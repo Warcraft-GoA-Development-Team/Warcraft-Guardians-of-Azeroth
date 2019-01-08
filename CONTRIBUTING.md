@@ -9,3 +9,6 @@ map generation will clear all of your changes. For more information, visit this 
 4. DO NOT make character attributes higher than 30 (40 maximum). Having a higher value than this breaks certain vanilla
 events.
         
+General Repository Information:
+
+1. If your pull request is currently a work in progress and requires more commits before review/finalization, please write in "(WIP)" at the end of your pull request title. This will have GitHub mark it as a pull request that should not be merged yet.
