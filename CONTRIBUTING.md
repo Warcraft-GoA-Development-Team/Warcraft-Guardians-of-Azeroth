@@ -12,5 +12,3 @@ events.
 General Repository Information:
 
 1. If your pull request is currently a work in progress and requires more commits before review/finalization, please write in "(WIP)" at the end of your pull request title. This will have GitHub mark it as a pull request that should not be merged yet.
-
-Test
