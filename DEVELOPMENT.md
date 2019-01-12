@@ -29,11 +29,18 @@
  - Utilize the order given in [this article](https://ck2.paradoxwikis.com/Modifiers) making a gap between the modifiers similar to how they are sectioned off. For example **"Character Attribute Modifiers"** and **"Realm Modifiers"**.
  
  ## Other Modding Articles
- [Scripting](https://ck2.paradoxwikis.com/Scripting)
- [Events](https://ck2.paradoxwikis.com/Event_modding)
- [Decisions](https://ck2.paradoxwikis.com/Decisions_modding)
- [Scopes](https://ck2.paradoxwikis.com/Scopes)
- [Portraits](https://ck2.paradoxwikis.com/Portrait_modding)
- [Titles](https://ck2.paradoxwikis.com/Title_modding)
- [Traits](https://ck2.paradoxwikis.com/Trait_modding)
+### [Scripting](https://ck2.paradoxwikis.com/Scripting)
+ 
+### [Events](https://ck2.paradoxwikis.com/Event_modding)
+ 
+### [Decisions](https://ck2.paradoxwikis.com/Decisions_modding)
+ 
+### [Scopes](https://ck2.paradoxwikis.com/Scopes)
+ 
+### [Portraits](https://ck2.paradoxwikis.com/Portrait_modding)
+ 
+### [Titles](https://ck2.paradoxwikis.com/Title_modding)
+ 
+### [Traits](https://ck2.paradoxwikis.com/Trait_modding)
+ 
  
