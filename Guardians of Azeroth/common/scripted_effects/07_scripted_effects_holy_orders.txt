@@ -1,0 +1,365 @@
+check_holy_order_donation_effect = {
+	hidden_tooltip = {
+		save_event_target_as = holy_order_potential_title
+
+		if = { # Checking if it is an island the Hospitallers could be interested in 
+				limit = {
+					is_title_active = d_knights_hospitaler
+					d_knights_hospitaler = {
+						owner = {
+							religion = ROOT
+						}
+					}
+					ROOT = {
+						is_heretic = no
+						NOT = {
+							has_character_flag = refused_to_give_island_to_knights
+						}
+					}
+					OR = {
+						title = d_cyprus
+						AND = {
+							title = d_sicily
+							c_malta = {
+								owner = {
+									OR = {
+										character = FROM
+										any_liege = {
+											character = FROM
+										}
+									}
+								}
+							}
+						}
+						title = c_malta
+						title = d_corsica
+						title = d_sardinia
+						title = d_krete
+						AND = {
+							title = d_abydos
+							c_lesbos = {
+								owner = {
+									OR = {
+										character = FROM
+										any_liege = {
+											character = FROM
+										}
+									}
+								}
+							}
+						}
+						title = c_lesbos
+						AND = {
+							title = d_cibyrrhaeot
+							c_rhodos = {
+								owner = {
+									OR = {
+										character = FROM
+										any_liege = {
+											character = FROM
+										}
+									}
+								}
+							}
+						}
+						title = c_rhodos
+						AND = {
+							title = d_samos
+							c_chios = {
+								owner = {
+									OR = {
+										character = FROM
+										any_liege = {
+											character = FROM
+										}
+									}
+								}
+							}
+						}
+						title = c_chios
+						AND = {
+							title = d_aegean_islands
+							c_naxos = {
+								owner = {
+									OR = {
+										character = FROM
+										any_liege = {
+											character = FROM
+										}
+									}
+								}
+							}
+						}
+						title = c_naxos
+						title = d_cephalonia
+					}
+				}
+				if = {
+					limit = {
+						title = d_abydos
+					}
+					c_lesbos = {
+						save_event_target_as = potential_title
+					}
+				}
+				else_if = {
+					limit = {
+						title = d_cibyrrhaeot
+					}
+					c_rhodos = {
+						save_event_target_as = potential_title
+					}
+				}
+				else_if = {
+					limit = {
+						title = d_sicily
+					}
+					c_malta = {
+						save_event_target_as = potential_title
+					}
+				}
+				else = {
+					save_event_target_as = potential_title 
+				}
+				ROOT = { save_event_target_as = title_owner }
+				d_knights_hospitaler = {
+					owner = {
+						character_event = { id = HFP.44000 days = 1}
+					}
+				}
+		}
+
+		if = { # Checking if it is a Duchy the Teutonics could be interested in
+			limit = {
+				# Checking that ROOT has the whole Duchy
+				NOT = {
+					any_direct_de_jure_vassal_title = {
+						NOT = {
+							owner = {
+								OR = {
+									character = ROOT
+									any_liege = {
+										character = ROOT
+									}
+								}
+							}
+						}
+					}
+				}
+				# Checking that the Teutonics are active
+				is_title_active = d_teutonic_order
+				# Checking that Root is the same religion as the Teutonics
+				d_teutonic_order = {
+					owner = {
+						religion = ROOT
+					}
+				}
+				# Checking that Root don't already own the associated Kingdom of that title
+				kingdom = {
+					OR = {
+						owner = {
+							NOT = {
+								character = ROOT
+							}
+						}
+						NOT = {
+							owner = {
+								always = yes
+							}
+						}
+					}
+				}
+				# Checking that the Teutonics don't already have a Duchy
+				d_teutonic_order = {
+					owner = {
+						NOT = {
+							any_demesne_title = {
+								tier = COUNT
+							}
+						}
+					}
+				}
+				# Checking that the Teutonics aren't already in a Northern Crusade
+				d_teutonic_order = {
+					owner = {
+						NOT = {
+							any_war = {
+								using_cb = northern_crusade_war
+							}
+						}
+					}
+				}
+				# Checking the ROOT 
+				ROOT = {
+					is_heretic = no
+					NOT = {
+						has_character_flag = refused_to_give_land_to_teutonics
+					}
+				}
+				# Duke tier 
+				tier = DUKE
+				# Somewhere in the north
+				OR = {
+					region = world_europe_north
+					region = custom_eastern_baltic
+					region = custom_russia
+				}
+				OR = {
+					# Is by water
+					any_direct_de_jure_vassal_title = {
+						location = {
+							port = yes
+						}
+						owner = {
+							OR = {
+								character = FROM
+								any_liege = {
+									character = FROM
+								}
+							}
+						}
+					}
+					# Is the neighbor to another Catholic realm
+					any_direct_de_jure_vassal_title = {
+						location = {
+							any_neighbor_province = {
+								OR = {
+									religion = ROOT
+									owner = {
+										religion = ROOT
+									}
+									owner = {
+										any_liege = {
+											religion = ROOT
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+				# Is adjacent to infidels
+				any_direct_de_jure_vassal_title = {
+					location = {
+						any_neighbor_province = {
+							owner = {
+								OR = {
+									NOT = {
+										religion_group = ROOT
+									}
+									any_liege = {
+										NOT = {
+											religion_group = ROOT
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			d_teutonic_order = {
+				owner = {
+					character_event = { id = HFP.44005 days = 1}
+				}
+			}
+		}
+	}
+}
+
+holy_order_set_law_effect = {
+	add_law = revoke_title_law_2
+	add_law = ze_administration_laws_1
+	add_law = law_voting_power_0
+	add_law = war_voting_power_0
+	add_law = revoke_title_voting_power_0
+	add_law = imprison_voting_power_0
+	add_law = grant_title_voting_power_0
+	add_law = banish_voting_power_0
+	add_law = execution_voting_power_0
+	add_law = succession_voting_power_0	
+	add_law = centralization_3
+}
+
+teutonic_order_upgrade_capital_effect = {
+	any_demesne_title = {
+		limit = {
+			OR = {
+				tier = BARON
+				tier = COUNT
+			}
+			holding_type = TRIBAL
+		}
+		convert_to = CASTLE
+		if = {
+			limit = {
+				location = {
+					num_of_empty_holdings = 2
+				}
+				NOT = {
+					any_direct_de_jure_vassal_title = {
+						holding_type = city
+					}
+				}
+			}
+			location = {
+				build_holding = {
+					type = CITY
+				}
+			}
+		}
+		if = {
+			limit = {
+				location = {
+					num_of_empty_holdings = 2
+				}
+				NOT = {
+					any_direct_de_jure_vassal_title = {
+						holding_type = TEMPLE
+					}
+				}
+			}
+			location = {
+				build_holding = {
+					type = TEMPLE
+				}
+			}
+		}
+	}
+}
+
+holy_order_distribute_titles_effect = {
+	any_demesne_title = {
+		limit = {
+			NOT = {
+				holding_type = CASTLE
+			}
+			lower_tier_than = DUKE
+		}
+		if = {
+			limit = {
+				holding_type = CITY
+			}
+			create_random_steward = {
+				random_traits = yes
+				dynasty = random
+			}
+		}
+		else_if = {
+			limit = {
+				holding_type = TEMPLE
+			}
+			create_random_priest = {
+				random_traits = yes
+				dynasty = random
+			}
+		}
+		else = {
+			create_random_soldier = {
+				random_traits = yes
+				dynasty = random
+			}
+		}
+		grant_title_no_opinion = new_character
+	}
+}

@@ -1,0 +1,372 @@
+# Title decisions are possible vs _all_ titles and are shown in the Title Diplomacy View, not the Intrigue View. The taker is in the FROM scope.
+#
+# filter = [capital/primary_title/owned/vassal_owned/sub_realm_owned/realm_owned/dynasty_owned/all]
+# ai_target_filter = [capital/primary_title/owned/vassal_owned/sub_realm_owned/realm_owned/dynasty_owned/all] (which titles for which the AI evaluates the decision.)
+#	owned: all titles owned by the AI
+#	vassal_owned: all titles owned by direct vassal rulers of the AI's employer
+#	sub_realm_owned: all titles below the AI's employer
+#	realm_owned: all titles in the same top realm as the AI
+#	dynasty_owned: all titles owned by members of the same dynasty
+#	all: all titles (Avoid if possible. VERY CPU-HEAVY!)
+#	
+
+title_decisions = {
+	abandon_province = {
+		only_playable = yes
+		filter = sub_realm_owned
+		ai_target_filter = sub_realm_owned
+		ai_check_interval = 36
+		
+		from_potential = {
+			# Warcraft
+			is_untouchable_trigger = no
+			
+			is_nomadic = yes
+			has_dlc = "Horse Lords"
+		}
+		
+		potential = {
+			tier = COUNT
+			location = {
+				owner = {
+					same_realm = FROM
+				}
+				any_neighbor_province = {
+					owner = {
+						NOT = { same_realm = FROM }
+					}
+				}
+			}
+		}
+
+		allow = {
+			location = {
+				NOT = { num_of_settlements = 1 }
+			}
+			has_siege = no
+			FROM = {
+				war = no
+			}
+			location = {
+				NOT = { has_province_modifier = nomads_exploited_land }
+			}
+		}
+		effect = {
+			holder_scope = {
+				capital_holding = {
+					add_holding_modifier = {
+						modifier = nomad_population_boom
+						years = 8
+						stacking = yes
+					}
+				}
+				hidden_tooltip = {
+					top_liege = {
+						if = { 
+							limit = { NOT = { character = PREV } } 
+							capital_holding = {
+								add_holding_modifier = {
+									modifier = nomad_population_boom_spillover
+									years = 8
+									stacking = yes
+								}
+							}
+						}
+						any_vassal = {
+							limit = {
+								NOT = { character = PREVPREV }
+								clan = yes
+							}
+							capital_holding = {
+								add_holding_modifier = {
+									modifier = nomad_population_boom_spillover
+									years = 8
+									stacking = yes
+								}
+							}
+						}
+					}
+				}
+			}
+			location = {
+				random_neighbor_province = {
+					limit = {
+						owner = {
+							NOT = {
+								same_realm = FROM
+							}
+						}
+					}
+					owner = {
+						ROOT = {
+							grant_title = PREV
+						}
+					}
+				}
+			}
+			location = {
+				add_province_modifier = {
+					modifier = nomads_exploited_land
+					years = 8
+				}
+			}
+		}
+		revoke_allowed = {
+			always = no
+		}
+		ai_will_do = {
+			factor = 0
+		}
+	}
+	
+	reclaim_nomad_province = {
+		only_playable = yes
+		filter = sub_realm_owned
+		ai_target_filter = sub_realm_owned
+		is_high_prio = yes
+		ai_check_interval = 36
+		
+		from_potential = {
+			# Warcraft
+			is_untouchable_trigger = no
+			
+			is_nomadic = yes
+			has_dlc = "Horse Lords"
+			OR = {
+				war = no
+				ai = no
+			}
+			any_realm_province = {
+				has_province_modifier = nomad_agitation
+			}
+		}
+		
+		potential = {
+			tier = COUNT
+			location = {
+				owner = {
+					same_realm = FROM
+					is_nomadic = no
+					ai = yes
+				}
+				has_province_modifier = nomad_agitation
+			}
+		}
+
+		allow = {
+			FROM = {
+				war = no
+			}
+			location = {
+				has_province_modifier = nomad_agitation
+			}
+		}
+		effect = {
+			location = {
+				ROOT = {
+					grant_title = FROM
+				}
+				remove_province_modifier = nomad_agitation
+			}
+		}
+		revoke_allowed = {
+			always = no
+		}
+		ai_will_do = {
+			factor = 1
+		}
+	}
+	
+	set_crown_focus = { # High Prio version
+		only_playable = yes
+		filter = owned
+		ai_target_filter = owned
+		is_high_prio = yes
+		ai_check_interval = 12
+		
+		from_potential = {
+			is_playable = yes
+			has_dlc = "Reapers"
+			is_nomadic = no
+			higher_tier_than = COUNT
+			NOT = {
+				any_demesne_province = {
+					has_province_flag = crown_focus_province
+				}
+			}
+		}
+		
+		potential = {
+			owner = { character = FROM }
+			tier = count
+		}
+
+		allow = {
+			hidden_tooltip = {
+				OR = {
+					FROM = {
+						ai = no
+					}
+					FROM = {
+						NOT = {
+							any_demesne_province = {
+								has_province_flag = crown_focus_province
+							}
+						}
+					}
+				}
+			}
+
+			location = {
+				capital_holding = {
+					NOR = {
+						has_siege = yes
+						is_occupied = yes 
+					}
+				}
+			}
+			
+			FROM = {	
+				OR = {
+					AND = {
+						independent = yes
+						higher_tier_than = COUNT
+					}
+					AND = {
+						independent = no
+						tier = DUKE
+						realm_size = 35
+					}
+					AND = {
+						independent = no
+						tier = KING
+						realm_size = 55
+					}
+					AND = {
+						independent = no
+						OR = {
+							is_merchant_republic = yes
+							is_republic = yes
+							government = order_government
+						}
+					}
+				}
+			}
+		}
+
+		effect = {
+			FROM = {
+				any_demesne_province = {
+					limit = {
+						has_province_flag = crown_focus_province
+					}
+					clr_province_flag = crown_focus_province
+				}
+			}
+			location = { set_province_flag = crown_focus_province }
+		}
+
+		revoke_allowed = {
+			always = no
+		}
+
+		ai_will_do = {
+			factor = 1
+		}
+	}
+	
+	move_crown_focus = {
+		only_playable = yes
+		filter = owned
+		ai_target_filter = owned
+		ai_check_interval = 120
+		
+		from_potential = {
+			is_playable = yes
+			has_dlc = "Reapers"
+			is_nomadic = no
+			higher_tier_than = COUNT
+			any_demesne_province = {
+				has_province_flag = crown_focus_province
+			}
+		}
+		
+		potential = {
+			owner = { character = FROM }
+			tier = count
+			NOT = { location = { has_province_flag = crown_focus_province } }
+		}
+
+		allow = {
+			hidden_tooltip = {
+				OR = {
+					FROM = {
+						ai = no
+					}
+					FROM = {
+						NOT = {
+							any_demesne_province = {
+								has_province_flag = crown_focus_province
+							}
+						}
+					}
+				}
+			}
+
+			location = {
+				capital_holding = {
+					NOR = {
+						has_siege = yes
+						is_occupied = yes 
+					}
+				}
+			}
+			
+			FROM = {
+				OR = {
+					AND = {
+						independent = yes
+						higher_tier_than = COUNT
+					}
+					AND = {
+						independent = no
+						tier = DUKE
+						realm_size = 35
+					}
+					AND = {
+						independent = no
+						tier = KING
+						realm_size = 55
+					}
+					AND = {
+						independent = no
+						OR = {
+							is_merchant_republic = yes
+							is_republic = yes
+						}
+					}
+				}
+			}
+		}
+
+		effect = {
+			FROM = {
+				any_demesne_province = {
+					limit = {
+						has_province_flag = crown_focus_province
+					}
+					clr_province_flag = crown_focus_province
+				}
+			}
+			location = { set_province_flag = crown_focus_province }
+		}
+
+		revoke_allowed = {
+			always = no
+		}
+
+		ai_will_do = {
+			factor = 1
+		}
+	}
+}

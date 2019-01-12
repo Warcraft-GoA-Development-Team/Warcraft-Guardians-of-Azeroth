@@ -1,0 +1,430 @@
+become_leader_of_horde_faction_effect = {
+	if = {
+		limit = { can_lead_faction_trigger = yes }
+		if = {
+			limit = { is_tributary = yes }
+			suzerain = { remove_tributary = PREV }
+		}
+		add_trait = leader_of_horde_trait
+		# Creates the Horde title
+		if = {
+			limit = { NOT = { e_horde = { has_holder = yes } } }
+			create_e_horde_effect = yes
+		}
+		else = {
+			if = {
+				limit = {
+					NOT = { has_landed_title = e_horde }
+					e_horde = { has_holder = yes }
+				}
+				grant_title_no_opinion = e_horde
+			}
+		}
+		hidden_effect = {
+			clr_character_flag = being_joined_horde_flag
+			# add_alliances_with_faction_effect = yes
+			break_alliances_with_alliance_faction_effect = yes
+		}
+	}
+	# Something went wrong, cleanup
+	else = {
+		leave_horde_faction_effect = yes
+		narrative_event = { id = WCPLF.105 }	# Destroys Horde faction
+	}
+}
+become_leader_of_alliance_faction_effect = {
+	if = {
+		limit = { can_lead_faction_trigger = yes }
+		if = {
+			limit = { is_tributary = yes }
+			suzerain = { remove_tributary = PREV }
+		}
+		add_trait = leader_of_alliance_trait
+		# Creates the Alliance title
+		if = {
+			limit = { has_global_flag = centralized_alliance_flag }
+			if = {
+				limit = { NOT = { e_alliance = { has_holder = yes } } }
+				create_e_alliance_effect = yes
+			}
+			else = {
+				if = {
+					limit = {
+						NOT = { has_landed_title = e_alliance }
+						e_alliance = { has_holder = yes }
+					}
+					grant_title_no_opinion = e_alliance
+				}
+			}
+		}
+		hidden_effect = {
+			clr_character_flag = being_joined_alliance_flag
+			# add_alliances_with_faction_effect = yes
+			break_alliances_with_horde_faction_effect = yes
+		}
+	}
+	# Something went wrong, cleanup
+	else = {
+		leave_alliance_faction_effect = yes
+		narrative_event = { id = WCPLF.205 }	# Destroys Horde faction
+	}
+}
+join_horde_faction_effect = {
+	if = {
+		limit = { can_be_in_horde_faction_trigger = yes }
+		if = {
+			limit = { is_tributary = yes }
+			suzerain = { remove_tributary = PREV }
+		}
+		if = {
+			limit = {
+				NOT = { tier = EMPEROR }
+				has_global_flag = centralized_horde_flag
+				e_horde = { has_holder = yes }
+			}
+			e_horde = { holder_scope = { set_defacto_vassal = PREVPREV } }
+		}
+		else = { leader_of_horde_trait = { make_tributary = { who = PREV tributary_type = political_faction } } }
+		hidden_effect = {
+			clr_character_flag = being_joined_horde_flag
+			add_alliances_with_faction_effect = yes
+			break_alliances_with_alliance_faction_effect = yes
+		}
+	}
+	else = {
+		leave_horde_faction_effect = yes
+	}
+}
+join_alliance_faction_effect = {
+	if = {
+		limit = { can_be_in_alliance_faction_trigger = yes }
+		if = {
+			limit = { is_tributary = yes }
+			suzerain = { remove_tributary = PREV }
+		}
+		if = {
+			limit = {
+				NOT = { tier = EMPEROR }
+				has_global_flag = centralized_alliance_flag
+				e_alliance = { has_holder = yes }
+			}
+			e_alliance = { holder_scope = { set_defacto_vassal = PREVPREV } }
+		}
+		else = { leader_of_alliance_trait = { make_tributary = { who = PREV tributary_type = political_faction } } }
+		hidden_effect = {
+			clr_character_flag = being_joined_alliance_flag
+			add_alliances_with_faction_effect = yes
+			break_alliances_with_horde_faction_effect = yes
+		}
+	}
+	else = {
+		leave_alliance_faction_effect = yes
+	}
+}
+leave_horde_faction_effect = {
+	if = {
+		limit = {
+			is_alive = yes
+			is_dying = no
+		}
+		break_alliances_with_horde_faction_effect = yes
+		if = {
+			limit = { trait = leader_of_horde_trait }
+			remove_trait = leader_of_horde_trait
+			narrative_event = { id = WCPLF.105 }	# Destroys Horde faction
+		}
+		if = {
+			limit = { is_tributary = yes }
+			suzerain = { remove_tributary = PREV }
+		}
+		if = {
+			limit = {
+				NOT = { has_landed_title = e_horde }
+				de_facto_liege_title = e_horde
+			}
+			set_defacto_liege = THIS
+		}
+	}
+}
+leave_alliance_faction_effect = {
+	if = {
+		limit = {
+			is_alive = yes
+			is_dying = no
+		}
+		break_alliances_with_alliance_faction_effect = yes
+		if = {
+			limit = { trait = leader_of_alliance_trait }
+			remove_trait = leader_of_alliance_trait
+			if = {
+				limit = {
+					NOT = { has_global_flag = centralized_alliance_flag }
+					any_tributary = {
+						can_lead_faction_trigger = yes
+						is_tributary = { type = political_faction suzerain = suzerain }
+						NOT = { character = ROOT }
+					}
+				}
+				random_tributary = {
+					limit = {
+						can_lead_faction_trigger = yes
+						is_tributary = { type = political_faction suzerain = suzerain }
+						NOT = {
+							any_independent_ruler = {
+								NOT = { character = PREV }
+
+								can_lead_faction_trigger = yes
+								is_tributary = { type = political_faction suzerain = PREVPREV }
+								relative_power = { who = PREV power = 1.01 }
+							}
+						}
+					}
+					add_trait = leader_of_alliance_trait
+					narrative_event = { id = WCPLF.60 }
+				}
+				any_tributary = {
+					join_alliance_faction_effect = yes
+				}
+			}
+			else = {
+				# Destroys faction
+				narrative_event = { id = WCPLF.205 }
+			}
+		}
+		if = {
+			limit = { is_tributary = yes }
+			suzerain = { remove_tributary = PREV }
+		}
+		if = {
+			limit = {
+				NOT = { has_landed_title = e_alliance }
+				de_facto_liege_title = e_alliance
+			}
+			set_defacto_liege = THIS
+		}
+	}
+}
+add_alliances_with_faction_effect = {
+	if = {
+		limit = {
+			is_alive = yes
+			is_dying = no
+		}
+		suzerain = {
+			any_tributary = {
+				limit = {
+					NOT = { character = PREVPREV }
+					is_tributary = { type = political_faction suzerain = suzerain }
+				}
+				opinion = { modifier = in_non_aggression_pact who = PREVPREV years = 1 }
+				reverse_opinion = { modifier = in_non_aggression_pact who = PREVPREV years = 1 }
+				add_alliance = { who = PREVPREV years = 9999 }
+			}
+		}
+	}
+}
+break_alliances_with_horde_faction_effect = {
+	if = {
+		limit = {
+			is_alive = yes
+			is_dying = no
+		}
+		any_independent_ruler = {
+			limit = {
+				NOT = { character = PREV }
+				is_member_of_horde_faction_trigger = yes
+				is_allied_with = PREV
+			}
+			break_alliance = PREV
+			remove_opinion = { who = PREV modifier = in_non_aggression_pact }
+			reverse_remove_opinion = { who = PREV modifier = in_non_aggression_pact }
+		}
+	}
+}
+break_alliances_with_alliance_faction_effect = {
+	if = {
+		limit = {
+			is_alive = yes
+			is_dying = no
+		}
+		any_independent_ruler = {
+			limit = {
+				NOT = { character = PREV }
+				is_member_of_alliance_faction_trigger = yes
+				is_allied_with = PREV
+			}
+			break_alliance = PREV
+			remove_opinion = { who = PREV modifier = in_non_aggression_pact }
+			reverse_remove_opinion = { who = PREV modifier = in_non_aggression_pact }
+		}
+	}
+}
+
+create_e_horde_effect = {
+	primary_title = {
+		show_scope_change = no
+		hidden_effect = { activate_title = { title = e_horde status = yes } }
+		e_horde = {
+			show_scope_change = no
+			gain_title = PREVPREV
+			# set_name = "HORDE"
+			# adjective = "HORDE_ADJ"
+			hidden_effect = {
+				copy_title_laws = PREV
+				make_primary_title = yes
+				change_faction_laws = yes
+			}
+		}
+	}
+	if = {
+		limit = {
+			any_demesne_title = {
+				tier = EMPEROR
+				NOT = { title = e_horde }
+				NOT = { title = e_alliance }
+			}
+		}
+		any_demesne_title = {
+			limit = {
+				tier = EMPEROR
+				NOT = { title = e_horde }
+				NOT = { title = e_alliance }
+			}
+			show_scope_change = no
+			destroy_landed_title = THIS
+		}
+	}
+	hidden_effect = {
+		set_global_flag = centralized_horde_flag
+		any_tributary = {
+			limit = {
+				is_tributary = { type = political_faction suzerain = suzerain }
+				NOT = { tier = EMPEROR }
+			}
+			set_defacto_liege = PREV
+		}
+	}
+}
+create_e_alliance_effect = {
+	primary_title = {
+		show_scope_change = no
+		hidden_effect = { activate_title = { title = e_alliance status = yes } }
+		e_alliance = {
+			show_scope_change = no
+			gain_title = PREVPREV
+			hidden_effect = {
+				set_coa = PREV
+				copy_title_laws = PREV
+				make_primary_title = yes
+				change_faction_laws = yes
+			}
+		}
+	}
+	if = {
+		limit = {
+			any_demesne_title = {
+				tier = EMPEROR
+				NOT = { title = e_horde }
+				NOT = { title = e_alliance }
+			}
+		}
+		any_demesne_title = {
+			limit = {
+				tier = EMPEROR
+				NOT = { title = e_horde }
+				NOT = { title = e_alliance }
+			}
+			show_scope_change = no
+			destroy_landed_title = THIS
+		}
+	}
+	hidden_effect = {
+		set_global_flag = centralized_alliance_flag
+		any_tributary = {
+			limit = {
+				is_tributary = { type = political_faction suzerain = suzerain }
+				NOT = { tier = EMPEROR }
+			}
+			set_defacto_liege = PREV
+		}
+	}
+}
+change_faction_laws = {
+	if = {
+		limit = {
+			is_law_potential = succ_feudal_elective
+			NOT = { has_law = succ_feudal_elective }
+		}
+		add_law = { law = succ_feudal_elective cooldown = no opinion_effect = no }
+	}
+	if = {
+		limit = {
+			is_law_potential = law_voting_power_1
+			NOT = { has_law = law_voting_power_1 }
+		}
+		add_law = { law = law_voting_power_1 cooldown = no opinion_effect = no }
+	}
+	if = {
+		limit = {
+			is_law_potential = war_voting_power_1
+			NOT = { has_law = war_voting_power_1 }
+		}
+		add_law = { law = war_voting_power_1 cooldown = no opinion_effect = no }
+	}
+	if = {
+		limit = {
+			is_law_potential = revoke_title_voting_power_1
+			NOT = { has_law = revoke_title_voting_power_1 }
+		}
+		add_law = { law = revoke_title_voting_power_1 cooldown = no opinion_effect = no }
+	}
+	if = {
+		limit = {
+			is_law_potential = imprison_voting_power_1
+			NOT = { has_law = imprison_voting_power_1 }
+		}
+		add_law = { law = imprison_voting_power_1 cooldown = no opinion_effect = no }
+	}
+	if = {
+		limit = {
+			is_law_potential = grant_title_voting_power_1
+			NOT = { has_law = grant_title_voting_power_1 }
+		}
+		add_law = { law = grant_title_voting_power_1 cooldown = no opinion_effect = no }
+	}
+	if = {
+		limit = {
+			is_law_potential = banish_voting_power_1
+			NOT = { has_law = banish_voting_power_1 }
+		}
+		add_law = { law = banish_voting_power_1 cooldown = no opinion_effect = no }
+	}
+	if = {
+		limit = {
+			is_law_potential = execution_voting_power_1
+			NOT = { has_law = execution_voting_power_1 }
+		}
+		add_law = { law = execution_voting_power_1 cooldown = no opinion_effect = no }
+	}
+	if = {
+		limit = {
+			is_law_potential = succession_voting_power_1
+			NOT = { has_law = succession_voting_power_1 }
+		}
+		add_law = { law = succession_voting_power_1 cooldown = no opinion_effect = no }
+	}
+	if = {
+		limit = {
+			is_law_potential = crown_authority_1
+			NOT = { has_law = crown_authority_1 }
+		}
+		add_law = { law = crown_authority_1 cooldown = no opinion_effect = no }
+	}
+	if = {
+		limit = {
+			is_law_potential = revoke_title_law_1
+			NOT = { has_law = revoke_title_law_1 }
+		}
+		add_law = { law = revoke_title_law_1 cooldown = no opinion_effect = no }
+	}
+}

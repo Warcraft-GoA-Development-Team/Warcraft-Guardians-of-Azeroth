@@ -1,0 +1,3026 @@
+namespace = WCVOD
+
+# Void corruption
+# Stages:
+# 3) 66-100 - Major exposure (character slowly turns into a n'raqi, no way back)
+# 2) 33-65 - Minor exposure (void elf)
+# 1) 0-32 - Natural form
+
+# Moves on to the next stage of void corruption
+character_event = {
+	id = WCVOD.10
+	desc = {
+		trigger = { NOT = { check_variable = { which = void_corruption value = 66 } } }
+		text = EVTDESC_WCVOD_10_case_01
+	}
+	desc = {
+		trigger = { check_variable = { which = void_corruption value = 66 } }
+		text = EVTDESC_WCVOD_10_case_02
+	}
+	picture = GFX_evt_voidwalker
+	border = GFX_event_normal_frame_intrigue
+
+	is_triggered_only = yes
+	hide_from = yes
+	hide_new = yes
+
+	trigger = {
+		OR = {
+			AND = {
+				NOR = {
+					has_character_modifier = void_corruption_1
+					has_character_modifier = void_corruption_2
+					has_character_flag = void_creature
+				}
+				check_variable = { which = void_corruption value = 33 }
+			}
+			AND = {
+				NOR = {
+					has_character_modifier = void_corruption_2
+					has_character_flag = void_creature
+				}
+				check_variable = { which = void_corruption value = 66 }
+			}
+		}
+	}
+
+	option = {
+		name = {
+			trigger = {
+				NOT = { true_religion_group = void_group }
+				NOT = { check_variable = { which = void_corruption value = 66 } }
+			}
+			text = ALAS
+		}
+		name = {
+			trigger = {
+				true_religion_group = void_group
+				NOT = { check_variable = { which = void_corruption value = 66 } }
+			}
+			text = EXCELLENT
+		}
+		name = {
+			trigger = { check_variable = { which = void_corruption value = 66 } }
+			text = EVTOPTA_WCVOD_10
+		}
+
+		remove_void_corruption_modifiers_effect = yes
+		add_void_corruption_modifier_effect = yes
+		
+		# Stage effects
+		if = {
+			limit = { check_variable = { which = fel_corruption value = 66 }  }
+			if = {
+				limit = { NOT = { true_religion = old_gods_worship } }
+				if = {
+					limit = { liege = { religion = old_gods_worship } }
+					if = { limit = { has_secret_religion = yes } clear_secret_religion = yes }
+					religion = old_gods_worship
+				}
+				else = { set_secret_religion = old_gods_worship }
+			}
+		}
+		if = {
+			limit = { NOT = { true_religion_group = void_group } }
+			character_event = { id = WCVOD.170 days = 3 }
+		}
+
+		hidden_effect = {
+			if = {
+				limit = {
+					is_pregnant = yes
+					can_has_children_trigger = no
+				}
+				death = { death_reason = death_natural }
+			}
+		}
+	}
+}
+# Moves on to the previous stage of void corruption
+character_event = {
+	id = WCVOD.20
+	desc = EVTDESC_WCVOD_20
+	picture = GFX_evt_voidwalker
+	border = GFX_event_normal_frame_intrigue
+
+	is_triggered_only = yes
+	hide_from = yes
+	hide_new = yes
+
+	trigger = {
+		OR = {
+			AND = {
+				has_character_modifier = void_corruption_2
+				NOT = { check_variable = { which = void_corruption value = 66 } }
+			}
+			AND = {
+				has_character_modifier = void_corruption_1
+				NOT = { check_variable = { which = void_corruption value = 33 } }
+			}
+		}
+	}
+
+	option = {
+		name = {
+			trigger = { NOT = { true_religion_group = void_group } }
+			text = EXCELLENT
+		}
+		name = {
+			trigger = { true_religion_group = void_group }
+			text = ALAS
+		}
+
+		# Modifiers
+		remove_void_corruption_modifiers_effect = yes
+		add_void_corruption_modifier_effect = yes
+	}
+}
+
+# Increases/decreases void corruption
+character_event = {
+	id = WCVOD.95
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	only_playable = yes
+	min_age = 16
+	only_capable = yes
+
+	trigger = {
+		is_alive = yes
+		is_dying = no
+		
+		NOT = { has_character_flag = void_creature }
+		OR = {
+			AND = {
+				AND = {
+					is_corruptible_shadow_priest_trigger = no
+					is_susceptible_to_void_corruption_trigger = no
+				}
+				NOT = { check_variable = { which = void_corruption value = 0 } }
+			}
+			AND = {
+				OR = {
+					is_corruptible_shadow_priest_trigger = yes
+					is_susceptible_to_void_corruption_trigger = yes
+				}
+				NOT = { check_variable = { which = void_corruption value = 100 } }
+				OR = {
+					# If you turned into voidform, you'll receive a very very large "dose" of void
+					AND = {
+						has_character_modifier = void_corruption_2
+						NOT = { check_variable = { which = void_corruption value = 70 } }	# Void corruption "ceiling"
+					}
+					# If you're a high lvl shadow_priest, you'll receive a very large "dose" of void
+					AND = {
+						is_shadow_priest_class_trigger = yes
+						is_weak_shadow_priest_class_trigger = no
+						NOT = { check_variable = { which = void_corruption value = 50 } }	# Void corruption "ceiling"
+					}
+					# If you're a weak shadow priest, you'll receive an average "dose" of void
+					AND = {
+						is_shadow_priest_class_trigger = yes
+						is_weak_shadow_priest_class_trigger = yes
+						NOT = { check_variable = { which = void_corruption value = 45 } }	# Void corruption "ceiling"
+					}
+					# If you're a void worshiper, you'll receive an average "dose" of void
+					AND = {
+						OR = {
+							true_religion_group = void_group
+							has_character_flag = consuming_void_magic_flag
+						}
+						NOT = { check_variable = { which = void_corruption value = 35 } }	# Void corruption "ceiling"
+					}
+					# If you're only located amoung the void worshipers, you'll receive
+					# a small "dose" of void
+					AND = {
+						location = { religion_group = void_group }
+						NOT = { check_variable = { which = void_corruption value = 15 } }	# Void corruption "ceiling"
+					}
+				}
+			}
+			AND = {
+				OR = {
+					is_corruptible_shadow_priest_trigger = yes
+					is_susceptible_to_void_corruption_trigger = yes
+				}
+				check_variable = { which = void_corruption value = 1 }
+				NOR = {
+					has_character_modifier = void_corruption_2
+					is_shadow_priest_class_trigger = yes
+					true_religion_group = void_group
+					location = { religion_group = void_group }
+				}
+			}
+		}
+	}
+
+	immediate = {
+		if = {
+			limit = {
+				AND = {
+					is_corruptible_shadow_priest_trigger = no
+					is_susceptible_to_void_corruption_trigger = no
+				}
+				NOT = { check_variable = { which = void_corruption value = 0 } }
+			}
+			character_event = { id = WCVOD.115 }
+			break = yes
+		}
+		if = {
+			limit = {
+				OR = {
+					is_corruptible_shadow_priest_trigger = yes
+					is_susceptible_to_void_corruption_trigger = yes
+				}
+				NOT = { check_variable = { which = void_corruption value = 100 } }
+				OR = {
+					# If you turned into voidform, you'll receive a very very large "dose" of void
+					AND = {
+						has_character_modifier = void_corruption_2
+						NOT = { check_variable = { which = void_corruption value = 70 } }	# Void corruption "ceiling"
+					}
+					# If you're a high lvl shadow priest, you'll receive a very large "dose" of void
+					AND = {
+						is_shadow_priest_class_trigger = yes
+						is_weak_shadow_priest_class_trigger = no
+						NOT = { check_variable = { which = void_corruption value = 50 } }	# Void corruption "ceiling"
+					}
+					# If you're a weak shadow priest, you'll receive an average "dose" of void
+					AND = {
+						is_shadow_priest_class_trigger = yes
+						is_weak_shadow_priest_class_trigger = yes
+						NOT = { check_variable = { which = void_corruption value = 45 } }	# Void corruption "ceiling"
+					}
+					# If you're void worshiper, you'll receive an average "dose" of void
+					AND = {
+						OR = {
+							true_religion_group = void_group
+							has_character_flag = consuming_void_magic_flag
+						}
+						NOT = { check_variable = { which = void_corruption value = 35 } }	# Void corruption "ceiling"
+					}
+					# If you're only located among the void worshipers, you'll receive
+					# a small "dose" of void, but, anyway, this will be enough for the minor exposure
+					AND = {
+						location = { religion_group = void_group }
+						NOT = { check_variable = { which = void_corruption value = 15 } }	# Void corruption "ceiling"
+					}
+				}
+			}
+			character_event = { id = WCVOD.100 }
+			break = yes
+		}
+		if = {
+			limit = { check_variable = { which = void_corruption value = 1 } }
+			character_event = { id = WCVOD.110 }
+		}
+	}
+}
+# Increases void corruption
+character_event = {
+	id = WCVOD.100
+	desc = EVTDESC_WCVOD_100
+	picture = GFX_evt_voidwalker
+	border = GFX_event_normal_frame_intrigue
+
+	is_triggered_only = yes
+
+	immediate = {
+		log = "Void corruption of [Root.GetBestName] is [Root.void_corruption.GetValue]"
+	}
+
+	option = {
+		name = {
+			trigger = { NOT = { true_religion_group = void_group } }
+			text = ALAS
+		}
+		name = {
+			trigger = { true_religion_group = void_group }
+			text = EXCELLENT
+		}
+
+		add_5_void_corruption_effect = yes
+	}
+}
+# Decreases void corruption
+character_event = {
+	id = WCVOD.110
+	desc = EVTDESC_WCVOD_110
+	picture = GFX_evt_voidwalker
+	border = GFX_event_normal_frame_intrigue
+
+	is_triggered_only = yes
+
+	immediate = {
+		log = "Void corruption of [Root.GetBestName] is [Root.void_corruption.GetValue]"
+	}
+
+	option = {
+		name = {
+			trigger = { NOT = { true_religion_group = void_group } }
+			text = EXCELLENT
+		}
+		name = {
+			trigger = { true_religion_group = void_group }
+			text = ALAS
+		}
+		remove_5_void_corruption_effect = yes
+	}
+}
+# Removes void corruption
+character_event = {
+	id = WCVOD.115
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		log = "Void corruption of [Root.GetBestName] is [Root.void_corruption.GetValue]"
+
+		set_variable = { which = void_corruption value = 0 }
+	}
+}
+
+# If character isn't a void worshiper, converts to the void religions
+character_event = {
+	id = WCVOD.170
+	desc = EVTDESC_WCVOD_170
+	picture = GFX_evt_voidwalker
+
+	is_triggered_only = yes
+
+	trigger = {
+		NOT = { true_religion_group = void_group }
+		NOT = { true_religion = forsaken_cult }
+	}
+
+	# No! Everything should be in balance!
+	option = {
+		trigger = {
+			OR = {
+				true_religion_group = light_group
+				true_religion_group = arakkoa_religion_group
+			}
+		}
+		name = EVTOPTA_WCVOD_170
+
+		if = {
+			limit = {
+				OR = {
+					has_character_flag = void_creature
+					has_character_modifier = void_corruption_2
+					has_character_modifier = void_corruption_1
+					liege = { religion = forsaken_cult }
+				}
+			}
+			if = { limit = { has_secret_religion = yes } clear_secret_religion = yes }
+			religion = forsaken_cult
+		}
+		else = { set_secret_religion = forsaken_cult }
+
+		ai_chance = {
+			factor = 40
+			modifier = {
+				factor = 1.5
+				has_benevolent_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.1
+				has_pleasant_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.1
+				has_pious_trait_trigger = yes
+			}
+		}
+	}
+
+	# The Void can be used for good!
+	option = {
+		name = EVTOPTC_WCVOD_170
+
+		if = {
+			limit = {
+				OR = {
+					has_character_flag = void_creature
+					has_character_modifier = void_corruption_2
+					has_character_modifier = void_corruption_1
+					liege = { religion = voidfarer }
+				}
+			}
+			if = { limit = { has_secret_religion = yes } clear_secret_religion = yes }
+			religion = voidfarer
+		}
+		else = { set_secret_religion = voidfarer }
+
+		ai_chance = {
+			factor = 80
+			modifier = {
+				factor = 1.5
+				has_benevolent_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.1
+				has_pleasant_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.1
+				has_pious_trait_trigger = yes
+			}
+			modifier = {
+				factor = 0.5
+				OR = {
+					true_religion_group = light_group
+					true_religion_group = arakkoa_religion_group
+				}
+			}
+		}
+	}
+
+	# I has seen the true face of the Void!
+	option = {
+		name = EVTOPTB_WCVOD_170
+
+		if = {
+			limit = {
+				OR = {
+					has_character_flag = void_creature
+					has_character_modifier = void_corruption_2
+					liege = { religion = old_gods_worship }
+				}
+			}
+			if = { limit = { has_secret_religion = yes } clear_secret_religion = yes }
+			religion = old_gods_worship
+		}
+		else = { set_secret_religion = old_gods_worship }
+
+		ai_chance = {
+			factor = 20
+			modifier = {
+				factor = 5
+				trait = lunatic
+			}
+			modifier = {
+				factor = 4
+				has_impious_trait_trigger = yes
+			}
+			modifier = {
+				factor = 3
+				has_evil_trait_trigger = yes
+			}
+			modifier = {
+				factor = 3
+				has_unpleasant_trait_trigger = yes
+			}
+		}
+	}
+}
+
+### Void mutations ###
+character_event = {
+	id = WCVOD.300
+
+	# is_triggered_only = yes
+	hide_window = yes
+
+	min_age = 16
+	only_capable = yes
+	prisoner = no
+	religion = old_gods_worship
+
+	trigger = {
+		is_alive = yes
+		is_dying = no
+		
+		NOT = { has_character_flag = void_creature }
+		
+		true_religion = old_gods_worship
+		
+		OR = {
+			has_character_flag = void_mutation_flag
+			has_character_modifier = void_corruption_2
+		}
+		is_susceptible_to_void_corruption_trigger = yes
+	}
+
+	mean_time_to_happen = {
+		years = 20
+		modifier = {
+			factor = 0.65
+			is_shadow_priest_class_trigger = yes
+		}
+		modifier = {
+			factor = 0.65
+			check_variable = { which = void_corruption value = 99 }
+		}
+		modifier = {
+			factor = 0.65
+			check_variable = { which = void_corruption value = 88 }
+		}
+		modifier = {
+			factor = 0.65
+			check_variable = { which = void_corruption value = 77 }
+		}
+		modifier = {
+			factor = 0.8
+			is_mage_class_trigger = yes
+		}
+	}
+
+	immediate = {
+		if = {
+			limit = { NOT = { check_variable = { which = void_mutations value = 3 } } }
+			change_variable = { which = void_mutations value = 1 }
+			random_list = {
+				10 = {
+					set_character_flag = tentacle_arm_mutation_flag
+
+					modifier = {
+						factor = 0
+						OR = {
+							trait = tentacle_arm_mutation
+							has_character_flag = tentacle_arm_mutation_flag
+						}
+					}
+					modifier = {
+						factor = 0
+						OR = {
+							trait = chela_hand_mutation
+							has_character_flag = chela_hand_mutation_flag
+						}
+					}
+				}
+				10 = {
+					set_character_flag = chela_hand_mutation_flag
+
+					modifier = {
+						factor = 0
+						OR = {
+							trait = chela_hand_mutation
+							has_character_flag = chela_hand_mutation_flag
+						}
+					}
+					modifier = {
+						factor = 0
+						OR = {
+							trait = tentacle_arm_mutation
+							has_character_flag = tentacle_arm_mutation_flag
+						}
+					}
+				}
+				10 = {
+					set_character_flag = chitinous_growths_mutation_flag
+
+					modifier = {
+						factor = 0
+						OR = {
+							trait = chitinous_growths_mutation
+							has_character_flag = chitinous_growths_mutation_flag
+						}
+					}
+				}
+				10 = {
+					set_character_flag = spikes_mutation_flag
+
+					modifier = {
+						factor = 0
+						OR = {
+							trait = spikes_mutation
+							has_character_flag = spikes_mutation_flag
+						}
+					}
+				}
+				10 = {
+					set_character_flag = scales_mutation_flag
+
+					modifier = {
+						factor = 0
+						OR = {
+							trait = scales_mutation
+							has_character_flag = scales_mutation_flag
+						}
+					}
+					# Races that have scales by default
+					modifier = {
+						factor = 0
+						OR = {
+							trait = creature_murloc
+							trait = creature_naga
+							is_whelp_trigger = yes
+							is_drake_trigger = yes
+							is_dragon_trigger = yes
+							is_wyrm_trigger = yes
+							trait = creature_arakkoa_corrupted
+							trait = creature_arakkoa
+							trait = creature_gorloc
+						}
+					}
+				}
+				10 = {
+					set_character_flag = eyes_mutation_flag
+
+					modifier = {
+						factor = 0
+						OR = {
+							trait = eyes_mutation
+							has_character_flag = eyes_mutation_flag
+						}
+					}
+				}
+			}
+			character_event = { id = WCVOD.305 }
+		}
+		else = {
+			set_character_flag = transformation_into_nraqi_flag
+			long_character_event = { id = WCVOD.310 }
+		}
+	}
+}
+
+# Notification
+character_event = {
+	id = WCVOD.305
+	desc = {
+		trigger  = { has_character_flag = tentacle_arm_mutation_flag }
+		text = EVTDESC_WCVOD_305_tentacle_arm
+	}
+	desc = {
+		trigger  = { has_character_flag = chela_hand_mutation_flag }
+		text = EVTDESC_WCVOD_305_chela_hand
+	}
+	desc = {
+		trigger  = { has_character_flag = chitinous_growths_mutation_flag }
+		text = EVTDESC_WCVOD_305_chitinous_growths
+	}
+	desc = {
+		trigger  = { has_character_flag = spikes_mutation_mutation_flag }
+		text = EVTDESC_WCVOD_305_spikes
+	}
+	desc = {
+		trigger  = { has_character_flag = scales_mutation_flag }
+		text = EVTDESC_WCVOD_305_scales
+	}
+	desc = {
+		trigger  = { has_character_flag = eyes_mutation_flag }
+		text = EVTDESC_WCVOD_305_eyes
+	}
+	picture = GFX_evt_nraqi
+	border = GFX_event_normal_frame_intrigue
+
+	is_triggered_only = yes
+
+	# That's... wonderful!
+	option = {
+		name = EVTOPTA_WCVOD_305
+
+		if = {
+			limit = { has_character_flag = tentacle_arm_mutation_flag }
+			clr_character_flag = tentacle_arm_mutation_flag
+			if = {
+				limit = { trait = one_handed }
+				remove_trait = one_handed
+			}
+			add_trait = tentacle_arm_mutation
+		}
+		if = {
+			limit = { has_character_flag = chela_hand_mutation_flag }
+			clr_character_flag = chela_hand_mutation_flag
+			if = {
+				limit = { trait = one_handed }
+				remove_trait = one_handed
+			}
+			add_trait = chela_hand_mutation
+		}
+		if = {
+			limit = { has_character_flag = chitinous_growths_mutation_flag }
+			clr_character_flag = chitinous_growths_mutation_flag
+			if = {
+				limit = { trait = maimed }
+				remove_trait = maimed
+			}
+			if = {
+				limit = { trait = mangled }
+				remove_trait = mangled
+			}
+			add_trait = chitinous_growths_mutation
+		}
+		if = {
+			limit = { has_character_flag = spikes_mutation_flag }
+			clr_character_flag = spikes_mutation_flag
+			add_trait = spikes_mutation
+		}
+		if = {
+			limit = { has_character_flag = scales_mutation_flag }
+			clr_character_flag = scales_mutation_flag
+			add_trait = scales_mutation
+		}
+		if = {
+			limit = { has_character_flag = eyes_mutation_flag }
+			clr_character_flag = eyes_mutation_flag
+			if = {
+				limit = { has_character_flag = removed_one_eyed }
+				remove_trait = one_eyed
+			}
+			add_trait = eyes_mutation
+		}
+	}
+}
+
+
+long_character_event = {
+	id = WCVOD.310
+	desc = EVTDESC_WCVOD_310
+	picture = GFX_evt_nraqi
+	border = GFX_event_long_frame_intrigue
+
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCVOD_310
+
+		clr_character_flag = transformation_into_nraqi_flag
+		remove_racial_traits_effect = yes
+		add_trait = creature_nraqi
+		add_trait_void_creature_effect = yes
+		if = { limit = { has_secret_religion = yes } clear_secret_religion = yes }
+		if = { limit = { NOT = { religion = old_gods_worship } } religion = old_gods_worship }
+		if = { limit = { NOT = { culture = nraqi } } culture = nraqi }
+		hidden_effect = { set_graphical_culture = nraqi }
+	}
+}
+
+long_character_event = {
+	id = WCVOD.400
+	desc = EVTDESC_WCVOD_400
+	picture = GFX_evt_cthraxxi
+	border = GFX_event_long_frame_intrigue
+
+	min_age = 16
+	only_capable = yes
+	prisoner = no
+	religion = old_gods_worship
+
+	trigger = {
+		trait = creature_nraqi
+		true_religion = old_gods_worship
+	}
+
+	mean_time_to_happen = {
+		years = 300
+
+		modifier = {
+			factor = 0.8
+			prestige = 3000
+		}
+		modifier = {
+			factor = 0.8
+			prestige = 2000
+		}
+		modifier = {
+			factor = 0.8
+			prestige = 1000
+		}
+		modifier = {
+			factor = 0.8
+			piety = 3000
+		}
+		modifier = {
+			factor = 0.8
+			piety = 2000
+		}
+		modifier = {
+			factor = 0.8
+			piety = 1000
+		}
+		modifier = {
+			factor = 0.8
+			trait = cruel
+		}
+	}
+
+	option = {
+		name = EVTOPTA_WCVOD_400
+
+		add_trait_void_creature_effect = yes
+		remove_racial_traits_effect = yes
+		add_trait = creature_cthraxxi
+		if = { limit = { NOT = { religion = old_gods_worship } } religion = old_gods_worship }
+		if = { limit = { has_secret_religion = yes } clear_secret_religion = yes }
+		if = { limit = { NOT = { culture = nraqi } } culture = nraqi }
+		hidden_effect = { set_graphical_culture = cthraxxi }
+	}
+}
+
+#############################
+# 	the Twilight Hour		#
+#############################
+
+# The appointment of the Twilight Viceroy (creation of the Black Empire)
+character_event = {
+	id = WCVOD.600
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	min_age = 16
+	only_capable = yes
+	prisoner = no
+	is_playable = yes
+	only_independent = yes
+	religion = old_gods_worship
+
+	trigger = {
+		is_adult = yes
+		is_incapable = no
+		prisoner = no
+		is_playable = yes
+		independent = yes
+		religion = old_gods_worship
+		
+		is_alive = yes
+		is_dying = no
+		
+		OR = {
+			NOT = { has_global_flag = black_empire_was_created_flag }
+			had_global_flag = { flag = black_empire_was_created_flag years = 50 }
+		}
+
+		has_secret_religion = no
+		NOT = { e_black_empire = { has_holder = yes } }
+		religion_authority = 0.75
+		num_of_holy_sites = 4
+	}
+
+	immediate = {
+		log = "WCVOD.600 fired for [Root.GetBestName]"
+
+		clr_global_flag = black_empire_was_created_flag
+		set_global_flag = black_empire_was_created_flag
+
+		73 = { province_event = { id = WCTHW.50 } } # When shit happens, Medivh tries to fix it
+
+		# The Old Gods chooses the strongest creature
+		# Checks if ROOT is the strongest creature
+		if = {
+			limit = {
+				NOT = {
+					any_independent_ruler = {
+						is_adult = yes
+						is_incapable = no
+						prisoner = no
+
+						NOT = { character = ROOT }
+
+						has_secret_religion = no
+						religion = old_gods_worship
+						combat_rating_diff = { character = ROOT value = 1 }
+					}
+				}
+			}
+			narrative_event = { id = WCVOD.605 }
+		}
+		else = {
+			# Checks the independent rulers
+			if = {
+				limit = {
+					any_independent_ruler = {
+						is_adult = yes
+						is_incapable = no
+						prisoner = no
+
+						NOT = { character = ROOT }
+
+						has_secret_religion = no
+						religion = old_gods_worship
+					}
+				}
+				random_independent_ruler = {
+					limit = {
+						is_adult = yes
+						is_incapable = no
+						prisoner = no
+
+						has_secret_religion = no
+						religion = old_gods_worship
+						NOT = {
+							any_independent_ruler = {
+								is_adult = yes
+								is_incapable = no
+								prisoner = no
+
+								NOT = { character = PREV }
+
+								has_secret_religion = no
+								religion = old_gods_worship
+								combat_rating_diff = { character = PREV value = 1 }
+							}
+						}
+					}
+					narrative_event = { id = WCVOD.605 }
+				}
+			}
+			else = {
+				narrative_event = { id = WCVOD.605 }
+			}
+		}
+	}
+}
+narrative_event = {
+	id = WCVOD.605
+	title = EVTTITLE_WCVOD_605
+	desc = EVTDESC_WCVOD_605
+	picture = GFX_evt_black_empire
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+
+	major = yes
+	show_root = yes
+
+	immediate = {
+		log = "WCVOD.605 fired for [Root.GetBestName]"
+
+		activate_title = { title = e_black_empire status = yes }
+		e_black_empire = { gain_title = ROOT }
+		any_independent_ruler = {
+			limit = {
+				prisoner = no
+				is_untouchable_trigger = no
+
+				religion = old_gods_worship
+				war = no
+			}
+			any_demesne_title = {
+				limit = { tier = EMPEROR }
+				ROOT = { grant_title_no_opinion = { target = PREV type = claim } }
+				destroy_landed_title = THIS
+			}
+			set_defacto_liege = ROOT
+		}
+		set_black_pact_government_effect = yes
+	}
+
+	option = {
+		trigger = { NOT = { true_religion = old_gods_worship } }
+		name = EVTOPTA_WCVOD_605
+	}
+	option = {
+		trigger = { true_religion = old_gods_worship }
+		name = EVTOPTB_WCVOD_605
+
+		random = {
+			factor = 33
+			add_trait = lunatic
+			modifier = {
+				factor = 0
+				trait = lunatic
+			}
+		}
+	}
+}
+
+# Terror of the Tides
+narrative_event = {
+	id = WCVOD.700
+	title = EVTTITLE_WCVOD_700
+	desc = EVTDESC_WCVOD_700
+	picture = GFX_evt_sea_serpent
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+
+	major = yes
+	hide_from = yes
+	hide_new = yes
+
+	trigger = {
+		NOT = { has_global_flag = naga_resurfaced_flag }
+	}
+
+	immediate = {
+		set_global_flag = naga_resurfaced_flag
+	}
+
+	option = {
+		trigger = { NOT = { true_religion = old_gods_worship } }
+		name = EVTOPTA_WCVOD_700
+	}
+	option = {
+		trigger = { true_religion = old_gods_worship }
+		name = EVTOPTB_WCVOD_700
+	}
+}
+
+# Spawns a naga group
+province_event = {
+	id = WCVOD.705
+
+	is_triggered_only = yes
+	hide_window = yes
+	
+	has_global_flag = naga_resurfaced_flag
+
+	trigger = {
+		NOT = { culture = naga }
+		NOT = { religion = old_gods_worship }
+
+		port = yes
+	}
+
+	mean_time_to_happen = {
+		months = 1200
+	}
+
+	immediate = {
+		random_list = {
+			50 = {
+				create_character = {
+					female = no
+					dynasty = none
+					culture = naga religion = old_gods_worship
+					trait = creature_naga
+					trait = proud trait = cruel
+					random_traits = yes
+					age = 300
+					flag = void_creature
+				}
+				new_character = {
+					remove_education_effect = yes
+					random_list = {
+						10 = {
+							add_trait = misguided_warrior
+							add_trait = class_warrior_3
+						}
+						30 = {
+							add_trait = tough_soldier
+							add_trait = class_warrior_4
+						}
+						45 = {
+							add_trait = skilled_tactician
+							add_trait = class_warrior_5
+						}
+						15 = {
+							add_trait = brilliant_strategist
+							add_trait = class_warrior_6
+						}
+					}
+					save_event_target_as = target_naga
+				}
+			}
+			50 = {
+				create_character = {
+					female = yes
+					dynasty = none
+					culture = naga religion = old_gods_worship
+					trait = creature_naga
+					trait = proud trait = cruel
+					random_traits = yes
+					age = 300
+					flag = void_creature
+				}
+				new_character = {
+					remove_education_effect = yes
+					random_list = {
+						10 = {
+							add_trait = detached_priest
+							add_trait = class_mage_3
+						}
+						30 = {
+							add_trait = martial_cleric
+							add_trait = class_mage_4
+						}
+						45 = {
+							add_trait = scholarly_theologian
+							add_trait = class_mage_5
+						}
+						15 = {
+							add_trait = mastermind_theologian
+							add_trait = class_mage_6
+						}
+					}
+					save_event_target_as = target_naga
+				}
+			}
+		}
+		save_event_target_as = target_province
+		event_target:target_naga = {
+			# Removes wrong traits
+			remove_trait = chaste
+			remove_trait = kind
+			remove_trait = charitable
+			remove_trait = humble
+			remove_trait = honest
+			remove_trait = zealous
+			remove_trait = trusting
+
+			character_event = { id = WCVOD.707 }
+		}
+	}
+}
+character_event = {
+	id = WCVOD.707
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		# Creates title and gives money
+		create_title = {
+			tier = DUKE
+			landless = yes
+			temporary = yes
+			adventurer = yes
+			culture = ROOT
+			name = "CLAIMANT_ADVENTURE"
+			holder = ROOT
+		}
+		wealth = 500
+
+		spawn_unit = {
+			province = event_target:target_province
+			home = event_target:target_province
+			owner = ROOT
+			earmark = naga_forces
+			troops = {
+				light_infantry = { 300 300 }
+				heavy_infantry = { 400 400 }
+				archers = { 200 200 }
+				artillery = { 100 100 }
+			}
+			attrition = 0.25
+			scaled_by_biggest_garrison = 2
+			reinforces = no
+			maintenance = 0.5
+		}
+
+		# Create some decent commander characters
+		create_random_soldier = {
+			female = no
+			dynasty = none
+			culture = naga religion = old_gods_worship
+			trait = creature_naga
+			trait = proud trait = cruel
+			random_traits = yes
+			age = 300
+			flag = void_creature
+		}
+		create_random_soldier = {
+			female = no
+			dynasty = none
+			culture = naga religion = old_gods_worship
+			trait = creature_naga
+			trait = proud trait = cruel
+			random_traits = yes
+			age = 300
+			flag = void_creature
+		}
+		create_random_soldier = {
+			female = no
+			dynasty = none
+			culture = naga religion = old_gods_worship
+			trait = creature_naga
+			trait = proud trait = cruel
+			random_traits = yes
+			age = 300
+			flag = void_creature
+		}
+		create_random_soldier = {
+			female = no
+			dynasty = none
+			culture = naga religion = old_gods_worship
+			trait = creature_naga
+			trait = proud trait = cruel
+			random_traits = yes
+			age = 300
+			flag = void_creature
+		}
+
+		# Create a fleet, just to be sure
+		spawn_fleet = {
+			province = closest # closest sea zone
+			owner = ROOT
+			disband_on_peace = yes
+			troops = {
+				galleys = { 150 150 }
+			}
+			earmark = naga_forces
+		}
+		event_target:target_province = {
+			county = {
+				holder_scope = {
+					reverse_unsafe_war = {
+						target = event_target:target_naga
+						casus_belli = pagan_county_conquest
+						thirdparty_title = PREV
+					}
+					character_event = { id = WCVOD.708 }
+					any_liege = {
+						limit = { NOT = { character = PREV } }
+						character_event = { id = WCVOD.708 }
+					}
+				}
+			}
+		}
+	}
+}
+# Notification
+character_event = {
+	id = WCVOD.708
+	desc = EVTDESC_WCVOD_708
+	picture = GFX_evt_sea_serpent
+	border = GFX_event_normal_frame_war
+
+	is_triggered_only = yes
+
+	hide_new = yes
+
+	option = {
+		name = ALAS
+	}
+}
+
+### The Reawakening of C'thun ###
+# Ping event
+province_event = {
+	id = WCVOD.1000
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		if = {
+			limit = {
+				e_ahnqiraj = {
+					has_holder = yes
+					holder_scope = {
+						trait = creature_qiraji
+						religion = old_gods_worship
+					}
+				}
+			}
+			e_ahnqiraj = {
+				holder_scope = { narrative_event = { id = WCVOD.1005 } }
+			}
+		}
+		else = {
+			create_character = {
+				female = no
+				dynasty = none
+				culture = qiraji religion = old_gods_worship
+				trait = creature_qiraji
+				trait = mastermind_theologian
+				trait = class_shadow_priest_10
+				trait = scholar trait = quick trait = cruel trait = deceitful
+				random_traits = yes
+				age = 300
+				flag = void_creature
+			}
+			new_character = {
+				k_ahnqiraj = {
+					any_direct_de_jure_vassal_title = {
+						any_direct_de_jure_vassal_title = {
+							grant_title_no_opinion = { target = PREVPREVPREV type = claim }
+							location = {
+								culture = PREVPREVPREVPREV
+								religion = PREVPREVPREVPREV
+							}
+						}
+					}
+				}
+				activate_title = { title = e_ahnqiraj status = yes }
+				e_ahnqiraj = { gain_title = PREV }
+				narrative_event = { id = WCVOD.1005 }
+			}
+		}
+	}
+}
+# Main event
+narrative_event = {
+	id = WCVOD.1005
+	title = EVTTITLE_WCVOD_1005
+	desc = EVTDESC_WCVOD_1005
+	picture = GFX_evt_ahnqiraj
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+
+	major = yes
+
+	immediate = {
+		set_global_flag = reawakening_of_cthun_flag
+	}
+
+	# The Qiraji will devour them all!
+	option = {
+		trigger = { true_religion = old_gods_worship }
+		name = EVTOPTA_WCFEL_1005
+
+		if = {
+			limit = { character = ROOT }
+			capital_scope = {
+				show_scope_change = no
+				ROOT = {
+					show_scope_change = no
+					spawn_unit = {
+						owner = ROOT
+						province = PREV
+						home = PREV
+						troops = {
+							insectoidswarm = { 4375 4375 }
+						}
+						attrition = 0
+						merge = yes
+						maintenance = no
+					}
+					spawn_unit = {
+						owner = ROOT
+						province = PREV
+						home = PREV
+						troops = {
+							insectoidswarm = { 4375 4375 }
+						}
+						attrition = 0
+						merge = yes
+						maintenance = no
+					}
+					spawn_unit = {
+						owner = ROOT
+						province = PREV
+						home = PREV
+						troops = {
+							insectoidguard = { 625 625 }
+						}
+						attrition = 0
+						merge = yes
+						maintenance = no
+					}
+					spawn_unit = {
+						owner = ROOT
+						province = PREV
+						home = PREV
+						troops = {
+							insectoidguard = { 625 625 }
+						}
+						attrition = 0
+						merge = yes
+						maintenance = no
+					}
+				}
+			}
+			offmap_cthun = {
+				set_status = old_god_partly_free
+			}
+			b_ahnqiraj = {
+				add_building = ca_old_god_1
+			}
+		}
+	}
+	# The ancient evil must remain in confinement!
+	option = {
+		trigger = { NOT = { true_religion = old_gods_worship } }
+		name = EVTOPTB_WCFEL_1005
+	}
+}
+
+#############################
+# 		Xal'atath 			#
+#############################
+# Xal'atath choses a new host
+province_event = {
+	id = WCVOD.2000
+
+	is_triggered_only = yes
+	hide_window = yes
+	
+	has_dlc = "Mystics"
+
+	trigger = {
+		has_dlc = "Mystics"
+	}
+
+	immediate = {
+		random_playable_ruler = {
+			limit = {
+				is_untouchable_trigger = no
+				
+				is_adult = yes
+				is_incapable = yes
+				prisoner = no
+
+				OR = {
+					is_feudal = yes
+					is_republic = yes
+					is_theocracy = yes
+					government = tribal_monarchy_government
+				}
+
+				is_susceptible_to_void_corruption_trigger = yes
+
+				NOT = { trait = craven }
+				NOT = { trait = content }
+			}
+			narrative_event = { id = WCVOD.2005 }
+			break = yes
+		}
+		province_event = { id = WCVOD.2000 days = 365 }
+	}
+}
+# The old man gives you a mysterious blade
+narrative_event = {
+	id = WCVOD.2005
+	title = EVTTITLE_WCVOD_2005
+	desc = EVTDESC_WCVOD_2005
+	picture = GFX_evt_throne_room
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+	
+	immediate = {
+		log = "Xal'atath chose [Root.GetBestName] as new host"
+	}
+
+	# Accept the gift
+	option = {
+		trigger = {
+			NOR = {
+				religion = old_gods_worship
+				true_religion = old_gods_worship
+			}
+		}
+		name = EVTOPTA_WCVOD_2005
+
+		add_xalatath_effect = yes
+
+		narrative_event = { id = WCVOD.2010 days = 7 }
+
+		ai_chance = {
+			factor = 50
+
+			modifier = {
+				factor = 1.6
+				trait = cynical
+			}
+			modifier = {
+				factor = 1.2
+				trait = ambitious
+			}
+			modifier = {
+				factor = 1.2
+				trait = greedy
+			}
+			modifier = {
+				factor = 1.2
+				has_evil_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.2
+				has_impious_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.2
+				has_unpleasant_trait_trigger = yes
+			}
+		}
+	}
+	# Reject the gift
+	option = {
+		trigger = {
+			NOR = {
+				religion = old_gods_worship
+				true_religion = old_gods_worship
+			}
+		}
+		name = EVTOPTB_WCVOD_2005
+
+		hidden_effect = { 73 = { province_event = { id = WCVOD.2000 days = 30 } } }
+
+		ai_chance = {
+			factor = 50
+
+			modifier = {
+				factor = 1.6
+				trait = zealous
+			}
+			modifier = {
+				factor = 1.2
+				trait= content
+			}
+			modifier = {
+				factor = 1.2
+				trait = temperate
+			}
+			modifier = {
+				factor = 1.2
+				has_benevolent_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.2
+				has_pleasant_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.2
+				has_pious_trait_trigger = yes
+			}
+		}
+	}
+	option = {
+		trigger = {
+			OR = {
+				religion = old_gods_worship
+				true_religion = old_gods_worship
+			}
+		}
+		name = EVTOPTC_WCVOD_2005
+
+		add_xalatath_effect = yes
+
+		narrative_event = { id = WCVOD.2015 days = 7 }
+	}
+}
+# Whisper of the Blade
+narrative_event = {
+	id = WCVOD.2010
+	title = EVTTITLE_WCVOD_2005
+	desc = EVTDESC_WCVOD_2010
+	picture = GFX_evt_lunatic
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	trigger = {
+		has_artifact = xalatath
+	}
+
+	# Xal'atath is calling me!
+	option = {
+		name = EVTOPTA_WCVOD_2010
+
+		if = {
+			limit = { NOT = { trait = lunatic } }
+			random = {
+				chance = 25
+				add_trait = lunatic
+			}
+		}
+
+		narrative_event = { id = WCVOD.2015 days = 7 }
+	}
+	# Throw it out of here!
+	option = {
+		name = EVTOPTB_WCVOD_2010
+
+		destroy_xalatath_effect = yes
+		if = {
+			limit = { NOT = { trait = lunatic } }
+			random = {
+				chance = 15
+				add_trait = lunatic
+			}
+		}
+
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+# Conversation with Xal'atath
+narrative_event = {
+	id = WCVOD.2015
+	title = EVTTITLE_WCVOD_2005
+	desc = EVTDESC_WCVOD_2015
+	picture = GFX_evt_lunatic
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	trigger = {
+		has_artifact = xalatath
+	}
+
+	option = {
+		name = EXCELLENT
+
+		hidden_effect = { narrative_event = { id = WCVOD.2020 days = 30 random = 60 } }
+	}
+}
+# Xal'atath tells you about the Void!
+narrative_event = {
+	id = WCVOD.2020
+	title = EVTTITLE_WCVOD_2005
+	desc = EVTDESC_WCVOD_2020
+	picture = GFX_evt_black_empire
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	trigger = {
+		NOR = {
+			religion_group = void_group
+			true_religion_group = void_group
+		}
+		has_artifact = xalatath
+	}
+
+	# Tell me about the Void
+	option = {
+		name = EVTOPTA_WCVOD_2020
+
+		if = {
+			limit = {
+				OR = {
+					true_religion = holy_light
+					true_religion = scarlet_light
+				}
+			}
+			set_secret_religion = forsaken_cult
+		}
+		else = { set_secret_religion = voidfarer }
+		if = {
+			limit = { NOT = { trait = lunatic } }
+			random = {
+				chance = 15
+				add_trait = lunatic
+			}
+		}
+
+		ai_chance = {
+			factor = 20
+			modifier = {
+				factor = 1.5
+				has_evil_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.5
+				has_impious_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.5
+				has_unpleasant_trait_trigger = yes
+			}
+		}
+	}
+	# Tell me about the Old Gods
+	option = {
+		name = EVTOPTB_WCVOD_2020
+
+		if = {
+			limit = { NOT = { trait = lunatic } }
+			random = {
+				chance = 50
+				add_trait = lunatic
+			}
+		}
+		set_secret_religion = old_gods_worship
+
+		ai_chance = {
+			factor = 20
+			modifier = {
+				factor = 1.84
+				has_impious_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.84
+				has_unpleasant_trait_trigger = yes
+			}
+		}
+	}
+	# Never mind...
+	option = {
+		name = EVTOPTC_WCVOD_2020
+
+		ai_chance = {
+			factor = 60
+			modifier = {
+				factor = 1.5
+				has_benevolent_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.5
+				has_pleasant_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.5
+				has_pious_trait_trigger = yes
+			}
+		}
+	}
+}
+# on_combat_pulse
+# Use Xal'atath's power against your enemy?
+character_event = {
+	id = WCVOD.2025
+	desc = EVTDESC_WCVOD_2025
+	picture = GFX_evt_voidwalker
+	border = GFX_event_normal_frame_war
+
+	is_triggered_only = yes
+	
+	min_age = 16
+	only_capable = yes
+	prisoner = no
+
+	trigger = {
+		is_alive = yes
+		is_dying = no
+		
+		OR = {
+			war = yes
+			liege = { war = yes }
+		}
+
+		has_artifact = xalatath
+	}
+
+	immediate = {
+		if = {
+			limit = { has_global_flag = full_report_flag }
+			log = "WCVOD.2025 fired for [Root.GetBestName]"
+		}
+
+		save_event_target_as = target_xalatath_holder
+		location = { save_event_target_as = target_province }
+	}
+	
+	weight_multiplier = {
+		days = 1
+	}
+
+	# Kill them all!
+	option = {
+		name = EVTOPTA_WCVOD_2025
+
+		if = {
+			limit = { NOT = { trait = cruel } }
+			random = {
+				chance = 50
+				add_trait_cruel_effect = yes
+				remove_trait_kind_effect = yes
+			}
+		}
+		any_current_enemy = {
+			limit = {
+				war_with = ROOT
+				any_army = {
+					location = { province = event_target:target_province }
+				}
+			}
+			random_army = {
+				limit = { location = { province = event_target:target_province } }
+				troops = -0.4
+				morale = -0.4
+			}
+			hidden_effect = { character_event = { id = WCVOD.2026 } }
+		}
+		event_target:target_xalatath_holder = {
+			random_army = {
+				limit = { location = { province = event_target:target_province } }
+				troops = -0.2
+				morale = -0.2
+			}
+			hidden_effect = { character_event = { id = WCVOD.2026 } }
+		}
+	}
+	# It's not worth it
+	option = {
+		name = EVTOPTB_WCVOD_2025
+	}
+}
+# Notifies that target_xalatath_holder has used Xal'atath
+character_event = {
+	id = WCVOD.2026
+	desc = EVTDESC_WCVOD_2026
+	picture = GFX_evt_voidwalker
+	border = GFX_event_normal_frame_war
+
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCVOD_2026
+
+		tooltip = {
+			ROOT = {
+				random_army = {
+					limit = { location = { province = event_target:target_province } }
+					troops = -0.4
+					morale = -0.4
+				}
+			}
+			if = {
+				limit = { NOT = { character = event_target:target_xalatath_holder } }
+				event_target:target_xalatath_holder = {
+					random_army = {
+						limit = { location = { province = event_target:target_province } }
+						troops = -0.2
+						morale = -0.2
+					}
+				}
+			}
+		}
+	}
+}
+# Checks the possibility of losing Xal'atath
+character_event = {
+	id = WCVOD.2030
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	trigger = {
+		has_artifact = xalatath
+	}
+
+	immediate = {
+		# Xal'atath kills you if you're craven or content
+		if = {
+			limit = {
+				OR = {
+					trait = craven
+					trait = content
+				}
+			}
+			narrative_event = { id = WCVOD.2040 }
+			break = yes
+		}
+		# Xal'atath may leave you if it doesn't like you
+		random = {
+			chance = 33
+			modifier = {
+				factor = 1.23
+				NOT = { true_religion_group = void_group }
+			}
+			modifier = {
+				factor = 1.23
+				trait = kind
+			}
+			modifier = {
+				factor = 1.23
+				NOT = { true_religion_group = void_group }
+				trait = zealous
+			}
+			modifier = {
+				factor = 1.23
+				trait = honest
+			}
+			modifier = {
+				factor = 0.56
+				true_religion_group = void_group
+			}
+			modifier = {
+				factor = 0.56
+				trait = ambitious
+			}
+			modifier = {
+				factor = 0.56
+				trait = brave
+			}
+			modifier = {
+				factor = 0.56
+				trait = cruel
+			}
+			modifier = {
+				factor = 0.56
+				trait = cynical
+			}
+			modifier = {
+				factor = 0.56
+				trait = deceitful
+			}
+			narrative_event = { id = WCVOD.2035 }
+			break = yes
+		}
+
+		character_event = { id = WCVOD.2030 days = 730 }
+	}
+}
+# on_death
+# Loses Xal'atath after death
+character_event = {
+	id = WCVOD.2032
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	trigger = {
+		has_artifact = xalatath
+	}
+
+	immediate = {
+		destroy_xalatath_effect = yes
+		if = {
+			limit = {
+				is_ruler = yes
+				is_lowborn = no
+			}
+			current_heir = {
+				if = {
+					limit =  { NOT = { character = ROOT } }
+					narrative_event = { id = WCVOD.2035 days = 1 }
+				}
+			}
+		}
+	}
+}
+# Xal'atath disappears
+narrative_event = {
+	id = WCVOD.2035
+	title = EVTTITLE_WCVOD_2005
+	desc = EVTDESC_WCVOD_2035
+	picture = GFX_evt_voidwalker
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	# You promised...
+	option = {
+		trigger = { character = FROM }
+		name = EVTOPTA_WCVOD_2035
+
+		destroy_xalatath_effect = yes
+	}
+	# Strange...
+	option = {
+		trigger = { NOT = { character = FROM } }
+		name = EVTOPTB_WCVOD_2035
+	}
+}
+# Xal'atath kills you
+narrative_event = {
+	id = WCVOD.2040
+	title = EVTTITLE_WCVOD_2005
+	desc = EVTDESC_WCVOD_2040
+	picture = GFX_evt_voidwalker
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	trigger = {
+		has_artifact = xalatath
+	}
+
+	# Argh!
+	option = {
+		name = ARGH
+
+		destroy_xalatath_effect = yes
+		death = { death_reason = death_murder_unknown_strangle }
+	}
+}
+
+#############################
+#		Random events		#
+#############################
+
+# Void events
+character_event = {
+	id = WCVOD.9900
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	min_age = 16
+	only_playable = yes
+	only_capable = yes
+	prisoner = no
+
+	trigger = {
+		is_untouchable_trigger = no
+		
+		is_alive = yes
+		is_dying = no
+
+		is_susceptible_to_void_corruption_trigger = yes
+		OR = {
+			NOT = { has_character_flag = void_creature }
+			NOT = { has_character_modifier = inflow_of_the_void }
+		}
+	}
+
+	weight_multiplier = {
+		days = 1
+		modifier = {
+			factor = 4
+			has_character_modifier = dark_presence
+		}
+		modifier = {
+			factor = 2
+			OR = {
+				is_shadow_priest_class_trigger = yes
+				true_religion_group = void_group
+			}
+		}
+		modifier = {
+			factor = 2
+			trait = lunatic
+		}
+		modifier = {
+			factor = 1.6
+			trait = depressed
+		}
+		modifier = {
+			factor = 1.6
+			trait = paranoid
+		}
+		modifier = {
+			factor = 1.4
+			has_character_flag = void_creature
+		}
+		modifier = {
+			factor = 1.4
+			has_character_modifier = void_corruption_2
+		}
+		modifier = {
+			factor = 1.4
+			has_character_modifier = void_corruption_1
+		}
+		modifier = {
+			factor = 1.4
+			trait = stressed
+		}
+		modifier = {
+			factor = 1.2
+			trait = ambitious
+		}
+		modifier = {
+			factor = 1.2
+			is_mage_class_trigger = yes
+		}
+	}
+
+	immediate = {
+		random_list = {
+			10 = {
+				narrative_event = { id = WCVOD.9950 }	# The Nightmares
+				modifier = {
+					factor = 0
+					has_character_flag = void_creature
+				}
+			}
+			10 = {
+				character_event = { id = WCVOD.10000 }	# Founds a void cube
+				modifier = {
+					factor = 0
+					has_character_modifier = inflow_of_the_void
+				}
+			}
+			10 = {
+				narrative_event = { id = WCVOD.10005 }	# The Ancient Creature
+			}
+		}
+	}
+}
+
+############ The Nightmares ############
+narrative_event = {
+	id = WCVOD.9950
+	title = EVTTITLE_WCVOD_9950
+	desc = EVTDESC_WCVOD_9950
+	picture = GFX_evt_black_empire
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	trigger = {
+		NOT = { has_character_flag = ongoing_nightmares_chain_flag }
+
+		is_susceptible_to_void_corruption_trigger = yes
+		NOT = { has_character_flag = void_creature }
+	}
+
+	immediate = {
+		set_character_flag = ongoing_nightmares_chain_flag
+	}
+
+	option = {
+		name = EVTOPTA_WCVOD_9950
+
+		random_list = {
+			50 = {}
+			30 = {
+				add_trait = stressed
+				hidden_tooltip = { character_event = { id = 38282 } }
+				modifier = {
+					factor = 0
+					trait = stressed
+				}
+				modifier = {
+					factor = 0
+					OR = {
+						religion = old_gods_worship
+						true_religion = old_gods_worship
+					}
+				}
+			}
+			20 = {
+				add_trait_depressed_effect = yes
+				modifier = {
+					factor = 0
+					trait = depressed
+				}
+				modifier = {
+					factor = 0
+					OR = {
+						religion = old_gods_worship
+						true_religion = old_gods_worship
+					}
+				}
+			}
+		}
+		random_list = {
+			80 = {}
+			20 = {
+				add_trait_paranoid_effect = yes
+				remove_trait_trusting_effect = yes
+				modifier = {
+					factor = 0
+					trait = paranoid
+				}
+			}
+		}
+	}
+
+	# Chooses nightmares for the future and completes the chain
+	after = {
+		narrative_event = { id = WCVOD.9965 days = 15 random = 30 }			# Rotting forest
+		random = {
+			chance = 50
+			narrative_event = { id = WCVOD.9960 days = 30 random = 30 }		# Underwater nightmare
+		}
+		narrative_event = { id = WCVOD.9970 days = 45 random = 30 }			# N'raqi
+		narrative_event = { id = WCVOD.9975 days = 60 random = 30 }			# Ritual
+		character_event = { id = WCVOD.9990 days = 105 }
+	}
+}
+# Underwater nightmare
+narrative_event = {
+	id = WCVOD.9960
+	title = EVTTITLE_WCVOD_9950
+	desc = EVTDESC_WCVOD_9960
+	picture = GFX_evt_nzoth
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	trigger = {
+		has_character_flag = ongoing_nightmares_chain_flag
+
+		is_susceptible_to_void_corruption_trigger = yes
+		NOT = { has_character_flag = void_creature }
+	}
+	
+	fail_trigger_effect = {
+		clr_character_flag = ongoing_nightmares_chain_flag
+	}
+
+	option = {
+		name = EVTOPTA_WCVOD_9950
+
+		random_list = {
+			30 = {}
+			30 = {
+				add_trait = stressed
+				hidden_tooltip = { character_event = { id = 38282 } }
+				modifier = {
+					factor = 0
+					trait = stressed
+				}
+				modifier = {
+					factor = 0
+					OR = {
+						religion = old_gods_worship
+						true_religion = old_gods_worship
+					}
+				}
+			}
+			20 = {
+				add_trait_depressed_effect = yes
+				modifier = {
+					factor = 0
+					trait = depressed
+				}
+				modifier = {
+					factor = 0
+					OR = {
+						religion = old_gods_worship
+						true_religion = old_gods_worship
+					}
+				}
+			}
+			20 = {
+				add_trait = lunatic
+				hidden_tooltip = { character_event = { id = 38304 } }
+				modifier  = {
+					factor = 0
+					trait = lunatic
+				}
+			}
+		}
+		random_list = {
+			60 = {}
+			20 = {
+				add_trait_paranoid_effect = yes
+				remove_trait_trusting_effect = yes
+				modifier = {
+					factor = 0
+					trait = paranoid
+				}
+			}
+			20 = {
+				add_trait_craven_effect = yes
+				if = {
+					limit = { trait = brave }
+					remove_trait = brave
+				}
+				modifier = {
+					factor = 0
+					trait = craven
+				}
+				modifier = {
+					factor = 0
+					OR = {
+						religion = old_gods_worship
+						true_religion = old_gods_worship
+					}
+				}
+			}
+		}
+		random_list = {
+			85 = {}
+			6 = {
+				add_trait_wounded_effect = yes
+				modifier = {
+					factor = 0
+					trait = wounded
+				}
+			}
+			5 = {
+				add_trait_severely_injured_effect = yes
+				modifier = {
+					factor = 0
+					trait = severely_injured
+				}
+				modifier = {
+					factor = 0
+					OR = {
+						religion = old_gods_worship
+						true_religion = old_gods_worship
+					}
+				}
+			}
+			3 = {
+				add_trait = one_legged
+				hidden_tooltip = { character_event = { id = RIP.11503 } }
+				add_trait_severely_injured_effect = yes
+				modifier = {
+					factor = 0
+					trait = one_legged
+				}
+				modifier = {
+					factor = 0
+					OR = {
+						religion = old_gods_worship
+						true_religion = old_gods_worship
+					}
+				}
+			}
+			1 = {
+				death = { death_reason = death_accident_drowning }
+				modifier = {
+					factor = 0
+					OR = {
+						religion = old_gods_worship
+						true_religion = old_gods_worship
+					}
+				}
+			}
+		}
+	}
+}
+# Rotting forest
+narrative_event = {
+	id = WCVOD.9965
+	title = EVTTITLE_WCVOD_9950
+	desc = EVTDESC_WCVOD_9965
+	picture = GFX_evt_black_empire
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	trigger = {
+		has_character_flag = ongoing_nightmares_chain_flag
+
+		is_susceptible_to_void_corruption_trigger = yes
+		NOT = { has_character_flag = void_creature }
+	}
+	
+	fail_trigger_effect = {
+		clr_character_flag = ongoing_nightmares_chain_flag
+	}
+
+	option = {
+		name = EVTOPTA_WCVOD_9950
+
+		random_list = {
+			50 = {}
+			20 = {
+				add_trait = stressed
+				hidden_tooltip = { character_event = { id = 38282 } }
+				modifier = {
+					factor = 0
+					trait = stressed
+				}
+				modifier = {
+					factor = 0
+					OR = {
+						religion = old_gods_worship
+						true_religion = old_gods_worship
+					}
+				}
+			}
+			15 = {
+				add_trait_depressed_effect = yes
+				modifier = {
+					factor = 0
+					trait = depressed
+				}
+				modifier = {
+					factor = 0
+					OR = {
+						religion = old_gods_worship
+						true_religion = old_gods_worship
+					}
+				}
+			}
+			15 = {
+				add_trait = lunatic
+				hidden_tooltip = { character_event = { id = 38304 } }
+				modifier  = {
+					factor = 0
+					trait = lunatic
+				}
+			}
+		}
+		random_list = {
+			60 = {}
+			30 = {
+				add_trait_paranoid_effect = yes
+				remove_trait_trusting_effect = yes
+				modifier = {
+					factor = 0
+					trait = paranoid
+				}
+			}
+			10 = {
+				add_trait_craven_effect = yes
+				if = {
+					limit = { trait = brave }
+					remove_trait = brave
+				}
+				modifier = {
+					factor = 0
+					trait = craven
+				}
+				modifier = {
+					factor = 0
+					OR = {
+						religion = old_gods_worship
+						true_religion = old_gods_worship
+					}
+				}
+			}
+		}
+		random_list = {
+			90 = {}
+			10 = {
+				add_trait_wounded_effect = yes
+			}
+		}
+	}
+}
+# N'raqi
+narrative_event = {
+	id = WCVOD.9970
+	title = EVTTITLE_WCVOD_9950
+	desc = EVTDESC_WCVOD_9970
+	picture = GFX_evt_nraqi
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	trigger = {
+		has_character_flag = ongoing_nightmares_chain_flag
+
+		is_susceptible_to_void_corruption_trigger = yes
+		NOT = { has_character_flag = void_creature }
+	}
+	
+	fail_trigger_effect = {
+		clr_character_flag = ongoing_nightmares_chain_flag
+	}
+
+	option = {
+		name = EVTOPTA_WCVOD_9950
+
+		random_list = {
+			30 = {}
+			30 = {
+				add_trait = stressed
+				hidden_tooltip = { character_event = { id = 38282 } }
+				modifier = {
+					factor = 0
+					trait = stressed
+				}
+				modifier = {
+					factor = 0
+					OR = {
+						religion = old_gods_worship
+						true_religion = old_gods_worship
+					}
+				}
+			}
+			20 = {
+				add_trait_depressed_effect = yes
+				modifier = {
+					factor = 0
+					trait = depressed
+				}
+				modifier = {
+					factor = 0
+					OR = {
+						religion = old_gods_worship
+						true_religion = old_gods_worship
+					}
+				}
+			}
+			20 = {
+				add_trait = lunatic
+				hidden_tooltip = { character_event = { id = 38304 } }
+				modifier  = {
+					factor = 0
+					trait = lunatic
+				}
+			}
+		}
+		random_list = {
+			60 = {}
+			10 = {
+				add_trait_paranoid_effect = yes
+				remove_trait_trusting_effect = yes
+				modifier = {
+					factor = 0
+					trait = paranoid
+				}
+			}
+			30 = {
+				add_trait_craven_effect = yes
+				if = {
+					limit = { trait = brave }
+					remove_trait = brave
+				}
+				modifier = {
+					factor = 0
+					trait = craven
+				}
+				modifier = {
+					factor = 0
+					OR = {
+						religion = old_gods_worship
+						true_religion = old_gods_worship
+					}
+				}
+			}
+		}
+		random_list = {
+			80 = {}
+			9 = {
+				add_trait_wounded_effect = yes
+			}
+			6 = {
+				add_trait_severely_injured_effect = yes
+				modifier = {
+					factor = 0
+					trait = severely_injured
+				}
+				modifier = {
+					factor = 0
+					OR = {
+						religion = old_gods_worship
+						true_religion = old_gods_worship
+					}
+				}
+			}
+			5 = {
+				add_trait = one_legged
+				hidden_tooltip = { character_event = { id = RIP.11503 } }
+				add_trait_severely_injured_effect = yes
+				modifier = {
+					factor = 0
+					trait = one_legged
+				}
+				modifier = {
+					factor = 0
+					OR = {
+						religion = old_gods_worship
+						true_religion = old_gods_worship
+					}
+				}
+			}
+		}
+	}
+}
+# Ritual
+narrative_event = {
+	id = WCVOD.9975
+	title = EVTTITLE_WCVOD_9950
+	desc = EVTDESC_WCVOD_9975
+	picture = GFX_evt_sacrifice
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	trigger = {
+		has_character_flag = ongoing_nightmares_chain_flag
+
+		is_susceptible_to_void_corruption_trigger = yes
+		NOT = { has_character_flag = void_creature }
+	}
+	
+	fail_trigger_effect = {
+		clr_character_flag = ongoing_nightmares_chain_flag
+	}
+
+	option = {
+		name = EVTOPTA_WCVOD_9950
+
+		random_list = {
+			50 = {}
+			20 = {
+				add_trait = stressed
+				hidden_tooltip = { character_event = { id = 38282 } }
+				modifier = {
+					factor = 0
+					trait = stressed
+				}
+				modifier = {
+					factor = 0
+					OR = {
+						religion = old_gods_worship
+						true_religion = old_gods_worship
+					}
+				}
+			}
+			15 = {
+				add_trait_depressed_effect = yes
+				modifier = {
+					factor = 0
+					trait = depressed
+				}
+				modifier = {
+					factor = 0
+					OR = {
+						religion = old_gods_worship
+						true_religion = old_gods_worship
+					}
+				}
+			}
+			15 = {
+				add_trait = lunatic
+				hidden_tooltip = { character_event = { id = 38304 } }
+				modifier  = {
+					factor = 0
+					trait = lunatic
+				}
+			}
+		}
+		random_list = {
+			20 = {}
+			20 = {
+				add_trait_paranoid_effect = yes
+				remove_trait_trusting_effect = yes
+				modifier = {
+					factor = 0
+					trait = paranoid
+				}
+			}
+			20 = {
+				add_trait_craven_effect = yes
+				if = {
+					limit = { trait = brave }
+					remove_trait = brave
+				}
+				modifier = {
+					factor = 0
+					trait = craven
+				}
+				modifier = {
+					factor = 0
+					OR = {
+						religion = old_gods_worship
+						true_religion = old_gods_worship
+					}
+				}
+			}
+			20 = {
+				add_trait_cruel_effect = yes
+				remove_trait_kind_effect = yes
+				modifier = {
+					factor = 0
+					trait = cruel
+				}
+			}
+			20 = {
+				add_trait_wroth_effect = yes
+				remove_trait_patient_effect = yes
+				modifier = {
+					factor = 0
+					trait = wroth
+				}
+			}
+		}
+	}
+}
+# Choses the end
+character_event = {
+	id = WCVOD.9990
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		clr_character_flag = ongoing_nightmares_chain_flag
+
+		random_list = {
+			75 = {
+				narrative_event = { id = WCVOD.9991 }		# Good end
+
+				modifier = {
+					factor = 0
+					OR = {
+						religion = old_gods_worship
+						true_religion = old_gods_worship
+					}
+				}
+				modifier = {
+					factor = 1.2
+					has_benevolent_trait_trigger = yes
+				}
+				modifier = {
+					factor = 1.2
+					has_pleasant_trait_trigger = yes
+				}
+				modifier = {
+					factor = 1.2
+					has_pious_trait_trigger = yes
+				}
+				modifier = {
+					factor = 1.2
+					trait = brave
+				}
+				modifier = {
+					factor = 0
+					true_religion = old_gods_worship
+				}
+			}
+			25 = {
+				narrative_event = { id = WCVOD.9995 }		# Bad end
+
+				modifier = {
+					factor = 2
+					trait = lunatic
+				}
+				modifier = {
+					factor = 1.4
+					has_evil_trait_trigger = yes
+				}
+				modifier = {
+					factor = 1.4
+					has_unpleasant_trait_trigger = yes
+				}
+				modifier = {
+					factor = 1.4
+					has_impious_trait_trigger = yes
+				}
+				modifier = {
+					factor = 1.4
+					trait = depressed
+				}
+				modifier = {
+					factor = 1.4
+					trait = stressed
+				}
+				modifier = {
+					factor = 1.4
+					trait = craven
+				}
+			}
+		}
+	}
+}
+# Good end of the nightmares
+narrative_event = {
+	id = WCVOD.9991
+	title = EVTTITLE_WCVOD_9950
+	desc = EVTDESC_WCVOD_9991
+	picture = GFX_evt_black_empire
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	trigger = {
+		is_susceptible_to_void_corruption_trigger = yes
+		NOT = { has_character_flag = void_creature }
+	}
+
+	option = {
+		name = EVTOPTA_WCVOD_9991
+	}
+}
+# Bad end
+narrative_event = {
+	id = WCVOD.9995
+	title = EVTTITLE_WCVOD_9950
+	desc = EVTDESC_WCVOD_9995
+	picture = GFX_evt_black_empire
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	trigger = {
+		is_susceptible_to_void_corruption_trigger = yes
+		NOT = { has_character_flag = void_creature }
+	}
+
+	option = {
+		trigger = { NOT = { true_religion = old_gods_worship } }
+		name = EVTOPTA_WCVOD_9995
+
+		random_list = {
+			20 = {}
+			40 = {
+				add_trait = lunatic
+				hidden_tooltip = { character_event = { id = 38304 } }
+				modifier = {
+					factor = 0
+					trait = lunatic
+				}
+			}
+			40 = { death = { death_reason = death_suicide_hanging } }
+		}
+
+		ai_chance = {
+			factor = 10
+
+			modifier = {
+				factor = 4
+				has_benevolent_trait_trigger = yes
+			}
+			modifier = {
+				factor = 3.5
+				has_pious_trait_trigger = yes
+			}
+			modifier = {
+				factor = 3
+				has_pleasant_trait_trigger = yes
+			}
+		}
+	}
+
+	option = {
+		name = EVTOPTB_WCVOD_9995
+
+		if = { limit = { NOT = { true_religion = old_gods_worship } } set_secret_religion = old_gods_worship }
+		if = {
+			limit = { NOT = { trait = lunatic } }
+			random = {
+				chance = 75
+				add_trait = lunatic
+				hidden_tooltip = { character_event = { id = 38304 } }
+			}
+		}
+		add_15_void_corruption_effect = yes
+
+		ai_chance = {
+			factor = 90
+		}
+	}
+}
+
+# Founds a void cube
+# Actually, this's a copy of "fel crystal" event
+character_event = {
+	id = WCVOD.10000
+	desc = EVTDESC_WCVOD_10000
+	picture = GFX_evt_voidwalker
+	border = GFX_event_normal_frame_intrigue
+
+	is_triggered_only = yes
+
+	# Use its power
+	option = {
+		name = {
+			trigger = { NOT = { has_character_flag = void_creature } }
+			text = EVTOPTA_WCFEL_9950
+		}
+		name = {
+			trigger = { has_character_flag = void_creature }
+			text = EXCELLENT
+		}
+		add_15_void_corruption_effect = yes
+		add_character_modifier = { name = inflow_of_the_void duration = 1825 }
+
+		ai_chance = {
+			factor = 26
+			modifier = {
+				factor = 3
+				has_impious_trait_trigger = yes
+			}
+			modifier = {
+				factor = 2.5
+				has_evil_trait_trigger = yes
+			}
+			modifier = {
+				factor = 2.5
+				has_unpleasant_trait_trigger = yes
+			}
+			modifier = {
+				factor = 0.01
+				trait = zealous
+				NOT = { true_religion_group = void_group }
+			}
+		}
+	}
+
+	# Destroy it!
+	option = {
+		trigger = { NOT = { has_character_flag = void_creature } }
+		name = EVTOPTB_WCFEL_9950
+
+		random_list = {
+			25 = { remove_5_void_corruption_effect = yes }
+			75 = { remove_15_void_corruption_effect = yes }
+		}
+
+		ai_chance = {
+			factor = 74
+			modifier = {
+				factor = 2
+				has_benevolent_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.5
+				has_pleasant_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.5
+				has_pious_trait_trigger = yes
+			}
+			modifier = {
+				factor = 0.01
+				true_religion_group = void_group
+			}
+		}
+	}
+}
+
+############ The Ancient Creature ############
+# Founds an ancient creature
+narrative_event = {
+	id = WCVOD.10005
+	title = EVTTITLE_WCVOD_10005
+	desc = EVTDESC_WCVOD_10005
+	picture = GFX_evt_desert
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	option = {
+		trigger = { NOT = { religion = old_gods_worship } }
+		name = EVTOPTA_WCVOD_10005
+
+		hidden_effect = { narrative_event = { id = WCVOD.10010 days = 30 random = 30 } }
+	}
+
+	option = {
+		trigger = { religion = old_gods_worship }
+		name = EVTOPTB_WCVOD_10005
+
+		hidden_effect = {
+			narrative_event = { id = WCVOD.10015 days = 35 random = 30 }
+		}
+	}
+
+	option = {
+		trigger = { NOT = { religion = old_gods_worship } }
+		name = EVTOPTC_WCVOD_10005
+
+		custom_tooltip = {
+			text = stops_the_event_chain
+		}
+	}
+}
+narrative_event = {
+	id = WCVOD.10010
+	title = EVTTITLE_WCVOD_10005
+	desc = EVTDESC_WCVOD_10010
+	picture = GFX_evt_desert
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCVOD_10010
+
+		hidden_effect = { narrative_event = { id = WCVOD.10015 days = 5 } }
+	}
+
+	option = {
+		name = EVTOPTB_WCVOD_10010
+
+		custom_tooltip = {
+			text = stops_the_event_chain
+		}
+	}
+}
+narrative_event = {
+	id = WCVOD.10015
+	title = EVTTITLE_WCVOD_10005
+	desc = {
+		trigger = { has_character_flag = found_cthraxxi_good_end_flag }
+		text = EVTDESC_WCVOD_10015_good
+	}
+	desc = {
+		trigger = { has_character_flag = found_cthraxxi_bad_end_flag }
+		text = EVTDESC_WCVOD_10015_bad
+	}
+	picture = GFX_evt_cthraxxi
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	immediate = {
+		if = {
+			limit = { true_religion = old_gods_worship }
+			set_character_flag = found_cthraxxi_good_end_flag
+		}
+		else = {
+			set_character_flag = found_cthraxxi_bad_end_flag
+		}
+		create_character = {
+			dynasty = none
+			religion = old_gods_worship
+			culture = nraqi
+			female = no
+			age = 1000000
+			attributes = {
+				martial=5 diplomacy=5 stewardship=5 intrigue=5 learning=5
+			}
+			random_traits = yes
+			trait = creature_cthraxxi
+			trait = class_warrior_7
+			trait = brilliant_strategist
+			trait = cruel
+			trait = patient
+			flag = void_creature
+		}
+		new_character = {
+			save_event_target_as = target_cthraxxi
+
+			set_graphical_culture = cthraxxi
+
+			# Removes wrong traits
+			remove_trait = chaste
+			remove_trait = kind
+			remove_trait = charitable
+			remove_trait = humble
+			remove_trait = honest
+			remove_trait = zealous
+			remove_trait = trusting
+			
+			give_nickname = nick_the_devourer
+		}
+	}
+
+	option = {
+		trigger = { has_character_flag = found_cthraxxi_good_end_flag }
+
+		name = EXCELLENT
+
+		reverse_opinion = { modifier = opinion_loyal_servant who = event_target:target_cthraxxi }
+	}
+	option = {
+		trigger = { has_character_flag = found_cthraxxi_bad_end_flag }
+
+		name = ALAS
+
+		prestige = -250
+		hidden_effect = {
+			event_target:target_cthraxxi = { death = { death_reason = death_missing } }
+		}
+	}
+
+	after = {
+		clr_character_flag = found_cthraxxi_good_end_flag
+		clr_character_flag = found_cthraxxi_bad_end_flag
+	}
+}

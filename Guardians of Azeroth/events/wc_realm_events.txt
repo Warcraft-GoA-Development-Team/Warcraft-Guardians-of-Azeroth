@@ -1,0 +1,156 @@
+namespace = WCRLM
+narrative_event = {
+	id = WCRLM.100
+	title = EVTTITLE_WCRLM_100
+	desc = EVTDESC_WCRLM_100
+	picture = GFX_evt_gilneas
+	border = GFX_event_narrative_frame_diplomacy
+
+	is_triggered_only = yes
+	major = yes
+	major_trigger = {
+		any_demesne_province = {
+			region = world_eastern_kingdoms
+		}
+	}
+
+	option = {
+		name = {
+			trigger = { character = ROOT }
+			text = EVTOPTA_WCRLM_100_case_01
+		}
+		name = {
+			trigger = { NOT = { character = ROOT } opinion = { who = ROOT value = -25 } }
+			text = EVTOPTA_WCRLM_100_case_02
+		}
+		name = {
+			trigger = { NOT = { character = ROOT } NOT = { opinion = { who = FROM value = -25 } } }
+			text = EVTOPTA_WCRLM_100_case_03
+		}
+	}
+}
+
+# Culling/Genocide/Brings Death
+province_event = {
+	id = WCRLM.200
+
+	is_triggered_only = yes
+	hide_window = yes
+	
+	trigger = {
+		OR = {
+			has_province_modifier = ongoing_genocide
+			has_province_modifier = ongoing_culling
+			has_province_modifier = spreading_of_death
+		}
+	}
+
+	immediate = {
+		save_event_target_as = target_populated_province
+		holder_scope = { character_event = { id = WCRLM.201 } }
+	}
+}
+
+character_event = {
+	id = WCRLM.201
+	desc = {
+		trigger = { event_target:target_populated_province = { has_province_modifier = ongoing_culling } }
+		text = EVTDESC_WCRLM_201_culling
+	}
+	desc = EVTDESC_WCRLM_201_genocide
+	picture = GFX_evt_burning_house
+
+	is_triggered_only = yes
+	
+	immediate = {
+		save_event_target_as = target_province_holder	# Used in convert_to_target_undead_province_effect
+	}
+
+	option = {
+		name = EXCELLENT
+		event_target:target_populated_province = {
+			if = {
+				limit = { NOT = { has_province_modifier = spreading_of_death } }
+				culture = ROOT
+				religion = ROOT
+				hidden_effect = {
+					set_variable = { which = prosperity_value value = 0 }
+					remove_province_modifier = prosperity_modifier_1
+					remove_province_modifier = prosperity_modifier_2
+					remove_province_modifier = prosperity_modifier_3
+					remove_province_modifier = depopulated_1
+					remove_province_modifier = depopulated_2
+				}
+				if = {
+					limit = { NOT = { has_province_modifier = depopulated_3 } }
+					add_province_modifier = { name = depopulated_3 duration = -1 }
+				}
+			}
+			if = {
+				limit = {
+					has_province_modifier = ongoing_culling
+					has_province_modifier = undead_province
+				}
+				remove_province_modifier = undead_province
+			}
+			if = {
+				limit = {
+					has_province_modifier = spreading_of_death
+					NOT = { has_province_modifier = undead_province }
+				}
+				convert_to_target_undead_province_effect = yes
+			}
+			if = {
+				limit = { has_province_modifier = ongoing_genocide }
+				remove_province_modifier = ongoing_genocide
+			}
+			if = {
+				limit = { has_province_modifier = ongoing_culling }
+				remove_province_modifier = ongoing_culling
+			}
+			if = {
+				limit = { has_province_modifier = spreading_of_death }
+				remove_province_modifier = spreading_of_death
+			}
+		}
+	}
+}
+
+# Clears genocide modifiers if province has been conquered
+character_event = {
+	id = WCRLM.202
+
+	is_triggered_only = yes
+	hide_window = yes
+	
+	only_playable = yes
+
+	trigger = {
+		FROM = {
+			OR = {
+				tier = COUNT
+				tier = BARON
+			}
+			location = {
+				OR = {
+					has_province_modifier = ongoing_genocide
+					has_province_modifier = ongoing_culling
+					has_province_modifier = spreading_of_death
+				}
+			}
+		}
+	}
+
+	immediate = {
+		log = "WCRLM.202 fired for [Root.GetBestName]"
+		
+		FROM = {
+			location = {
+				remove_province_modifier = ongoing_genocide
+				remove_province_modifier = ongoing_culling
+				remove_province_modifier = spreading_of_death
+				clear_delayed_event = { id = WCRLM.200 }
+			}
+		}
+	}
+}

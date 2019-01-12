@@ -1,0 +1,223 @@
+###################################
+#
+# Zeus
+# Ambition decisions
+#
+###################################
+
+# Written by Markus Olsén
+
+targetted_decisions = {
+	
+	request_council_position = {
+		only_playable = yes
+		is_high_prio = yes
+		filter = liege
+		ai_target_filter = liege
+		ai_check_interval = 6
+		
+		from_potential = {
+			has_ambition = obj_become_council_member
+		}
+		allow = {
+			FROM = {
+				prisoner = no
+				prestige = 100
+				NOR = { 
+					in_revolt = yes
+					is_incapable = yes
+					is_inaccessible_trigger = yes
+					liege = { 
+						OR = {
+							in_revolt = yes
+							has_opinion_modifier = { who = PREV modifier = requested_council_position } 
+						}
+					}
+				}
+			}
+		}
+	
+		effect = {
+			FROM = {
+				prestige = -50
+			}
+			custom_tooltip = {
+				text = request_council_position_tooltip
+				hidden_tooltip = {
+					opinion = {
+						modifier = requested_council_position
+						who = FROM
+						years = 2
+					}
+					character_event = { id = ZE.6001 days = 3 }			
+				}
+			}
+		}
+		revoke_allowed = {
+			always = no
+		}
+		ai_will_do = {
+			factor = 0
+		}
+	}
+
+	ask_for_land = {
+		only_playable = yes
+		is_high_prio = yes
+		ai_check_interval = 12
+		
+		filter = liege
+		ai_target_filter = liege
+		
+		from_potential = {
+			is_playable = yes
+			OR = { 
+				has_ambition = obj_land_for_son 
+				has_ambition = obj_land_for_daughter 
+			}
+			higher_tier_than = BARON
+		}
+		allow = {
+			FROM = {
+				NOR = { 
+					prisoner = yes
+					in_revolt = yes
+					is_incapable = yes
+					is_inaccessible_trigger = yes
+					liege = {
+						OR = {
+							has_regent = yes
+							in_revolt = yes
+							has_opinion_modifier = { who = PREV modifier = requested_land } 
+						}
+					}
+				}
+				OR = {
+					custom_tooltip = {
+						text = tooltip_land_for_son
+						has_ambition = obj_land_for_son 
+						any_child = {
+							is_heir = no
+							is_female = no
+							is_landed = no
+							is_adult = yes
+							prisoner = no
+							NOR = { 
+								is_incapable = yes 
+								is_ascetic_trigger = yes
+								trait = eunuch
+							}
+							liege = {
+								character = PREVPREV
+							}
+						}
+					}
+					custom_tooltip = {
+						text = tooltip_land_for_daugther
+						has_ambition = obj_land_for_daughter 
+						any_child = {
+							is_heir = no
+							is_female = yes
+							is_landed = no
+							is_adult = yes
+							prisoner = no
+							NOR = { 
+								is_incapable = yes 
+								is_ascetic_trigger = yes
+							}
+							liege = {
+								character = PREVPREV
+							}
+						}
+					}
+				}
+			}
+			any_demesne_title = {
+				tier = COUNT 
+				can_be_given_away = yes
+				NOT = {
+					location = {
+						is_capital = yes
+					}
+				}
+			}
+		}
+		
+		effect = {
+			FROM = { prestige = -20 }
+			custom_tooltip = {
+				text = ask_for_land_tooltip
+				hidden_tooltip = {
+					opinion = {
+						modifier = requested_land
+						who = FROM
+						years = 2
+					}
+					character_event = { id = ZE.6012 days = 3 }
+				}
+			}
+		}
+		revoke_allowed = {
+			always = no
+		}
+		ai_will_do = {
+			factor = 0.1
+
+			modifier = {
+				factor = 2
+				FROM = {
+					trait = proud
+				}
+			}
+
+			modifier = {
+				factor = 2
+				FROM = {
+					trait = stubborn
+				}
+			}
+
+			modifier = {
+				factor = 2
+				FROM = {
+					trait = greedy
+				}
+			}
+
+			modifier = {
+				factor = 2
+				FROM = {
+					trait = ambitious
+				}
+			}
+
+			modifier = {
+				factor = 0.5
+				FROM = {
+					trait = content
+				}
+			}
+
+			modifier = {
+				factor = 0.5
+				FROM = {
+					trait = shy
+				}
+			}
+
+			modifier = {
+				factor = 0.5
+				FROM = {
+					trait = craven
+				}
+			}
+
+			modifier = {
+				factor = 0.5
+				FROM = {
+					trait = humble
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,77 @@
+# Artifacts are a scope in and of themselves now.
+
+# effects
+add_artifact = golden_platypus	# must be scoped to a character
+								# a copy of the named artifact is created and added to the scoped character
+
+any_artifact = {					# scope must be a character
+									# will execute the effect on all artifacts owned by scoped character, and that fulfills the limit
+	limit = {						
+		has_artifact_flag = rare	# example
+	}
+	destroy_artifact 				# example
+									# the scope of the effect being executed is the artifact, and the PREV scope here is the character who owns the artifact
+}
+random_artifact = {					# scope must be a character
+									# will execute the effect on one randomly chosen artifact owned by scoped character, and that fulfills the limit
+	limit = {
+		quality < 10				#example
+	}
+	destroy_artifact 				# example
+									# the scope of the effect being executed is the artifact, and the PREV scope here is the character who owns the artifact
+}
+transfer_artifact = {				# scope must be an artifact
+	from = PREV 					# from and to should both be characters. if from doesn't own the artifact, to will not receive it
+	to = PREVPREV
+}
+
+destroy_artifact 					# scope can be an artifact, or a character.
+									# if there is no name given, the scope MUST be an artifact, and the PREV scope must be the owner.
+									# this can be achieved through any_artefact and random_artefact effects
+
+destroy_artifact = golden_platypus	# if an artifact name is given, the scope should be the owner of the artifact. if they own an artifact by that name, it will be destroyed
+									# if they own more than one, only the first one will be destroyed
+									# WILL FAIL and add an error message if called on an indestructible artifact
+
+
+
+# Triggers
+num_of_artifacts = 3 					# scope must be a character, returns true if scoped character has at least 3 (in this example) artifacts
+has_artifact = golden_platypus			# scope must be a character, returns true if scoped character owns an artifact by that name		
+quality > 10							# scope must be an artifact.
+										# all comparison operators are available ( <, <=, =, >=, >=)
+										# returns true if the quality of the scoped artifact compares correctly to the value
+
+has_artifact_flag						# scope must be an artifact
+										# returns true if the scoped artifact has that flag defined
+
+is_artifact_active						# scope must be an artifact
+										# returns true if the scoped artifact is currently active
+										# note that an artifact without an active trigger will always be considered active, even if not owned
+										# also note that an artifact with an active trigger and without an owner will never be considered active
+any_artifact = {						# must be scoped to a character
+										# returns true if any artifact owned by that character fulfills the conditions
+	quality >= 10	# example
+}
+
+owner / artifact_owner = {				# takes an artifact as a scope, returns the current owner of the artifact. either owner or artifact_owner can be used
+	title = {
+		tier = emperor
+	}
+}
+
+original_owner / original_artifact_owner = {	# takes an artifact as a scope, returns the original owner of the artifact. either original_owner or original_artifact_owner can be used
+	title = {
+		tier = emperor
+	}
+}
+
+is_indestructible = yes					# scope is artifact, returns true if the scoped artifact is indestructible, false otherwise
+artifact_type = golden_platypus			# takes an artifact as a scope, returns true if the artifact is of the given type, false otherwise
+is_artifact_same_type_as = ROOT 		# takes an artifact as a scope, and an artifact as a target, and returns true if they're the same type, false otherwise
+artifact_type_owned_by = ROOT	 		# takes an artifact as a scope, and a character as a target, and returns true if the target character already owns an artifact of the same type
+stacking = no							# can only have a single copy of this artifact in one's posession. Defaults to "yes"
+
+#events
+on_artifact_inheritance					# on action event is sent whenever a character receives an artifact (one event for each artifact)
+										# Scopes: ROOT is the character, FROM is the artifact, FROMFROM is the old holder

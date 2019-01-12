@@ -1,0 +1,1744 @@
+namespace = WCBDP
+# What is horde_beyond_dark_portal_flag?
+# If this event chain fires for the Horde, events go a little differently...
+narrative_event = {
+	id = WCBDP.50
+	title = EVTTITLE_WCBDP_50
+	desc = {
+		trigger = { has_global_flag = horde_beyond_dark_portal_flag }
+		text = EVTDESC_WCBDP_50_horde
+	}
+	desc = {
+		trigger = {
+			NOT = { has_global_flag = horde_beyond_dark_portal_flag }
+		}
+		text = EVTDESC_WCBDP_50_alliance
+	}
+	picture = GFX_evt_dark_portal_01
+
+	major = yes
+	major_trigger = {
+		OR = {
+			AND = {
+				ROOT = { has_landed_title = e_horde }
+				has_landed_title = e_horde
+			}
+			AND = {
+				ROOT = {
+					NOT = { has_landed_title = e_horde }
+					is_member_of_alliance_faction_trigger = yes
+				}
+				is_member_of_alliance_faction_trigger = yes
+			}
+		}
+	}
+	
+	only_playable = yes
+	only_independent = yes
+	has_global_flag = dark_portal_was_opened_flag
+
+	trigger = {
+		NOR = {
+			has_global_flag = horde_beyond_dark_portal_flag
+			has_global_flag = alliance_beyond_dark_portal_flag
+			has_global_flag = neutral_beyond_dark_portal_flag
+		}
+		NOT = { has_global_flag = draenor_is_destroyed_flag }
+		73 = {
+			owner = {
+				OR = {
+					character = ROOT
+					is_liege_or_above = ROOT
+				}
+			}
+		}
+
+		OR = {
+			e_horde = { has_holder = no }
+			year = 595
+		}
+	}
+
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					has_landed_title = e_horde
+					is_member_of_horde_faction_trigger = yes
+				}
+			}
+			set_global_flag = horde_beyond_dark_portal_flag
+			break = yes
+		}
+		if = {
+			limit = { is_member_of_alliance_faction_trigger = yes }
+			set_global_flag = alliance_beyond_dark_portal_flag
+			break = yes
+		}
+		set_global_flag = neutral_beyond_dark_portal_flag
+		save_event_target_as = target_portal_owner
+		
+		character_event = { id = WCSDW.3 }		# Creates the Warsong Clan
+	}
+
+	mean_time_to_happen = {
+		months = 24
+	}
+
+	# Send large army and marshall
+	option = {
+		trigger = {
+			job_marshal = { is_alive = yes }
+		}
+		name = {
+			trigger = { has_landed_title = e_horde }
+			text = EVTOPTA_WCBDP_50_horde
+		}
+		name = {
+			trigger = { NOT = { has_landed_title = e_horde } }
+			text = EVTOPTA_WCBDP_50_alliance
+		}
+		prestige = 250
+		add_character_modifier = { name = sent_large_army_beyond_dark_portal duration = -1 }
+		job_marshal = {
+			add_trait = travelling
+			set_character_flag = on_journey_beyond_dark_portal_flag
+			letter_event = { id = WCBDP.140 }
+		}
+		hidden_effect = {
+			if = {
+				limit = { character = ROOT }
+				73 = { province_event = { id = WCBDP.59 days = 2 } }
+			}
+		}
+
+		ai_chance = {
+			factor = 5
+			modifier = {
+				factor = 10
+				has_landed_title = e_horde
+			}
+			modifier = {
+				factor = 0
+				war = yes
+				NOT = { has_landed_title = e_horde }
+			}
+		}
+	}
+
+	# Send army
+	option = {
+		name = EVTOPTB_WCBDP_50
+		prestige = 100
+		add_character_modifier = { name = sent_army_beyond_dark_portal duration = -1 }
+
+		hidden_effect = {
+			if = {
+				limit = { character = ROOT }
+				73 = { province_event = { id = WCBDP.59 days = 2 } }
+			}
+		}
+
+		ai_chance = {
+			factor = 10
+			modifier = {
+				factor = 0.5
+				war = yes
+			}
+		}
+	}
+
+	# Do nothing
+	option = {
+		name = {
+			trigger = { has_landed_title = e_horde }
+			text = EVTOPTC_WCBDP_50_horde
+		}
+		name = {
+			trigger = { NOT = { has_landed_title = e_horde } }
+			text = EVTOPTC_WCBDP_50_alliance
+		}
+
+		hidden_effect = {
+			if = {
+				limit = { character = ROOT }
+				# Clean up
+				73 = { province_event = { id = WCBDP.149 days = 30 } }
+			}
+		}
+
+		ai_chance = {
+			factor = 5
+		}
+	}
+}
+# Starts the invasion
+province_event = {
+	id = WCBDP.59
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		if = {
+			limit = {
+				has_global_flag = horde_beyond_dark_portal_flag
+				e_horde = { has_holder = yes }
+			}
+			e_horde = { holder_scope = { narrative_event = { id = WCBDP.60 } } }
+			break = yes
+		}
+		if = {
+			limit = {
+				has_global_flag = alliance_beyond_dark_portal_flag
+				leader_of_alliance_trait = { always = yes }
+			}
+			leader_of_alliance_trait = { narrative_event = { id = WCBDP.60 } }
+			break = yes
+		}
+		if = {
+			limit = {
+				has_global_flag = neutral_beyond_dark_portal_flag
+				event_target:target_portal_owner = { is_alive = yes }
+			}
+			event_target:target_portal_owner = {
+				narrative_event = { id = WCBDP.60 }
+			}
+			break = yes
+		}
+		# Clean up
+		73 = { province_event = { id = WCBDP.149 days = 60 } }
+	}
+}
+narrative_event = {
+	id = WCBDP.60
+	title = EVTTITLE_WCBDP_50
+	desc = {
+		trigger = { NOT = { has_global_flag = horde_beyond_dark_portal_flag } }
+		text = EVTDESC_WCBDP_60_alliance
+	}
+	desc = {
+		trigger = { has_global_flag = horde_beyond_dark_portal_flag }
+		text = EVTDESC_WCBDP_60_horde
+	}
+	picture = GFX_evt_dark_portal_01
+
+	is_triggered_only = yes
+
+	major = yes
+	major_trigger = {
+		trait = travelling
+		has_character_flag = on_journey_beyond_dark_portal_flag
+	}
+
+	# Strengthen positions
+	option = {
+		trigger = { character = ROOT }
+		name = {
+			trigger = { NOT = { has_global_flag = horde_beyond_dark_portal_flag } }
+			text = EVTOPTA_WCBDP_60_alliance
+		}
+		name = {
+			trigger = { has_global_flag = horde_beyond_dark_portal_flag }
+			text = EVTOPTA_WCBDP_60_horde
+		}
+		prestige = 100
+		custom_tooltip = {
+			text = EVTOPTA_WCBDP_60_tooltip
+			hidden_tooltip = {
+				set_global_flag = strengthens_position_beyond_dark_portal_flag
+				random = {
+					chance = 10
+					character_event = { id = 246 }
+				}
+				73 = { province_event = { id = WCBDP.64 days = 3 } }
+			}
+		}
+		ai_chance = {
+			factor = 5
+		}
+	}
+	# Attack the Citadel
+	option = {
+		trigger = { character = ROOT }
+		name = {
+			trigger = { NOT = { has_global_flag = horde_beyond_dark_portal_flag } }
+			text = EVTOPTB_WCBDP_60_alliance
+		}
+		name = {
+			trigger = { has_global_flag = horde_beyond_dark_portal_flag }
+			text = EVTOPTB_WCBDP_60_horde
+		}
+		prestige = 150
+		custom_tooltip = {
+			text = EVTOPTB_WCBDP_60_tooltip
+			hidden_tooltip = {
+				random = {
+					chance = 15
+					character_event = { id = 246 }
+				}
+				73 = { province_event = { id = WCBDP.64 days = 3 } }
+			}
+		}
+		ai_chance = {
+			factor = 10
+		}
+	}
+	option = {
+		trigger = { NOT = { character = ROOT } }
+		name = EVTOPTC_WCBDP_60
+	}
+}
+
+# Peace with the Laughing Skull
+province_event = {
+	id = WCBDP.64
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		if = {
+			limit = {
+				has_global_flag = horde_beyond_dark_portal_flag
+				e_horde = { has_holder = yes }
+			}
+			e_horde = { holder_scope = { narrative_event = { id = WCBDP.65 } } }
+			break = yes
+		}
+		if = {
+			limit = {
+				has_global_flag = alliance_beyond_dark_portal_flag
+				leader_of_alliance_trait = { always = yes }
+			}
+			leader_of_alliance_trait = { narrative_event = { id = WCBDP.65 } }
+			break = yes
+		}
+		if = {
+			limit = { has_global_flag = neutral_beyond_dark_portal_flag event_target:target_portal_owner = { is_alive = yes } }
+			event_target:target_portal_owner = {
+				narrative_event = { id = WCBDP.65 }
+			}
+			break = yes
+		}
+		# Clean up
+		73 = { province_event = { id = WCBDP.149 days = 60 } }
+	}
+}
+narrative_event = {
+	id = WCBDP.65
+	title = EVTTITLE_WCBDP_50
+	desc = {
+		trigger = { NOT = { has_global_flag = horde_beyond_dark_portal_flag } }
+		text = EVTDESC_WCBDP_65_alliance
+	}
+	desc = {
+		trigger = { has_global_flag = horde_beyond_dark_portal_flag }
+		text = EVTDESC_WCBDP_65_horde
+	}
+	picture = GFX_evt_laughing_skull_orc
+
+	is_triggered_only = yes
+
+	major = yes
+	major_trigger = {
+		trait = travelling
+		has_character_flag = on_journey_beyond_dark_portal_flag
+	}
+
+	# Peace with the Laughing Skull
+	option = {
+		trigger = { character = ROOT }
+		name = {
+			trigger = { NOT = { has_global_flag = horde_beyond_dark_portal_flag } }
+			text = EVTOPTA_WCBDP_65_alliance
+		}
+		name = {
+			trigger = { has_global_flag = horde_beyond_dark_portal_flag }
+			text = EVTOPTA_WCBDP_65_horde
+		}
+		prestige = -50
+		custom_tooltip = {
+			text = EVTOPTA_WCBDP_65_tooltip
+			hidden_tooltip = {
+				set_global_flag = truce_with_laughing_skulls_beyond_dark_portal_flag
+				73 = {
+					province_event = { id = WCBDP.66 days = 1 }
+					province_event = { id = WCBDP.74 days = 4 }
+				}
+			}
+		}
+		ai_chance = {
+			factor = 5
+		}
+	}
+	# Alliance with the Laughing Skull
+	option = {
+		trigger = { character = ROOT }
+		name = {
+			trigger = { NOT = { has_global_flag = horde_beyond_dark_portal_flag } }
+			text = EVTOPTB_WCBDP_65_alliance
+		}
+		name = {
+			trigger = { has_global_flag = horde_beyond_dark_portal_flag }
+			text = EVTOPTB_WCBDP_65_horde
+		}
+		prestige = -100
+		custom_tooltip = {
+			text = EVTOPTB_WCBDP_65_tooltip
+			hidden_tooltip = {
+				set_global_flag = alliance_with_laughing_skulls_beyond_dark_portal_flag
+				73 = {
+					province_event = { id = WCBDP.69 days = 5 }
+					province_event = { id = WCBDP.66 days = 1 }
+					province_event = { id = WCBDP.74 days = 4 }
+				}
+			}
+		}
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 15
+				has_global_flag = horde_beyond_dark_portal_flag
+			}
+		}
+	}
+	# Nope, it's a bad idea
+	option = {
+		trigger = { character = ROOT }
+		name = {
+			trigger = { NOT = { has_global_flag = horde_beyond_dark_portal_flag } }
+			text = EVTOPTC_WCBDP_65_alliance
+		}
+		name = {
+			trigger = { has_global_flag = horde_beyond_dark_portal_flag }
+			text = EVTOPTC_WCBDP_65_horde
+		}
+		prestige = 50
+		custom_tooltip = {
+			text = EVTOPTC_WCBDP_65_tooltip
+			hidden_tooltip = {
+				73 = { province_event = { id = WCBDP.74 days = 4 } }
+			}
+		}
+		ai_chance = {
+			factor = 0
+		}
+	}
+	option = {
+		trigger = { NOT = { character = ROOT } }
+		name = EVTOPTC_WCBDP_60
+	}
+}
+
+# Reaction of the Laughing Skull
+province_event = {
+	id = WCBDP.66
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		if = {
+			limit = {
+				has_global_flag = horde_beyond_dark_portal_flag
+				e_horde = { has_holder = yes }
+			}
+			e_horde = { holder_scope = { narrative_event = { id = WCBDP.67 } } }
+			break = yes
+		}
+		if = {
+			limit = {
+				has_global_flag = alliance_beyond_dark_portal_flag
+				leader_of_alliance_trait = { always = yes }
+			}
+			leader_of_alliance_trait = { narrative_event = { id = WCBDP.67 } }
+			break = yes
+		}
+		if = {
+			limit = { has_global_flag = neutral_beyond_dark_portal_flag event_target:target_portal_owner = { is_alive = yes } }
+			event_target:target_portal_owner = {
+				narrative_event = { id = WCBDP.67 }
+			}
+			break = yes
+		}
+	}
+}
+narrative_event = {
+	id = WCBDP.67
+	title = EVTTITLE_WCBDP_50
+	desc = {
+		trigger = {
+			NOT = { has_global_flag = horde_beyond_dark_portal_flag }
+			NOT = { has_global_flag = alliance_with_laughing_skulls_beyond_dark_portal_flag }
+		}
+		text = EVTDESC_WCBDP_67_alliance_case_01
+	}
+	desc = {
+		trigger = {
+			NOT = { has_global_flag = horde_beyond_dark_portal_flag }
+			has_global_flag = alliance_with_laughing_skulls_beyond_dark_portal_flag
+		}
+		text = EVTDESC_WCBDP_67_alliance_case_02
+	}
+	desc = {
+		trigger = {
+			has_global_flag = horde_beyond_dark_portal_flag
+			NOT = { has_global_flag = alliance_with_laughing_skulls_beyond_dark_portal_flag }
+		}
+		text = EVTDESC_WCBDP_67_horde_case_01
+	}
+	desc = {
+		trigger = {
+			has_global_flag = horde_beyond_dark_portal_flag
+			has_global_flag = alliance_with_laughing_skulls_beyond_dark_portal_flag
+		}
+		text = EVTDESC_WCBDP_67_horde_case_02
+	}
+	picture = GFX_evt_laughing_skull_orc
+
+	is_triggered_only = yes
+
+	major = yes
+	major_trigger = {
+		trait = travelling
+		has_character_flag = on_journey_beyond_dark_portal_flag
+	}
+
+	option = {
+		trigger = { character = ROOT }
+		name = EVTOPTA_WCBDP_67
+	}
+	option = {
+		trigger = { NOT = { character = ROOT } }
+		name = EVTOPTC_WCBDP_60
+	}
+}
+
+# The Laughing Skull sneak into Azeroth
+province_event = {
+	id = WCBDP.69
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		if = {
+			limit = {
+				has_global_flag = horde_beyond_dark_portal_flag
+				e_horde = { has_holder = yes }
+			}
+			e_horde = { holder_scope = { narrative_event = { id = WCBDP.70 } } }
+			break = yes
+		}
+		if = {
+			limit = {
+				has_global_flag = alliance_beyond_dark_portal_flag
+				leader_of_alliance_trait = { always = yes }
+			}
+			leader_of_alliance_trait = { narrative_event = { id = WCBDP.70 } }
+			break = yes
+		}
+		if = {
+			limit = { has_global_flag = neutral_beyond_dark_portal_flag event_target:target_portal_owner = { is_alive = yes } }
+			event_target:target_portal_owner = {
+				narrative_event = { id = WCBDP.70 }
+			}
+			break = yes
+		}
+	}
+}
+narrative_event = {
+	id = WCBDP.70
+	title = EVTTITLE_WCBDP_50
+	desc = EVTDESC_WCBDP_70
+	picture = GFX_evt_laughing_skull_orc
+
+	is_triggered_only = yes
+
+	major = yes
+	major_trigger = {
+		trait = travelling
+		has_character_flag = on_journey_beyond_dark_portal_flag
+	}
+
+	immediate = {
+		create_character = {
+			name = Mogor
+			dynasty = 42001
+			religion = primitive_shamanism
+			culture = ogre
+			female = no
+			age = 38
+			attributes = {
+				martial=8 diplomacy=4 stewardship=4 intrigue=5 learning=7
+			}
+			random_traits = yes
+			trait=martial_cleric
+			trait = creature_ogre
+			trait=twoheaded
+			trait = class_shaman_4
+			trait=wroth trait=honest
+		}
+		new_character = {
+			culture = laughting_skull
+			wealth = 500
+			prestige = 500
+			set_character_flag = wc_raiding_adventurer_flag
+			character_event = { id = HL.100 }
+		}
+	}
+
+	option = {
+		trigger = { character = ROOT }
+		name = EVTOPTA_WCBDP_70
+		prestige = -250
+	}
+	option = {
+		trigger = { NOT = { character = ROOT } }
+		name = EVTOPTC_WCBDP_60
+	}
+}
+
+# Pursuit of Deathwing and attack on the Black Temple
+province_event = {
+	id = WCBDP.74
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		log = "WCBDP.74 fired for [Root.GetName]"
+
+		if = {
+			limit = {
+				has_global_flag = horde_beyond_dark_portal_flag
+				e_horde = { has_holder = yes }
+			}
+			e_horde = { holder_scope = { narrative_event = { id = WCBDP.75 } } }
+			break = yes
+		}
+		if = {
+			limit = {
+				has_global_flag = alliance_beyond_dark_portal_flag
+				leader_of_alliance_trait = { always = yes }
+			}
+			leader_of_alliance_trait = { narrative_event = { id = WCBDP.75 } }
+			break = yes
+		}
+		if = {
+			limit = { has_global_flag = neutral_beyond_dark_portal_flag event_target:target_portal_owner = { is_alive = yes } }
+			event_target:target_portal_owner = {
+				narrative_event = { id = WCBDP.75 }
+			}
+			break = yes
+		}
+		# Clean up
+		73 = { province_event = { id = WCBDP.149 days = 60 } }
+	}
+}
+narrative_event = {
+	id = WCBDP.75
+	title = EVTTITLE_WCBDP_50
+	desc = {
+		trigger = { NOT = { has_global_flag = horde_beyond_dark_portal_flag } }
+		text = EVTDESC_WCBDP_75_alliance
+	}
+	desc = {
+		trigger = { has_global_flag = horde_beyond_dark_portal_flag }
+		text = EVTDESC_WCBDP_75_horde
+	}
+	picture = GFX_evt_neltharion
+
+	is_triggered_only = yes
+
+	major = yes
+	major_trigger = {
+		trait = travelling
+		has_character_flag = on_journey_beyond_dark_portal_flag
+	}
+
+	immediate = {
+		73 = { province_event = { id = WCBDP.79 days = 21 } }
+	}
+
+	option = {
+		trigger = { character = ROOT }
+		name = EVTOPTA_WCBDP_75
+	}
+	option = {
+		trigger = { NOT = { character = ROOT } }
+		name = EVTOPTC_WCBDP_60
+	}
+}
+# Pursuit of Deathwing
+province_event = {
+	id = WCBDP.79
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		if = {
+			limit = {
+				has_global_flag = horde_beyond_dark_portal_flag
+				e_horde = { has_holder = yes }
+			}
+			e_horde = { holder_scope = { narrative_event = { id = WCBDP.80 } } }
+			break = yes
+		}
+		if = {
+			limit = {
+				has_global_flag = alliance_beyond_dark_portal_flag
+				leader_of_alliance_trait = { always = yes }
+			}
+			leader_of_alliance_trait = { narrative_event = { id = WCBDP.80 } }
+			break = yes
+		}
+		if = {
+			limit = { has_global_flag = neutral_beyond_dark_portal_flag event_target:target_portal_owner = { is_alive = yes } }
+			event_target:target_portal_owner = {
+				narrative_event = { id = WCBDP.80 }
+			}
+			break = yes
+		}
+		# Clean up
+		73 = { province_event = { id = WCBDP.149 days = 60 } }
+	}
+}
+narrative_event = {
+	id = WCBDP.80
+	title = EVTTITLE_WCBDP_50
+	desc = {
+		trigger = { NOT = { has_global_flag = horde_beyond_dark_portal_flag } }
+		text = EVTDESC_WCBDP_80_alliance
+	}
+	desc = {
+		trigger = { has_global_flag = horde_beyond_dark_portal_flag }
+		text = EVTDESC_WCBDP_80_horde
+	}
+	picture = GFX_evt_gronn
+
+	is_triggered_only = yes
+
+	major = yes
+	major_trigger = {
+		trait = travelling
+		has_character_flag = on_journey_beyond_dark_portal_flag
+	}
+
+	# Alliance with the gronns
+	option = {
+		trigger = { character = ROOT }
+		name = {
+			trigger = { NOT = { has_global_flag = horde_beyond_dark_portal_flag } }
+			text = EVTOPTA_WCBDP_80_alliance
+		}
+		name = {
+			trigger = { has_global_flag = horde_beyond_dark_portal_flag }
+			text = EVTOPTA_WCBDP_80_horde
+		}
+		prestige = -50
+		custom_tooltip = {
+			text = EVTOPTA_WCBDP_80_tooltip
+			hidden_tooltip = {
+				random_list = {
+					70 = { set_global_flag = deathwing_lost_beyond_dark_portal_flag }
+					20 = { set_global_flag = deathwing_barely_lost_beyond_dark_portal_flag }
+					10 = { set_global_flag = deathwing_won_beyond_dark_portal_flag }
+				}
+				73 = {
+					province_event = { id = WCBDP.84 days = 7 }
+					province_event = { id = WCBDP.89 days = 7 }
+				}
+			}
+		}
+	}
+	# Nope, it's a bad idead
+	option = {
+		trigger = { character = ROOT }
+		name = {
+			trigger = { NOT = { has_global_flag = horde_beyond_dark_portal_flag } }
+			text = EVTOPTB_WCBDP_80_alliance
+		}
+		name = {
+			trigger = { has_global_flag = horde_beyond_dark_portal_flag }
+			text = EVTOPTB_WCBDP_80_horde
+		}
+		prestige = 100
+		custom_tooltip = {
+			text = EVTOPTB_WCBDP_80_tooltip
+			hidden_tooltip = {
+				random_list = {
+					20 = { set_global_flag = deathwing_lost_beyond_dark_portal_flag }
+					40 = { set_global_flag = deathwing_barely_lost_beyond_dark_portal_flag }
+					40 = { set_global_flag = deathwing_won_beyond_dark_portal_flag }
+				}
+				73 = {
+					province_event = { id = WCBDP.84 days = 7 }
+					province_event = { id = WCBDP.89 days = 7 }
+				}
+			}
+		}
+		ai_chance = {
+			factor = 0
+		}
+	}
+	option = {
+		trigger = { NOT = { character = ROOT } }
+		name = EVTOPTC_WCBDP_60
+	}
+}
+# Deathwing lose/won
+province_event = {
+	id = WCBDP.84
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		if = {
+			limit = {
+				has_global_flag = horde_beyond_dark_portal_flag
+				e_horde = { has_holder = yes }
+			}
+			e_horde = { holder_scope = { narrative_event = { id = WCBDP.85 } } }
+			break = yes
+		}
+		if = {
+			limit = {
+				has_global_flag = alliance_beyond_dark_portal_flag
+				leader_of_alliance_trait = { always = yes }
+			}
+			leader_of_alliance_trait = { narrative_event = { id = WCBDP.85 } }
+			break = yes
+		}
+		if = {
+			limit = { has_global_flag = neutral_beyond_dark_portal_flag event_target:target_portal_owner = { is_alive = yes } }
+			event_target:target_portal_owner = {
+				narrative_event = { id = WCBDP.85 }
+			}
+			break = yes
+		}
+	}
+}
+narrative_event = {
+	id = WCBDP.85
+	title = EVTTITLE_WCBDP_50
+	desc = {
+		trigger = { has_global_flag = deathwing_lost_beyond_dark_portal_flag }
+		text = EVTDESC_WCBDP_85_case_01
+	}
+	desc = {
+		trigger = { has_global_flag = deathwing_barely_lost_beyond_dark_portal_flag }
+		text = EVTDESC_WCBDP_85_case_02
+	}
+	desc = {
+		trigger = { has_global_flag = deathwing_won_beyond_dark_portal_flag }
+		text = EVTDESC_WCBDP_85_case_03
+	}
+	picture = GFX_evt_neltharion
+
+	is_triggered_only = yes
+
+	major = yes
+	major_trigger = {
+		trait = travelling
+		has_character_flag = on_journey_beyond_dark_portal_flag
+	}
+
+	immediate = {
+		if = {
+			limit = { OR = { has_global_flag = deathwing_barely_lost_beyond_dark_portal_flag has_global_flag = deathwing_won_beyond_dark_portal_flag } }
+			any_character = {
+				limit = {
+					trait = travelling
+					has_character_flag = on_journey_beyond_dark_portal_flag
+				}
+				random = {
+					chance = 25
+					death = { death_reason = death_battle }
+				}
+			}
+			break = yes
+		}
+		random = {
+			chance = 25
+			character_event = { id = 246 }
+		}
+	}
+
+	option = {
+		trigger = { character = ROOT }
+		name = {
+			trigger = { OR = { has_global_flag = deathwing_lost_beyond_dark_portal_flag has_global_flag = deathwing_barely_lost_beyond_dark_portal_flag } }
+			text = EXCELLENT
+		}
+		name = {
+			trigger = { has_global_flag = deathwing_won_beyond_dark_portal_flag }
+			text = ALAS
+		}
+		if = {
+			limit = { has_global_flag = deathwing_lost_beyond_dark_portal_flag }
+			prestige = 250
+		}
+		if = {
+			limit = { has_global_flag = deathwing_barely_lost_beyond_dark_portal_flag }
+			prestige = 100
+		}
+		if = {
+			limit = { has_global_flag = deathwing_won_beyond_dark_portal_flag }
+			prestige = -100
+		}
+	}
+	option = {
+		trigger = { NOT = { character = ROOT } }
+		name = EVTOPTC_WCBDP_60
+	}
+}
+# New allies
+province_event = {
+	id = WCBDP.89
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		if = {
+			limit = {
+				has_global_flag = horde_beyond_dark_portal_flag
+				e_horde = { has_holder = yes }
+			}
+			e_horde = { holder_scope = { narrative_event = { id = WCBDP.90 } } }
+			break = yes
+		}
+		if = {
+			limit = {
+				has_global_flag = alliance_beyond_dark_portal_flag
+				leader_of_alliance_trait = { always = yes }
+			}
+			leader_of_alliance_trait = { narrative_event = { id = WCBDP.90 } }
+			break = yes
+		}
+		if = {
+			limit = { has_global_flag = neutral_beyond_dark_portal_flag event_target:target_portal_owner = { is_alive = yes } }
+			event_target:target_portal_owner = {
+				narrative_event = { id = WCBDP.90 }
+			}
+			break = yes
+		}
+		# Clean up
+		73 = { province_event = { id = WCBDP.149 days = 60 } }
+	}
+}
+narrative_event = {
+	id = WCBDP.90
+	title = EVTTITLE_WCBDP_50
+	desc = {
+		trigger = { NOT = { has_global_flag = horde_beyond_dark_portal_flag } }
+		text = EVTDESC_WCBDP_90_alliance
+	}
+	desc = {
+		trigger = { has_global_flag = horde_beyond_dark_portal_flag }
+		text = EVTDESC_WCBDP_90_horde
+	}
+	picture = GFX_evt_terokkar_forest
+
+	is_triggered_only = yes
+
+	major = yes
+	major_trigger = {
+		trait = travelling
+		has_character_flag = on_journey_beyond_dark_portal_flag
+	}
+
+	# Alliance with the ogres/draenei
+	option = {
+		trigger = { character = ROOT }
+		name = {
+			trigger = { NOT = { has_global_flag = horde_beyond_dark_portal_flag } }
+			text = EVTOPTA_WCBDP_90_alliance
+		}
+		name = {
+			trigger = { has_global_flag = horde_beyond_dark_portal_flag }
+			text = EVTOPTA_WCBDP_90_horde
+		}
+		custom_tooltip = { text = EVTOPTA_WCBDP_90_case_01_tooltip }
+		prestige = 50
+
+		73 = {
+			# province_event = { id = WCBDP.94 days = 1 }
+			province_event = { id = WCBDP.99 days = 14 }
+		}
+	}
+	# Establish a relationship with the arakkoa
+	option = {
+		trigger = { character = ROOT }
+		name = {
+			trigger = { NOT = { has_global_flag = horde_beyond_dark_portal_flag } }
+			text = EVTOPTB_WCBDP_90_alliance
+		}
+		name = {
+			trigger = { has_global_flag = horde_beyond_dark_portal_flag }
+			text = EVTOPTB_WCBDP_90_horde
+		}
+		custom_tooltip = { text = EVTOPTA_WCBDP_90_case_01_tooltip }
+		prestige = 50
+		set_global_flag = alliance_with_arakkoa
+
+		73 = {
+			# province_event = { id = WCBDP.94 days = 1 }
+			province_event = { id = WCBDP.99 days = 14 }
+		}
+
+		ai_chance = {
+			factor = 0
+		}
+	}
+	# Nope, it's a bad idea
+	option = {
+		trigger = { character = ROOT }
+		name = {
+			trigger = { NOT = { has_global_flag = horde_beyond_dark_portal_flag } }
+			text = EVTOPTC_WCBDP_90_alliance
+		}
+		name = {
+			trigger = { has_global_flag = horde_beyond_dark_portal_flag }
+			text = EVTOPTC_WCBDP_90_horde
+		}
+		custom_tooltip = { text = EVTOPTC_WCBDP_90_case_01_tooltip }
+		prestige = 100
+
+		73 = { province_event = { id = WCBDP.99 days = 14 } }
+
+		ai_chance = {
+			factor = 0
+		}
+	}
+	option = {
+		trigger = { NOT = { character = ROOT } }
+		name = EVTOPTC_WCBDP_60
+	}
+}
+# A small group wants to follow you
+province_event = {
+	id = WCBDP.94
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		if = {
+			limit = {
+				has_global_flag = horde_beyond_dark_portal_flag
+				e_horde = { has_holder = yes }
+			}
+			e_horde = { holder_scope = { narrative_event = { id = WCBDP.95 } } }
+			break = yes
+		}
+		if = {
+			limit = {
+				has_global_flag = alliance_beyond_dark_portal_flag
+				leader_of_alliance_trait = { always = yes }
+			}
+			leader_of_alliance_trait = { narrative_event = { id = WCBDP.95 } }
+			break = yes
+		}
+		if = {
+			limit = { has_global_flag = neutral_beyond_dark_portal_flag event_target:target_portal_owner = { is_alive = yes } }
+			event_target:target_portal_owner = {
+				narrative_event = { id = WCBDP.95 }
+			}
+			break = yes
+		}
+	}
+}
+narrative_event = {
+	id = WCBDP.95
+	title = EVTTITLE_WCBDP_50
+	desc = EVTDESC_WCBDP_95_case_01
+	picture = GFX_evt_terokkar_forest
+
+	is_triggered_only = yes
+
+	trigger = {
+		any_province = {
+			has_empty_holding = yes
+			de_jure_liege_or_above = k_black_morass
+			holder_scope = {
+				top_liege = {
+					OR = {
+						character = ROOT
+						AND = {
+							has_global_flag = alliance_beyond_dark_portal_flag
+							is_member_of_alliance_faction_trigger = yes
+						}
+						AND = {
+							has_global_flag = horde_beyond_dark_portal_flag
+							OR = {
+								has_landed_title = e_horde
+								is_member_of_horde_faction_trigger = yes
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	major = yes
+	major_trigger = {
+		trait = travelling
+		has_character_flag = on_journey_beyond_dark_portal_flag
+	}
+
+	# Take them
+	option = {
+		trigger = { character = ROOT }
+		name = EVTOPTA_WCBDP_95
+		custom_tooltip = { text = EVTOPTA_WCBDP_95_tooltip }
+		prestige = 100
+		if = {
+			limit = { NOT = { trait = kind } }
+			random = {
+				chance = 25
+				if = { limit = { trait = cruel } remove_trait = cruel }
+				if = { limit = { NOT = { trait = cruel trait = kind } } add_trait = kind character_event = { id = 38268 } }
+			}
+		}
+		hidden_effect = {
+			if = {
+				limit = {
+					has_global_flag = horde_beyond_dark_portal_flag
+					NOT = { has_global_flag = alliance_with_arakkoa }
+				}
+				create_character = {
+					dynasty = NONE
+					religion = orcish_fel
+					culture = ogre
+					female = no
+					age = 33
+					attributes = {
+						learning=7
+					}
+					random_traits = yes
+					trait=scholarly_theologian
+					trait = creature_ogre
+					trait=twoheaded
+					trait = class_warlock_5
+				}
+				new_character = {
+					random_province = {
+						limit = {
+							has_empty_holding = yes
+							de_jure_liege_or_above = k_black_morass
+							holder_scope = {
+								top_liege = {
+									OR = {
+										character = ROOT
+										AND = {
+											has_global_flag = alliance_beyond_dark_portal_flag
+											is_member_of_alliance_faction_trigger = yes
+										}
+										AND = {
+											has_global_flag = horde_beyond_dark_portal_flag
+											OR = {
+												has_landed_title = e_horde
+												is_member_of_horde_faction_trigger = yes
+											}
+										}
+									}
+								}
+							}
+						}
+						build_holding = { type = castle holder = PREV }
+						culture = PREV
+						religion = PREV
+					}
+					set_defacto_liege = THIS
+				}
+			}
+			if = {
+				limit = {
+					OR = {
+						has_global_flag = alliance_beyond_dark_portal_flag
+						has_global_flag = neutral_beyond_dark_portal_flag
+					}
+					NOT = { has_global_flag = alliance_with_arakkoa }
+				}
+				create_character = {
+					dynasty = NONE
+					religion = naaru
+					culture = draenei
+					female = yes
+					age = 26
+					attributes = {
+						learning=7
+					}
+					random_traits = yes
+					trait=scholarly_theologian
+					trait = creature_draenei
+					# trait=class_warrior
+					trait = class_priest_5
+				}
+				new_character = {
+					random_province = {
+						limit = {
+							has_empty_holding = yes
+							de_jure_liege_or_above = k_black_morass
+							holder_scope = {
+								top_liege = {
+									OR = {
+										character = ROOT
+										AND = {
+											has_global_flag = alliance_beyond_dark_portal_flag
+											is_member_of_alliance_faction_trigger = yes
+										}
+										AND = {
+											has_global_flag = horde_beyond_dark_portal_flag
+											OR = {
+												has_landed_title = e_horde
+												is_member_of_horde_faction_trigger = yes
+											}
+										}
+									}
+								}
+							}
+						}
+						build_holding = { type = temple holder = PREV }
+						culture = PREV
+						religion = PREV
+					}
+					set_defacto_liege = THIS
+				}
+			}
+			if = {
+				limit = {
+					has_global_flag = alliance_with_arakkoa
+				}
+				create_character = {
+					dynasty = NONE
+					religion = anzu_worship
+					culture = arakkoa
+					female = yes
+					age = 26
+					attributes = {
+						learning=7
+					}
+					random_traits = yes
+					trait=scholarly_theologian
+					trait = creature_arakkoa_corrupted
+					trait = class_priest_5
+				}
+				new_character = {
+					random_province = {
+						limit = {
+							has_empty_holding = yes
+							de_jure_liege_or_above = k_black_morass
+							holder_scope = {
+								top_liege = {
+									OR = {
+										character = ROOT
+										AND = {
+											has_global_flag = alliance_beyond_dark_portal_flag
+											is_member_of_alliance_faction_trigger = yes
+										}
+										AND = {
+											has_global_flag = horde_beyond_dark_portal_flag
+											OR = {
+												has_landed_title = e_horde
+												is_member_of_horde_faction_trigger = yes
+											}
+										}
+									}
+								}
+							}
+						}
+						build_holding = { type = city holder = PREV }
+						culture = PREV
+						religion = PREV
+					}
+					set_defacto_liege = THIS
+				}
+			}
+		}
+		ai_chance = {
+			factor = 0
+		}
+	}
+	# Nope, it's a bad idead
+	option = {
+		trigger = { character = ROOT }
+		name = EVTOPTB_WCBDP_95
+		custom_tooltip = { text = EVTOPTA_WCBDP_95_tooltip }
+		prestige = -100
+		if = {
+			limit = { NOT = { trait = cruel } }
+			random = {
+				chance = 25
+				if = { limit = { trait = kind } remove_trait = kind character_event = { id = 38307 } }
+				if = { limit = { NOT = { trait = kind trait = cruel } } add_trait = cruel character_event = { id = 38259 } }
+			}
+		}
+	}
+	option = {
+		trigger = { NOT = { character = ROOT } }
+		name = EVTOPTC_WCBDP_60
+	}
+}
+# Siege of the Black Temple and Horde attack
+province_event = {
+	id = WCBDP.99
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		if = {
+			limit = {
+				has_global_flag = horde_beyond_dark_portal_flag
+				e_horde = { has_holder = yes }
+			}
+			e_horde = { holder_scope = { narrative_event = { id = WCBDP.100 } } }
+			break = yes
+		}
+		if = {
+			limit = {
+				has_global_flag = alliance_beyond_dark_portal_flag
+				leader_of_alliance_trait = { always = yes }
+			}
+			leader_of_alliance_trait = { narrative_event = { id = WCBDP.100 } }
+			break = yes
+		}
+		if = {
+			limit = { has_global_flag = neutral_beyond_dark_portal_flag event_target:target_portal_owner = { is_alive = yes } }
+			event_target:target_portal_owner = {
+				narrative_event = { id = WCBDP.100 }
+			}
+			break = yes
+		}
+		# Clean up
+		73 = { province_event = { id = WCBDP.149 days = 60 } }
+	}
+}
+narrative_event = {
+	id = WCBDP.100
+	title = EVTTITLE_WCBDP_50
+	desc = {
+		trigger = { NOT = { has_global_flag = horde_beyond_dark_portal_flag } }
+		text = EVTDESC_WCBDP_100_alliance
+	}
+	desc = {
+		trigger = { has_global_flag = horde_beyond_dark_portal_flag }
+		text = EVTDESC_WCBDP_100_horde
+	}
+	picture = GFX_evt_terokkar_forest
+
+	is_triggered_only = yes
+
+	major = yes
+	major_trigger = {
+		trait = travelling
+		has_character_flag = on_journey_beyond_dark_portal_flag
+	}
+
+	# Siege
+	option = {
+		trigger = { character = ROOT }
+		name = EVTOPTA_WCBDP_100
+		custom_tooltip = { text = EVTOPTA_WCBDP_100_tooltip }
+		prestige = 100
+		hidden_tooltip = {
+			random_list = {
+				75 = { set_global_flag = won_battle_of_black_temple_beyond_dark_portal_flag }
+				25 = { set_global_flag = lost_battle_of_black_temple_beyond_dark_portal_flag }
+			}
+		}
+		73 = {
+			province_event = { id = WCBDP.104 days = 3 }
+			province_event = { id = WCBDP.109 days = 7 }
+		}
+		ai_chance = {
+			factor = 5
+		}
+	}
+	# All forces to the siege
+	option = {
+		trigger = { character = ROOT }
+		name = EVTOPTB_WCBDP_100
+		custom_tooltip = { text = EVTOPTB_WCBDP_100_tooltip }
+		prestige = 150
+		hidden_tooltip = {
+			random_list = {
+				50 = { set_global_flag = won_battle_of_black_temple_beyond_dark_portal_flag }
+				50 = { set_global_flag = lost_battle_of_black_temple_beyond_dark_portal_flag }
+			}
+		}
+		73 = {
+			province_event = { id = WCBDP.104 days = 3 }
+			province_event = { id = WCBDP.109 days = 7 }
+		}
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 5
+				has_global_flag = horde_beyond_dark_portal_flag
+			}
+		}
+	}
+	# Defend the Portal!
+	option = {
+		trigger = {
+			character = ROOT
+			NOT = { has_global_flag = strengthens_position_beyond_dark_portal_flag }
+		}
+		name = EVTOPTC_WCBDP_100
+		custom_tooltip = { text = EVTOPTC_WCBDP_100_tooltip }
+		prestige = 50
+		set_global_flag = strengthens_position_beyond_dark_portal_flag
+		73 = {
+			province_event = { id = WCBDP.109 days = 7 }
+		}
+		ai_chance = {
+			factor = 0
+		}
+	}
+	option = {
+		trigger = { NOT = { character = ROOT } }
+		name = EVTOPTC_WCBDP_60
+	}
+}
+# Outcomes
+province_event = {
+	id = WCBDP.104
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		if = {
+			limit = {
+				has_global_flag = horde_beyond_dark_portal_flag
+				e_horde = { has_holder = yes }
+			}
+			e_horde = { holder_scope = { narrative_event = { id = WCBDP.105 } } }
+			break = yes
+		}
+		if = {
+			limit = {
+				has_global_flag = alliance_beyond_dark_portal_flag
+				leader_of_alliance_trait = { always = yes }
+			}
+			leader_of_alliance_trait = { narrative_event = { id = WCBDP.105 } }
+			break = yes
+		}
+		if = {
+			limit = { has_global_flag = neutral_beyond_dark_portal_flag event_target:target_portal_owner = { is_alive = yes } }
+			event_target:target_portal_owner = {
+				narrative_event = { id = WCBDP.105 }
+			}
+			break = yes
+		}
+	}
+}
+narrative_event = {
+	id = WCBDP.105
+	title = EVTTITLE_WCBDP_50
+	desc = {
+		trigger = { has_global_flag = won_battle_of_black_temple_beyond_dark_portal_flag }
+		text = EVTDESC_WCBDP_105_case_01
+	}
+	desc = {
+		trigger = { has_global_flag = lost_battle_of_black_temple_beyond_dark_portal_flag }
+		text = EVTDESC_WCBDP_105_case_02
+	}
+	picture = GFX_evt_terokkar_forest
+
+	is_triggered_only = yes
+
+	major = yes
+	major_trigger = {
+		trait = travelling
+		has_character_flag = on_journey_beyond_dark_portal_flag
+	}
+
+	immediate = {
+		if = {
+			limit = { has_global_flag = lost_battle_of_black_temple_beyond_dark_portal_flag }
+			any_character = {
+				limit = {
+					trait = travelling
+					has_character_flag = on_journey_beyond_dark_portal_flag
+				}
+				random = {
+					chance = 25
+					death = { death_reason = death_battle }
+				}
+			}
+			break = yes
+		}
+		random = {
+			chance = 50
+			character_event = { id = 246 }
+		}
+	}
+
+	option = {
+		trigger = { character = ROOT }
+		name = {
+			trigger = { has_global_flag = won_battle_of_black_temple_beyond_dark_portal_flag }
+			text = EVTOPTA_WCBDP_105_case_01
+		}
+		name = {
+			trigger = { has_global_flag = lost_battle_of_black_temple_beyond_dark_portal_flag }
+			text = EVTOPTA_WCBDP_105_case_02
+		}
+		if = {
+			limit = { has_global_flag = won_battle_of_black_temple_beyond_dark_portal_flag }
+			prestige = 100
+		}
+		if = {
+			limit = { has_global_flag = lost_battle_of_black_temple_beyond_dark_portal_flag }
+			prestige = -100
+		}
+	}
+	option = {
+		trigger = { NOT = { character = ROOT } }
+		name = EVTOPTC_WCBDP_60
+	}
+}
+# Fate of the Portal
+province_event = {
+	id = WCBDP.109
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		if = {
+			limit = {
+				has_global_flag = horde_beyond_dark_portal_flag
+				e_horde = { has_holder = yes }
+			}
+			e_horde = { holder_scope = { narrative_event = { id = WCBDP.110 } } }
+			break = yes
+		}
+		if = {
+			limit = {
+				has_global_flag = alliance_beyond_dark_portal_flag
+				leader_of_alliance_trait = { always = yes }
+			}
+			leader_of_alliance_trait = { narrative_event = { id = WCBDP.110 } }
+			break = yes
+		}
+		if = {
+			limit = { has_global_flag = neutral_beyond_dark_portal_flag event_target:target_portal_owner = { is_alive = yes } }
+			event_target:target_portal_owner = {
+				narrative_event = { id = WCBDP.110 }
+			}
+			break = yes
+		}
+		# Clean up
+		73 = { province_event = { id = WCBDP.149 days = 60 } }
+	}
+}
+narrative_event = {
+	id = WCBDP.110
+	title = EVTTITLE_WCBDP_50
+	desc = {
+		trigger = { NOT = { has_global_flag = horde_beyond_dark_portal_flag } }
+		text = EVTDESC_WCBDP_110_alliance
+	}
+	desc = {
+		trigger = { has_global_flag = horde_beyond_dark_portal_flag }
+		text = EVTDESC_WCBDP_110_horde
+	}
+	picture = GFX_evt_dark_portal_01
+
+	is_triggered_only = yes
+
+	major = yes
+	major_trigger = {
+		trait = travelling
+		has_character_flag = on_journey_beyond_dark_portal_flag
+	}
+
+	# Close the Portal
+	option = {
+		trigger = {
+			character = ROOT
+			has_global_flag = strengthens_position_beyond_dark_portal_flag
+		}
+
+		name = {
+			trigger = { NOT = { has_global_flag = horde_beyond_dark_portal_flag } }
+			text = EVTOPTA_WCBDP_110_alliance
+		}
+		name = {
+			trigger = { has_global_flag = horde_beyond_dark_portal_flag }
+			text = EVTOPTA_WCBDP_110_horde
+		}
+
+		prestige = 500
+		set_global_flag = dark_portal_was_closed_bdp_flag
+		73 = { province_event = { id = WCBDP.149 days = 3 } }
+
+		ai_chance = {
+			factor = 75
+		}
+	}
+	# Destroy the Portal
+	option = {
+		trigger = {
+			character = ROOT
+			NOT = { has_global_flag = strengthens_position_beyond_dark_portal_flag }
+		}
+
+		name = {
+			trigger = { NOT = { has_global_flag = horde_beyond_dark_portal_flag } }
+			text = EVTOPTB_WCBDP_110_alliance
+		}
+		name = {
+			trigger = { has_global_flag = horde_beyond_dark_portal_flag }
+			text = EVTOPTB_WCBDP_110_horde
+		}
+
+		prestige = 250
+		set_global_flag = dark_portal_was_destroyed_bdp_flag
+		73 = { province_event = { id = WCBDP.149 days = 3 } }
+
+		ai_chance = {
+			factor = 75
+		}
+	}
+	option = {
+		trigger = {
+			always = no
+
+			character = ROOT
+			OR = {
+				has_global_flag = horde_beyond_dark_portal_flag
+				has_global_flag = strengthens_position_beyond_dark_portal_flag
+			}
+		}
+
+		name = {
+			trigger = { NOT = { has_global_flag = horde_beyond_dark_portal_flag } }
+			text = EVTOPTC_WCBDP_110_alliance
+		}
+		name = {
+			trigger = { has_global_flag = horde_beyond_dark_portal_flag }
+			text = EVTOPTC_WCBDP_110_horde
+		}
+
+		set_global_flag = dark_portal_was_left_bdp_flag
+		73 = { province_event = { id = WCBDP.149 days = 3 } }
+
+		ai_chance = {
+			factor = 25
+			modifier = {
+				factor = 0
+				OR = {
+					has_global_flag = alliance_beyond_dark_portal_flag
+					has_global_flag = neutral_beyond_dark_portal_flag
+				}
+			}
+		}
+	}
+	option = {
+		trigger = { NOT = { character = ROOT } }
+		name = EVTOPTC_WCBDP_60
+	}
+}
+letter_event = {
+	id = WCBDP.140
+	desc = EVTDESC_WCBDP_140
+
+	is_triggered_only = yes
+
+	option = {
+		name = OK
+		prestige = 100
+		add_trait = travelling
+	}
+}
+
+province_event = {
+	id = WCBDP.149
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		holder_scope = {
+			top_liege = {
+				narrative_event = { id = WCBDP.150 }
+			}
+		}
+	}
+}
+# The Dark Portal is closed
+narrative_event = {
+	id = WCBDP.150
+	title = EVTTITLE_WCBDP_150
+	desc = {
+		trigger = { has_global_flag = horde_beyond_dark_portal_flag }
+		text = EVTDESC_WCBDP_150_case_01
+	}
+	desc = {
+		trigger = { NOT = { has_global_flag = horde_beyond_dark_portal_flag } }
+		text = EVTDESC_WCBDP_150_case_02
+	}
+	picture = GFX_evt_dark_portal_01
+
+	is_triggered_only = yes
+	major = yes
+
+	immediate = {
+		any_character = {
+			limit = { has_character_flag = on_journey_beyond_dark_portal_flag }
+			remove_trait = travelling
+			clr_character_flag = on_journey_beyond_dark_portal_flag
+		}
+		set_global_flag = draenor_is_destroyed_flag
+		73 = {
+			if = {
+				limit = { NOT = { has_global_flag = dark_portal_was_left_bdp_flag } }
+				set_global_flag = dark_portal_was_destroyed_bdp_flag
+				if = {
+					limit = { has_province_modifier = dark_portal_is_open_2 }
+					remove_province_modifier = dark_portal_is_open_2
+				}
+				if = {
+					limit = { has_province_modifier = dark_portal_is_open_1 }
+					remove_province_modifier = dark_portal_is_open_1
+				}
+				add_province_modifier = { name = dark_portal_is_closed duration = -1 }
+			}
+			province_event = { id = WCUND.99 days = 3 }
+		}
+		# clr_global_flag = horde_beyond_dark_portal_flag
+		# clr_global_flag = alliance_beyond_dark_portal_flag
+		# clr_global_flag = neutral_beyond_dark_portal_flag
+		# clr_global_flag = truce_with_laughing_skulls_beyond_dark_portal_flag
+		# clr_global_flag = alliance_with_laughing_skulls_beyond_dark_portal_flag
+		# clr_global_flag = deathwing_lost_beyond_dark_portal_flag
+		# clr_global_flag = deathwing_barely_lost_beyond_dark_portal_flag
+		# clr_global_flag = deathwing_won_beyond_dark_portal_flag
+		# clr_global_flag = dark_portal_was_closed_bdp_flag
+		# clr_global_flag = dark_portal_was_destroyed_bdp_flag
+	}
+
+	option = {
+		name = EVTOPTA_WCBDP_150
+		
+		if = {
+			limit = { has_character_modifier = sent_large_army_beyond_dark_portal }
+			remove_character_modifier = sent_large_army_beyond_dark_portal
+		}
+		if = {
+			limit = { has_character_modifier = sent_army_beyond_dark_portal }
+			remove_character_modifier = sent_army_beyond_dark_portal
+		}
+	}
+}

@@ -1,0 +1,466 @@
+namespace=WCWAR
+
+character_event = {
+	id = WCWAR.250
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		set_character_flag = total_invasion_exception_flag
+		FROM = {
+			war = {
+				target = ROOT
+				casus_belli = total_invasion
+				thirdparty_title = ROOT
+			}
+		}
+		clr_character_flag = total_invasion_exception_flag
+	}
+}
+
+# # Handled by event HL.130
+# # Spawns raider
+# character_event = {
+	# id = WCWAR.460
+
+	# hide_window = yes
+	# is_triggered_only = yes
+
+	# trigger = {
+		# has_game_started = yes
+		# is_alive = yes
+		# is_dying = no
+		# any_demesne_title = { is_special_adventure_type_title_trigger = yes }
+		# NOT = { any_demesne_title = { adventurer = yes } }
+		# NOT = { any_vassal = { is_landed = yes } }
+		# prisoner = no
+		# is_incapable = no
+	# }
+
+	# immediate = {
+		# log = "WCWAR.460 fired for [This.GetBestName]"
+		# location = {
+			# log = "[Root.GetBestName] is located in [This.GetName]"
+			# log = "[Root.GetBestName]'s capital is in [This.GetName]"
+			# save_event_target_as = last_province
+		# }
+
+		# liege = {
+			# ROOT = {
+				# any_vassal = {
+					# set_defacto_liege = PREVPREV
+				# }
+			# }
+		# }
+
+		# if = {
+			# limit = { independent = yes }
+			# any_vassal = { set_defacto_liege = THIS }
+		# }
+		# set_defacto_liege = THIS
+
+		# any_demesne_title = {
+			# limit = { is_special_adventure_type_title_trigger = yes }
+			# set_title_landless = { title = THIS status = yes }
+			# set_title_adventurer = { title = THIS status = yes }
+			# set_defacto_liege = THIS
+		# }
+
+		# set_character_flag = raiding_adventurer
+		# change_variable = { which = global_raiding_adventurer_spawn_by_courtier_MTTH value = 1 }
+
+		# any_army = {
+			# set_can_toggle_looting = yes
+			# set_looting = yes
+			# set_can_toggle_looting = no
+		# }
+
+		# if = {
+			# limit = { NOT = { prestige = 750 } }
+			# prestige = 750
+		# }
+		# if = {
+			# limit = { NOT = { wealth = 500 } }
+			# wealth = 500
+		# }
+
+		# character_event = { id = WCWAR.471 }
+		# character_event = { id = HL.110 days = 1095 } # Ping to see if he's ready to settle, repeating every 3 years.
+
+		# if = {
+			# limit = { has_landed_title = k_orc_blackrock }
+			# character_event = { id = WCWAR.500 days = 10 }
+		# }
+	# }
+# }
+# Create new troops
+character_event = {
+	id = WCWAR.471
+
+	hide_window = yes
+	is_triggered_only = yes
+
+	immediate = {
+		log = "WCWAR.471 fired for [Root.GetBestName]"
+		if = {
+			limit = {
+				NOT = { prestige = 375 }
+				NOT = { wealth = 150 }
+			}
+			log = "WCWAR.471 failed initial trigger for [Root.GetBestName]"
+			break = yes
+		}
+		location = { log = "WCWAR.471 ROOT is [Root.GetBestName], ROOT's location is [This.GetName] last_province is [last_province.GetName]" }
+		if = {
+			limit = {
+				prestige = 375
+			}
+			spawn_unit = {
+				owner = ROOT
+				province = event_target:last_province
+				home = event_target:last_province
+				troops = {
+					light_infantry = { 50 50 }
+					heavy_infantry = { 125 125 }
+					light_cavalry = { 20 20 }
+					knights = { 5 5 }
+					archers = { 50 50 }
+				}
+				attrition = 1.0
+				is_looter = yes
+				can_toggle_looting = no
+				reinforces = yes
+				merge = yes
+				maintenance = no
+			}
+			prestige = -125
+		}
+		if = {
+			limit = {
+				wealth = 150
+			}
+			spawn_unit = {
+				owner = ROOT
+				province = event_target:last_province
+				home = event_target:last_province
+				troops = {
+					light_infantry = { 50 50 }
+					heavy_infantry = { 125 125 }
+					light_cavalry = { 20 20 }
+					knights = { 5 5 }
+					archers = { 50 50 }
+				}
+				attrition = 1.0
+				is_looter = yes
+				can_toggle_looting = no
+				reinforces = yes
+				merge = yes
+				maintenance = no
+			}
+			wealth = -50
+		}
+		repeat_event = { id = WCWAR.471 }
+	}
+}
+
+# Returns the Blackrock tribe back to the Searing Gorge after a defeat
+character_event = {
+	id = WCWAR.500
+	desc = "EVTDESC_WCWAR_500"
+	picture = "GFX_evt_grom_01"
+	border = "GFX_event_normal_frame_war"
+
+	is_triggered_only = yes
+
+	trigger = {
+		is_landed = no
+		independent = yes
+		war = no
+
+		NOT = { has_global_flag = WCWAR_500_flag }
+
+		has_landed_title = k_orc_blackrock
+	}
+
+	immediate = {
+		set_global_flag = WCWAR_500_flag
+		c_blackrock_spire = { add_claim = ROOT }
+		d_burning_steppes = { any_direct_de_jure_vassal_title = { add_claim = ROOT } }
+	}
+
+	option = {
+		name = LOKTAR_OGAR
+		c_blackrock_spire = {
+			holder_scope = {
+				top_liege = {
+					ROOT = {
+						if = {
+							limit = {
+								total_claims = {
+									who = PREV
+									strong = yes
+									value = 2
+								}
+							}
+							unsafe_war = {
+								target = PREV
+								casus_belli = claim_all
+								thirdparty_title = PREV
+							}
+						}
+						if = {
+							limit = {
+								NOT = {
+									total_claims = {
+										who = PREV
+										strong = yes
+										value = 2
+									}
+								}
+							}
+							unsafe_war = {
+								target = PREV
+								casus_belli = claim
+								thirdparty_title = PREVPREV
+							}
+						}
+					}
+				}
+			}
+		}
+		spawn_unit = {
+			owner = ROOT
+			province = 128	# Dustwind
+			home = 128		# Dustwind
+			troops = {
+				archers = { 200 200 }
+				light_infantry = { 300 300 }
+				heavy_infantry = { 400 400 }
+				light_cavalry = { 50 50 }
+				knights = { 50 50 }
+			}
+			attrition = 0
+			maintenance = no
+			earmark = horde_forces
+		}
+	}
+	option = {
+		name = EVTOPTB_WCWAR_500
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+
+# on_war_started
+# Invites neighbors to join war if character was attacked by evil guy
+character_event = {
+	id = WCWAR.580
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	only_playable = yes
+
+	trigger = {
+		ROOT = {
+			can_rule_peacefully_trigger = yes
+			evil_public_religion_trigger = no
+		}
+		FROM = {
+			OR = {
+				can_rule_peacefully_trigger = no
+				evil_public_religion_trigger = yes
+			}
+		}
+	}
+
+	immediate = {
+		any_neighbor_independent_ruler = {						# Invites your independent neighbors...
+			limit = {
+				NOT = { character = ROOT }
+				NOT = { character = FROM }
+				NOT = { has_character_flag = invite_against_evil_flag }
+			}
+			if = {
+				limit = {
+					NOT = { has_character_flag = invite_against_evil_flag }
+
+					can_join_war_against_evil_guy_trigger = yes
+					NOT = { is_allied_with = ROOT }
+					opinion = { who = ROOT value = 0 }
+				}
+				set_character_flag = invite_against_evil_flag
+				character_event = { id = WCWAR.600 days = 7 random = 90 }
+			}
+			any_realm_lord = {									# ...and their vassals...
+				if = {
+					limit = {
+						NOT = { has_character_flag = invite_against_evil_flag }
+
+						can_join_war_against_evil_guy_trigger = yes
+						NOT = { is_allied_with = ROOT }
+						opinion = { who = ROOT value = 0 }
+					}
+					set_character_flag = invite_against_evil_flag
+					character_event = { id = WCWAR.600 days = 7 random = 90 }
+				}
+			}
+			if = {
+				limit = {
+					OR = {
+						FROM = { has_invader_title_trigger = yes }
+						FROM = {
+							independent = yes
+							realm_size = 50
+						}
+					}
+				}
+				any_neighbor_independent_ruler = {					# ...and neighbors of your neighbors if evil guy is VERY EVIL or STRONG...
+					limit = {
+						NOT = { character = ROOT }
+						NOT = { character = FROM }
+						NOT = { has_character_flag = invite_against_evil_flag }
+					}
+					if = {
+						limit = {
+							NOT = { has_character_flag = invite_against_evil_flag }
+
+							can_join_war_against_evil_guy_trigger = yes
+							NOT = { is_allied_with = ROOT }
+							opinion = { who = ROOT value = 0 }
+						}
+						set_character_flag = invite_against_evil_flag
+						character_event = { id = WCWAR.600 days = 7 random = 90 }
+					}
+					any_realm_lord = {							# ...and their vassals
+						if = {
+							limit = {
+								NOT = { has_character_flag = invite_against_evil_flag }
+
+								can_join_war_against_evil_guy_trigger = yes
+								NOT = { is_allied_with = ROOT }
+								opinion = { who = ROOT value = 0 }
+							}
+							set_character_flag = invite_against_evil_flag
+							character_event = { id = WCWAR.600 days = 7 random = 90 }
+						}
+					}
+				}
+			}
+		}
+	}
+}
+# Join war against evil guy?
+# FROM is defender
+# FROMFROM is evil guy (attacker)
+character_event = {
+	id = WCWAR.600
+	desc = EVTDESC_WCWAR_600
+	picture = GFX_evt_battle
+	border = GFX_event_normal_frame_war
+
+	is_triggered_only = yes
+
+	only_playable = yes
+	war = no
+
+	trigger = {
+		can_join_war_against_evil_guy_trigger = yes
+		FROM = {
+			is_playable = yes
+
+			war_with = FROMFROM
+		}
+	}
+
+	# Join wars
+	option = {
+		name = EVTOPTA_WCWAR_600
+
+		join_defender_wars = FROM
+		prestige = 100
+		piety = 50
+		reverse_opinion = { modifier = opinion_very_grateful who = FROM years = 5 }
+
+		ai_chance = {
+			factor = 20
+			modifier = {
+				factor = 1.67
+				trait = charitable
+			}
+			modifier = {
+				factor = 1.67
+				trait = kind
+			}
+			modifier = {
+				factor = 1.67
+				trait = brave
+			}
+			modifier = {
+				factor = 1.67
+				trait = honest
+			}
+			modifier = {
+				factor = 1.67
+				trait = just
+			}
+			modifier = {
+				factor = 1.67
+				trait = zealous
+			}
+			modifier = {
+				factor = 1.67
+				opinion = { who = FROM value = 25 }
+			}
+			modifier = {
+				factor = 1.67
+				opinion = { who = FROM value = 50 }
+			}
+			modifier = {
+				factor = 1.67
+				FROMFROM = { has_invader_title_trigger = yes }
+			}
+		}
+	}
+	# No
+	option = {
+		name = EVTOPTB_WCWAR_600
+
+		prestige = -50
+		piety = -25
+
+		ai_chance = {
+			factor = 80
+			modifier = {
+				factor = 1.49
+				trait = greedy
+			}
+			modifier = {
+				factor = 1.49
+				trait = cruel
+			}
+			modifier = {
+				factor = 1.49
+				trait = craven
+			}
+			modifier = {
+				factor = 1.49
+				trait = deceitful
+			}
+			modifier = {
+				factor = 1.49
+				trait = arbitrary
+			}
+			modifier = {
+				factor = 1.49
+				trait = cynical
+			}
+		}
+	}
+
+	after = {
+		clr_character_flag = invite_against_evil_flag
+	}
+}

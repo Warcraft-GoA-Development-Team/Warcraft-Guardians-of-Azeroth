@@ -1,0 +1,180 @@
+# Supported types:
+# character, spouse, rivals, friends, liege_titles, vassal_titles, realm_titles, realm_characters, realm_characters_plus, independent_rulers
+
+###############
+# AMBITIONS
+###############
+
+# Strengthen Religion
+obj_strengthen_religion = {
+	type = character
+	
+	creation_effect = {
+		change_variable = { which = strengthen_religion value = 0 }
+		random_list = {
+			150 = { # No Opportunity
+				set_character_flag = had_ambition_opportunity_chance
+			}
+			50 = { # Liberate Opportunity
+				character_event = { id = JD.2100 days = 14 random = 14 }
+				set_character_flag = had_ambition_opportunity_chance
+				modifier = {
+					factor = 0
+					NOT = {
+						is_nomadic = no
+						mercenary = no
+						NOT = { pacifist = yes }
+						top_liege = {
+							religion = ROOT
+						}
+						any_realm_province = { 											# You need a province...
+							any_neighbor_province = { 									# ...that has a neighbor province...
+								holder_scope = { 										# ...whos holder is...
+									NOT = { same_realm = ROOT } 						# ...not in your realm...
+									top_liege = { 										# ...and has a Top Liege...
+										NOT = { religion = ROOT } 						# ...that is NOT of your religion...
+										any_realm_province = { 							# ...that has any province in their realm...
+											religion = ROOT 							# ...that is of your religion...
+											kingdom = { 								# ...and a De Jure part of a Kingdom, created or not...
+												any_de_jure_vassal_title = { 			# ...who contains any title...
+													tier = COUNT 						# ...of Count tier...
+													holder_scope = { same_realm = PREVPREVPREVPREV } # ...that is in the same realm as the Top Liege of the neighbor Province's holder...
+													location = { 						# ...and where the associated province...
+														any_neighbor_province = { 		# ...has a neighboring province...
+															holder_scope = { 			# ...whos holder...
+																top_liege = { 			# ...has a Top Liege...
+																	character = ROOT 	# ...that is you!
+																}
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+				modifier = {
+					trait = zealous
+					factor = 5
+				}
+				modifier = {
+					ai = no
+					factor = 3
+				}
+				modifier = {
+					has_focus = focus_theology
+					factor = 2
+				}
+				modifier = {
+					trait = cynical
+					factor = 0
+				}
+				modifier = {
+					has_character_flag = had_liberate_opportunity
+					factor = 0
+				}
+				modifier = {
+					has_character_flag = had_ambition_opportunity_chance
+					factor = 0
+				}
+			}
+		}
+	}
+	
+	potential = {
+		# Warcraft
+		is_untouchable_trigger = no
+		NOT = { religion_group = secular_group }
+
+		has_dlc = "Jade Dragon"
+		NOT = {
+			religion_authority = 0.3
+		}
+		is_playable = yes
+		is_landed = yes
+		higher_tier_than = BARON
+		is_nomadic = no
+		liege = { is_nomadic = no }
+		NOT = {
+			has_character_flag = strengthened_religion
+		}
+	}
+	
+	allow = {
+		independent = yes
+		is_adult = yes
+		NOR = {
+			is_incapable = yes
+			has_secret_religion = yes
+			is_devil_worshiper_trigger = yes
+			is_inaccessible_trigger = yes
+		}
+	}
+	
+	chance = {
+		factor = 50
+
+		modifier = {
+			factor = 0.1
+			NOT = { tier = king }
+			NOT = { tier = emperor }
+		}
+		modifier = {
+			factor = 10.0
+			OR = {
+				trait = detached_priest
+				trait = martial_cleric
+				trait = scholarly_theologian
+				trait = mastermind_theologian
+			}
+		}
+		modifier = {
+			factor = 10.0
+			trait = zealous
+		}
+		modifier = {
+			factor = 0.01
+			trait = cynical
+		}
+	}
+	
+	success = {
+		custom_tooltip = {
+			text = tooltip_obj_strengthen_religion
+			hidden_tooltip = {
+				check_variable = { which = strengthen_religion value = 3 }
+			}
+		}
+	}
+	
+	abort = {
+		OR = {
+			# Warcraft
+			is_untouchable_trigger = yes
+			religion_group = secular_group
+
+			religion_authority = 0.50
+		}
+	}
+	
+	abort_effect = {
+		
+	}
+	
+	effect = {
+		religion_authority = {
+			modifier = strengthened_religion
+			years = 50
+		}
+		piety = 100
+		add_character_modifier = {
+			modifier = strengthen_religion_ambition
+			years = 30
+		}
+		set_character_flag = strengthened_religion
+	}
+}

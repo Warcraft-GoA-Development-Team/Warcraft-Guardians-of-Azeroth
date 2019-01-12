@@ -1,0 +1,623 @@
+namespace = WCPLF
+
+# Cleanup: Adds alliances between members of the same faction
+# Necessary if someone joins, changes the faction
+character_event = {
+	id = WCPLF.1
+
+	is_triggered_only = yes
+	hide_window = yes
+	
+	only_playable = yes
+	only_independent = yes
+
+	trigger = {
+		is_tributary = { type = political_faction suzerain = suzerain }
+		suzerain = {
+			any_tributary = {
+				NOT = { character = ROOT }
+				is_tributary = { type = political_faction suzerain = suzerain }
+				
+				NOT = { is_allied_with = ROOT }
+			}
+		}
+	}
+
+	immediate = {
+		log = "WCPLF.1 fired for [Root.GetBestName]"
+		
+		add_alliances_with_faction_effect = yes
+	}
+}
+# Cleanup: Breaks alliances between members of the other factions
+# Necessary if someone joins, changes the faction
+character_event = {
+	id = WCPLF.2
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	trigger = {
+		OR = {
+			AND = {
+				is_member_of_horde_faction_trigger = yes
+				any_independent_ruler = {
+					is_member_of_alliance_faction_trigger = yes
+					NOT = { character = ROOT }
+					is_allied_with = ROOT
+				}
+			}
+			AND = {
+				is_member_of_alliance_faction_trigger = yes
+				any_independent_ruler = {
+					is_member_of_horde_faction_trigger = yes
+					NOT = { character = ROOT }
+					is_allied_with = ROOT
+				}
+			}
+		}
+	}
+
+	immediate = {
+		log = "WCPLF.2 fired for [Root.GetBestName]"
+
+		if = {
+			limit = { is_member_of_horde_faction_trigger = yes }
+			break_alliances_with_alliance_faction_effect = yes
+		}
+		if = {
+			limit = { is_member_of_alliance_faction_trigger = yes }
+			break_alliances_with_horde_faction_effect = yes
+		}
+	}
+}
+
+### Cleanup ###
+# on_new_holder, on_new_holder_inheritance, on_new_holder_usurpation
+# ROOT inherits faction trait/modifier OR clears them if something is wrong
+character_event = {
+	id = WCPLF.45
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	trigger = {
+		FROMFROM = { is_in_political_faction_trigger = yes }
+	}
+
+	immediate = {
+		log = "WCPLF.45 fired for [Root.GetBestName]"
+		# ROOT inherits faction trait/modifier
+		if = {
+			limit = {
+				is_in_political_faction_trigger = no
+				FROMFROM = { is_in_political_faction_trigger = yes }
+				higher_tier_than = FROMFROM
+				primary_title = { title = FROM }
+			}
+			FROMFROM = {
+				if = {
+					limit = {
+						AND = {
+							is_tributary = { type = political_faction suzerain = suzerain }
+							suzerain = { trait = leader_of_horde_trait }
+						}
+					}
+					ROOT = { join_horde_faction_effect = yes }
+					leave_horde_faction_effect = yes
+				}
+				else_if = {
+					limit = {
+						AND = {
+							is_tributary = { type = political_faction suzerain = suzerain }
+							suzerain = { trait = leader_of_alliance_trait }
+						}
+					}
+					ROOT = { join_alliance_faction_effect = yes }
+					leave_alliance_faction_effect = yes
+				}
+				trigger_switch = {
+					on_trigger = trait
+					leader_of_horde_trait = {
+						ROOT = { become_leader_of_horde_faction_effect = yes }
+						remove_trait = leader_of_horde_trait
+						break_alliances_with_horde_faction_effect = yes
+					}
+					leader_of_alliance_trait = {
+						ROOT = { become_leader_of_alliance_faction_effect = yes }
+						remove_trait = leader_of_alliance_trait
+						break_alliances_with_alliance_faction_effect = yes
+					}
+				}
+			}
+		}
+		else = {
+			FROMFROM = {
+				if = {
+					limit = { is_in_political_faction_trigger = yes }
+					character_event = { id = WCPLF.52 }
+				}
+			}
+		}
+	}
+}
+
+# on_character_convert_religion
+# Checks faction triggers after religion conversion
+character_event = {
+	id = WCPLF.50
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	only_playable = yes
+	
+	trigger = {
+		is_alive = yes
+		is_dying = no
+		is_in_political_faction_trigger = yes
+	}
+	
+	immediate = {
+		character_event = { id = WCPLF.52 }	# Clears faction trait/modifier if something is wrong
+	}
+}
+# on_war_ended_victory, on_war_ended_whitepeace, on_war_ended_defeat, on_war_ended_invalid
+# Checks faction triggers 1 day after war
+character_event = {
+	id = WCPLF.51
+
+	is_triggered_only = yes
+	hide_window = yes
+	
+	only_playable = yes
+
+	trigger = {
+		OR = {
+			ROOT = { is_in_political_faction_trigger = yes }
+			FROM = { is_in_political_faction_trigger = yes }
+		}
+	}
+
+	immediate = {
+		log = "WCPLF.51 fired for [Root.GetBestName]"
+		
+		ROOT = {
+			if = {
+				limit = {
+					is_alive = yes
+					is_dying = no
+					is_in_political_faction_trigger = yes
+				}
+				character_event = { id = WCPLF.52 days = 1 }	# Clears faction trait/modifier if something is wrong
+			}
+		}
+		FROM = {
+			if = {
+				limit = {
+					is_alive = yes
+					is_dying = no
+					is_in_political_faction_trigger = yes
+				}
+				character_event = { id = WCPLF.52 days = 1 }	# Clears faction trait/modifier if something is wrong
+			}
+		}
+	}
+}
+# Clears faction trait/modifier if something is wrong
+character_event = {
+	id = WCPLF.52
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	trigger = {
+		OR = {
+			AND = {
+				is_member_of_horde_faction_trigger = yes
+				can_be_in_horde_faction_trigger = no
+			}
+			AND = {
+				is_member_of_alliance_faction_trigger = yes
+				can_be_in_alliance_faction_trigger = no
+			}
+		}
+	}
+
+	immediate = {
+		log = "WCPLF.52 fired for [Root.GetBestName]"
+
+		### THE HORDE ###
+		if = {
+			limit = { is_member_of_horde_faction_trigger = yes }
+			leave_horde_faction_effect = yes
+		}
+
+		### THE ALLIANCE ###
+		if = {
+			limit = { is_member_of_alliance_faction_trigger = yes }
+			leave_alliance_faction_effect = yes
+		}
+	}
+}
+# One of the members takes a faction under control
+narrative_event = {
+	id = WCPLF.60
+	title = EVTTITLE_WCPLF_60
+	desc = EVTDESC_WCPLF_60
+	picture = GFX_evt_burning_banners
+	border = GFX_event_narrative_frame_diplomacy
+
+	is_triggered_only = yes
+	major = yes
+
+	option = {
+		name = OK
+	}
+}
+
+# Foundation of the Horde
+narrative_event = {
+	id = WCPLF.100
+	title = EVTTITLE_WCPLF_100
+	desc = {
+		trigger = { NOT = { had_character_flag = { flag = horde_faction_was_created_flag days = 1 } } }
+		text = EVTDESC_WCPLF_100_foundation
+	}
+	desc = {
+		trigger = { had_character_flag = { flag = horde_faction_was_created_flag days = 1 } }
+		text = EVTDESC_WCPLF_100_revival
+	}
+	picture = GFX_evt_warcraft_3_orc_shield
+	border = GFX_event_narrative_frame_war
+	
+	is_triggered_only = yes
+	
+	major = yes
+	
+	immediate = {
+		if = {
+			limit = { NOT = { has_global_flag = horde_faction_was_created_flag } }
+			set_global_flag = horde_faction_was_created_flag
+		}
+		become_leader_of_horde_faction_effect = yes
+	}
+	
+	option = {
+		name = OK
+	}
+}
+
+# Destruction of the Horde
+narrative_event = {
+	id = WCPLF.105
+	title = EVTTITLE_WCPLF_100
+	desc = EVTDESC_WCPLF_105
+	picture = GFX_evt_warcraft_3_orc_shield
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+	major = yes
+
+	immediate = {
+		remove_trait = leader_of_horde_trait
+		any_tributary = {
+			limit = {
+				NOT = { character = ROOT }
+				is_tributary = { type = political_faction suzerain = suzerain }
+			}
+			character_event = { id = WCPLF.52 }
+		}
+		activate_title = { title = e_horde status = no }
+		e_horde = { destroy_landed_title = THIS }
+	}
+
+	option = {
+		name = OK
+	}
+}
+
+# FROM asks you to accept FROM into your faction
+letter_event = {
+	id = WCPLF.110
+	desc = {
+		trigger = { FROM = { has_character_flag = being_joined_horde_flag } }
+		text = EVTDESC_WCPLF_110
+	}
+	desc = {
+		trigger = { FROM = { has_character_flag = being_joined_alliance_flag } }
+		text = EVTDESC_WCPLF_210
+	}
+
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCPLF_110
+		custom_tooltip = { text = EVTOPTA_WCPLF_110_tooltip }
+		FROM = {
+			opinion = { modifier = opinion_glad who = ROOT years = 10 }
+			letter_event = { id = WCPLF.111 }
+		}
+	}
+	option = {
+		name = EVTOPTB_WCPLF_110
+		FROM = {
+			opinion = { modifier = opinion_very_disappointed who = ROOT years = 10 }
+			letter_event = { id = WCPLF.112 }
+		}
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+
+# Faction's leader accepts you into the faction
+letter_event = {
+	id = WCPLF.111
+	desc = EVTDESC_WCPLF_111
+
+	is_triggered_only = yes
+
+	immediate = {
+		if = {
+			limit = { has_character_flag = being_joined_horde_flag }
+			join_horde_faction_effect = yes
+		}
+		if = {
+			limit = { has_character_flag = being_joined_alliance_flag }
+			join_alliance_faction_effect = yes
+		}
+	}
+	option = {
+		name = EXCELLENT
+	}
+}
+# Faction's leader refuses
+letter_event = {
+	id = WCPLF.112
+	desc = EVTDESC_WCPLF_112
+
+	is_triggered_only = yes
+
+	option = {
+		name = ALAS
+		
+		hidden_effect = {
+			clr_character_flag = being_joined_horde_flag
+			clr_character_flag = being_joined_alliance_flag
+		}
+	}
+}
+# Faction's leader asks ROOT to join
+letter_event = {
+	id = WCPLF.120
+	desc = {
+		trigger = { has_character_flag = being_joined_horde_flag }
+		text = EVTDESC_WCPLF_120
+	}
+	desc = {
+		trigger = { has_character_flag = being_joined_alliance_flag }
+		text = EVTDESC_WCPLF_220
+	}
+
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCPLF_120
+
+		if = {
+			limit = { has_character_flag = being_joined_horde_flag }
+			join_horde_faction_effect = yes
+		}
+		if = {
+			limit = { has_character_flag = being_joined_alliance_flag }
+			join_alliance_faction_effect = yes
+		}
+		FROMFROM = { opinion = { modifier = opinion_glad who = ROOT years = 10 } }
+		hidden_effect = { FROMFROM = { letter_event = { id = WCPLF.121 } } }
+
+		ai_chance = {
+			factor = 25
+			modifier = {
+				factor = 2
+				opinion = { who = FROMFROM value = 25 }
+			}
+			modifier = {
+				factor = 2
+				opinion = { who = FROMFROM value = 50 }
+			}
+			modifier = {
+				factor = 2
+				opinion = { who = FROMFROM value = 75 }
+			}
+		}
+	}
+	option = {
+		name = EVTOPTB_WCPLF_120
+
+		FROMFROM = { opinion = { modifier = opinion_disappointed who = ROOT years = 5 } }
+		hidden_effect = { FROMFROM = { letter_event = { id = WCPLF.122 } } }
+
+		ai_chance = {
+			factor = 75
+		}
+	}
+}
+# FROM joins your faction
+letter_event = {
+	id = WCPLF.121
+	desc = {
+		trigger = {
+			FROM = {
+				OR = {
+					has_character_flag = being_joined_horde_flag
+					is_member_of_horde_faction_trigger = yes
+				}
+			}
+		}
+		text = EVTDESC_WCPLF_121
+	}
+	desc = {
+		trigger = {
+			FROM = {
+				OR = {
+					has_character_flag = being_joined_alliance_flag
+					is_member_of_alliance_faction_trigger = yes
+				}
+			}
+		}
+		text = EVTDESC_WCPLF_221
+	}
+
+	is_triggered_only = yes
+
+	option = {
+		name = EXCELLENT
+	}
+}
+# FROM refuses to join your faction
+letter_event = {
+	id = WCPLF.122
+	desc = {
+		trigger = { FROM = { has_character_flag = being_joined_horde_flag } }
+		text = EVTDESC_WCPLF_122
+	}
+	desc = {
+		trigger = { FROM = { has_character_flag = being_joined_alliance_flag } }
+		text = EVTDESC_WCPLF_222
+	}
+
+	is_triggered_only = yes
+
+	option = {
+		name = ALAS
+		
+		hidden_effect = {
+			FROM = {
+				clr_character_flag = being_joined_horde_flag
+				clr_character_flag = being_joined_alliance_flag
+			}
+		}
+	}
+}
+
+# FROM leaves your factions
+letter_event = {
+	id = WCPLF.130
+	desc = {
+		trigger = { trait = leader_of_horde_trait }
+		text = EVTDESC_WCPLF_130
+	}
+	desc = {
+		trigger = { trait = leader_of_alliance_trait }
+		text = EVTDESC_WCPLF_230
+	}
+
+	is_triggered_only = yes
+
+	immediate = {
+		log = "[From.GetBestName] left faction"
+	}
+
+	option = {
+		name = ALAS
+	}
+}
+
+# Foundation of the Alliance
+narrative_event = {
+	id = WCPLF.200
+	title = EVTTITLE_WCPLF_200
+	desc = {
+		trigger = { NOT = { had_character_flag = { flag = alliance_faction_was_created_flag days = 1 } } }
+		text = EVTDESC_WCPLF_200_foundation
+	}
+	desc = {
+		trigger = { had_character_flag = { flag = alliance_faction_was_created_flag days = 1 } }
+		text = EVTDESC_WCPLF_200_revival
+	}
+	picture = GFX_evt_warcraft_3_human_shield
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+	major = yes
+
+	immediate = {
+		if = {
+			limit = { NOT = { has_global_flag = alliance_faction_was_created_flag } }
+			set_global_flag = alliance_faction_was_created_flag
+		}
+		become_leader_of_alliance_faction_effect = yes
+	}
+	option = {
+		name = OK
+	}
+}
+# Destruction of the Alliance
+narrative_event = {
+	id = WCPLF.205
+	title = EVTTITLE_WCPLF_200
+	desc = EVTDESC_WCPLF_205
+	picture = GFX_evt_warcraft_3_human_shield
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+	major = yes
+
+	immediate = {
+		remove_trait = leader_of_alliance_trait
+		any_tributary = {
+			limit = {
+				NOT = { character = ROOT }
+				is_tributary = { type = political_faction suzerain = suzerain }
+			}
+			character_event = { id = WCPLF.52 }
+		}
+		activate_title = { title = e_alliance status = no }
+		e_alliance = { destroy_landed_title = THIS }
+	}
+
+	option = {
+		name = OK
+	}
+}
+
+# The faction was centralized
+narrative_event = {
+	id = WCPLF.280
+	title = EVTTITLE_WCPLF_280
+	desc = {
+		trigger = { has_landed_title = e_horde }
+		text = EVTDESC_WCPLF_280
+		picture = GFX_evt_warcraft_3_orc_shield
+	}
+	desc = {
+		trigger = { has_landed_title = e_alliance }
+		text = EVTDESC_WCPLF_280
+		picture = GFX_evt_warcraft_3_human_shield
+	}
+	picture = GFX_evt_warcraft_3_human_shield
+	border = GFX_event_narrative_frame_diplomacy
+
+	is_triggered_only = yes
+	major = yes
+
+	option = {
+		name = {
+			trigger = {
+				OR = {
+					character = ROOT
+					opinion = { who = ROOT value = 10 }
+				}
+			}
+			text = EXCELLENT
+		}
+		name = {
+			trigger = {
+				NOT = { character = ROOT }
+				NOT = { opinion = { who = ROOT value = 10 } }
+			}
+			text = ALAS
+		}
+	}
+}

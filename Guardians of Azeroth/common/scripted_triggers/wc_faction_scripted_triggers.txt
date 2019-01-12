@@ -1,0 +1,165 @@
+has_faction_title_trigger = {
+	OR = {
+		has_landed_title = e_horde
+		has_landed_title = e_alliance
+	}
+}
+can_lead_faction_trigger = {
+	can_be_in_faction_trigger = yes
+	
+	is_nomadic = no
+	is_republic = no
+	is_theocracy = no
+}
+can_be_in_faction_trigger = {
+	is_untouchable_trigger = no
+	can_rule_peacefully_trigger = yes
+
+	is_playable = yes
+	controls_religion = no
+	holy_order = no
+	mercenary = no
+	
+	independent = yes
+	OR = {
+		is_tributary = no
+		is_tributary = { type = political_faction suzerain = suzerain }
+	}
+	is_nomadic = no
+	NOT = { government = dragon_government }
+	higher_real_tier_than = COUNT
+}
+can_be_in_horde_faction_trigger = {
+	can_be_in_faction_trigger = yes
+
+	OR = {
+		is_member_of_horde_faction_trigger = yes
+		is_in_political_faction_trigger = no
+	}
+	NOT = { has_landed_title = e_alliance }
+	OR = {
+		trait = leader_of_horde_trait
+		leader_of_horde_trait = { always = yes }
+	}
+	OR = {
+		NOT = { e_horde = { has_holder = yes } }
+		e_horde = { holder_scope = { trait = leader_of_horde_trait } }
+	}
+}
+can_be_in_alliance_faction_trigger = {
+	can_be_in_faction_trigger = yes
+
+	OR = {
+		is_member_of_alliance_faction_trigger = yes
+		is_in_political_faction_trigger = no
+	}
+	NOT = { has_landed_title = e_horde }
+	OR = {
+		trait = leader_of_alliance_trait
+		leader_of_alliance_trait = { always = yes }
+	}
+	OR = {
+		NOT = { e_alliance = { has_holder = yes } }
+		e_alliance = { holder_scope = { trait = leader_of_alliance_trait } }
+	}
+}
+is_member_of_horde_faction_trigger = {
+	OR = {
+		trait = leader_of_horde_trait
+		AND = {
+			is_tributary = { type = political_faction suzerain = suzerain }
+			suzerain = { trait = leader_of_horde_trait }
+		}
+	}
+}
+is_member_of_alliance_faction_trigger = {
+	OR = {
+		trait = leader_of_alliance_trait
+		AND = {
+			is_tributary = { type = political_faction suzerain = suzerain }
+			suzerain = { trait = leader_of_alliance_trait }
+		}
+	}
+}
+has_good_opinion_with_prev_faction_leader_trigger = {
+	NOR = {
+		evil_public_religion_trigger = yes
+		religion_group = elemental_lords_group
+		religion = scarlet_light
+		religion = cult_of_hakkar
+		
+		religion = water_deities
+		religion = cult_of_the_candle
+		religion = primitive_shamanism
+	}
+	OR = {
+		opinion = { who = PREV value = 15 }
+		AND = {
+			NOR = {
+				trait = stubborn
+				trait = envious
+				trait = ambitious
+				trait = proud
+				trait = greedy
+			}
+			opinion = { who = PREV value = -10 }
+		}
+		hidden_tooltip = {
+			AND = {
+				ongoing_invasion_trigger = yes
+				opinion = { who = PREV value = -50 }
+			}
+		}
+	}
+}
+is_in_political_faction_trigger = {
+	OR = {
+		is_member_of_horde_faction_trigger = yes
+		is_member_of_alliance_faction_trigger = yes
+	}
+}
+has_horde_culture_trigger = {
+	OR = {
+		culture_group = goblin_group
+		culture = blood_elf
+		culture_group = orc_group
+		culture_group = ogre_group
+		culture_group = tauren_group
+		culture_group = troll_group
+		culture_group = undead_group
+	}
+}
+has_horde_religion_trigger = {
+	OR = {
+		religion_group = loa_group
+		religion_group = primitive_group
+		religion = cult_of_wealth
+		AND = {
+			religion_group = shamanism_group
+			NOT = { religion = tidemother }
+		}
+		religion_group = void_group
+	}
+}
+has_alliance_culture_trigger = {
+	OR = {
+		culture_group = draenei_group
+		culture_group = dwarf_group
+		culture_group = gnome_group
+		culture = high_elf
+		culture = dryad
+		culture_group = human_group
+		culture_group = night_elf_group
+	}
+}
+has_alliance_religion_trigger = {
+	OR = {
+		religion_group = druidism_group
+		religion_group = light_group
+		AND = {
+			religion_group = secular_group
+			NOT = { religion = cult_of_wealth }
+		}
+		religion = tidemother
+	}
+}

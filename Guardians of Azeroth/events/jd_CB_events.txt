@@ -1,0 +1,1065 @@
+namespace = JD
+
+#####################
+# Hostage CB Events #
+#####################
+character_event = { # The target receives an event
+	id = JD.2000
+	desc = EVTDESC_JD_2000
+	picture = GFX_evt_into_the_dungeon
+	border = GFX_event_normal_frame_war
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		war_with = FROM
+	}
+	
+	immediate = {
+		any_realm_character = {
+			limit = {
+				is_landed = no
+				OR = {
+					any_spouse = { character = FROM }
+					is_friend = FROM
+					is_close_relative = FROM
+					dynasty = FROM
+					is_consort = FROM
+				}
+				OR = {
+					prisoner = yes
+					has_opinion_modifier = {
+						modifier = opinion_forced_consort
+						who = ROOT
+					}
+				}
+			}
+			diplomatic_immunity = yes
+		}
+		random_realm_character = {
+			limit = {
+				is_landed = no
+				OR = {
+					any_spouse = { character = FROM }
+					is_friend = FROM
+					is_close_relative = FROM
+					dynasty = FROM
+					is_consort = FROM
+				}
+				OR = {
+					prisoner = yes
+					has_opinion_modifier = {
+						modifier = opinion_forced_consort
+						who = ROOT
+					}
+				}
+			}
+			save_event_target_as = chosen_captive
+		}
+	}
+	
+	option = { # Offer to end the war by sending back the captives
+		name = "EVTOPTA_JD_2000"
+		
+		trigger = {
+			event_target:chosen_captive = {
+				is_alive = yes
+			}
+		}
+		
+		FROM = {
+			character_event = { id = JD.2001 }
+		}
+		
+		ai_chance = {
+			factor = 20
+			
+			modifier = {
+				factor = 2
+				trait = craven
+			}
+			modifier = {
+				factor = 2
+				trait = content
+			}
+			modifier = {
+				factor = 2
+				trait = kind
+			}
+		}
+	}
+	
+	option = { # Kill one captive
+		name = "EVTOPTB_JD_2000"
+		
+		trigger = {
+			event_target:chosen_captive = {
+				is_alive = yes
+			}
+		}
+		
+		tooltip = {
+			event_target:chosen_captive = {
+				death = {
+					death_reason = death_execution_beheading
+					killer = ROOT
+				}
+			}
+		}
+		FROM = {
+			character_event = { id = JD.2004 }
+		}
+		prestige = 100
+		
+		ai_chance = {
+			factor = 40
+			
+			modifier = {
+				factor = 0
+				event_target:chosen_captive = {
+					OR = {
+						is_friend = ROOT
+						is_lover = ROOT
+						is_close_relative = ROOT
+					}
+				}
+			}
+		}
+	}
+	
+	option = { # Kill ALL captives!!
+		name = "EVTOPTC_JD_2000"
+		
+		trigger = {
+			any_realm_character = {
+				count = 2
+				is_landed = no
+				OR = {
+					any_spouse = { character = FROM }
+					is_friend = FROM
+					is_close_relative = FROM
+					dynasty = FROM
+					is_consort = FROM
+				}
+				OR = {
+					prisoner = yes
+					has_opinion_modifier = {
+						modifier = opinion_forced_consort
+						who = ROOT
+					}
+				}
+			}
+		}
+		
+		any_realm_character = {
+			limit = {
+				is_landed = no
+				OR = {
+					any_spouse = { character = FROM }
+					is_friend = FROM
+					is_close_relative = FROM
+					dynasty = FROM
+					is_consort = FROM
+				}
+				OR = {
+					prisoner = yes
+					has_opinion_modifier = {
+						modifier = opinion_forced_consort
+						who = ROOT
+					}
+				}
+			}
+			death = {
+				death_reason = death_execution_beheading
+				killer = ROOT
+			}
+		}
+		FROM = {
+			character_event = { id = JD.2005 }
+		}
+		prestige = 200
+		
+		ai_chance = {
+			factor = 5
+			
+			modifier = {
+				factor = 5
+				trait = cruel
+			}
+			modifier = {
+				factor = 5
+				trait = arbitrary
+			}
+			modifier = {
+				factor = 5
+				trait = lunatic
+			}
+			modifier = {
+				factor = 5
+				trait = possessed
+			}
+			modifier = {
+				factor = 5
+				is_rival = FROM
+			}
+		}
+	}
+	
+	option = { # Do nothing, war continues normally
+		name = "EVTOPTD_JD_2000"
+		
+		ai_chance = {
+			factor = 35
+		}
+	}
+	
+	after = {
+		any_realm_character = {
+			limit = {
+				is_landed = no
+				OR = {
+					any_spouse = { character = FROM }
+					is_friend = FROM
+					is_close_relative = FROM
+					dynasty = FROM
+					is_consort = FROM
+				}
+				OR = {
+					prisoner = yes
+					has_opinion_modifier = {
+						modifier = opinion_forced_consort
+						who = ROOT
+					}
+				}
+			}
+			diplomatic_immunity = no
+		}
+	}
+}
+
+character_event = { # Captives released, end war?
+	id = JD.2001
+	desc = EVTDESC_JD_2001
+	picture = GFX_evt_emissary
+	border = GFX_event_normal_frame_war
+	
+	is_triggered_only = yes
+	
+	option = { # Accept offer
+		name = "EVTOPTA_JD_2001"
+		FROM = {
+			character_event = { id = JD.2002 }
+			any_realm_character = {
+				limit = {
+					is_landed = no
+					OR = {
+						any_spouse = { character = ROOT }
+						is_friend = ROOT
+						is_close_relative = ROOT
+						dynasty = ROOT
+						is_consort = ROOT
+					}
+					OR = {
+						prisoner = yes
+						has_opinion_modifier = {
+							modifier = opinion_forced_consort
+							who = PREV
+						}
+					}
+				}
+				hidden_effect = {
+					if = { # Concubines are released...
+						limit = {
+							is_consort = yes
+							consort = { # ...if they are taken by someone in the same realm of your target
+								same_realm = PREV
+							}
+						}
+						consort = {
+							remove_consort = PREV
+						}
+					}
+					if = {
+						limit = { # Marriages are annuled
+							is_married = yes
+							any_spouse = { same_realm = PREV }
+						}
+						remove_spouse = yes
+					}
+				}
+				if = { # Release prisoners
+					limit = {
+						prisoner = yes
+					}
+					imprison = no
+				}
+				if = { # Move to the saviours court...
+					limit = {
+						OR = { # ...unless you are a concubine to a landed character...
+							is_consort = no
+							AND = {
+								is_consort = yes
+								spouse = {
+									is_landed = no
+								}
+							}
+						}
+						OR = { # ...or the wife to a landed character
+							is_married = no
+							AND = {
+								is_married = yes
+								spouse = {
+									is_landed = no
+								}
+							}
+						}
+					}
+					move_character = ROOT
+				}
+				opinion = {
+        			who = ROOT
+        			modifier = opinion_my_saviour
+        			years = 100
+        		}
+			}
+		}
+		any_war = {
+			limit = {
+				attacker = { character = ROOT }
+				defender = { character = FROM }
+			}
+			end_war = invalid
+		}
+		
+		ai_chance = {
+			factor = 80
+			
+			modifier = {
+				factor = 2
+				trait = craven
+			}
+			modifier = {
+				factor = 2
+				trait = content
+			}
+			modifier = {
+				factor = 2
+				trait = kind
+			}
+		}
+	}
+	
+	option = { # Reject offer
+		name = "EVTOPTB_JD_2001"
+		FROM = {
+			character_event = { id = JD.2003 }
+		}
+		prestige = -100
+		ai_chance = {
+			factor = 20
+			
+			modifier = {
+				factor = 2
+				trait = arbitrary
+			}
+		}
+	}
+}
+
+character_event = { # Informed of acceptance
+	id = JD.2002
+	desc = EVTDESC_JD_2002
+	picture = GFX_evt_carriage_default
+	border = GFX_event_normal_frame_war
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = "EVTOPTA_JD_2002"
+	}
+}
+
+character_event = { # Informed of denial
+	id = JD.2003
+	desc = EVTDESC_JD_2003
+	picture = GFX_evt_lunatic
+	border = GFX_event_normal_frame_war
+	
+	is_triggered_only = yes
+	
+	option = { # War contines
+		name = "EVTOPTA_JD_2003"
+		
+		ai_chance = {
+			factor = 60
+			
+			modifier = {
+				factor = 2
+				trait = craven
+			}
+		}
+	}
+	
+	option = { # Execute prisoners
+		name = "EVTOPTB_JD_2003"
+		
+		trigger = {
+			any_realm_character = {
+				is_landed = no
+				OR = {
+					any_spouse = { character = FROM }
+					is_friend = FROM
+					is_close_relative = FROM
+					dynasty = FROM
+					is_consort = FROM
+				}
+				OR = {
+					prisoner = yes
+					has_opinion_modifier = {
+						modifier = opinion_forced_consort
+						who = ROOT
+					}
+				}
+			}
+		}
+		
+		any_realm_character = {
+			limit = {
+				is_landed = no
+				OR = {
+					any_spouse = { character = FROM }
+					is_friend = FROM
+					is_close_relative = FROM
+					dynasty = FROM
+					is_consort = FROM
+				}
+				OR = {
+					prisoner = yes
+					has_opinion_modifier = {
+						modifier = opinion_forced_consort
+						who = ROOT
+					}
+				}
+			}
+			death = {
+				death_reason = death_execution_beheading
+				killer = ROOT
+			}
+		}
+		FROM = {
+			character_event = { id = JD.2005 }
+		}
+		prestige = 100
+		
+		ai_chance = {
+			factor = 40
+			
+			modifier = {
+				factor = 2
+				trait = cruel
+			}
+			modifier = {
+				factor = 2
+				trait = wroth
+			}
+		}
+	}
+}
+
+character_event = { # Informed of execution
+	id = JD.2004
+	desc = EVTDESC_JD_2004
+	picture = GFX_evt_beheading
+	border = GFX_event_normal_frame_war
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = "EVTOPTA_JD_2004"
+		event_target:chosen_captive = {
+			if = {
+				limit = {
+					NOT = {
+						has_opinion_modifier = {
+							modifier = opinion_my_saviour
+							who = ROOT
+						}
+					}
+				}
+				death = {
+					death_reason = death_execution_beheading
+					killer = FROM
+				}
+			}
+		}
+	}
+}
+
+character_event = { # Informed of mass execution
+	id = JD.2005
+	desc = EVTDESC_JD_2005
+	picture = GFX_evt_beheading
+	border = GFX_event_normal_frame_war
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = "EVTOPTA_JD_2005"
+	}
+}
+
+#############################################
+# Strengthen Religion Opportunity CB Events #
+#############################################
+
+character_event = { # Religious Liberation
+	id = JD.2100
+	desc = EVTDESC_JD_2100
+	picture = GFX_evt_religious_exultation
+	border = GFX_event_normal_frame_religion
+	
+	only_playable = yes
+	only_independent = yes
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		# Warcraft
+		is_untouchable_trigger = no
+		can_rule_peacefully_trigger = yes
+		
+		has_dlc = "Jade Dragon"
+		ROOT = {
+			NOT = {
+				has_game_rule = {
+					name = jade_dragon_cbs
+					value = off
+				}
+			}
+		}
+		is_nomadic = no
+		mercenary = no
+		NOT = { pacifist = yes }
+		top_liege = {
+			religion = ROOT
+		}
+		any_realm_province = { 											# You need a province...
+			any_neighbor_province = { 									# ...that has a neighbor province...
+				holder_scope = { 										# ...whos holder is...
+					NOT = { same_realm = ROOT } 						# ...not in your realm...
+					top_liege = { 										# ...and has a Top Liege...
+						NOT = { religion = ROOT } 						# ...that is NOT of your religion...
+						any_realm_province = { 							# ...that has any province in their realm...
+							religion = ROOT 							# ...that is of your religion...
+							kingdom = { 								# ...and a De Jure part of a Kingdom, created or not...
+								any_de_jure_vassal_title = { 			# ...who contains any title...
+									tier = COUNT 						# ...of Count tier...
+									holder_scope = { same_realm = PREVPREVPREVPREV } # ...that is in the same realm as the Top Liege of the neighbor Province's holder...
+									location = { 						# ...and where the associated province...
+										any_neighbor_province = { 		# ...has a neighboring province...
+											holder_scope = { 			# ...whos holder...
+												top_liege = { 			# ...has a Top Liege...
+													character = ROOT 	# ...that is you!
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		NOR = {
+			has_character_flag = had_liberate_opportunity
+			has_character_flag = denied_liberate_opportunity
+		}
+	}
+	
+	weight_multiplier = {
+		days = 1
+		modifier = {
+			factor = 3
+			trait = zealous
+		}
+		modifier = {
+			factor = 0.25
+			NOT = {
+				higher_tier_than = DUKE
+			}
+		}
+		modifier = {
+			factor = 0
+			trait = cynical
+		}
+		modifier = {
+			factor = 0
+			pacifist = yes
+		}
+	}
+	
+	immediate = {
+		random_independent_ruler = {
+			limit = {
+				NOT = {
+					religion = ROOT
+				}
+				any_realm_province = {
+					any_neighbor_province = {
+						holder_scope = {
+							OR = {
+								character = ROOT
+								is_liege_or_above = ROOT
+							}
+						}
+					}
+				}
+				any_realm_province = {
+					religion = ROOT
+					kingdom = {
+						any_de_jure_vassal_title = {
+							tier = COUNT
+							holder_scope = { same_realm = PREVPREVPREVPREV }
+							location = {
+								any_neighbor_province = {
+									holder_scope = {
+										OR = {
+											character = ROOT
+											is_liege_or_above = ROOT
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			save_event_target_as = liberate_target
+		}
+	}
+	
+	option = {
+		name = EVTOPTA_JD_2100
+		custom_tooltip = {
+			text = cb_opportunity_liberate
+			hidden_tooltip = {
+				set_character_flag = had_liberate_opportunity
+			}
+		}
+	}
+	
+	option = {
+		name = EVTOPTB_JD_2100
+		
+		custom_tooltip = {
+			text = cb_opportunity_liberate_deny
+			hidden_tooltip = {
+				set_character_flag = denied_liberate_opportunity
+			}
+		}
+		
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+
+###########################
+# New Tributary CB Events #
+###########################
+
+character_event = {
+	id = JD.2200
+	desc = EVTDESC_JD_2200
+	picture = GFX_evt_throne_room
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = "EVTOPTA_JD_2200"
+	}
+}
+
+
+#################################
+# Tributary CB Surrender Events #
+#################################
+
+character_event = {
+	id = JD.2500
+	desc = EVT_DESC_JD_2500
+	picture = GFX_evt_council
+
+	is_triggered_only = yes
+
+	option = { #We shall surrender now and save our people
+		name = EVT_OPTA_JD_2500
+		ai_chance = {
+			factor = 10
+			modifier = {
+				factor = 0
+				OR = {
+					trait = lunatic
+					trait = possessed
+					trait = proud
+					trait = stubborn
+					is_tributary = yes
+					relative_power_including_allies_defender = {
+						who = event_target:tribute_war_suzerain
+						power = 1.5
+					}
+					event_target:tribute_war_suzerain = {
+						any_war = {
+							NOT = {
+								any_attacker = {
+									character = ROOT
+								}
+							}
+							NOT = {
+								any_defender = {
+									character = ROOT
+								}
+							}
+						}
+					}
+				}
+			}
+			modifier = {
+				factor = 2
+				OR = {
+					trait = craven
+					trait = content
+				}
+			}
+			modifier = {
+				factor = 1.5
+				NOT = {
+					relative_power_including_allies_defender = {
+						who = event_target:tribute_war_suzerain
+						power = 0.25
+					}
+				}
+			}
+			modifier = {
+				factor = 1.5
+				NOT = {
+					relative_power_including_allies_defender = {
+						who = event_target:tribute_war_suzerain
+						power = 0.5
+					}
+				}
+			}
+			modifier = {
+				factor = 1.5
+				NOT = {
+					relative_power_including_allies_defender = {
+						who = event_target:tribute_war_suzerain
+						power = 0.75
+					}
+				}
+			}
+			modifier = {
+				factor = 1.5
+				NOT = {
+					relative_power_including_allies_defender = {
+						who = event_target:tribute_war_suzerain
+						power = 0.9
+					}
+				}
+			}
+		}
+		event_target:tribute_war_suzerain = { letter_event = { id = JD.2501 days = 1 tooltip = surrender_tributary_event_tt } }
+	}
+	option = { #We will not give in so easily!
+		name = EVT_OPTB_JD_2500
+		ai_chance = {
+			factor = 90
+		}
+	}
+}
+#The target of your tributary war surrenders
+letter_event = {
+	id = JD.2501
+	desc = EVT_DESC_JD_2501
+
+	is_triggered_only = yes
+
+	trigger = { event_target:tribute_war_target = { is_alive = yes } }
+
+	option = { #A wise decision
+		name = EVT_OPTA_JD_2501
+		ai_chance = {
+			factor = 70
+			modifier = {
+				factor = 0.1
+				trait = cruel
+			}
+			modifier = {
+				factor = 0.5
+				trait = proud
+			}
+			modifier = {
+				factor = 0
+				OR = {
+					trait = lunatic
+					trait = possessed
+				}
+			}
+			modifier = {
+				factor = 0.3
+				is_nomadic = yes
+			}
+		}
+		if  = {
+			limit = {
+				uses_decadence = yes
+			}
+			decadence = -5
+		}
+		if  = {
+			limit = {
+				is_nomadic = yes
+			}
+			clan_title = {
+				ROOT = {
+					any_vassal = {
+						limit = { is_nomadic = yes }
+						clan_title = {
+							clan_opinion = {
+								who = PREVPREVPREV
+								modifier = won_tributary_war
+								years = 3
+							}
+						}
+					}
+				}
+			}
+		}
+		if = {
+			limit = {
+				is_tribal = yes
+			}
+			any_vassal = {
+				limit = { is_tribal = yes }
+				opinion = {
+					who = ROOT
+					modifier = won_tributary_war
+					years = 3
+				}
+			}
+		}
+		hidden_effect = { FROM = { letter_event = { id = JD.2502 } } }
+		tooltip = {
+			event_target:tribute_war_target = {
+				#show_scope_change = no
+				prestige = -50
+				custom_tooltip = {
+					text = "REMOVE_PREVIOUS_SUZERAIN"
+					hidden_tooltip = {
+						any_suzerain = {
+							event_target:tribute_war_target = {
+								remove_tributary = PREV
+							}
+						}
+					}
+				}
+				trigger_switch = {
+					on_trigger = has_character_flag
+
+					surrender_tributary_permanent_cb = {
+						event_target:tribute_war_suzerain = {
+							show_scope_change = no
+							make_tributary = {
+								who = event_target:tribute_war_target
+								tributary_type = permanent
+							}
+							hidden_effect = {
+								any_war = {
+									limit = {
+										using_cb = tributary_permanent_cb
+										defender = { character = event_target:tribute_war_target }
+									}
+									end_war = invalid
+								}
+							}
+						}
+						event_target:tribute_war_target = {
+							opinion = {
+								modifier = opinion_forced_tributary 
+								who = ROOT
+								years = 15
+							}
+						}
+					}
+					surrender_tributary_nomad_cb = {
+						event_target:tribute_war_suzerain = {
+							show_scope_change = no
+							make_tributary = {
+								who = event_target:tribute_war_target
+								tributary_type = nomadic
+							}
+							hidden_effect = {
+								any_war = {
+									limit = {
+										using_cb = tributary_nomad_cb
+										defender = { character = event_target:tribute_war_target }
+									}
+									end_war = invalid
+								}
+							}
+						}
+					}
+					surrender_tributary_cb = {
+						event_target:tribute_war_suzerain = {
+							show_scope_change = no
+							make_tributary = {
+								who = event_target:tribute_war_target
+								percentage = 0.4
+							}
+							hidden_effect = {
+								any_war = {
+									limit = {
+										using_cb = tributary_cb
+										defender = { character = event_target:tribute_war_target }
+									}
+									end_war = invalid
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	option = { #Haha let them cower as we pillage their lands
+		name = EVT_OPTB_JD_2501
+		ai_chance = {
+			factor = 30
+			modifier = {
+				factor = 2
+				trait = humble
+			}
+			modifier = {
+				factor = 5
+				trait = content
+			}
+			modifier = {
+				factor = 2
+				is_smart_trigger = yes
+			}
+			modifier = {
+				factor = 2
+				trait = kind
+			}
+			modifier = {
+				factor = 3
+				NOT = {
+					relative_power_including_allies_attacker = {
+						who = FROM
+						power = 1.5
+					}
+				}
+			}
+		}
+		prestige = 20
+		FROM = { letter_event = { id = JD.2503 } }
+	}
+}
+#Your surrender was accepted
+letter_event = {
+	id = JD.2502
+	desc = EVT_DESC_JD_2502
+
+	is_triggered_only = yes
+
+	option = {
+		name = EVT_OPTA_JD_2502
+		prestige = -50
+		custom_tooltip = {
+			text = "REMOVE_PREVIOUS_SUZERAIN"
+			hidden_tooltip = {
+				any_suzerain = {
+					event_target:tribute_war_target = {
+						remove_tributary = PREV
+					}
+				}
+			}
+		}
+		trigger_switch = {
+			on_trigger = has_character_flag
+
+			surrender_tributary_permanent_cb = {
+				event_target:tribute_war_suzerain = {
+					show_scope_change = no
+					make_tributary = {
+						who = event_target:tribute_war_target
+						tributary_type = permanent
+					}
+					hidden_effect = {
+						any_war = {
+							limit = {
+								using_cb = tributary_permanent_cb
+								defender = { character = event_target:tribute_war_target }
+							}
+							end_war = invalid
+						}
+					}
+				}
+			}
+			surrender_tributary_nomad_cb = {
+				event_target:tribute_war_suzerain = {
+					show_scope_change = no
+					make_tributary = {
+						who = event_target:tribute_war_target
+						tributary_type = nomadic
+					}
+					hidden_effect = {
+						any_war = {
+							limit = {
+								using_cb = tributary_nomad_cb
+								defender = { character = event_target:tribute_war_target }
+							}
+							end_war = invalid
+						}
+					}
+				}
+			}
+			surrender_tributary_cb = {
+				event_target:tribute_war_suzerain = {
+					show_scope_change = no
+					make_tributary = {
+						who = event_target:tribute_war_target
+						percentage = 0.4
+					}
+					hidden_effect = {
+						any_war = {
+							limit = {
+								using_cb = tributary_cb
+								defender = { character = event_target:tribute_war_target }
+							}
+							end_war = invalid
+						}
+					}
+				}
+			}
+		}
+		clr_character_flag = surrender_tributary_permanent_cb
+		clr_character_flag = surrender_tributary_nomad_cb
+		clr_character_flag = surrender_tributary_cb
+	}
+}
+#Your surrender was declined
+letter_event = {
+	id = JD.2503
+	desc = EVT_DESC_JD_2503
+
+	is_triggered_only = yes
+
+	option = { #Then we fight!
+		name = EVT_OPTA_JD_2503
+		clr_character_flag = surrender_tributary_permanent_cb
+		clr_character_flag = surrender_tributary_nomad_cb
+		clr_character_flag = surrender_tributary_cb
+	}
+}

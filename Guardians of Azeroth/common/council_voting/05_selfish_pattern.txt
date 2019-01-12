@@ -1,0 +1,309 @@
+selfish_pattern_for = {
+	icon = 9
+	pattern_type = for
+	
+	declare_war_interaction = {
+	# Councillor might gain a title
+		custom_tooltip = {
+			text = pattern_selfish_gain_title_custom_tooltip
+			hidden_tooltip = {
+				FROMFROMFROM = { # Gainer
+					character = ROOT
+				}	
+			}
+		}
+	}
+	
+	grant_landed_title_interaction = {
+		OR = {
+			custom_tooltip = {
+				text = pattern_selfish_gain_title_custom_tooltip
+				hidden_tooltip = {
+					FROMFROM = {
+						character = ROOT
+					}
+				}
+			}
+			custom_tooltip = {
+				text = pattern_vastly_over_demesne_tooltip
+				hidden_tooltip = {
+					AND = {
+						liege = {
+							is_nomadic = no
+							over_max_demesne_size = 4
+						}
+						FROMFROMFROM = {
+							OR = {
+								tier = BARON
+								tier = COUNT
+							}
+						}
+					}	
+				}
+			}
+		}
+	}
+
+
+	enforce_peace = {
+		OR = {
+			custom_tooltip = {
+				text = pattern_selfish_save_my_hide_custom_tooltip
+				hidden_tooltip = {
+					any_war = {
+						defender = {
+							OR = {
+								character = ROOT
+								is_allied_with = ROOT
+							}
+						}
+						attacker = {
+							is_liege_or_above = FROM
+						}
+						OR = {
+							war_score = -5
+							defender = {
+								attacker = {
+									relative_power_including_allies_attacker = {
+										who = PREV # Defender
+										power = 1.0
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+
+			custom_tooltip = {
+				text = pattern_selfish_save_ally_custom_tooltip
+				hidden_tooltip = {
+					any_allied_character = {
+						any_war = {
+							defender = {
+								is_allied_with = ROOT
+							}
+							attacker = {
+								is_liege_or_above = FROM
+							}
+							OR = {
+								war_score = -5
+								defender = {
+									attacker = {
+										relative_power_including_allies_attacker = {
+											who = PREV # Defender
+											power = 1.0
+										}
+									}
+								}
+							}
+						}
+					}	
+				}
+			}
+		}
+	}
+}
+
+selfish_pattern_against = {
+	icon = 10
+	pattern_type = against
+	
+	declare_war_interaction = {
+	# Councillor might lose a title
+		custom_tooltip = {
+			text = pattern_selfish_lose_title_custom_tooltip
+			hidden_tooltip = {
+				OR = {
+					FROMFROM = { # Defender
+						character = ROOT
+					}
+					AND = {
+						FROMFROMFROMFROM = { # Thirdparty_title
+							holder_scope = {
+								character = ROOT
+								is_liege_or_above = ROOT_FROMFROM
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	# ROOT - Voter, FROM - Actor, FROMFROM - Recipient, FROMFROMFROM - Revoked title.
+	revoke_title_interaction = {
+		custom_tooltip = {
+			text = pattern_selfish_lose_title_custom_tooltip
+			hidden_tooltip = {
+				FROMFROM = {
+					character = ROOT
+				}	
+			}
+		}
+	}
+	imprison_character_interaction = {
+		custom_tooltip = {
+			text = pattern_selfish_affects_me_custom_tooltip
+			hidden_tooltip = {
+				FROMFROM = {
+					character = ROOT
+				}
+			}
+		}
+		custom_tooltip = {
+			text = pattern_selfish_affects_council_stability_tooltip
+			hidden_tooltip = {
+				FROMFROM = {
+					is_voter = yes
+					same_liege = ROOT
+					NOT = { is_rival = ROOT }
+				}
+			}
+		}
+	}
+	# ROOT - Voter, FROM - Actor, FROMFROM - Recipient, FROMFROMFROM - Granted title.
+	grant_landed_title_interaction = {
+		OR = {
+			custom_tooltip = {
+				text = pattern_i_am_unlanded_custom_tooltip
+				hidden_tooltip = {
+					AND = {
+						is_landed = no
+						OR = {
+							is_female = no
+							AND = {
+								OR = {
+									religion = messalian
+									religion = cathar
+									religion = mazdaki
+								}
+								liege = { religion = ROOT }
+							}
+							liege = {
+								OR = {
+									primary_title = {
+										has_law = status_of_women_4
+									}
+									has_game_rule = {
+										name = gender
+										value = all
+									}
+								}
+							}
+						}
+						FROMFROM = {
+							is_landed = yes
+						}
+						liege = { 
+							is_nomadic = no
+							NOT = { over_max_demesne_size = 2 }
+						}
+					}	
+				}
+			}
+			FROMFROMFROM = {
+				OR = {
+					custom_tooltip = {
+						text = pattern_my_de_jure_title_custom_tooltip
+						hidden_tooltip = {
+							any_direct_de_jure_vassal_title = {
+								holder_scope = { character = ROOT }
+							}	
+						}
+					}
+					custom_tooltip = {
+						text = pattern_i_desire_this_title_custom_tooltip
+						hidden_tooltip = {
+							any_de_jure_liege_title = {
+								holder_scope = { character = ROOT }
+							}	
+						}
+					}
+				}
+			}
+		}
+	}
+	# ROOT - Voter, FROM - Actor, FROMFROM - Recipient
+	exile_imprisoned_interaction = {
+		custom_tooltip = {
+			text = pattern_selfish_affects_me_custom_tooltip
+			hidden_tooltip = {
+				FROMFROM = {
+					character = ROOT
+				}
+			}
+		}
+	}
+	# ROOT - Voter, FROM - Actor, FROMFROM - Recipient
+	execute_imprisoned_interaction = {
+		custom_tooltip = {
+			text = pattern_selfish_affects_me_custom_tooltip
+			hidden_tooltip = {
+				FROMFROM = {
+					character = ROOT
+				}
+			}
+		}
+	}
+
+	# ROOT - Voter, FROM = Liege, FROMFROM = Vote Starter
+	enforce_peace = {
+		OR = {
+			custom_tooltip = {
+				text = pattern_selfish_i_am_winning_custom_tooltip
+				hidden_tooltip = {
+					any_war = {
+						attacker = {
+							OR = {
+								character = ROOT
+								is_allied_with = ROOT
+							}
+						}
+						defender = {
+							is_liege_or_above = FROM
+						}
+						OR = {
+							war_score = 5
+							defender = {
+								attacker = {
+									relative_power_including_allies_attacker = {
+										who = PREV # Defender
+										power = 1.0
+									}
+								}
+							}
+						}
+					}	
+				}
+			}
+			
+			custom_tooltip = {
+				text = pattern_selfish_ally_is_winning_custom_tooltip
+				hidden_tooltip = {
+						any_allied_character = {
+						any_war = {
+							attacker = {
+								is_allied_with = ROOT
+							}
+							defender = {
+								is_liege_or_above = FROM
+							}
+							OR = {
+								war_score = 5
+								defender = {
+									attacker = {
+										relative_power_including_allies_attacker = {
+											who = PREV # Defender
+											power = 1.0
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}

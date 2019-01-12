@@ -1,0 +1,1034 @@
+namespace=WCFTW
+
+#########################################
+#
+#	First War event
+#
+#########################################
+
+################  Orcs  ################
+# Invites other orcish clans from Draenor
+narrative_event = {
+	id = WCFTW.4
+	title = EVTTITLE_WCFTW_4
+	desc = EVTDESC_WCFTW_4
+	picture = GFX_evt_grom_01
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+		
+	only_playable = yes
+	only_independent = yes
+	has_global_flag = orcish_invasion_flag
+	
+	major = yes
+
+	trigger = {
+		is_alive = yes
+		is_dying = no
+		
+		has_global_flag = orcish_invasion_flag
+		NOT = { has_global_flag = horde_in_azeroth_flag }
+		
+		num_of_count_titles = 3 			# two titles char will give to the new clans
+		has_landed_title = e_horde
+		trait = leader_of_horde_trait
+	}
+
+	hide_from = yes
+	hide_new = yes
+
+	immediate = {
+		if = {
+			limit = { has_global_flag = full_report_flag }
+			log = "WCFTW.4 fired for [Root.GetBestName]"
+		}
+
+		set_global_flag = horde_in_azeroth_flag
+		73 = {
+			add_province_modifier = { name = dark_portal_is_open_2 duration = -1 }
+			if = {
+				limit = { has_province_modifier = dark_portal_is_open_1 }
+				remove_province_modifier = dark_portal_is_open_1
+			}
+		}
+		character_event = { id = WCSDW.1 }	# Creates the Burning Blade Clan
+		character_event = { id = WCSDW.2 }	# Creates the Dragonmaw Clan
+	}
+
+	option = {
+		name = {
+			text = EVTOPTA_case1_WCFTW_4
+			trigger = {
+				culture_group = orc_group
+			}
+		}
+		name = {
+			text = EVTOPTA_case2_WCFTW_4
+			trigger = {
+				culture = azerothian
+				NOT = { has_character_flag = is_medivh }
+			}
+		}
+		name = {
+			text = EVTOPTA_case3_WCFTW_4
+			trigger = {
+				OR = {
+					AND = {
+						culture_group = human_group
+						NOT = { culture = azerothian }
+						NOT = { has_character_flag = is_medivh }
+					}
+					culture_group = dwarf_group
+					culture_group = high_elf_group
+				}
+			}
+		}
+		name = {
+			text = EVTOPTA_case4_WCFTW_4
+			trigger = {
+				has_character_flag = is_medivh
+			}
+		}
+		name = {
+			text = EVTOPTA_case5_WCFTW_4
+			trigger = {
+				NAND = {
+					culture_group = human_group
+					culture_group = dwarf_group
+					culture_group = high_elf_group
+					culture_group = orc_group
+				}
+			}
+		}
+		
+		if = {
+			limit = { character = ROOT }
+			# spawn_horde_troops_effect = yes
+		}
+	}
+}
+
+# Invasion of Blackrock Mountain
+character_event = {
+	id = WCFTW.5
+	desc = EVTDESC_WCFTW_5
+	picture = GFX_evt_grom_01
+
+	is_triggered_only = yes
+	
+	only_playable = yes
+	only_independent = yes
+	has_global_flag = orcish_invasion_flag
+	war = no
+
+	trigger = {
+		is_alive = yes
+		is_dying = no
+		
+		year = 585
+		has_global_flag = orcish_invasion_flag
+		NOT = { has_global_flag = invasion_of_blackrock_flag }
+
+		has_landed_title = e_horde
+		k_blackrock = {
+			has_holder = yes
+			holder_scope = {
+				is_landed = yes
+				independent = yes
+			}
+		}
+	}
+
+	immediate = {
+		if = {
+			limit = { has_global_flag = full_report_flag }
+			log = "WCFTW.5 fired for [Root.GetBestName]"
+		}
+
+		set_global_flag = invasion_of_blackrock_flag
+	}
+
+	option = {
+		name = LOKTAR_OGAR
+		k_blackrock = {
+			holder_scope = {
+				set_character_flag = total_invasion_exception_flag
+				reverse_unsafe_war = {
+					casus_belli = total_invasion
+					target = ROOT
+				}
+			}
+		}
+		
+		spawn_horde_troops_effect = yes
+	}
+	option = {
+		name = EVTOPTA_WCFTW_5
+		
+		prestige = -1000
+		any_vassal = {
+			limit = { is_horde_culture = yes }
+			opinion = { modifier = opinion_coward who = ROOT years = 25 }
+			opinion = { modifier = opinion_angry who = ROOT years = 5 }
+		}
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+
+# Creates the Horde and characters
+character_event = {
+	id = WCFTW.99
+
+	is_triggered_only = yes
+	hide_window = yes
+	
+	only_rulers = yes
+
+	trigger = {
+		is_alive = yes
+		is_dying = no
+		
+		NOT = { has_global_flag = dark_portal_was_opened_flag }
+		NOT = { has_global_flag = orcish_invasion_flag }
+		year = 583
+		religion = holy_light
+		controls_religion = yes
+	}
+
+	immediate = {
+		create_character = {
+			name = Durotan
+			dynasty = 2200
+			dna="oaknhahmcmg"
+			culture = frostwolf religion = orcish_shamanism
+			attributes = {
+				martial=5 diplomacy=7 stewardship=6 intrigue=3 learning=3
+			}
+			trait=skilled_tactician
+			trait=creature_orc
+			trait=class_warrior_7
+			trait=honest trait=patient trait=just trait=brave trait=kind
+			age = 43
+		}
+		new_character = {
+			244 = {
+				county = { grant_title_no_opinion = { target = PREVPREV } }
+				culture = PREV
+				religion = PREV
+			}
+			activate_title = { title = d_frostwolf status = yes }
+			d_frostwolf = { gain_title = PREV }
+			save_event_target_as = target_durotan
+			create_character = {
+				name = Draka
+				female = yes
+				dynasty = none
+				dna="eannjcaomnc"
+				culture = frostwolf religion = orcish_shamanism
+				attributes = {
+					martial=3 diplomacy=6 stewardship=3 intrigue=5 learning=6
+				}
+				trait=tough_soldier
+				trait=creature_orc
+				trait=class_warrior_5
+				trait=honest trait=brave trait=kind trait=patient
+				random_traits = yes
+				age = 40
+			}
+			new_character = {
+				add_spouse = PREV
+				create_character = {
+					name = Go'el
+					dynasty = 2200
+					dna="cfkehenfmib"
+					culture = frostwolf religion = orcish_shamanism
+					attributes = {
+						martial=0 diplomacy=2 stewardship=1 intrigue=0 learning=1
+					}
+					trait=creature_orc
+					age = 1
+				}
+				new_character = {
+					set_father = PREVPREV
+					set_mother = PREV
+					set_character_flag = is_thrall
+				}
+			}
+			create_character = {
+				name=Drek'thar
+				dynasty = none
+				dna="cpodgbnhngb"
+				culture = frostwolf religion = orcish_shamanism
+				attributes = {
+					martial=6 diplomacy=5 stewardship=6 intrigue=4 learning=6
+				}
+				trait=scholarly_theologian
+				trait=creature_orc
+				trait=class_shaman_6
+				trait=brave trait=stubborn trait=honest trait=content trait=diligent
+				random_traits = yes
+				age = 48
+			}
+			new_character = {
+				give_job_title = job_spiritual
+			}
+		}
+		create_character = {
+			name = Blackhand
+			dynasty = 2000
+			#has_nickname=nick_the_destroyer
+			dna="mcbaoeimohl"
+			culture = blackrock religion = orcish_fel
+			attributes = {
+				martial=6 diplomacy=5 stewardship=4 intrigue=3 learning=4
+			}
+			trait=brilliant_strategist
+			trait=creature_orc
+			trait=class_warrior_6
+			trait=wroth trait=greedy trait=proud trait=cruel trait=arbitrary
+			age = 41
+		}
+		new_character = {
+			67 = {
+				county = { grant_title_no_opinion = { target = PREVPREV } }
+				culture = PREV
+				religion = PREV
+			}
+			68 = {
+				county = { grant_title_no_opinion = { target = PREVPREV } }
+				culture = PREV
+				religion = PREV
+			}
+			69 = {
+				county = { grant_title_no_opinion = { target = PREVPREV } }
+				culture = PREV
+				religion = PREV
+			}
+			71 = {
+				county = { grant_title_no_opinion = { target = PREVPREV } }
+				culture = PREV
+				religion = PREV
+			}
+			72 = {
+				county = { grant_title_no_opinion = { target = PREVPREV } }
+				culture = PREV
+				religion = PREV
+			}
+			85 = {
+				county = { grant_title_no_opinion = { target = PREVPREV } }
+				culture = PREV
+				religion = PREV
+			}
+			activate_title = { title = e_horde status = yes }
+			e_horde = { gain_title = PREV }
+			activate_title = { title = k_orc_blackrock status = yes }
+			k_orc_blackrock = { gain_title = PREV }
+			prestige = 500
+			give_nickname=nick_the_destroyer
+			join_society_shadow_council_effect = yes
+			create_character = {
+				name = Urukal
+				female = yes
+				dynasty = none
+				dna="mcbaoeimohl"
+				culture = blackrock religion = orcish_fel
+				attributes = {
+					martial=7 diplomacy=4 stewardship=7 intrigue=2 learning=3
+				}
+				trait=tough_soldier
+				trait=creature_orc
+				trait=class_warrior_2
+				trait=proud trait=temperate
+				random_traits = yes
+				age = 40
+			}
+			new_character = {
+				add_spouse = PREV
+				create_character = {
+					name = Dal'rend
+					dynasty = 2000
+					dna="mcbaoeimohl"
+					culture = blackrock religion = orcish_fel
+					attributes = {
+						martial=6 diplomacy=5 stewardship=5 intrigue=2 learning=2
+					}
+					trait=skilled_tactician
+					trait=creature_orc
+					trait=class_warrior_5
+					trait=proud trait=greedy trait=wroth trait=zealous
+					age = 20
+				}
+				new_character = {
+					set_father = PREVPREV
+					set_mother = PREV
+					give_job_title = job_treasurer
+				}
+				create_character = {
+					name = Maim
+					dynasty = 2000
+					dna="mcbaoeimohl"
+					culture = blackrock religion = orcish_fel
+					attributes = {
+						martial=5 diplomacy=4 stewardship=4 intrigue=1 learning=1
+					}
+					trait=tough_soldier
+					trait=creature_orc
+					trait=class_warrior_5
+					trait=content trait=cruel trait=arbitrary
+					age = 19
+				}
+				new_character = {
+					set_father = PREVPREV
+					set_mother = PREV
+				}
+				create_character = {
+					name = Griselda
+					female = yes
+					dynasty = 2000
+					dna="mcbaoeimohl"
+					culture = blackrock religion = orcish_fel
+					attributes = {
+						martial=3 diplomacy=5 stewardship=3 intrigue=4 learning=2
+					}
+					trait=flamboyant_schemer
+					trait=creature_orc
+					trait=class_rogue_2
+					trait=arbitrary
+					age = 18
+				}
+				new_character = {
+					set_father = PREVPREV
+					set_mother = PREV
+				}
+			}
+			create_character = {
+				name = Kilrogg
+				dynasty = 2150
+				dna="jcpjjmmnbnn"
+				culture = bleeding_hollow religion = orcish_fel
+				attributes = {
+					martial=6 diplomacy=5 stewardship=4 intrigue=3 learning=4
+				}
+				trait=skilled_tactician
+				trait=creature_orc
+				trait=class_warrior_5
+				trait=brave trait=patient trait=temperate trait=just trait=cruel trait=one_eyed
+				age = 67
+			}
+			new_character = {
+				77 = {
+					county = { grant_title_no_opinion = { target = PREVPREV } }
+					culture = PREV
+					religion = PREV
+				}
+				78 = {
+					county = { grant_title_no_opinion = { target = PREVPREV } }
+					culture = PREV
+					religion = PREV
+				}
+				79 = {
+					county = { grant_title_no_opinion = { target = PREVPREV } }
+					culture = PREV
+					religion = PREV
+				}
+				activate_title = { title = d_bleeding_hollow status = yes }
+				d_bleeding_hollow = { gain_title = PREV }
+				set_defacto_liege = e_horde
+			}
+			create_character = {
+				name = Gul'dan
+				dynasty = 2350
+				dna="0db0g0g0aa0"
+				culture = stormreaver religion = orcish_fel
+				attributes = {
+					martial=4 diplomacy=5 stewardship=4 intrigue=6 learning=5
+				}
+				trait=mastermind_theologian
+				trait=creature_orc
+				trait=class_warlock_8
+				trait=ambitious trait=sorcerer trait=cruel trait=envious trait=proud trait=wroth trait=deceitful
+				age = 52
+			}
+			new_character = {
+				70 = {
+					county = { grant_title_no_opinion = { target = PREVPREV } }
+					culture = PREV
+					religion = PREV
+				}
+				73 = {
+					county = { grant_title_no_opinion = { target = PREVPREV } }
+					culture = PREV
+					religion = PREV
+				}
+				80 = {
+					county = { grant_title_no_opinion = { target = PREVPREV } }
+					culture = PREV
+					religion = PREV
+				}
+				activate_title = { title = d_stormreaver status = yes }
+				d_stormreaver = { gain_title = PREV }
+				set_defacto_liege = e_horde
+				set_character_flag = is_guldan
+				save_event_target_as = target_guldan
+				reverse_opinion = { modifier = opinion_loyal_servant who = PREV }	# Blackhand
+				join_society_shadow_council_effect = yes
+				set_society_grandmaster = yes
+				add_society_currency_massive_effect = yes
+				give_job_title = job_chancellor
+				character_event = { id = WCFTW.990 days = 730 random = 1095 }
+			}
+			create_character = {
+				name = Vorpil
+				dynasty = none
+				dna="ffnjoojjgeg"
+				culture = stormreaver religion = orcish_fel
+				attributes = {
+					martial=4 diplomacy=5 stewardship=4 intrigue=6 learning=5
+				}
+				trait=scholarly_theologian
+				trait=creature_orc
+				trait=class_warlock_5
+				trait=cruel trait=proud trait=deceitful
+				random_traits = yes
+				age = 43
+			}
+			new_character = {
+				opinion = { modifier = opinion_loyal_servant who = event_target:target_guldan }
+				leave_society = yes
+				join_society_shadow_council_effect = yes
+				society_rank_up = 2
+				give_job_title = job_spymaster
+			}
+			create_character = {
+				name = Teron'gor
+				dynasty = none
+				dna="hlenoeeigng"
+				culture = stormreaver religion = orcish_fel
+				attributes = {
+					martial=6 diplomacy=5 stewardship=4 intrigue=6 learning=6
+				}
+				trait=scholarly_theologian
+				trait=creature_orc
+				trait=class_warlock_5
+				trait=cruel trait=wroth
+				random_traits = yes
+				age = 47
+			}
+			new_character = {
+				opinion = { modifier = opinion_loyal_servant who = event_target:target_guldan }
+				leave_society = yes
+				join_society_shadow_council_effect = yes
+				society_rank_up = 2
+				give_minor_title = title_shadow_council_member_1
+			}
+			create_character = {
+				name = Fel'dan
+				dynasty = none
+				dna="jfmnkkfmeof"
+				culture = stormreaver religion = orcish_fel
+				attributes = {
+					martial=3 diplomacy=6 stewardship=4 intrigue=7 learning=3
+				}
+				trait=scholarly_theologian
+				trait=creature_orc
+				trait=class_warlock_5
+				trait=cruel trait=proud
+				random_traits = yes
+				age = 42
+			}
+			new_character = {
+				opinion = { modifier = opinion_loyal_servant who = event_target:target_guldan }
+				leave_society = yes
+				join_society_shadow_council_effect = yes
+				society_rank_up = 2
+				give_minor_title = title_shadow_council_member_3
+			}
+			create_character = {
+				name = Ragnok
+				dynasty = 2351
+				dna="cfkehenfmib"
+				culture = stormreaver religion = orcish_fel
+				attributes = {
+					martial=5 diplomacy=1 stewardship=4 intrigue=6 learning=6
+				}
+				trait=scholarly_theologian
+				trait=creature_orc
+				trait=class_warlock_5
+				trait=greedy trait=paranoid trait=patient trait=cruel trait=deceitful
+				age = 51
+			}
+			new_character = {
+				opinion = { modifier = opinion_loyal_servant who = event_target:target_guldan }
+				leave_society = yes
+				join_society_shadow_council_effect = yes
+				society_rank_up = 2
+				give_minor_title = title_shadow_council_member_2
+			}
+			create_character = {
+				name = Orgrim
+				dynasty = 2001
+				dna="cfkehenfmib"
+				culture = blackrock religion = orcish_shamanism
+				attributes = {
+					martial=7 diplomacy=4 stewardship=5 intrigue=4 learning=2
+				}
+				trait=brilliant_strategist
+				trait=creature_orc
+				trait=class_warrior_7
+				trait=strong trait=honest trait=wroth trait=brave trait=ambitious trait=just trait=stubborn
+				age = 43
+			}
+			new_character = {
+				prestige = 600
+				add_artifact = doomhammer
+				add_claim = e_horde
+				add_claim = k_orc_blackrock
+				give_job_title=job_marshal
+				event_target:target_durotan = { add_friend = PREV }
+			}
+			create_character = {
+				name = Cho'gall
+				dynasty = 2050
+				dna="fhkfpbgdbga"
+				culture = twilights_hammer religion = orcish_fel
+				attributes = {
+					martial=4 diplomacy=4 stewardship=4 intrigue=7 learning=7
+				}
+				trait=mastermind_theologian
+				trait=creature_ogre
+				trait=class_warlock_7
+				trait=twoheaded trait=diligent trait=cruel trait=deceitful trait=arbitrary
+				age = 52
+			}
+			new_character = {
+				74 = {
+					county = { grant_title_no_opinion = { target = PREVPREV } }
+					culture = PREV
+					religion = PREV
+				}
+				75 = {
+					county = { grant_title_no_opinion = { target = PREVPREV } }
+					culture = PREV
+					religion = PREV
+				}
+				76 = {
+					county = { grant_title_no_opinion = { target = PREVPREV } }
+					culture = PREV
+					religion = PREV
+				}
+				activate_title = { title = d_twilights_hammer status = yes }
+				d_twilights_hammer = { gain_title = PREV }
+				set_defacto_liege = e_horde
+				set_graphical_culture = twoheadedogre
+				join_society_shadow_council_effect = yes
+				society_rank_up = 2
+				give_job_title = job_spiritual
+			}
+			narrative_event = { id = WCFTW.100 }
+		}
+	}
+}
+
+# Starts the Horde Invasion
+narrative_event = {
+	id = WCFTW.100
+	title = EVTTITLE_WCFTW_100
+	desc = EVTDESC_WCFTW_100
+	picture = GFX_evt_openingdarkportal
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+
+	major = yes
+
+	hide_from = yes
+
+	immediate = {
+		if = {
+			limit = { has_global_flag = full_report_flag }
+			log = "WCFTW.100 fired for [Root.GetBestName]"
+		}
+		
+		set_global_flag = dark_portal_was_opened_flag
+		set_global_flag = orcish_invasion_flag
+				
+		73 = {
+			add_province_modifier = {
+				name = dark_portal_is_open_2
+				duration = -1
+			}
+			if = {
+				limit = { has_province_modifier = dark_portal_is_closed }
+				remove_province_modifier = dark_portal_is_closed
+			}
+		}
+		
+		# "The Twilight" event chain
+		73 = { province_event = { id = WCDAC.4999 days = 30 } }
+		# Starts "The Reawakening of C'thun" event chain
+		73 = { province_event = { id = WCVOD.1000 years = 25 } }
+		d_frostwolf = { 
+			owner = {
+				narrative_event = {
+					id = WCFW.1
+				}
+			}
+		}
+	}
+
+	option = {
+		name = LOKTAR_OGAR
+		trigger = { character = ROOT }
+		
+		wealth = 250
+		prestige = 200
+		spawn_horde_troops_effect = yes
+		spawn_horde_troops_effect = yes
+
+		if = {
+			limit = { character = ROOT }
+			k_stormwind = {
+				if = {
+					limit = { has_holder = yes }
+					holder_scope = {
+						set_character_flag = total_invasion_exception_flag
+						reverse_unsafe_war = {
+							casus_belli = total_invasion
+							target = ROOT
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	option = { #Chad orcs option
+		trigger = {
+			NOT = { character = ROOT }
+			NOT =  { culture = frostwolf }	
+			culture_group = orc_group
+
+		}			
+		name = LOKTAR_OGAR
+		
+		wealth = 100
+	}
+	
+	option = { #Virgin orcs option
+		trigger = {
+			NOT = { character = ROOT }
+			culture = frostwolf 			
+		}
+		name = EVTOPTB_WCFTW_101
+		piety = 25
+	}
+
+
+	option = {
+		name = EVTOPTB_WCFTW_100
+
+		trigger = {
+			NOR = {
+				culture_group = orc_group
+				character = ROOT
+				has_character_flag = is_medivh
+			}
+		}
+	}
+
+	option = {
+		name = EVTOPTC_WCFTW_100
+		trigger = {
+			has_character_flag = is_medivh
+		}
+	}
+}
+
+# IMPORTANT! Disabled this event for a while
+# character_event = {
+	# id = WCFTW.220
+
+	# hide_window = yes
+	# is_triggered_only = yes
+
+	# trigger = {
+		# NOT = { has_global_flag = khadgar_existed }
+		# has_character_flag = is_medivh
+		# has_global_flag = orcish_invasion_flag
+	# }
+
+	# immediate = {
+		# set_global_flag = khadgar_existed
+		# create_character = {
+			# name = Khadgar
+			# dynasty = none
+			# religion = holy_light
+			# culture = dalaranian
+			# female = no
+			# age = 18
+			# attributes = {
+				# martial=6 diplomacy=7 stewardship=5 intrigue=6 learning=8
+			# }
+			# trait=mastermind_theologian
+			# trait = creature_human
+			# trait=class_mage_3
+			# trait=honest trait=kind trait=brave trait=humble trait=diligent trait=trusting
+		# }
+		# new_character = {
+			# # add_character_modifier = { name = hero_power_2 duration = -1 }
+			# set_character_flag = is_khadgar
+			# character_event = { id = WCFTW.221 }
+		# }
+	# }
+# }
+
+# character_event = {
+	# id = WCFTW.221
+
+	# is_triggered_only = yes
+	# hide_window = yes
+
+	# immediate = {
+		# FROM = { character_event = { id = WCFTW.222 } }
+	# }
+# }
+
+# character_event = {
+	# id = WCFTW.222
+
+	# is_triggered_only = yes
+	# hide_window = yes
+
+	# immediate = {
+		# FROM = {
+			# save_event_target_as = student
+			# opinion = { modifier = opinion_teaching_me who = ROOT }
+			# set_character_flag = sent_letter_to_mentor
+			# set_character_flag = training_mentor_mage_flag
+		# }
+		# ROOT = {
+			# save_event_target_as = mentor
+			# letter_event = { id = WCCLS.2100 days = 1 }
+		# }
+	# }
+# }
+
+### Location of the Tomb of Sargeras ###
+character_event = {
+	id = WCFTW.990
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	trigger = {
+		is_adult = yes
+		is_incapable = no
+
+		has_character_flag = is_guldan
+	}
+
+	immediate = {
+		if = {
+			limit = { has_global_flag = full_report_flag }
+			log = "WCFTW.990 fired for [Root.GetBestName]"
+		}
+
+		if = {
+			limit = { any_character = { has_character_flag = is_medivh } }
+			random_character = {
+				limit = { has_character_flag = is_medivh }
+				save_event_target_as = target_medivh
+			}
+			character_event = { id = WCFTW.1000 }  			# Ransack Medivh's mind?
+		}
+		else = { character_event = { id = WCFTW.995 } }		# If Medivh is dead, just finds a map
+	}
+}
+# Finds a map of the Broken Isles
+long_character_event = {
+	id = WCFTW.995
+	desc = EVTDESC_WCFTW_995
+	picture = GFX_evt_ritual_scroll
+	border = GFX_event_long_frame_intrigue
+
+	is_triggered_only = yes
+
+	option = {
+		name = EXCELLENT
+
+		custom_tooltip = {
+			text = EVTOPTA_WCFTW_301_tooltip
+			hidden_tooltip = {
+				set_character_flag = knows_location_of_broken_isles
+			}
+		}
+	}
+}
+# Ransack Medivh's mind?
+character_event = {
+	id = WCFTW.1000
+	desc = EVTDESC_WCFTW_300
+	picture = GFX_evt_possessed_medivh
+
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCFTW_300
+
+		custom_tooltip = {
+			text = EVTOPTA_WCFTW_300_tooltip
+			hidden_tooltip = {
+				character_event = { id = WCFTW.1005 days = 20 }
+			}
+		}
+	}
+
+	option = {
+		name = EVTOPTB_WCFTW_300
+
+		ai_chance = {
+			factor = 0
+		}
+	}
+
+	after = {
+		event_target:target_medivh = { character_event = { id = WCFTW.1006 days = 10 } }
+	}
+}
+# Check whether Medivh died or not
+character_event = {
+	id = WCFTW.1005
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		if = {
+			limit = { event_target:target_medivh = { is_alive = yes } }
+			character_event = { id = WCFTW.1010 }			# Finds out the location of the tomb
+		}
+		else = { character_event = { id = WCFTW.1015 } }	# Falls into a coma
+	}
+}
+# Reveals Medivh
+character_event = {
+	id = WCFTW.1006
+	desc = EVTDESC_WCFTW_1006
+	picture = GFX_evt_possessed_medivh
+	border = GFX_event_normal_frame_intrigue
+
+	is_triggered_only = yes
+
+	immediate = {
+		if = {
+			limit = { has_global_flag = full_report_flag }
+			log = "WCFTW.1006 fired for [Root.GetBestName]"
+		}
+
+		any_playable_ruler = {
+			limit = {
+				OR = {
+					religion_group = ROOT
+					culture_group = ROOT
+					is_liege_or_above = ROOT
+				}
+			}
+			character_event = { id = WCFTW.1007 }
+		}
+		if = {
+			limit = {
+				ai = yes
+				top_liege = { ai = yes }
+			}
+			top_liege = {
+				ROOT = {
+					death = { death_reason = death_execution killer = PREV }
+				}
+			}
+		}
+	}
+
+	option = {
+		name = ALAS
+
+		convert_to_secret_religion = yes
+	}
+}
+# Notifies what Medivh did
+character_event = {
+	id = WCFTW.1007
+	desc = EVTDESC_WCFTW_201
+	picture = GFX_evt_possessed_medivh
+
+	is_triggered_only = yes
+
+	option = {
+		trigger = { evil_true_religion_trigger = no }
+		name = EVTOPTA_WCFTW_201
+
+		opinion = { modifier = opinion_world_traitor who = FROM }
+		if = {
+			limit = { is_friend = FROM }
+			remove_friend = FROM
+		}
+	}
+	option = {
+		trigger = { evil_true_religion_trigger = yes }
+		name = EXCELLENT
+	}
+}
+# Finds out the location of the tomb
+character_event = {
+	id = WCFTW.1010
+	desc = EVTDESC_WCFTW_301
+	picture = GFX_evt_possessed_medivh
+
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCFTW_301
+		custom_tooltip = {
+			text = EVTOPTA_WCFTW_301_tooltip
+			hidden_tooltip = {
+				set_character_flag = knows_location_of_broken_isles
+			}
+		}
+	}
+}
+# Falls into a coma
+character_event = {
+	id = WCFTW.1015
+	desc = EVTDESC_WCFTW_302
+	picture = GFX_evt_possessed_medivh
+
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCFTW_302
+
+		add_trait = incapable
+		hidden_effect = {
+			character_event = { id = WCFTW.1020 days = 90 random = 730 }		# Comes out of a coma
+		}
+	}
+}
+# Comes out of a coma
+character_event = {
+	id = WCFTW.1020
+	desc = EVTDESC_WCFTW_303
+	picture = GFX_evt_possessed_medivh
+
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCFTW_303
+
+		remove_trait = incapable
+		hidden_effect = {
+			character_event = { id = WCFTW.1010 days = 3 }		# Finds out the location of the tomb
+		}
+	}
+}

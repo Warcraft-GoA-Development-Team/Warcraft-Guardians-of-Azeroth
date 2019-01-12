@@ -1,0 +1,116 @@
+ #
+# 00_tributary_types.txt
+#
+
+# this lets you define new tributary types, with different values from the existing ones.
+# the "default" type, however MUST always exist (and will be automatically created if it doesn't). It represents the tributaries that existed so far into the game.
+# You cannot create a tributary type called "none" as it is the token used to signify there is no tributary relationship. A type called "none" will at best be completely ignored in-game, and at worst could break the tributary system.
+
+default = {								# name used for that type of tributary. "default" is the standard type, replacing the old tributaries, and "none" is reserved and should be used
+	tributary_name = TRIBUTARY_DEFAULT_NAME		# localization string used for tributaries of that type (ie "Tributary" for the default type, "Imperial Tributary" for the imperial type, etc)
+	tributary_plural = TRIBUTARY_DEFAULT_PLURAL	# localization string used for tributaries of that type, when there is more than one (ie "Tributaries" for the default type, "Imperial Tributaries" for the imperial type, etc)
+	suzerain_name = SUZERAIN_DEFAULT_NAME		# localization string used for suzerains of that tributary type (ie "Suzerain" for the default type, "Imperial Suzerain" for the imperial type, etc)
+	tribute_name = TRIBUTARY_DEFAULT_TRIBUTE	# localization string used for "paying $TRIBUTE$" for that tributary type
+	breaks_at_suzerain_death = yes		# yes/no value determining if the tributary relationship is disolved when the suzerain dies.
+	breaks_at_tributary_death = no 		# yes/no value determining if the tributery relationship is disolved when the tributary dies
+	suzerain_can_be_called = yes 		# yes/no value determining if tributaries can call their tributaries to war (as ally)	
+	suzerain_must_defend = no 			# yes/no value determining if the suzerain is forced to accept calls to arms from tributary in defensive wars (wars were the tributary is the defender)
+										# if they decline anyway, they will lose the tributary and an amount of prestige defined in defines.lua, called SUZERAIN_DEFENDER_CALL_DECLINE_COST
+	tributary_can_be_summoned = yes 	# yes/no value determining if the suzerain can calls the tributaries to war (as tribal vassals / allies)	
+	tributary_must_defend = yes			# yes/no value determining if the tributaries are forced to accept defensive calls to arms
+	tributaries_can_infight = yes		# yes/no value determining if the tributaries can fight against each others, if both tributaries are of the same type
+										# if tributaries are of different types, they will always be allowed to fight each other, even if they have the same suzerain
+	suzerain_can_join_infighting = yes	# yes/no value determining if the suzerain can join a tributary in a war against another
+	tributaries_can_unite = no 			# yes/no value determining if, when trying to break, the tributaries can band together against the suzerain, à la major revolt
+										# Also means that tributaries of this type will never help their suzerain in a war against another tributary of this type, even when they're not willing to help the other tributary
+	breaks_on_realm_change=yes			# yes/no value determining if the tributary relationship is dissolved when the tributary's titles change realms
+	icon = 7							# which frame of the icon strip to use. Note that using an index already used for another relation type (E.G., alliances) will break the tooltip
+	cbs_against_suzerain = {			# list of CBs tributaries can use against their suzerain. Any CB on this list simply cannot be used
+		free_tributary_cb
+	}
+	income_tribute_percentage = {		# how much of their monthly income the tributary must pay to their suzerain.
+										# THIS IS ONLY EVALUATED WHEN THE TRIBUTARY RELATIONSHIP IS FORMED
+										# and is not reevaluated afterwards
+										# this value is an MTTH and should compute a value between 0 and 1, inclusive
+										# in case the total is less than 0, it will be counted as 0
+										# in case the total is more than 1, it will be counted as 1
+										# current scope is the tributary, FROM is the suzerain
+		value = 0.10
+		additive_modifier = {
+			value = 0.05
+			FROM = {
+				is_merchant_republic = yes
+			}
+		}
+	}
+	reinforce_tribute_percentage = {	# How much of the tributary's reinforcement rate will go to the suzerain's instead.
+										# THIS IS ONLY EVALUATED WHEN THE TRIBUTARY RELATIONSHIP IS FORMED
+										# and is not reevaluated afterwards
+										# this value is an MTTH and should compute a value between 0 and 1, inclusive
+										# in case the total is less than 0, it will be counted as 0
+										# in case the total is more than 1, it will be counted as 1
+										# current scope is the tributary, FROM is the suzerain
+
+										# this is applied by substracting the percentage, as is, from the tributary's reinforcement rate
+										# and adding a scaled (based on demesne size= version of the percentage to the suzerain
+										# So, for example, the tributary loses 10% of reinforcement rate, but the suzerain gains 10% * (tributary's demesne size) / (suzerain's demesne size)
+		value = 0.10
+		additive_modifier = {
+			value = 0.05
+			FROM = {
+				is_merchant_republic = yes
+			}
+		}
+	}
+	prestige_to_suzerain = {			# how much of prestige the suzerain gains every month per tributary (of that type) he holds
+										# this value is an MTTH and the raw value will be added to the suzerain's prestige every month.
+										# current scope is the suzerain, FROM is the tributary
+		value = 0
+	}
+	prestige_to_tributary = {			# how much prestige the tributary gains every month
+										# this value is an MTTH and the raw value will be added to the tributary's prestige every month.
+										# to make them lose prestige, return a negative value
+										# current scope is the tributary, FROM is the suzerain
+		value = 0
+	}
+	piety_to_suzerain = {				# how much of piety the suzerain gains every month per tributary (of that type) he holds
+										# this value is an MTTH and the raw value will be added to the suzerain's piety every month.
+										# current scope is the suzerain, FROM is the tributary
+		value = 0
+	}
+	piety_to_tributary = {				# how much of piety a tributary gains every month
+										# this value is an MTTH and the raw value will be added to the tributary's piety every month.
+										# to make them lose piety, return a negative value
+										# current scope is the tributary, FROM is the suzerain
+		value = 0
+	}
+	modifier = {						# what modifiers to apply to the tributary. Will use tributary_name as its name
+		monthly_grace = 1
+	}
+}
+
+Tributary status can be set in title history:
+860.1.1 = {
+	set_tribute_suzerain = {
+		who = e_china_west_governor		# What title to be a tributary to
+		percentage = 0.40				# How much tribute to pay. If not set, will be calculated based on income_tribute_percentage
+		type = imperial					# What type of tributary to be. If not set, will use "default"
+	}
+}
+
+### effects and triggers
+make_tributary = {						# Effect to create a tributary. The scope character is the suzerain
+	who = ROOT							# who is the new tributary
+	percentage = 0.05					# the tribute being paid (as a percentage of the tributary's income), overrides the value defined in the tributary type
+	tributary_type = imperial			# the type of tributary. If ommited, defaults to "default"
+}
+
+is_tributary = yes						# this form of the trigger returns true if the scope character is a tributary, any type of tributary, to any character
+
+is_tributary = {						# this (NEW!) form of the trigger allows you to check if the scope character is a tributary of a specific type, to a specific character
+	type = imperial 					# the type of tributary we're checking the character against. If ommitted, the trigger will return true for any type of tributary
+	suzerain = FROM 					# the suzerain we the scope character is supposed to have
+										# if ommitted, the trigger returns true if the scope character is a tributary of any suzerain
+}
+
+# this does mean that "is_tributary = {}"  is the same as "is_tributary = yes" but please don't use such a horrible construct

@@ -1,0 +1,237 @@
+targetted_decisions = {
+	start_sway = {
+		only_playable = yes
+		ai = no
+		hide_in_decisions_list = yes
+		potential = {
+			NOT = { character = FROM }
+			ROOT = { is_alive = yes }
+			FROM = {
+				has_dlc = "Holy Fury"
+				ai = no
+				is_ruler = yes
+				OR = { 
+					is_landed = yes
+					is_patrician = yes
+				}
+				NOT = { 
+					persistent_event_target:sway_target = {
+						character = ROOT
+					}
+				}
+			}
+		}
+		allow = {
+			# Warcraft
+			is_untouchable_trigger = no
+			can_rule_peacefully_trigger = yes
+			evil_public_religion_trigger = no
+			has_invader_title_trigger = no
+			FROM = {
+				is_untouchable_trigger = no
+				can_rule_peacefully_trigger = yes
+				evil_public_religion_trigger = no
+				has_invader_title_trigger = no
+			}
+			
+			show_only_failed_conditions = yes
+			FROM = { 
+				custom_tooltip = { 
+					text = inaccessible_tooltip
+					hidden_tooltip = { is_inaccessible_trigger = no } 
+				}
+				is_adult = yes
+				NOT = { is_incapable = yes }
+				is_within_diplo_range = ROOT
+			}
+			FROM = { 
+				show_scope_change = no
+				custom_tooltip = { 
+					text = tooltip_cannot_antagonize_sway_same_time
+					hidden_tooltip = {
+						NOT = { #Can't appease and antagonize at the same time.
+							persistent_event_target:antagonize_target = {
+								character = ROOT
+							}
+						}
+					}
+				}
+			}
+			prisoner = no
+			NOT = { is_incapable = yes }
+			NOT = { trait = in_hiding }
+			NOT = { has_character_modifier = in_seclusion }
+			custom_tooltip = { 
+				text = tooltip_rebuked_apology 
+				NOT = { has_opinion_modifier = { who = FROM modifier = opinion_rebuked_appeaser_cooldown } } 
+			}
+			OR = { 
+				NOT = { is_rival = FROM } 
+				FROM = { trait = arbitrary } 
+			}
+			
+			is_adult = yes
+			FROM = { 
+				show_scope_change = no
+				NOT = { rightful_religious_head = ROOT } 
+			} 
+		}
+		effect = {
+			hidden_tooltip = {
+				FROM = {
+					clr_character_flag = flag_tired_of_gifts
+					if = { 
+						limit = { persistent_event_target:sway_target = { always = yes } }
+						persistent_event_target:sway_target = { clr_character_flag = flag_character_being_swayed } 
+						remove_special_interest = persistent_event_target:sway_target 
+					}
+				}
+			}
+			FROM = {
+				save_persistent_event_target = {
+					name = sway_target
+					scope = ROOT
+				}
+				add_special_interest = { who = ROOT key = swaying_target_key } 
+			}
+			set_character_flag = flag_character_being_swayed #Only used for AI weights.
+		}
+	}
+	
+	stop_sway = {
+		ai = no
+		only_playable = yes
+		hide_in_decisions_list = yes
+		potential = {
+			FROM = {
+				ai = no
+				persistent_event_target:sway_target = {
+					character = ROOT
+				}
+			}
+		}
+		allow = {
+		}
+		effect = {
+			clr_character_flag = flag_character_being_swayed #Only used for AI weights.
+			FROM = {
+				clr_character_flag = flag_tired_of_gifts
+				remove_special_interest = persistent_event_target:sway_target
+				clear_persistent_event_target = sway_target
+			}
+		}
+	}
+	
+	start_antagonize = {
+		ai = no
+		only_playable = yes
+		hide_in_decisions_list = yes
+		ai_target_filter = self
+		potential = {
+			NOT = { character = FROM }
+			ROOT = { is_alive = yes }
+			FROM = {
+				has_dlc = "Holy Fury"
+				ai = no
+				is_ruler = yes
+				OR = { 
+					is_landed = yes
+					is_patrician = yes
+				}
+				NOT = {
+					persistent_event_target:antagonize_target = {
+						character = ROOT
+					}
+				}
+			}
+		}
+		allow = {
+			# Warcraft
+			is_untouchable_trigger = no
+			can_rule_peacefully_trigger = yes
+			evil_public_religion_trigger = no
+			has_invader_title_trigger = no
+			FROM = {
+				is_untouchable_trigger = no
+				can_rule_peacefully_trigger = yes
+				evil_public_religion_trigger = no
+				has_invader_title_trigger = no
+			}
+			
+			show_only_failed_conditions = yes
+			FROM = { 
+				custom_tooltip = { 
+					text = inaccessible_tooltip
+					hidden_tooltip = { is_inaccessible_trigger = no } 
+				}
+				is_adult = yes
+				NOT = { is_incapable = yes }
+				is_within_diplo_range = ROOT
+			}
+			FROM = { 
+				show_scope_change = no
+				custom_tooltip = { 
+					text = tooltip_cannot_antagonize_sway_same_time
+					hidden_tooltip = {
+						NOT = { #Can't appease and antagonize at the same time.
+							persistent_event_target:sway_target = {
+								character = ROOT
+							}
+						}
+					}
+				}
+			}
+			NOR = {
+				is_friend = FROM
+				is_lover = FROM
+			}
+			prisoner = no
+			NOT = { is_incapable = yes }
+			NOT = { trait = in_hiding }
+			NOT = { has_character_modifier = in_seclusion }
+			is_adult = yes
+		}
+		effect = {
+			hidden_tooltip = {
+				FROM = {
+					if = { 
+						limit = { persistent_event_target:antagonize_target = { always = yes } }
+						persistent_event_target:antagonize_target = { clr_character_flag = flag_character_being_antagonized } 
+						remove_special_interest = persistent_event_target:antagonize_target 
+					}
+				}
+			}
+			FROM = {
+				save_persistent_event_target = {
+					name = antagonize_target
+					scope = ROOT
+				}
+				add_special_interest = { who = ROOT key = antagonizing_target_key } 
+			}
+			set_character_flag = flag_character_being_antagonized
+		}
+
+	}
+	stop_antagonize = {
+		ai = no
+		only_playable = yes
+		hide_in_decisions_list = yes
+		ai_target_filter = self
+		potential = {
+			FROM = {
+				persistent_event_target:antagonize_target = {
+					character = ROOT
+				}
+			}
+		}
+		allow = {
+		}
+		effect = {
+			clr_character_flag = flag_character_being_antagonized
+			FROM = {
+				remove_special_interest = persistent_event_target:antagonize_target
+				clear_persistent_event_target = antagonize_target
+			}
+		}
+	}
+}

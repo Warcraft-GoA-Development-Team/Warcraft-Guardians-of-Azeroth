@@ -1,0 +1,826 @@
+decisions = {
+	# loa_group
+	pick_main_loa = {
+		is_high_prio = yes
+
+		ai_check_interval = 48
+
+		potential = {
+			is_adult = yes
+			is_incapable = no
+
+			religion = cult_of_loa
+			true_religion = cult_of_loa
+		}
+
+		allow = {
+			custom_tooltip = {
+				text = pick_main_loa_timer_tooltip
+				NOT = { has_character_modifier = picked_main_deity_timer }
+			}
+			prisoner = no
+			piety = 25
+		}
+
+		effect = {
+			piety = -25
+			custom_tooltip = {
+				text = pick_main_loa_tooltip
+				add_character_modifier = {
+					name = picked_main_deity_timer
+					duration = 3650
+					hidden = yes
+				}
+			}
+
+			trigger_switch = {
+				on_trigger = has_character_modifier
+				follower_of_nalorakk 	= { remove_character_modifier = follower_of_nalorakk 		}
+				follower_of_akilzon     = { remove_character_modifier = follower_of_akilzon         }
+				follower_of_janalai     = { remove_character_modifier = follower_of_janalai         }
+				follower_of_halazzi     = { remove_character_modifier = follower_of_halazzi         }
+				follower_of_mahamba     = { remove_character_modifier = follower_of_mahamba         }
+				follower_of_tsulkalu    = { remove_character_modifier = follower_of_tsulkalu        }
+				follower_of_pogeyan     = { remove_character_modifier = follower_of_pogeyan         }
+				follower_of_bwonsamdi   = { remove_character_modifier = follower_of_bwonsamdi       }
+				follower_of_shango      = { remove_character_modifier = follower_of_shango          }
+				follower_of_shirvallah  = { remove_character_modifier = follower_of_shirvallah      }
+				follower_of_hireek      = { remove_character_modifier = follower_of_hireek          }
+				follower_of_shadra      = { remove_character_modifier = follower_of_shadra          }
+				follower_of_akali       = { remove_character_modifier = follower_of_akali           }
+				follower_of_harkoa      = { remove_character_modifier = follower_of_harkoa          }
+				follower_of_mamtoth     = { remove_character_modifier = follower_of_mamtoth         }
+				follower_of_quetzlun    = { remove_character_modifier = follower_of_quetzlun        }
+				follower_of_rhunok      = { remove_character_modifier = follower_of_rhunok          }
+				follower_of_sseratus    = { remove_character_modifier = follower_of_sseratus        }
+				follower_of_tharonja    = { remove_character_modifier = follower_of_tharonja        }
+				# follower_of_dubrajin    = { remove_character_modifier = follower_of_dubrajin        }
+				# follower_of_zimabwa     = { remove_character_modifier = follower_of_zimabwa         }
+				# follower_of_zimrhuk     = { remove_character_modifier = follower_of_zimrhuk         }
+				# follower_of_zimtorga    = { remove_character_modifier = follower_of_zimtorga        }
+				follower_of_bethekk     = { remove_character_modifier = follower_of_bethekk         }
+				follower_of_hethiss     = { remove_character_modifier = follower_of_hethiss         }
+				follower_of_kimbul      = { remove_character_modifier = follower_of_kimbul          }
+				follower_of_muehzala    = { remove_character_modifier = follower_of_muehzala        }
+				follower_of_akildarah   = { remove_character_modifier = follower_of_akildarah       }
+				follower_of_akunda      = { remove_character_modifier = follower_of_akunda          }
+				follower_of_dambala     = { remove_character_modifier = follower_of_dambala         }
+				follower_of_gral        = { remove_character_modifier = follower_of_gral            }
+				follower_of_gonk        = { remove_character_modifier = follower_of_gonk            }
+				follower_of_jani        = { remove_character_modifier = follower_of_jani            }
+				follower_of_kragwa      = { remove_character_modifier = follower_of_kragwa          }
+				follower_of_lukou       = { remove_character_modifier = follower_of_lukou           }
+				follower_of_paku        = { remove_character_modifier = follower_of_paku            }
+				follower_of_rezan       = { remove_character_modifier = follower_of_rezan           }
+				follower_of_sethraliss  = { remove_character_modifier = follower_of_sethraliss      }
+				follower_of_torcali     = { remove_character_modifier = follower_of_torcali         }
+				follower_of_torga       = { remove_character_modifier = follower_of_torga           }
+				follower_of_zanza       = { remove_character_modifier = follower_of_zanza           }
+			}
+			#Event for picking loa
+			character_event = { id = WCLOA.1010 }
+
+			#Starts main loa events
+			hidden_tooltip = {
+				if = {
+					limit = { follower_of_loa = no }
+					character_event = { id = WCLOA.1000 days = 10 }
+				}
+			}
+		}
+
+		revoke_allowed = {
+			always = no
+		}
+
+		ai_will_do = {
+			factor = 1
+		}
+	} #end of pick_main_loa
+	blood_rituals = {
+		ai_check_interval = 24
+
+		only_playable = yes
+
+		potential = {
+			is_adult = yes
+			is_incapable = no
+
+			religion = cult_of_hakkar
+
+			higher_real_tier_than = BARON
+		}
+
+		allow = {
+			prisoner = no
+			is_inaccessible_trigger = no
+
+			custom_tooltip = {
+				text = is_not_busy_trigger_tooltip
+				hidden_tooltip = { NOT = { has_character_flag = do_not_disturb } }
+			}
+			custom_tooltip = {
+				text = has_not_used_decision_3_years_tooltip
+				hidden_tooltip = {
+					OR = {
+						NOT = { has_character_flag = blood_rituals_cooldown_flag }
+						had_character_flag = { flag = blood_rituals_cooldown_flag years = 3 }
+					}
+				}
+			}
+
+			num_of_prisoners = 1
+		}
+
+		effect = {
+			set_character_flag = do_not_disturb
+			set_character_flag = blood_rituals_cooldown_flag
+
+			major_soul_corruption_effect = yes
+
+			character_event = { id = WCLOA.100 }
+		}
+
+		revoke_allowed = {
+			always = no
+		}
+
+		ai_will_do = {
+			factor = 0.25
+		}
+	}
+	primitive_rites = {
+		ai_check_interval = 24
+
+		only_playable = yes
+
+		potential = {
+			is_adult = yes
+			is_incapable = no
+
+			religion_group = primitive_group
+		}
+
+		allow = {
+			prisoner = no
+			is_inaccessible_trigger = no
+
+			war = no
+
+			custom_tooltip = {
+				text = is_not_busy_trigger_tooltip
+				hidden_tooltip = { NOT = { has_character_flag = do_not_disturb } }
+			}
+			custom_tooltip = {
+				text = has_not_used_decision_3_years_tooltip
+				hidden_tooltip = {
+					OR = {
+						NOT = { has_character_flag = primitive_rites_cooldown_flag }
+						had_character_flag = { flag = primitive_rites_cooldown_flag years = 3 }
+					}
+				}
+			}
+
+			wealth = 25
+		}
+
+		effect = {
+			set_character_flag = do_not_disturb
+			set_character_flag = primitive_rites_cooldown_flag
+
+			wealth = -25
+
+			character_event = { id = WCPRM.100 }
+		}
+
+		revoke_allowed = {
+			always = no
+		}
+
+		ai_will_do = {
+			factor = 0.25
+		}
+	}
+	offer_gift_to_elements = {
+		ai_check_interval = 24
+
+		only_playable = yes
+
+		potential = {
+			is_adult = yes
+			is_incapable = no
+
+			religion_group = elemental_lords_group
+
+			higher_real_tier_than = BARON
+		}
+
+		allow = {
+			prisoner = no
+			is_inaccessible_trigger = no
+
+			war = no
+
+			custom_tooltip = {
+				text = has_not_used_decision_3_years_tooltip
+				hidden_tooltip = {
+					OR = {
+						NOT = { has_character_flag = offer_gift_to_elements_cooldown_flag }
+						had_character_flag = { flag = offer_gift_to_elements_cooldown_flag years = 3 }
+					}
+				}
+			}
+
+			scaled_wealth = 0.5
+			prestige = 200
+		}
+
+		effect = {
+			set_character_flag = offer_gift_to_elements_cooldown_flag
+
+			character_event = { id = WCSHM.100 }
+		}
+	}
+
+	honor_local_spirits = {
+		is_high_prio = yes
+		ai_check_interval = 24
+
+		only_playable = yes
+
+		potential = {
+			is_adult = yes
+			is_incapable = no
+			religion_group = shamanism_group
+			true_religion_group = shamanism_group
+		}
+
+		allow = {
+			prisoner = no
+			is_inaccessible_trigger = no
+			wealth = 50
+			war = no
+
+			custom_tooltip = {
+				text = is_not_busy_trigger_tooltip
+				hidden_tooltip = { NOT = { has_character_flag = do_not_disturb } }
+			}
+			custom_tooltip = {
+				text = has_not_used_decision_3_years_tooltip
+				hidden_tooltip = {
+					OR = {
+						NOT = { has_character_flag = honor_local_spirits_cooldown_flag }
+						had_character_flag = { flag = honor_local_spirits_cooldown_flag years = 3 }
+					}
+				}
+			}
+
+			wealth = 25
+		}
+
+		effect = {
+			set_character_flag = do_not_disturb
+
+
+			wealth = -25
+
+			character_event = { id = WCSAD.1 }
+		}
+
+		revoke_allowed = {
+			always = no
+		}
+
+		ai_will_do = {
+			factor = 0.25
+			modifier = {
+				factor = 3
+				is_shaman_class_trigger = yes
+			}
+		}
+	}
+	seek_ancestral_help = {
+		is_high_prio = yes
+		ai_check_interval = 24
+
+		only_playable = yes
+
+		potential = {
+			is_playable = yes
+			age = 16
+			prisoner = no
+			religion = orcish_shamanism
+			true_religion = orcish_shamanism
+		}
+		allow = {
+			wealth = 50
+			war = no
+			prisoner = no
+			is_inaccessible_trigger = no
+			custom_tooltip = {
+				text = is_not_busy_trigger_tooltip
+				hidden_tooltip = { NOT = { has_character_flag = do_not_disturb } }
+			}
+			custom_tooltip = {
+				text = has_not_used_decision_3_years_tooltip
+				hidden_tooltip = {
+					OR = {
+						NOT = { has_character_flag = seek_ancestral_help_cooldown_flag }
+						had_character_flag = { flag = seek_ancestral_help_cooldown_flag years = 3 }
+					}
+				}
+			}
+		}
+
+
+
+		effect = {
+			set_character_flag = do_not_disturb
+			wealth = -50
+			hidden_tooltip = {
+				character_event = { id = WCSAD.20 }
+			}
+		}
+		revoke_allowed = {
+			always = no
+		}
+		ai_will_do = {
+			factor = 0.25
+
+		}
+	}
+	earth_mother_ritual = {
+		is_high_prio = yes
+		ai_check_interval = 24
+
+		only_playable = yes
+
+		potential = {
+			is_playable = yes
+			age = 16
+			prisoner = no
+			religion = earth_mother_worship
+			true_religion = earth_mother_worship
+		}
+		allow = {
+			wealth = 50
+			war = no
+			prisoner = no
+			is_inaccessible_trigger = no
+			custom_tooltip = {
+				text = is_not_busy_trigger_tooltip
+				hidden_tooltip = { NOT = { has_character_flag = do_not_disturb } }
+			}
+			custom_tooltip = {
+				text = has_not_used_decision_3_years_tooltip
+				hidden_tooltip = {
+					OR = {
+						NOT = { has_character_flag = earth_mother_ritual_cooldown_flag }
+						had_character_flag = { flag = earth_mother_ritual_cooldown_flag years = 3 }
+					}
+				}
+			}
+		}
+
+
+
+		effect = {
+			set_character_flag = do_not_disturb
+			wealth = -50
+			hidden_tooltip = {
+				character_event = { id = WCSAD.30 }
+			}
+		}
+		revoke_allowed = {
+			always = no
+		}
+		ai_will_do = {
+			factor = 0.25
+
+		}
+	}
+	approach_powerful_elemental = {
+		is_high_prio = yes
+		ai_check_interval = 108
+
+		only_playable = yes
+
+		potential = {
+			is_playable = yes
+			age = 16
+			prisoner = no
+			religion_group = shamanism_group
+			true_religion_group = shamanism_group
+		}
+		allow = {
+			wealth = 100
+			OR = {
+				piety = 1000
+				AND = {
+					piety = 500
+					is_shaman_class_trigger = yes
+				}
+			}
+			OR = {
+				prestige = 1500
+				AND = {
+					prestige = 750
+					is_shaman_class_trigger = yes
+				}
+			}
+			war = no
+			prisoner = no
+			is_inaccessible_trigger = no
+			custom_tooltip = {
+				text = is_not_busy_trigger_tooltip
+				hidden_tooltip = { NOT = { has_character_flag = do_not_disturb } }
+			}
+			custom_tooltip = {
+				text = has_not_used_decision_10_years_tooltip
+				hidden_tooltip = {
+					OR = {
+						NOT = { has_character_flag = approach_powerful_elemental_cooldown_flag }
+						had_character_flag = { flag = approach_powerful_elemental_cooldown_flag years = 10 }
+					}
+				}
+			}
+		}
+		effect = {
+			set_character_flag = do_not_disturb
+			wealth = -100
+			prestige = -500
+			piety = -250
+			hidden_tooltip = {
+				character_event = { id = WCSAD.40 }
+			}
+		}
+		revoke_allowed = {
+			always = no
+		}
+		ai_will_do = {
+			factor = 0.05
+
+		}
+	}
+	tidesages_blessing_decision = {
+		is_high_prio = yes
+		ai_check_interval = 24
+
+		only_playable = yes
+
+		potential = {
+			is_playable = yes
+			age = 16
+			prisoner = no
+			religion = tidemother
+			true_religion = tidemother
+		}
+		allow = {
+			wealth = 50
+			war = no
+			prisoner = no
+			is_inaccessible_trigger = no
+			custom_tooltip = {
+				text = is_not_busy_trigger_tooltip
+				hidden_tooltip = { NOT = { has_character_flag = do_not_disturb } }
+			}
+			custom_tooltip = {
+				text = has_not_used_decision_3_years_tooltip
+				hidden_tooltip = {
+					OR = {
+						NOT = { has_character_flag = tidesages_blessing_cooldown_flag }
+						had_character_flag = { flag = tidesages_blessing_cooldown_flag years = 3 }
+					}
+				}
+			}
+		}
+
+
+
+		effect = {
+			set_character_flag = do_not_disturb
+			wealth = -50
+			hidden_tooltip = {
+				character_event = { id = WCSAD.70 }
+			}
+		}
+		revoke_allowed = {
+			always = no
+		}
+		ai_will_do = {
+			factor = 0.25
+
+		}
+	}
+	pray_to_elune = {
+		is_high_prio = yes
+		ai_check_interval = 24
+
+		only_playable = yes
+
+		potential = {
+			is_playable = yes
+			age = 16
+			prisoner = no
+			religion = kaldorei_religion
+			true_religion = kaldorei_religion
+		}
+		allow = {
+			piety = 0
+			war = no
+			prisoner = no
+			is_inaccessible_trigger = no
+			custom_tooltip = {
+				text = is_not_busy_trigger_tooltip
+				hidden_tooltip = { NOT = { has_character_flag = do_not_disturb } }
+			}
+			custom_tooltip = {
+				text = has_not_used_decision_3_years_tooltip
+				hidden_tooltip = {
+					OR = {
+						NOT = { has_character_flag = pray_to_elune_cooldown_flag }
+						had_character_flag = { flag = pray_to_elune_cooldown_flag years = 3 }
+					}
+				}
+			}
+		}
+
+
+
+		effect = {
+			set_character_flag = do_not_disturb
+			hidden_tooltip = {
+				character_event = { id = WCSAD.75 }
+			}
+		}
+		revoke_allowed = {
+			always = no
+		}
+		ai_will_do = {
+			factor = 0.25
+
+		}
+	}
+	request_the_gift = {
+		is_high_prio = yes
+		ai_check_interval = 24
+
+		only_playable = yes
+
+		potential = {
+			is_playable = yes
+			age = 16
+			is_incapable = no
+			prisoner = no
+			religion = wolf_cult_religion
+			true_religion =  wolf_cult_religion
+			is_susceptible_to_worgen_curse_character_trigger = yes
+		}
+		allow = {
+			prestige = 500
+			piety = 250
+			war = no
+			prisoner = no
+			is_inaccessible_trigger = no
+		}
+
+		effect = {
+			prestige = -500
+			piety = -250
+			hidden_tooltip = {
+				character_event = { id = WCSAD.80 }
+			}
+		}
+		revoke_allowed = {
+			always = no
+		}
+		ai_will_do = {
+			factor = 0.25
+
+		}
+	}
+	ritual_to_twin_gods = {
+		is_high_prio = yes
+		ai_check_interval = 24
+
+		only_playable = yes
+
+		potential = {
+			is_playable = yes
+			age = 16
+			prisoner = no
+			religion = ursine
+			true_religion = ursine
+		}
+		allow = {
+			wealth = 50
+			war = no
+			prisoner = no
+			is_inaccessible_trigger = no
+			custom_tooltip = {
+				text = is_not_busy_trigger_tooltip
+				hidden_tooltip = { NOT = { has_character_flag = do_not_disturb } }
+			}
+			custom_tooltip = {
+				text = has_not_used_decision_3_years_tooltip
+				hidden_tooltip = {
+					OR = {
+						NOT = { has_character_flag = ritual_to_twin_gods_cooldown_flag }
+						had_character_flag = { flag = ritual_to_twin_gods_cooldown_flag years = 3 }
+					}
+				}
+			}
+		}
+
+
+
+		effect = {
+			wealth = -50
+			set_character_flag = do_not_disturb
+			hidden_tooltip = {
+				character_event = { id = WCSAD.85 }
+			}
+		}
+		revoke_allowed = {
+			always = no
+		}
+		ai_will_do = {
+			factor = 0.25
+
+		}
+	}
+	seek_wd_blessing = {
+		is_high_prio = yes
+		ai_check_interval = 24
+
+		only_playable = yes
+
+		potential = {
+			is_playable = yes
+			age = 16
+			prisoner = no
+			religion_group = druidism_group
+			true_religion_group = druidism_group
+		}
+		allow = {
+			prisoner = no
+			OR = {
+				AND = {
+					piety = 1000
+					prestige = 1000
+				}
+				AND = {
+					is_primary_war_defender = yes
+					piety = 500
+					prestige = 500
+				}
+			}
+			OR = {
+				religion = druidism_beliefs
+				AND = {
+					religion_group = druidism_group
+					is_druid_class_trigger = yes
+				}
+			}
+			is_inaccessible_trigger = no
+			custom_tooltip = {
+				text = is_not_busy_trigger_tooltip
+				hidden_tooltip = { NOT = { has_character_flag = do_not_disturb } }
+			}
+			custom_tooltip = {
+				text = has_not_used_decision_10_years_tooltip
+				hidden_tooltip = {
+					OR = {
+						NOT = { has_character_flag = seek_wd_blessing_cooldown_flag }
+						had_character_flag = { flag = seek_wd_blessing_cooldown_flag years = 10 }
+					}
+				}
+			}
+		}
+
+
+
+		effect = {
+			if = {
+				limit = {
+					is_primary_war_defender = yes
+				}
+				piety = -500
+				prestige = -500
+			}
+
+			else = {
+				piety = -1000
+				prestige = -1000
+			}
+
+			set_character_flag = do_not_disturb
+			hidden_tooltip = {
+				character_event = { id = WCSAD.90 }
+			}
+		}
+		revoke_allowed = {
+			always = no
+		}
+		ai_will_do = {
+			factor = 0.25
+
+		}
+	}
+	worgen_hunt = {
+		is_high_prio = yes
+		ai_check_interval = 24
+
+		only_playable = yes
+
+		potential = {
+			is_playable = yes
+			age = 16
+			prisoner = no
+			trait = worgen
+			is_incapable = no
+		}
+		allow = {
+			war = no
+			prisoner = no
+			is_inaccessible_trigger = no
+			custom_tooltip = {
+				text = is_not_busy_trigger_tooltip
+				hidden_tooltip = { NOT = { has_character_flag = do_not_disturb } }
+			}
+			custom_tooltip = {
+				text = has_not_used_decision_3_years_tooltip
+				hidden_tooltip = {
+					OR = {
+						NOT = { has_character_flag = worgen_hunt_cooldown_flag }
+						had_character_flag = { flag = worgen_hunt_cooldown_flag years = 3 }
+					}
+				}
+			}
+		}
+
+
+
+		effect = {
+			set_character_flag = do_not_disturb
+			hidden_tooltip = {
+				character_event = { id = WCSAD.120 }
+			}
+		}
+		revoke_allowed = {
+			always = no
+		}
+		ai_will_do = {
+			factor = 0.25
+
+		}
+	}
+	request_potion = {
+		is_high_prio = yes
+		ai_check_interval = 24
+
+		only_playable = yes
+
+		potential = {
+			is_playable = yes
+			age = 16
+			prisoner = no
+			religion = old_ways
+		}
+		allow = {
+			wealth = 50
+			war = no
+			prisoner = no
+			is_inaccessible_trigger = no
+			custom_tooltip = {
+				text = is_not_busy_trigger_tooltip
+				hidden_tooltip = { NOT = { has_character_flag = do_not_disturb } }
+			}
+			custom_tooltip = {
+				text = has_not_used_decision_3_years_tooltip
+				hidden_tooltip = {
+					OR = {
+						NOT = { has_character_flag = request_potion_cooldown_flag }
+						had_character_flag = { flag = request_potion_cooldown_flag years = 3 }
+					}
+				}
+			}
+		}
+
+
+
+		effect = {
+			set_character_flag = do_not_disturb
+			hidden_tooltip = {
+				character_event = { id = WCSAD.130 }
+			}
+		}
+		revoke_allowed = {
+			always = no
+		}
+		ai_will_do = {
+			factor = 0.25
+
+		}
+	}
+}
