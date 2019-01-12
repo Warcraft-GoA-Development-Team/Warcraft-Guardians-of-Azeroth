@@ -1,0 +1,45 @@
+namespace = WCGOV
+
+# Changes laws and removes titles
+character_event = {
+	id = WCGOV.1000
+
+	is_triggered_only = yes
+	hide_window = yes
+	
+	only_rulers = yes
+
+	trigger = {
+		dark_public_religion_trigger = yes
+	}
+
+	immediate = {
+		log = "WCGOV.1000 fired for [Root.GetBestName]"
+
+		if = {
+			limit = { is_ruler = yes }
+			any_demesne_title = {
+				if = {
+					limit = {
+						is_law_potential = status_of_magic_3
+						NOT = { has_law = status_of_magic_3 }
+					}
+					add_law = { law = status_of_magic_3 cooldown = no opinion_effect = no }
+				}
+			}
+			if = {
+				limit = { evil_public_religion_trigger = yes }
+				any_courtier_or_vassal = {
+					limit = { evil_public_religion_trigger = no }
+					leave_council_position_effect = yes
+					remove_title = title_commander
+				}
+			}
+		}
+		if = {
+			limit = { liege = { evil_public_religion_trigger = no } }
+			leave_council_position_effect = yes
+			remove_title = title_commander
+		}
+	}
+}

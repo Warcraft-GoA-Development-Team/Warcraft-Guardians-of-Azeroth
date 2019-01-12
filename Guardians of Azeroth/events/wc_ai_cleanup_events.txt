@@ -1,0 +1,423 @@
+namespace=WCCLN
+
+#ROOT is the demander, FROM is the vassal
+character_event = {
+	id = WCCLN.8
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		FROM = {
+			character_event = { id = WCCLN.9 }
+		}
+	}
+}
+
+#ROOT is the vassal, FROM is the demander
+character_event = {
+	id = WCCLN.9
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		# Fires for the vassal and each of his courtiers and vassals.
+		# Note: needs to fire for vassals/courtier before character
+		# FROMFROM is the demander. FROM is the vassal. ROOT is the character.
+		any_courtier = {
+			character_event = { id = 39700 }
+		}
+		any_vassal = {
+			character_event = { id = 39700 }
+		}
+		character_event = { id = 39700 }
+	}
+}
+
+# Marriage fixes
+character_event = {
+	id = WCCLN.100
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	trigger = {
+		is_alive = yes
+		is_dying = no
+		
+		new_character = { FROM = { can_has_sexual_relation_with_prev = no } }
+	}
+
+	immediate = {
+		new_character = {
+			if = {
+				limit = { is_female = no }
+				save_event_target_as = target_husband
+			}
+			if = {
+				limit = { is_female = yes }
+				save_event_target_as = target_wife
+			}
+			character_event = { id = WCRAC.10 }		# Adds race trait just for sure
+			FROM = {
+				if = {
+					limit = { is_female = no }
+					save_event_target_as = target_husband
+				}
+				if = {
+					limit = { is_female = yes }
+					save_event_target_as = target_wife
+				}
+				character_event = { id = WCRAC.10 }		# Adds race trait just for sure
+				if = {
+					limit = { can_has_sexual_relation_with_prev = no }
+					character_event = { id = WCCLN.101 days = 1 }
+				}
+			}
+		}
+
+		# Notifications for ROOTs
+		if = {
+			limit = {
+				FROM = { NOT = { character = ROOT } }
+				new_character = { NOT = { character = ROOT } }
+			}
+			ROOT = { character_event = { id = WCCLN.113 days = 1 } }
+		}
+	}
+}
+character_event = {
+	id = WCCLN.101
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		if = {
+			limit = { trait = cannot_marry_trait }
+			log = "(IMPORTANT) [This.GetBestName] cannot_marry, but tried to marry"
+		}
+		if = {
+			limit = { character = event_target:target_husband }
+			remove_spouse = event_target:target_wife
+		}
+		else = { remove_spouse = event_target:target_husband }
+		character_event = { id = WCCLN.102 }
+
+		if = {
+			limit = { character = event_target:target_husband }
+			opinion = { modifier = opinion_divorced who = event_target:target_wife }
+			any_close_relative = { opinion = { modifier = opinion_divorced_relative who = event_target:target_wife } }
+		}
+		else = {
+			opinion = { modifier = opinion_divorced who = event_target:target_husband }
+			any_close_relative = { opinion = { modifier = opinion_divorced_relative who = event_target:target_husband } }
+		}
+		if = {
+			limit = {
+				is_pregnant = yes 
+				father_of_unborn = { character = event_target:target_husband }
+			}
+			death = { death_reason = death_natural }
+			break = yes
+		}
+		if = {
+			limit = { can_marry_trigger = no }
+			set_cannot_marry_flag_effect = yes
+		}
+		else = {
+			if = {
+				limit = {
+					ai = yes
+					is_adult = yes
+					can_marry_trigger = yes
+					NOT = {
+						any_dynasty_member = {
+							ai = no
+						}
+					}
+				}
+				character_event = { id = WCCLN.130 }		# Finds right spouse
+			}
+		}
+	}
+}
+# Choses "messanger" or type of notification
+character_event = {
+	id = WCCLN.102
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		if = {
+			limit = { can_marry_trigger = no }
+			character_event = { id = WCCLN.112 }
+		}
+		else = { character_event = { id = WCCLN.111 } }
+		# if = {
+			# limit = {
+				# rightful_religious_head_scope = {
+					# is_alive = yes
+					# NOR = {
+						# religion_group = fel_group
+						# religion_group = necromancy_group
+						# religion_group = void_group
+					# }
+				# }
+			# }
+			# rightful_religious_head_scope = { character_event = { id = WCCLN.103 } }
+			# break = yes
+		# }
+	}
+}
+# character_event = {
+	# id = WCCLN.103
+
+	# is_triggered_only = yes
+	# hide_window = yes
+
+	# immediate = { FROM = { letter_event = { id = WCCLN.110 } } }
+# }
+# # Notification about divorce of interracial marriage
+# letter_event = {
+	# id = WCCLN.110
+	# desc = EVTDESC_WCCLN_110
+	# border = GFX_event_letter_frame_religion
+
+	# is_triggered_only = yes
+
+	# trigger = { ai = no }
+
+	# option = {
+		# name = I_SEE
+	# }
+# }
+
+# Notification about divorce of interracial marriage
+character_event = {
+	id = WCCLN.111
+	desc = EVTDESC_WCCLN_111
+	picture = GFX_evt_gift
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	trigger = { ai = no }
+
+	option = {
+		name = I_SEE
+	}
+}
+# Notification about divorce if you can't marry
+character_event = {
+	id = WCCLN.112
+	desc = EVTDESC_WCCLN_112
+	picture = GFX_evt_gift
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	trigger = { ai = no }
+
+	option = {
+		name = I_SEE
+	}
+}
+# Notification about divorce for ROOTs from WCCLN.100 event
+character_event = {
+	id = WCCLN.113
+	desc = EVTDESC_WCCLN_113
+	picture = GFX_evt_gift
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	trigger = { ai = no }
+
+	option = {
+		name = I_SEE
+	}
+}
+
+# Finds right spouse
+character_event = {
+	id = WCCLN.130
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	trigger = { ai = yes }
+
+	immediate = {
+		if = {
+			limit = {
+				any_realm_character = {
+					ai = yes
+					is_incapable = no
+					prisoner = no
+					is_inaccessible_trigger = no
+
+					can_has_sexual_relation_with_prev = yes
+					is_marriage_adult = yes
+
+					is_opposite_sex = ROOT
+					is_pregnant = no
+					is_married = no
+					is_consort = no
+				}
+			}
+			random_realm_character = {
+				limit = {
+					ai = yes
+					is_incapable = no
+					prisoner = no
+					is_inaccessible_trigger = no
+
+					can_has_sexual_relation_with_prev = yes
+					is_marriage_adult = yes
+
+					is_opposite_sex = ROOT
+					is_pregnant = no
+					is_married = no
+					is_consort = no
+				}
+				ROOT = { prev_add_spouse_this_effect = yes }
+			}
+		}
+		else = {
+			if = {
+				limit = { is_female = no }
+				log = "[This.GetBestName] spawned a spouse"
+				create_character = {
+					female = yes
+					dynasty = actually_culture
+					culture = ROOT religion = ROOT
+					random_traits = yes
+					age = 17
+					flag = spawned_spouse_flag
+				}
+				new_character = {
+					character_event = { id = WCRAC.10 }
+					ROOT = {
+						if = {
+							limit = { can_has_sexual_relation_with_prev = yes }
+							prev_add_spouse_this_effect = yes
+						}
+						else = {
+							log = "[This.GetBestName] killed a spouse"
+							set_cannot_marry_flag_effect = yes
+							PREV = { death = { death_reason = death_natural } }
+						}
+					}
+					break = yes
+				}
+			}
+			else = {
+				log = "[This.GetBestName] spawned a spouse"
+				create_character = {
+					dynasty = actually_culture
+					culture = ROOT religion = ROOT
+					random_traits = yes
+					age = 17
+					flag = spawned_spouse_flag
+				}
+				new_character = {
+					character_event = { id = WCRAC.10 }
+					ROOT = {
+						if = {
+							limit = { can_has_sexual_relation_with_prev = yes }
+							prev_add_spouse_this_effect = yes
+						}
+						else = {
+							log = "[This.GetBestName] killed a spouse"
+							set_cannot_marry_flag_effect = yes
+							PREV = { death = { death_reason = death_natural } }
+						}
+					}
+					break = yes
+				}
+			}
+		}
+	}
+}
+
+# Harem fixes
+character_event = {
+	id = WCCLN.200
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		# Adds race trait just for sure
+		character_event = { id = WCRAC.10 }
+		any_consort = {
+			character_event = { id = WCRAC.10 }
+			if = {
+				limit = { can_has_sexual_relation_with_prev = no }
+				remove_consort = PREV
+				PREV = {
+					if = {
+						limit = {
+							is_pregnant = yes
+							father_of_unborn = { character = PREV }
+						}
+						death = { death_reason = death_natural }
+					}
+					if = {
+						limit = { can_marry_trigger = no }
+						set_cannot_marry_flag_effect = yes
+					}
+				}
+				if = {
+					limit = {
+						is_pregnant = yes
+						father_of_unborn = { character = PREV }
+					}
+					death = { death_reason = death_natural }
+				}
+				if = {
+					limit = { can_marry_trigger = no }
+					set_cannot_marry_flag_effect = yes
+				}
+			}
+		}
+		FROM = {
+			# Adds race trait just for sure
+			character_event = { id = WCRAC.10 }
+			any_consort = {
+				character_event = { id = WCRAC.10 }
+				if = {
+					limit = { can_has_sexual_relation_with_prev = no }
+					remove_consort = PREV
+					PREV = {
+						if = {
+							limit = {
+								is_pregnant = yes
+								father_of_unborn = { character = PREV }
+							}
+							death = { death_reason = death_natural }
+						}
+						if = {
+							limit = { can_marry_trigger = no }
+							set_cannot_marry_flag_effect = yes
+						}
+					}
+					if = {
+						limit = {
+							is_pregnant = yes
+							father_of_unborn = { character = PREV }
+						}
+						death = { death_reason = death_natural }
+					}
+					if = {
+						limit = { can_marry_trigger = no }
+						set_cannot_marry_flag_effect = yes
+					}
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,878 @@
+namespace = WCDRU
+#####################################
+#
+#	WCDRU.1 - WCDRU.5999 - Worgens
+#
+#####################################
+
+### Fury of the Wolf ###
+# You got war troubles, help is needed, worgens seem legit
+narrative_event = {
+	id = WCDRU.300
+	title = EVTTITLE_WCDRU_300
+	desc = EVTDESC_WCDRU_300
+	picture = GFX_evt_emerald_dream
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+
+	min_age = 16
+	only_capable = yes
+	prisoner = no
+
+	trigger = {
+		is_untouchable_trigger = no
+		can_rule_peacefully_trigger = yes
+		
+		is_alive = yes
+		is_dying = no
+		is_inaccessible_trigger = no
+
+		NOT = { has_global_flag = ongoing_fury_of_wolf_chain_flag }
+		
+		trait = creature_human
+		is_susceptible_to_worgen_curse_character_trigger = yes
+		top_liege = {
+			is_untouchable_trigger = no
+			can_rule_peacefully_trigger = yes
+			
+			trait = creature_human
+			is_susceptible_to_worgen_curse_character_trigger = yes
+		}
+		OR = {
+			is_mage_class_trigger = yes
+			is_shaman_class_trigger = yes
+			is_druid_class_trigger = yes
+			is_loa_priest_class_trigger = yes
+		}
+		is_5_6_magic_class_trigger = yes
+		
+		OR = {
+			is_primary_war_defender = yes
+			top_liege = { is_primary_war_defender = yes }
+		}
+	}
+
+	weight_multiplier = {
+		days = 1
+		modifier = {
+			factor = 2
+			OR = {
+				top_liege = { any_war = { war_score = -50 } }
+				any_war = { war_score = -50 }
+			}
+		}
+		modifier = {
+			factor = 2
+			OR = {
+				top_liege = { any_war = { war_score = -25 } }
+				any_war = { war_score = -25 }
+			}
+		}
+	}
+	
+	immediate = {
+		save_event_target_as = target_mage
+		top_liege = { save_event_target_as = target_liege }
+		
+		set_global_flag = ongoing_fury_of_wolf_chain_flag
+		
+		# Cleanup
+		province_event = { id = WCDRU.340 days = 365 }
+	}
+
+	option = {
+		trigger = { independent = no }
+		name = EVTOPTA_WCDRU_300
+
+		top_liege = { narrative_event = { id = WCDRU.305 days = 3 } }
+	}
+	option = {
+		trigger = { independent = yes }
+		name = EVTOPTB_WCDRU_300
+
+		narrative_event = { id = WCDRU.320 days = 7 }
+	}
+	option = {
+		name = EVTOPTC_WCDRU_300
+		
+		custom_tooltip = {
+			text = stops_the_event_chain
+			hidden_effect = {
+				clr_global_flag = ongoing_fury_of_wolf_chain_flag
+			}
+		}
+		
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+# Suggests liege use worgens against enemies
+narrative_event = {
+	id = WCDRU.305
+	title = EVTTITLE_WCDRU_300
+	desc = EVTDESC_WCDRU_305
+	picture = GFX_evt_emerald_dream
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCDRU_300
+
+		set_character_flag = supported_worgen_summoning_flag
+		
+		event_target:target_mage = { letter_event = { id = WCDRU.310 days = 3 } }
+		
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 1.5
+				trait = patient
+			}
+			modifier = {
+				factor = 1.5
+				trait = craven
+			}
+		}
+	}
+	option = {
+		name = EVTOPTB_WCDRU_300
+
+		event_target:target_mage = { narrative_event = { id = WCDRU.315 days = 3 } }
+		
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 1.5
+				trait = wroth
+			}
+			modifier = {
+				factor = 1.5
+				trait = arbitrary
+			}
+		}
+	}
+}
+# Liege agrees
+letter_event = {
+	id = WCDRU.310
+	desc = EVTDESC_WCDRU_310
+	border = GFX_event_letter_frame_war
+
+	is_triggered_only = yes
+
+	option = {
+		name = EXCELLENT
+
+		narrative_event = { id = WCDRU.320 days = 7 }
+	}
+}
+# Liege is against it
+narrative_event = {
+	id = WCDRU.315
+	title = EVTTITLE_WCDRU_300
+	desc = EVTDESC_WCDRU_315
+	picture = GFX_evt_emerald_dream
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCDRU_315
+
+		narrative_event = { id = WCDRU.320 days = 7 }
+	}
+	option = {
+		name = EVTOPTB_WCDRU_315
+		
+		custom_tooltip = {
+			text = stops_the_event_chain
+			hidden_effect = {
+				clr_global_flag = ongoing_fury_of_wolf_chain_flag
+			}
+		}
+		
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+# You summoned worgens...
+narrative_event = {
+	id = WCDRU.320
+	title = EVTTITLE_WCDRU_300
+	desc = EVTDESC_WCDRU_320
+	picture = GFX_evt_worgen_and_satyr
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCDRU_320
+
+		prestige = -500
+		
+		narrative_event = { id = WCDRU.325 }
+	}
+}
+# ...and everyone knows that
+narrative_event = {
+	id = WCDRU.325
+	title = EVTTITLE_WCDRU_300
+	desc = EVTDESC_WCDRU_325
+	picture = GFX_evt_worgen_and_satyr
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+
+	major = yes
+	
+	immediate = {
+		save_event_target_as = target_mage
+		if = {
+			limit = { is_ruler = yes }
+			capital_scope = { save_event_target_as = target_province }
+		}
+		else = {
+			location = { save_event_target_as = target_province }
+		}
+		
+		set_global_flag = worgens_in_azeroth_flag
+		
+		create_character = {
+			name = "Ralaar"
+			dynasty = 100000
+			religion = wolf_cult_religion
+			culture = night_elf
+			age = 12000
+			attributes = {
+				martial=6 diplomacy=4 stewardship=4 intrigue=6 learning=5
+			}
+			trait = creature_night_elf
+			trait = class_druid_7
+			trait = martial_cleric
+			trait = worgen
+			# trait = mindless_worgen
+			trait = temperate
+			trait = wroth
+			trait = brave
+			trait = stubborn
+		}
+		new_character = {
+			character_event = { id = WCDRU.365 }
+		}
+	}
+
+	option = {
+		trigger = {
+			NOR = {
+				has_character_flag = supported_worgen_summoning_flag
+				character = event_target:target_mage
+			}
+		}
+		name = {
+			trigger = {
+				OR = {
+					true_religion_group = druidism_group
+					trait = creature_night_elf
+				}
+			}
+			text = EVTOPTA_WCDRU_325_druid
+		}
+		name = {
+			trigger = { trait = creature_human }
+			text = EVTOPTA_WCDRU_325_human
+		}
+		name = {
+			trigger = {
+				NOR = {
+					true_religion_group = druidism_group
+					trait = creature_night_elf
+					trait = creature_human
+				}
+			}
+			text = ALAS
+		}
+	}
+	option = {
+		trigger = {
+			OR = {
+				has_character_flag = supported_worgen_summoning_flag
+				character = event_target:target_mage
+			}
+		}
+		name = EVTOPTB_WCDRU_325
+
+		if = {
+			limit = { has_character_flag = supported_worgen_summoning_flag }
+			prestige = -500
+		}
+	}
+}
+# Cleanup
+province_event = {
+	id = WCDRU.340
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
+		if = {
+			limit = { NOT = { has_global_flag = worgens_in_azeroth_flag } }
+			clr_global_flag = ongoing_fury_of_wolf_chain_flag
+		}
+	}
+}
+
+# Creates pack leader and pick province
+province_event = {
+	id = WCDRU.350
+
+	hide_window = yes
+	
+	has_global_flag = worgens_in_azeroth_flag
+	
+	trigger = {
+		OR = {
+			terrain = forest
+			terrain = woods
+		}
+	}
+	
+	mean_time_to_happen = {
+		years = 600
+	}
+	
+	immediate = {
+		save_event_target_as = target_province
+		create_character = {
+			dynasty = none
+			religion = wolf_cult_religion
+			culture = night_elf
+			age = 12000
+			attributes = {
+				martial=5 diplomacy=5 stewardship=5 intrigue=5 learning=5
+			}
+			trait = creature_night_elf
+			trait = martial_cleric
+			trait = worgen
+			trait = wroth
+			random_traits = yes
+		}
+		new_character = {
+			remove_education_effect = yes
+			random_list = {
+				10 = { add_trait = martial_cleric add_trait = class_druid_2 }
+				10 = { add_trait = scholarly_theologian add_trait = class_druid_4 }
+				10 = { add_trait = mastermind_theologian add_trait = class_druid_6 }
+				10 = { add_trait = tough_soldier add_trait = class_warrior_2 }
+				10 = { add_trait = skilled_tactician add_trait = class_warrior_4 }
+				10 = { add_trait = brilliant_strategist add_trait = class_warrior_6 }
+			}
+			
+			character_event = { id = WCDRU.365 }
+		}
+	}
+}
+# Creates pack title and army
+# Handled by event HL.100
+character_event = {
+	id = WCDRU.365
+	
+	is_triggered_only = yes
+	hide_window = yes # Only fires for unplayable landless characters
+
+	only_men = yes
+	capable_only = yes
+	prisoner = no
+
+	immediate = {
+		log = "WCDRU.365 fired for [This.GetBestName]"
+		end_inaccessibility_effect = yes #removes in hiding or in_seclusion
+		set_defacto_liege = ROOT
+		create_title = {
+			tier = DUKE
+			landless = yes
+			adventurer = yes
+			culture = ROOT
+			name = "WORGEN_PACK"
+			holder = ROOT
+			base_title = THIS
+		}
+		set_character_flag = raiding_adventurer
+		set_character_flag = alpha_worgen_flag
+		create_random_soldier = {
+			random_traits = yes
+			dynasty = none
+			religion = ROOT
+			culture = ROOT
+			female = no
+			age = 30
+			trait = worgen
+		}
+		new_character = {
+			character_event = { id = WCRAC.10 }
+		}
+		create_random_soldier = {
+			random_traits = yes
+			dynasty = none
+			religion = ROOT
+			culture = ROOT
+			female = no
+			age = 25
+			trait = worgen
+		}
+		new_character = {
+			character_event = { id = WCRAC.10 }
+		}
+		spawn_unit = {
+			province = event_target:target_province
+			home = event_target:target_province
+			owner = ROOT
+			troops = {
+				light_infantry = { 1250 1250 }
+			}
+			cannot_inherit = yes
+			attrition = 1.0
+			scaled_by_biggest_garrison = 1.5
+			merge = yes
+			can_toggle_looting = no
+			is_looter = yes
+			reinforces = yes
+			maintenance = no
+		}
+		character_event = { id = WCDRU.370 days = 1825 } # Finishes hunting after 5 years
+	}
+}
+# Clean-up
+# Copy of event HL.199
+character_event = {
+	id = WCDRU.370
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
+		clr_character_flag = raiding_adventurer
+		disband_event_forces = yes
+		clan_title = {
+			activate_title = { title = THIS status = no }
+			destroy_landed_title = THIS
+		}
+		primary_title = {
+			if = {
+				limit = {
+					OR = {
+						AND = {
+							tier = DUKE
+							adventurer = yes
+						}
+						tier = EMPEROR
+					}
+				}
+				activate_title = { title = THIS status = no }
+				destroy_landed_title = THIS
+			}
+		}
+		death = { death_reason = death_missing }
+	}
+}
+### Mindless worgen events ###
+# Event tombola
+character_event = {
+	id = WCDRU.1000
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
+		if = {
+			limit = { NOT = { has_character_flag = mindless_worgen_timer_flag } }
+			set_character_flag = mindless_worgen_timer_flag
+		}
+		if = {
+			limit = { had_character_flag = { flag = mindless_worgen_timer_flag years = 2 } }
+			character_event = { id = WCDRU.1005 }
+			break = yes
+		}
+		random_list = {
+			10 = { character_event = { id = WCDRU.1010 } }
+			10 = { character_event = { id = WCDRU.1015 } }
+			10 = { character_event = { id = WCDRU.1020 } }
+			10 = { character_event = { id = WCDRU.1025 } }
+			7 = { 
+				character_event = { id = WCDRU.1150 }
+				
+				modifier = {
+					factor = 1.5
+					ai = no
+				}
+				modifier = {
+					factor = 1.5
+					had_character_flag = { flag = mindless_worgen_timer_flag years = 1 }
+				}
+				modifier = {
+					factor = 1.5
+					trait = kind
+				}
+				modifier = {
+					factor = 1.5
+					trait = patient
+				}
+				modifier = {
+					factor = 1.3
+					trait = charitable
+				}
+				modifier = {
+					factor = 1.3
+					trait = just
+				}
+				modifier = {
+					factor = 0.8
+					trait = cruel
+				}
+				modifier = {
+					factor = 0.8
+					trait = wroth
+				}
+			}
+		}
+		repeat_event = { id = WCDRU.1000 days = 60 }
+	}
+}
+character_event = {
+	id = WCDRU.1005
+	desc = EVTDESC_WCDRU_1005
+	picture = GFX_evt_worgen
+	border = GFX_event_normal_frame_war
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = RAWR
+		
+		death = { death_reason = death_missing }
+	}
+}
+# Lost in the woods
+character_event = {
+	id = WCDRU.1010
+	desc = EVTDESC_WCDRU_1010
+	picture = GFX_evt_worgen
+	border = GFX_event_normal_frame_war
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = EVTOPTA_WCDRU_1010
+		
+		random = {
+			chance = 15
+			add_trait_patient_effect = yes
+			remove_trait_wroth_effect = yes
+		}
+		random = {
+			chance = 15
+			add_trait_kind_effect = yes
+			remove_trait_cruel_effect = yes
+			remove_trait_envious_effect = yes
+		}
+	}
+	option = {
+		name = RAWR
+		
+		random = {
+			chance = 50
+			add_trait_wroth_effect = yes
+			remove_trait_patient_effect = yes
+		}
+		random = {
+			chance = 75
+			add_trait_cruel_effect = yes
+			remove_trait_kind_effect = yes
+		}
+	}
+}
+character_event = {
+	id = WCDRU.1011
+	desc = EVTDESC_WCDRU_1011
+	picture = GFX_evt_worgen
+	border = GFX_event_normal_frame_war
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = RAWR
+	}
+}
+# Peasant child in the field
+character_event = {
+	id = WCDRU.1015
+	desc = EVTDESC_WCDRU_1015
+	picture = GFX_evt_worgen
+	border = GFX_event_normal_frame_war
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = EVTOPTA_WCDRU_1015
+		
+		random = {
+			chance = 25
+			add_trait_patient_effect = yes
+			remove_trait_wroth_effect = yes
+		}
+		random = {
+			chance = 25
+			add_trait_kind_effect = yes
+			remove_trait_cruel_effect = yes
+			remove_trait_envious_effect = yes
+		}
+	}
+	option = {
+		name = RAWR
+		
+		random = {
+			chance = 50
+			add_trait_wroth_effect = yes
+			remove_trait_patient_effect = yes
+		}
+		add_trait_cruel_effect = yes
+		remove_trait_kind_effect = yes
+	}
+}
+character_event = {
+	id = WCDRU.1016
+	desc = EVTDESC_WCDRU_1016
+	picture = GFX_evt_worgen
+	border = GFX_event_normal_frame_war
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = RAWR
+	}
+}
+# Hunters
+character_event = {
+	id = WCDRU.1020
+	desc = EVTDESC_WCDRU_1020
+	picture = GFX_evt_worgen
+	border = GFX_event_normal_frame_war
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = EVTOPTA_WCDRU_1020
+		
+		random = {
+			chance = 35
+			add_trait_patient_effect = yes
+			remove_trait_wroth_effect = yes
+		}
+		random = {
+			chance = 10
+			add_trait_kind_effect = yes
+			remove_trait_cruel_effect = yes
+			remove_trait_envious_effect = yes
+		}
+		random = {
+			chance = 10
+			death = { death_reason = death_execution_hunt }
+		}
+	}
+	option = {
+		name = RAWR
+		
+		random = {
+			chance = 75
+			add_trait_wroth_effect = yes
+			remove_trait_patient_effect = yes
+		}
+		random = {
+			chance = 25
+			add_trait_cruel_effect = yes
+			remove_trait_kind_effect = yes
+		}
+		random = {
+			chance = 5
+			death = { death_reason = death_execution_hunt }
+		}
+	}
+}
+character_event = {
+	id = WCDRU.1021
+	desc = EVTDESC_WCDRU_1021
+	picture = GFX_evt_worgen
+	border = GFX_event_normal_frame_war
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = RAWR
+	}
+}
+# Wounded deer
+character_event = {
+	id = WCDRU.1025
+	desc = EVTDESC_WCDRU_1025
+	picture = GFX_evt_worgen
+	border = GFX_event_normal_frame_war
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = RAWR
+		
+		random = {
+			chance = 10
+			add_trait_wroth_effect = yes
+			remove_trait_patient_effect = yes
+		}
+		random = {
+			chance = 10
+			add_trait_cruel_effect = yes
+			remove_trait_kind_effect = yes
+		}
+	}
+}
+
+# The Inner Beast
+character_event = {
+	id = WCDRU.1150
+	desc = EVTDESC_WCDRU_1150
+	picture = GFX_evt_worgen
+	border = GFX_event_normal_frame_war
+	
+	is_triggered_only = yes
+	
+	# I'm ready to defeat my inner beast
+	option = {
+		name = EVTOPTA_WCDRU_1150
+		
+		clear_delayed_event = { id = WCDRU.1000 }
+		character_event = { id = WCDRU.1151 days = 60 }
+	}
+	option = {
+		name = RAWR
+	}
+}
+character_event = {
+	id = WCDRU.1151
+	desc = EVTDESC_WCDRU_1151
+	picture = GFX_evt_worgen
+	border = GFX_event_normal_frame_war
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = EXCELLENT
+		
+		remove_trait = mindless_worgen
+	}
+}
+
+# on_siege_over_winner
+# Mindless worgens occupies a holding
+character_event = {
+	id = WCDRU.5000
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	has_character_flag = alpha_worgen_flag
+	
+	trigger = {
+		trait = worgen
+		has_character_flag = alpha_worgen_flag
+		# religion = wolf_cult					# TODO:	wolf_cult religion
+	}
+	
+	immediate = {
+		FROM = {
+			location = {
+				if = {
+					limit = { is_susceptible_to_worgen_curse_province_trigger = yes }
+					ROOT = {
+						spawn_unit = {
+							province = PREV
+							home = PREV
+							owner = ROOT
+							troops = {
+								light_infantry = { 1 1 }
+							}
+							cannot_inherit = yes
+							attrition = 1.0
+							scaled_by_biggest_garrison = 0.2
+							merge = yes
+							can_toggle_looting = no
+							is_looter = yes
+							reinforces = yes
+							maintenance = no
+						}
+					}
+					holder_scope = {
+						character_event = { id = WCDRU.5005 }
+						any_liege = {
+							character_event = { id = WCDRU.5005 }
+						}
+					}
+				}
+			}
+			holder_scope = {
+				any_courtier = {
+					if = {
+						limit = {
+							at_location = ROOT
+							is_susceptible_to_worgen_curse_character_trigger = yes 
+						}
+						random = {
+							chance = 20
+							become_mindless_worgen_effect = yes
+						}
+					}
+				}
+			}
+		}
+	}
+}
+# Notification
+character_event = {
+	id = WCDRU.5005
+	desc = EVTDESC_WCDRU_5005
+	picture = GFX_evt_worgen
+	border = GFX_event_normal_frame_war
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = {
+			trigger = { true_religion = wolf_cult }
+			text = EXCELLENT
+		}
+		name = {
+			trigger = { NOT = { true_religion = wolf_cult } }
+			text = ALAS
+		}
+	}
+}
+# Notifies about turning into worgen
+character_event = {
+	id = WCDRU.5013
+	desc = EVTDESC_WCDRU_5013
+	picture = GFX_evt_worgen
+	border = GFX_event_normal_frame_war
+
+	is_triggered_only = yes
+
+	option = {
+		name = RAWR
+		
+		tooltip = {
+			if = { limit = { trait = worgen } add_trait = worgen }
+			if = { limit = { trait = mindless_worgen } add_trait = mindless_worgen }
+		}
+	}
+}

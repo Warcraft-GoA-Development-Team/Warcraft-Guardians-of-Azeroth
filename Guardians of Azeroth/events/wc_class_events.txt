@@ -1,0 +1,5540 @@
+namespace=WCCLS
+#############################################################################
+# Events responsible for class opportunities: training, abilities, and more
+############################################################################
+
+#########################
+# Mage
+#########################
+
+# Notification of the beginning of self-training
+narrative_event = {
+	id = WCCLS.1
+	title = EVTTITLE_WCCLS_1
+	desc = EVTDESC_WCCLS_1
+	picture = GFX_evt_mage_human
+	border = GFX_event_narrative_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+		add_character_modifier = {
+			name = training_self_mage
+			duration = -1
+		}
+		character_event = { id = WCCLS.2152 }
+		narrative_event = {
+			id = WCCLS.100
+			days = 1460
+		}
+	}
+
+	option = {
+		name = EXCELLENT
+	}
+}
+
+# Restores mana
+character_event = {
+	id = WCCLS.5
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	trigger = {
+		is_alive = yes
+		is_dying = no
+		
+		OR = {
+			AND = {
+				is_1_2_magic_class_trigger = yes
+				OR = {
+					NOR = {
+						has_character_modifier = mana_1
+						has_character_modifier = mana_2
+						has_character_modifier = mana_3
+						has_character_modifier = mana_4
+						has_character_modifier = mana_5
+					}
+					has_character_flag = completely_restored_mana_flag
+				}
+			}
+			AND = {
+				is_1_2_magic_class_trigger = yes
+				has_character_modifier = mana_0
+			}
+			AND = {
+				is_3_4_magic_class_trigger = yes
+				has_character_modifier = mana_1
+			}
+			AND = {
+				is_5_6_magic_class_trigger = yes
+				has_character_modifier = mana_2
+			}
+			AND = {
+				is_7_8_magic_class_trigger = yes
+				has_character_modifier = mana_3
+			}
+			AND = {
+				is_9_10_magic_class_trigger = yes
+				has_character_modifier = mana_4
+			}
+		}
+	}
+
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					NOR = {
+						has_character_modifier = mana_1
+						has_character_modifier = mana_2
+						has_character_modifier = mana_3
+						has_character_modifier = mana_4
+						has_character_modifier = mana_5
+					}
+					has_character_flag = completely_restored_mana_flag
+				}
+			}
+			if = {
+				limit = { has_character_modifier = mana_0 }
+				remove_character_modifier = mana_0
+			}
+			if = {
+				limit = { has_character_modifier = mana_1 }
+				remove_character_modifier = mana_1
+			}
+			if = {
+				limit = { has_character_modifier = mana_2 }
+				remove_character_modifier = mana_2
+			}
+			if = {
+				limit = { has_character_modifier = mana_3 }
+				remove_character_modifier = mana_3
+			}
+			if = {
+				limit = { has_character_modifier = mana_4 }
+				remove_character_modifier = mana_4
+			}
+			if = {
+				limit = { has_character_modifier = mana_5 }
+				remove_character_modifier = mana_5
+			}
+			if = {
+				limit = { is_9_10_magic_class_trigger = yes }
+				add_character_modifier = { name = mana_5 duration = -1 }
+				break = yes
+			}
+			if = {
+				limit = { is_7_8_magic_class_trigger = yes }
+				add_character_modifier = { name = mana_4 duration = -1 }
+				break = yes
+			}
+			if = {
+				limit = { is_5_6_magic_class_trigger = yes }
+				add_character_modifier = { name = mana_3 duration = -1 }
+				break = yes
+			}
+			if = {
+				limit = { is_3_4_magic_class_trigger = yes }
+				add_character_modifier = { name = mana_2 duration = -1 }
+				break = yes
+			}
+			if = {
+				limit = { is_1_2_magic_class_trigger = yes }
+				add_character_modifier = { name = mana_1 duration = -1 }
+			}
+			break = yes
+		}
+		if = {
+			limit = {
+				is_1_2_magic_class_trigger = yes
+				has_character_modifier = mana_0
+			}
+			remove_character_modifier = mana_0
+			add_character_modifier = { name = mana_1 duration = -1 }
+			break = yes
+		}
+		if = {
+			limit = {
+				is_3_4_magic_class_trigger = yes
+				has_character_modifier = mana_1
+			}
+			remove_character_modifier = mana_1
+			add_character_modifier = { name = mana_2 duration = -1 }
+			break = yes
+		}
+		if = {
+			limit = {
+				is_5_6_magic_class_trigger = yes
+				has_character_modifier = mana_2
+			}
+			remove_character_modifier = mana_2
+			add_character_modifier = { name = mana_3 duration = -1 }
+			break = yes
+		}
+		if = {
+			limit = {
+				is_7_8_magic_class_trigger = yes
+				has_character_modifier = mana_3
+			}
+			remove_character_modifier = mana_3
+			add_character_modifier = { name = mana_4 duration = -1 }
+			break = yes
+		}
+		if = {
+			limit = {
+				is_9_10_magic_class_trigger = yes
+				has_character_modifier = mana_4
+			}
+			remove_character_modifier = mana_4
+			add_character_modifier = { name = mana_5 duration = -1 }
+			break = yes
+		}
+	}
+}
+
+# Conjures Food
+character_event = {
+	id = WCCLS.10
+	desc = EVTDESC_WCCLS_10
+	picture = GFX_evt_mage_human
+	border = GFX_event_normal_frame_diplomacy
+
+	is_triggered_only = yes
+
+	# Poor people
+	option = {
+		name = EVTOPTA_WCCLS_10
+
+		add_character_modifier = { name = conjured_food_for_poor years = 2 }
+
+		remove_3_mana_effect = yes
+
+		ai_chance = {
+			factor = 40
+			modifier = {
+				factor = 1.5
+				trait = kind
+			}
+			modifier = {
+				factor = 1.5
+				trait = charitable
+			}
+			modifier = {
+				factor = 1.5
+				trait = just
+			}
+			modifier = {
+				factor = 1.5
+				OR = {
+					is_republic = yes
+					is_theocracy = yes
+				}
+			}
+		}
+	}
+
+	# The nobility
+	option = {
+		name = EVTOPTB_WCCLS_10
+
+		add_character_modifier = { name = conjured_food_for_nobility years = 2 }
+
+		remove_3_mana_effect = yes
+
+		ai_chance = {
+			factor = 60
+			modifier = {
+				factor = 1.5
+				OR = {
+					is_feudal = yes
+					is_tribal = yes
+				}
+			}
+			modifier = {
+				factor = 1.3
+				trait = proud
+			}
+			modifier = {
+				factor = 1.3
+				trait = arbitrary
+			}
+			modifier = {
+				factor = 1.3
+				trait = ambitious
+			}
+		}
+	}
+
+	# Never mind
+	option = {
+		name = EVTOPTC_WCCLS_10
+
+		clr_character_flag = conjure_food_cooldown_flag
+
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+
+# Study Magical Secrets
+# Start event
+character_event = {
+	id = WCCLS.15
+	desc = EVTDESC_WCCLS_15
+	picture = GFX_evt_ritual_scroll
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCCLS_15
+
+		# Plan of the studies ;)
+		hidden_effect = {
+			random = {
+				chance = 33
+				character_event = { id = WCCLS.16 days = 7 random = 76 }	# Expensive studies
+			}
+			random = {
+				chance = 33
+				character_event = { id = WCCLS.17 days = 7 random = 76 }	# You feel tired
+			}
+			random = {
+				chance = 33
+				character_event = { id = WCCLS.18 days = 7 random = 76 }	# Incident
+				modifier = {
+					factor = 1.2
+					NOT = { learning = 2 }
+				}
+				modifier = {
+					factor = 1.2
+					NOT = { learning = 4 }
+				}
+				modifier = {
+					factor = 1.2
+					NOT = { learning = 6 }
+				}
+				modifier = {
+					factor = 1.2
+					NOT = { learning = 8 }
+				}
+				modifier = {
+					factor = 0.8
+					learning = 9
+				}
+				modifier = {
+					factor = 0.8
+					learning = 12
+				}
+				modifier = {
+					factor = 0.8
+					learning = 15
+				}
+				modifier = {
+					factor = 0.8
+					learning = 18
+				}
+				modifier = {
+					factor = 0.8
+					learning = 21
+				}
+				modifier = {
+					factor = 0
+					has_injury_trigger = yes
+				}
+			}
+			hidden_effect = {
+				set_variable = { which = study_magical_secrets_efforts value = 1 }
+				character_event = { id = WCCLS.25 days = 90 }
+			}
+		}
+	}
+
+	option = {
+		name = EVTOPTB_WCCLS_15
+
+		clr_character_flag = do_not_disturb
+		clr_character_flag = study_magical_secrets_cooldown_flag
+
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+# Expensive studies
+character_event = {
+	id = WCCLS.16
+	desc = EVTDESC_WCCLS_16
+	picture = GFX_evt_ritual_scroll
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCCLS_16
+
+		scaled_wealth = { value = -0.25 min = -25 max = -300 }
+		hidden_effect = { change_variable = { which = study_magical_secrets_efforts value = 1 } }
+
+		ai_chance = {
+			factor = 90
+			modifier = {
+				factor = 0
+				NOT = { scaled_wealth = { value = 0.25 min = 25 max = 300 } }
+			}
+			modifier = {
+				factor = 0
+				trait = greedy
+				NOT = { scaled_wealth = 1 }
+			}
+		}
+	}
+	option = {
+		name = EVTOPTB_WCCLS_16
+
+		ai_chance = {
+			factor = 10
+		}
+	}
+}
+# You feel tired
+character_event = {
+	id = WCCLS.17
+	desc = EVTDESC_WCCLS_17
+	picture = GFX_evt_ritual_scroll
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCCLS_17
+
+		add_trait_silently_diligent_effect = yes
+		remove_trait_silently_slothful_effect = yes
+		if = {
+			limit = { NOT = { trait = stressed } }
+			random = {
+				chance = 33
+				add_trait = stressed
+			}
+		}
+
+		hidden_effect = { change_variable = { which = study_magical_secrets_efforts value = 1 } }
+
+		ai_chance = {
+			factor = 60
+			modifier = {
+				factor = 1.83
+				trait = ambitious
+			}
+			modifier = {
+				factor = 1.83
+				trait = stubborn
+			}
+			modifier = {
+				factor = 0
+				trait = slothful
+			}
+		}
+	}
+	option = {
+		name = EVTOPTB_WCCLS_17
+
+		if = {
+			limit = { NOT = { trait = slothful } }
+			random = {
+				chance = 20
+				add_trait_silently_slothful_effect = yes
+				remove_trait_silently_diligent_effect = yes
+			}
+		}
+
+		ai_chance = {
+			factor = 40
+			modifier = {
+				factor = 5
+				trait = content
+			}
+			modifier = {
+				factor = 0
+				trait = diligent
+			}
+		}
+	}
+}
+# Incident
+character_event = {
+	id = WCCLS.18
+	desc = EVTDESC_WCCLS_18
+	picture = GFX_evt_ritual_scroll
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	option = {
+		name = ALAS
+
+		random_list = {
+			50 = {}
+			30 = { add_trait_wounded_effect = yes }
+			15 = { add_maimed_trait_effect = yes }
+			5 = { death = { death_reason = death_accident } }
+		}
+
+		hidden_effect = { change_variable = { which = study_magical_secrets_efforts value = -1 } }
+	}
+}
+# Secret tombola
+character_event = {
+	id = WCCLS.25
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		random_list = {
+			# Nothing
+			50 = {
+				modifier = {
+					factor = 1.15
+					NOT = { learning = 2 }
+				}
+				modifier = {
+					factor = 1.15
+					NOT = { learning = 4 }
+				}
+				modifier = {
+					factor = 1.15
+					NOT = { learning = 6 }
+				}
+				modifier = {
+					factor = 1.15
+					NOT = { learning = 8 }
+				}
+				modifier = {
+					factor = 1.15
+					NOT = { check_variable = { which = study_magical_secrets_efforts value = 1 } }
+				}
+				modifier = {
+					factor = 0.65
+					check_variable = { which = study_magical_secrets_efforts value = 2 }
+				}
+				modifier = {
+					factor = 0.65
+					check_variable = { which = study_magical_secrets_efforts value = 3 }
+				}
+				modifier = {
+					factor = 0.65
+					learning = 9
+				}
+				modifier = {
+					factor = 0.65
+					learning = 12
+				}
+				modifier = {
+					factor = 0.65
+					learning = 15
+				}
+				modifier = {
+					factor = 0.65
+					learning = 18
+				}
+				modifier = {
+					factor = 0.65
+					learning = 21
+				}
+				character_event = { id = WCCLS.26 }
+			}
+			# Magical secrets
+			25 = {
+				random_list = {
+					33 = { set_character_flag = magical_secrets_teleportation_flag }
+					33 = { set_character_flag = magical_secrets_telekinesis_flag }
+					33 = { set_character_flag = magical_secrets_food_conjuring_flag }
+				}
+				character_event = { id = WCCLS.26 }
+			}
+			# Dark secrets
+			25 = {
+				modifier = {
+					factor = 1.41
+					trait = cruel
+				}
+				modifier = {
+					factor = 1.41
+					trait = envious
+				}
+				modifier = {
+					factor = 1.41
+					trait = ambitious
+				}
+				modifier = {
+					factor = 1.41
+					trait = cynical
+				}
+				modifier = {
+					factor = 0.46
+					trait = kind
+				}
+				modifier = {
+					factor = 0.46
+					trait = zealous
+				}
+				modifier = {
+					factor = 0.46
+					trait = content
+				}
+				modifier = {
+					factor = 0
+					has_character_flag = refused_dark_secrets_flag
+				}
+				modifier = {
+					factor = 0
+					OR = {
+						is_training_self_trigger = yes
+						is_training_mentor_trigger = yes
+					}
+				}
+				random_list = {
+					33 = { set_character_flag = magical_secrets_necromancy_flag }
+					33 = { set_character_flag = magical_secrets_fel_flag }
+					33 = { set_character_flag = magical_secrets_void_flag }
+				}
+				character_event = { id = WCCLS.27 }
+			}
+		}
+	}
+}
+# Magical secrets
+character_event = {
+	id = WCCLS.26
+	desc = {
+		trigger = { has_character_flag = magical_secrets_teleportation_flag }
+		text = EVTDESC_WCCLS_26_teleportation
+	}
+	desc = {
+		trigger = { has_character_flag = magical_secrets_telekinesis_flag }
+		text = EVTDESC_WCCLS_26_telekinesis
+	}
+	desc = {
+		trigger = { has_character_flag = magical_secrets_food_conjuring_flag }
+		text = EVTDESC_WCCLS_26_food_conjuring
+	}
+	desc = {
+		trigger = {
+			NOR = {
+				has_character_flag = magical_secrets_teleportation_flag
+				has_character_flag = magical_secrets_telekinesis_flag
+				has_character_flag = magical_secrets_food_conjuring_flag
+			}
+		}
+		text = EVTDESC_WCCLS_26_nothing
+	}
+	picture = GFX_evt_ritual_scroll
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	option = {
+		trigger = {
+			NOR = {
+				has_character_flag = magical_secrets_teleportation_flag
+				has_character_flag = magical_secrets_telekinesis_flag
+				has_character_flag = magical_secrets_food_conjuring_flag
+			}
+		}
+		name = ALAS
+	}
+	option = {
+		trigger = {
+			OR = {
+				has_character_flag = magical_secrets_teleportation_flag
+				has_character_flag = magical_secrets_telekinesis_flag
+				has_character_flag = magical_secrets_food_conjuring_flag
+			}
+		}
+		name = EXCELLENT
+
+		trigger_switch = {
+			on_trigger = has_character_flag
+			magical_secrets_teleportation_flag = { add_character_modifier = { name = magical_secrets_teleportation years = 1 } }
+			magical_secrets_telekinesis_flag = { add_character_modifier = { name = magical_secrets_telekinesis years = 1 } }
+			magical_secrets_food_conjuring_flag = { add_character_modifier = { name = magical_secrets_food_conjuring years = 1 } }
+		}
+	}
+
+	after = {
+		clr_character_flag = do_not_disturb
+		clear_flags_with_prefix = magical_secrets_
+		hidden_effect = { set_variable = { which = study_magical_secrets_efforts value = 0 } }
+	}
+}
+# Dark secrets
+character_event = {
+	id = WCCLS.27
+	desc = {
+		trigger = { has_character_flag = magical_secrets_necromancy_flag }
+		text = EVTDESC_WCCLS_27_necromancy
+	}
+	desc = {
+		trigger = { has_character_flag = magical_secrets_fel_flag }
+		text = EVTDESC_WCCLS_27_fel
+	}
+	desc = {
+		trigger = { has_character_flag = magical_secrets_void_flag }
+		text = EVTDESC_WCCLS_27_void
+	}
+	picture = GFX_evt_ritual_scroll
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCCLS_27
+
+		trigger_switch = {
+			on_trigger = has_character_flag
+			magical_secrets_necromancy_flag = { narrative_event = { id = WCCLS.1101 } }
+			magical_secrets_fel_flag = { narrative_event = { id = WCCLS.601 } }
+			magical_secrets_void_flag = { narrative_event = { id = WCCLS.1201 } }
+		}
+
+		ai_chance = {
+			chance = 40
+			modifier = {
+				factor = 1.5
+				trait = cruel
+			}
+			modifier = {
+				factor = 1.5
+				trait = envious
+			}
+			modifier = {
+				factor = 1.5
+				trait = ambitious
+			}
+			modifier = {
+				factor = 1.5
+				trait = cynical
+			}
+			modifier = {
+				factor = 0
+				NOT = { trait = cynical }
+			}
+		}
+	}
+	option = {
+		name = EVTOPTB_WCCLS_27
+
+		set_character_flag = refused_dark_secrets_flag
+
+		ai_chance = {
+			chance = 60
+			modifier = {
+				factor = 1.49
+				trait = kind
+			}
+			modifier = {
+				factor = 1.49
+				trait = zealous
+			}
+			modifier = {
+				factor = 1.49
+				trait = content
+			}
+		}
+	}
+
+	after = {
+		clr_character_flag = do_not_disturb
+		clear_flags_with_prefix = magical_secrets_
+		hidden_effect = { set_variable = { which = study_magical_secrets_efforts value = 0 } }
+	}
+}
+
+# sharp_mind_dec
+# Gives +2 to every attribute
+character_event = {
+	id = WCCLS.40
+	desc = {
+		trigger = { FROMFROM = { character = ROOT } }
+		text = EVTDESC_WCCLS_40_self
+	}
+	desc = {
+		trigger = { FROMFROM = { NOT = { character = ROOT } } }
+		text = EVTDESC_WCCLS_40_other
+	}
+	picture = GFX_evt_mage_human
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+	
+	option = {
+		name = EXCELLENT
+		
+		add_character_modifier = { name = sharp_mind years = 3 }
+	}
+}
+
+# Notification of the end of the training
+narrative_event = {
+	id = WCCLS.100
+	title = EVTTITLE_WCCLS_100
+	desc = EVTDESC_WCCLS_100
+	picture = GFX_evt_mage_human
+	border = GFX_event_narrative_frame_religion
+
+	is_triggered_only = yes
+
+	trigger = {
+		is_incapable = no
+		OR = {
+			has_character_modifier = training_self_mage
+			has_character_modifier = training_mentor_mage
+		}
+	}
+	
+	fail_trigger_effect = {
+		if = {
+			limit = { is_incapable = yes }
+			character_event = { id = WCCLS.1450 }
+		}
+	}
+
+	option = {
+		name = EXCELLENT
+
+		add_class_trait_effect = yes
+	}
+}
+
+#########################
+# Hunter
+#########################
+
+# Notification of the beginning of self-training
+narrative_event = {
+	id = WCCLS.101
+	title = EVTTITLE_WCCLS_1
+	desc = EVTDESC_WCCLS_101
+	picture = GFX_evt_hunter_human
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+
+	immediate = {
+		add_character_modifier = {
+			name = training_self_hunter
+			duration = -1
+		}
+		character_event = { id = WCCLS.2152 }
+		narrative_event = {
+			id = WCCLS.200
+			days = 1460
+		}
+	}
+
+	option = {
+		name = EXCELLENT
+	}
+}
+
+#on_combat_pulse
+# Inspire Army
+character_event = {
+	id = WCCLS.105
+	desc = EVTDESC_WCCLS_105
+	picture = GFX_evt_warrior_human
+	border = GFX_event_normal_frame_war
+
+	is_triggered_only = yes
+	
+	min_age = 16
+	only_capable = yes
+	prisoner = no
+
+	trigger = {
+		is_alive = yes
+		is_dying = no
+		
+		OR = {
+			war = yes
+			liege = { war = yes }
+		}
+
+		OR = {
+			is_hunter_class_trigger = yes
+			is_warrior_class_trigger = yes
+		}
+		NOT = { trait = craven }
+	}
+
+	immediate = {
+		log = "WCCLS.105 fired for [Root.GetBestName]"
+
+		location = { save_event_target_as = target_province }
+	}
+
+	weight_multiplier = {
+		days = 1
+		modifier = {
+			factor = 1.5
+			trait = brave
+		}
+	}
+
+	# Forward!
+	option = {
+		name = EVTOPTA_WCCLS_105
+
+		random_army = {
+			limit = { location = { province = event_target:target_province } }
+			if = {
+				limit = { ROOT = { is_9_10_physical_class_trigger = yes } }
+				morale = 0.5
+				break = yes
+			}
+			if = {
+				limit = { ROOT = { is_7_8_physical_class_trigger = yes } }
+				morale = 0.4
+				break = yes
+			}
+			if = {
+				limit = { ROOT = { is_5_6_physical_class_trigger = yes } }
+				morale = 0.3
+				break = yes
+			}
+			if = {
+				limit = { ROOT = { is_3_4_physical_class_trigger = yes } }
+				morale = 0.2
+				break = yes
+			}
+			if = {
+				limit = { ROOT = { is_1_2_physical_class_trigger = yes } }
+				morale = 0.1
+				break = yes
+			}
+		}
+		liege = {
+			random_army = {
+				limit = { location = { province = event_target:target_province } }
+				if = {
+					limit = { ROOT = { is_9_10_physical_class_trigger = yes } }
+					morale = 0.5
+					break = yes
+				}
+				if = {
+					limit = { ROOT = { is_7_8_physical_class_trigger = yes } }
+					morale = 0.4
+					break = yes
+				}
+				if = {
+					limit = { ROOT = { is_5_6_physical_class_trigger = yes } }
+					morale = 0.3
+					break = yes
+				}
+				if = {
+					limit = { ROOT = { is_3_4_physical_class_trigger = yes } }
+					morale = 0.2
+					break = yes
+				}
+				if = {
+					limit = { ROOT = { is_1_2_physical_class_trigger = yes } }
+					morale = 0.1
+					break = yes
+				}
+			}
+		}
+	}
+}
+
+# Notification of the end of the training
+narrative_event = {
+	id = WCCLS.200
+	title = EVTTITLE_WCCLS_100
+	desc = EVTDESC_WCCLS_200
+	picture = GFX_evt_hunter_human
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+
+	trigger = {
+		is_incapable = no
+		OR = {
+			has_character_modifier = training_self_hunter
+			has_character_modifier = training_mentor_hunter
+		}
+	}
+	
+	fail_trigger_effect = {
+		if = {
+			limit = { is_incapable = yes }
+			character_event = { id = WCCLS.1450 }
+		}
+	}
+
+	option = {
+		name = EXCELLENT
+
+		add_class_trait_effect = yes
+	}
+}
+
+#########################
+# Warrior
+#########################
+
+# Notification of the beginning of self-training
+narrative_event = {
+	id = WCCLS.201
+	title = EVTTITLE_WCCLS_1
+	desc = EVTDESC_WCCLS_201
+	picture = GFX_evt_warrior_human
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+
+	immediate = {
+		add_character_modifier = {
+			name = training_self_warrior
+			duration = -1
+		}
+		character_event = { id = WCCLS.2152 }
+		narrative_event = {
+			id = WCCLS.300
+			days = 1460
+		}
+	}
+
+	option = {
+		name = EXCELLENT
+	}
+}
+
+# Notification of the end of the training
+narrative_event = {
+	id = WCCLS.300
+	title = EVTTITLE_WCCLS_100
+	desc = EVTDESC_WCCLS_300
+	picture = GFX_evt_warrior_human
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+
+	trigger = {
+		is_incapable = no
+		OR = {
+			has_character_modifier = training_self_warrior
+			has_character_modifier = training_mentor_warrior
+		}
+	}
+	
+	fail_trigger_effect = {
+		if = {
+			limit = { is_incapable = yes }
+			character_event = { id = WCCLS.1450 }
+		}
+	}
+
+	option = {
+		name = EXCELLENT
+
+		add_class_trait_effect = yes
+	}
+}
+
+#########################
+# Paladin
+#########################
+
+# Notification of the beginning of self-training
+narrative_event = {
+	id = WCCLS.301
+	title = EVTTITLE_WCCLS_1
+	desc = EVTDESC_WCCLS_301
+	picture = GFX_evt_paladin_human
+	border = GFX_event_narrative_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+		add_character_modifier = {
+			name = training_self_paladin
+			duration = -1
+		}
+		character_event = { id = WCCLS.2152 }
+		narrative_event = {
+			id = WCCLS.400
+			days = 1460
+		}
+	}
+
+	option = {
+		name = EXCELLENT
+	}
+}
+
+# light_mark_dec
+# Gives 2 year health bonus or health penalty if ROOT is undead, demon or void creature
+character_event = {
+	id = WCCLS.305
+	desc = {
+		trigger = { character = FROMFROM }
+		text = EVTDESC_WCCLS_305_self
+	}
+	desc = {
+		trigger = {
+			NOT = { character = FROMFROM }
+			is_dark_being_trigger = yes
+		}
+		text = EVTDESC_WCCLS_305_other
+	}
+	desc = {
+		trigger = {
+			NOT = { character = FROMFROM }
+			is_dark_being_trigger = no
+		}
+		text = EVTDESC_WCCLS_305_bad
+	}
+	picture = GFX_evt_priest_human
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	option = {
+		trigger = { is_dark_being_trigger = no }
+		name = EXCELLENT
+
+		add_character_modifier = { name = light_mark_good years = 2 }
+	}
+
+	option = {
+		trigger = { is_dark_being_trigger = yes }
+		name = ALAS
+
+		add_character_modifier = { name = light_mark_bad years = 2 }
+	}
+}
+
+# Notification of the end of the training
+narrative_event = {
+	id = WCCLS.400
+	title = EVTTITLE_WCCLS_100
+	desc = EVTDESC_WCCLS_400
+	picture = GFX_evt_paladin_human
+	border = GFX_event_narrative_frame_religion
+
+	is_triggered_only = yes
+
+	trigger = {
+		is_incapable = no
+		OR = {
+			has_character_modifier = training_self_paladin
+			has_character_modifier = training_mentor_paladin
+		}
+	}
+	
+	fail_trigger_effect = {
+		if = {
+			limit = { is_incapable = yes }
+			character_event = { id = WCCLS.1450 }
+		}
+	}
+
+	option = {
+		name = EXCELLENT
+
+		add_class_trait_effect = yes
+	}
+}
+
+#########################
+# Priest
+#########################
+
+# Notification of the beginning of self-training
+narrative_event = {
+	id = WCCLS.401
+	title = EVTTITLE_WCCLS_1
+	desc = {
+		trigger = {
+			NOT = { religion = kaldorei_religion }
+		}
+		text = EVTDESC_WCCLS_401
+		picture = GFX_evt_priest_human
+	}
+	desc = {
+		trigger = {
+			religion = kaldorei_religion
+		}
+		text = EVTDESC_WCCLS_401_moon_priest
+		picture = GFX_evt_moon_priestess
+	}
+	border = GFX_event_narrative_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+		add_character_modifier = {
+			name = training_self_priest
+			duration = -1
+		}
+		character_event = { id = WCCLS.2152 }
+		narrative_event = {
+			id = WCCLS.500
+			days = 1460
+		}
+	}
+
+	option = {
+		name = EXCELLENT
+	}
+}
+
+# Notification of the end of the training
+narrative_event = {
+	id = WCCLS.500
+	title = EVTTITLE_WCCLS_100
+	desc = {
+		trigger = {
+			NOT = { religion = kaldorei_religion }
+		}
+		text = EVTDESC_WCCLS_500
+		picture = GFX_evt_priest_human
+	}
+	desc = {
+		trigger = {
+			religion = kaldorei_religion
+		}
+		text = EVTDESC_WCCLS_500_moon_priest
+		picture = GFX_evt_moon_priestess
+	}
+	border = GFX_event_narrative_frame_religion
+
+	is_triggered_only = yes
+
+	trigger = {
+		is_incapable = no
+		OR = {
+			has_character_modifier = training_self_priest
+			has_character_modifier = training_mentor_priest
+		}
+	}
+	
+	fail_trigger_effect = {
+		if = {
+			limit = { is_incapable = yes }
+			character_event = { id = WCCLS.1450 }
+		}
+	}
+
+	option = {
+		name = EXCELLENT
+
+		add_class_trait_effect = yes
+		if = {
+			limit = { 
+				religion = kaldorei_religion
+			}
+			hidden_effect = {
+				add_trait = subclass_moon_priest
+				join_society = sisterhood_of_elune
+			}
+		}
+	}
+}
+
+#########################
+# Rogue
+#########################
+
+# Notification of the beginning of self-training
+narrative_event = {
+	id = WCCLS.501
+	title = EVTTITLE_WCCLS_1
+	desc = EVTDESC_WCCLS_501
+	picture = GFX_evt_rogue_night_elf
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	immediate = {
+		add_character_modifier = {
+			name = training_self_rogue
+			duration = -1
+		}
+		character_event = { id = WCCLS.2152 }
+		narrative_event = {
+			id = WCCLS.600
+			days = 1460
+		}
+	}
+
+	option = {
+		name = EXCELLENT
+	}
+}
+
+# Fires by poison_with_gas
+# Someone tries to poison you
+character_event = {
+	id = WCCLS.505
+	desc = EVTDESC_WCCLS_505
+	picture = GFX_evt_shadow
+	border = GFX_event_normal_frame_intrigue
+
+	is_triggered_only = yes
+
+	option = {
+		name = ALAS
+
+		hidden_effect = { FROMFROM = { long_character_event = { id = WCCLS.506 } } }
+		trigger_switch = {
+			on_trigger = has_character_flag
+			deadly_gas_attack_flag = {
+				add_character_modifier = { name = has_been_poisoned_by_gas years = 2 }
+				hidden_effect = {
+					any_courtier = {
+						limit = { ai = yes }
+						add_character_modifier = { name = has_been_poisoned_by_gas years = 2 }
+					}
+				}
+			}
+			very_successful_gas_attack_flag = {
+				if = {
+					limit = { trait = one_eyed }
+					remove_trait = one_eyed
+				}
+				add_trait = blinded
+				add_character_modifier = { name = has_been_poisoned_by_gas years = 2 }
+			}
+			successful_gas_attack_flag = {
+				add_character_modifier = { name = has_been_poisoned_by_gas years = 2 }
+			}
+		}
+	}
+}
+# Fires by poison_with_gas if you failed
+# Notifies about outcome
+long_character_event = {
+	id = WCCLS.506
+	desc = {
+		trigger = { FROM = { has_character_flag = successful_gas_attack_flag } }
+		text = EVTDESC_WCCLS_506_successful
+	}
+	desc = {
+		trigger = { FROM = { has_character_flag = failed_gas_attack_flag } }
+		text = EVTDESC_WCCLS_506_failed
+	}
+	desc = {
+		trigger = { FROM = { has_character_flag = deadly_gas_attack_flag } }
+		text = EVTDESC_WCCLS_506_deadly
+	}
+	picture = GFX_evt_shadow
+	border = GFX_event_long_frame_intrigue
+
+	is_triggered_only = yes
+
+	option = {
+		name = {
+			trigger = { FROM = { NOT = { has_character_flag = failed_gas_attack_flag } }  }
+			text = EXCELLENT
+		}
+		name = {
+			trigger = { FROM = { has_character_flag = failed_gas_attack_flag } }
+			text = ALAS
+		}
+
+		tooltip = {
+			FROM =  {
+				if = {
+					limit = { NOT = { has_character_flag = failed_gas_attack_flag } }
+					if = {
+						limit = { has_character_flag = very_successful_gas_attack_flag }
+						add_trait = blinded
+					}
+					add_character_modifier = { name = has_been_poisoned_by_gas years = 2 }
+				}
+			}
+		}
+	}
+
+	after = {
+		FROM = {
+			clr_character_flag = deadly_gas_attack_flag
+			clr_character_flag = very_successful_gas_attack_flag
+			clr_character_flag = successful_gas_attack_flag
+			clr_character_flag = failed_gas_attack_flag
+			clr_character_flag = poison_with_gas_ongoing_flag
+		}
+	}
+}
+
+# Notification of the end of the training
+narrative_event = {
+	id = WCCLS.600
+	title = EVTTITLE_WCCLS_100
+	desc = EVTDESC_WCCLS_600
+	picture = GFX_evt_rogue_night_elf
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	trigger = {
+		is_incapable = no
+		OR = {
+			has_character_modifier = training_self_rogue
+			has_character_modifier = training_mentor_rogue
+		}
+	}
+	
+	fail_trigger_effect = {
+		if = {
+			limit = { is_incapable = yes }
+			character_event = { id = WCCLS.1450 }
+		}
+	}
+
+	option = {
+		name = EXCELLENT
+
+		add_class_trait_effect = yes
+	}
+}
+
+#########################
+# Warlock
+#########################
+
+# Notification of the beginning of self-training
+narrative_event = {
+	id = WCCLS.601
+	title = EVTTITLE_WCCLS_1
+	desc = EVTDESC_WCCLS_601
+	picture = GFX_evt_warlock_human
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	immediate = {
+		add_character_modifier = {
+			name = training_self_warlock
+			duration = -1
+		}
+		character_event = { id = WCCLS.2152 }
+		narrative_event = {
+			id = WCCLS.700
+			days = 1460
+		}
+	}
+
+	option = {
+		name = EXCELLENT
+	}
+}
+
+# You drains the soul
+character_event = {
+	id = WCCLS.605
+	desc = EVTDESC_WCCLS_605
+	picture = GFX_evt_sacrifice
+	border = GFX_event_normal_frame_intrigue
+
+	is_triggered_only = yes
+
+	option = {
+		name = EXCELLENT
+	}
+}
+
+# Selection of demon
+character_event = {
+	id = WCCLS.610
+	desc = EVTDESC_WCCLS_610
+	picture = GFX_evt_burning_legion
+	border = GFX_event_normal_frame_intrigue
+
+	is_triggered_only = yes
+
+	# Imp
+	option = {
+		name = EVTOPTA_WCCLS_610
+		add_character_modifier = { name = pet_imp duration = -1 }
+	}
+	# Succubus
+	option = {
+		name = EVTOPTB_WCCLS_610
+		# Random sayaadi
+		create_character = {
+			female = yes
+			dynasty = none
+			religion = ROOT culture = sayaadi
+			female = yes
+			age = 300
+			random_traits = yes
+			trait = creature_sayaadi
+			trait = demon
+			trait = fair
+			trait = seductress
+			trait = cruel
+			trait = lustful
+		}
+		hidden_effect = {
+			new_character = {
+				set_secret_religion = ROOT
+				add_friend = ROOT
+				opinion = { modifier = opinion_loyal_servant who = ROOT }
+
+				remove_education_effect = yes
+				random_list = {
+					10 = {
+						add_trait = amateurish_plotter
+						add_trait = class_warlock_1
+					}
+					45 = {
+						add_trait = flamboyant_schemer
+						add_trait = class_warlock_2
+					}
+					30 = {
+						add_trait = intricate_webweaver
+						add_trait = class_warlock_3
+					}
+					15 = {
+						add_trait = elusive_shadow
+						add_trait = class_warlock_4
+					}
+				}
+
+				# Set focus and add seductress
+				if = {
+					limit = { has_dlc = "Way of Life" }
+					clear_focus = yes
+					set_focus = focus_seduction
+				}
+
+				# Removes wrong traits
+				remove_trait = chaste
+				remove_trait = kind
+				remove_trait = charitable
+				remove_trait = humble
+				remove_trait = honest
+				remove_trait = zealous
+				remove_trait = trusting
+			}
+		}
+	}
+	# Felhunter
+	option = {
+		name = EVTOPTC_WCCLS_610
+		add_character_modifier = { name = pet_felhunter duration = -1 }
+	}
+	# Felguard
+	option = {
+		name = EVTOPTD_WCCLS_610
+		add_character_modifier = { name = pet_felguard duration = -1 }
+	}
+	
+	after = {
+		clr_character_flag = summon_demon_ongoing_flag
+	}
+}
+
+# Mind Control Spellcasting
+character_event = {
+	id = WCCLS.615
+	desc = EVTDESC_WCCLS_615
+	picture = GFX_evt_mind_control
+	border = GFX_event_normal_frame_intrigue
+
+	is_triggered_only = yes
+
+	immediate = {
+		FROM = { save_event_target_as = target_mind }
+	}
+
+	# I'll do it
+	option = {
+		name = EVTOPTA_WCCLS_615
+		custom_tooltip = { text = EVTOPTA_WCCLS_615_tooltip }
+
+		hidden_effect = {
+			random_list = {
+				20 = {
+					modifier = {
+						factor = 1.92
+						society_rank > 3
+					}
+					modifier = {
+						factor = 1.92
+						true_religion_group = void_group
+					}
+					modifier = {
+						factor = 1.92
+						is_3_4_magic_class_trigger = yes
+					}
+					modifier = {
+						factor = 1.92
+						is_5_6_magic_class_trigger = yes
+					}
+					modifier = {
+						factor = 1.92
+						is_7_8_magic_class_trigger = yes
+					}
+					modifier = {
+						factor = 1.92
+						is_9_10_magic_class_trigger = yes
+					}
+					character_event = { id = WCCLS.616 }	# Success
+				}
+				60 = {
+					character_event = { id = WCCLS.617 }	# Failure
+				}
+				20 = {
+					modifier = {
+						factor = 0
+						is_dark_being_trigger = yes
+					}
+					character_event = { id = WCCLS.618 }	# Absolute Failure
+				}
+			}
+		}
+	}
+
+	# I'll be merciful
+	option = {
+		name = EVTOPTB_WCCLS_615
+		custom_tooltip = { text = EVTOPTB_WCCLS_615_tooltip }
+	}
+}
+
+# Mind Control Success event
+character_event = {
+	id = WCCLS.616
+	desc = EVTDESC_WCCLS_616
+	picture = GFX_evt_mind_control
+	border = GFX_event_normal_frame_intrigue
+
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCCLS_616
+
+		if = {
+			limit = {
+				has_quest = quest_control_mind
+				quest_target = { character = event_target:target_mind }
+			}
+			clr_quest = quest_control_mind
+			add_society_currency_medium_effect = yes
+		}
+		reverse_opinion = {
+			who = event_target:target_mind
+			modifier = opinion_loyal_servant
+		}
+		minor_soul_corruption_effect = yes
+	}
+}
+
+# Mind Control Failure event
+character_event = {
+	id = WCCLS.617
+	desc = EVTDESC_WCCLS_617
+	picture = GFX_evt_mind_control
+	border = GFX_event_normal_frame_intrigue
+
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCCLS_617
+
+		if = {
+			limit = {
+				has_quest = quest_control_mind
+				quest_target = { character = event_target:target_mind }
+			}
+			clr_quest = {
+				id = quest_control_mind
+				failure = yes
+			}
+		}
+		tooltip = { event_target:target_mind = { add_trait = lunatic } }
+		major_soul_corruption_effect = yes
+	}
+}
+
+# Mind Control Absolute Failure event
+character_event = {
+	id = WCCLS.618
+	desc = EVTDESC_WCCLS_618
+	picture = GFX_evt_mind_control
+	border = GFX_event_normal_frame_intrigue
+
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCCLS_618
+
+		if = {
+			limit = {
+				has_quest = quest_control_mind
+				quest_target = { character = event_target:target_mind }
+			}
+			clr_quest = {
+				id = quest_control_mind
+				failure = yes
+			}
+		}
+		add_trait = incapable
+		tooltip = { event_target:target_mind = { add_trait = incapable } }
+		major_soul_corruption_effect = yes
+	}
+}
+
+# Notification of the end of the training
+narrative_event = {
+	id = WCCLS.700
+	title = EVTTITLE_WCCLS_100
+	desc = EVTDESC_WCCLS_700
+	picture = GFX_evt_warlock_human
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	trigger = {
+		is_incapable = no
+		OR = {
+			has_character_modifier = training_self_warlock
+			has_character_modifier = training_mentor_warlock
+		}
+	}
+	
+	fail_trigger_effect = {
+		if = {
+			limit = { is_incapable = yes }
+			character_event = { id = WCCLS.1450 }
+		}
+	}
+
+	option = {
+		name = EXCELLENT
+
+		add_class_trait_effect = yes
+
+		hidden_effect = { character_event = { id = WCFEL.170 days = 60 } }		# Changes religion
+	}
+}
+
+#########################
+# Shaman
+#########################
+
+# Notification of the beginning of self-training
+narrative_event = {
+	id = WCCLS.701
+	title = EVTTITLE_WCCLS_1
+	desc = EVTDESC_WCCLS_701
+	picture = GFX_evt_shaman_tauren
+	border = GFX_event_narrative_frame_religion
+
+	immediate = {
+		add_character_modifier = {
+			name = training_self_shaman
+			duration = -1
+		}
+		character_event = { id = WCCLS.2152 }
+		narrative_event = {
+			id = WCCLS.800
+			days = 1460
+		}
+	}
+
+	is_triggered_only = yes
+
+	option = {
+		name = EXCELLENT
+	}
+}
+
+# Notification of the end of the training
+narrative_event = {
+	id = WCCLS.800
+	title = EVTTITLE_WCCLS_100
+	desc = EVTDESC_WCCLS_800
+	picture = GFX_evt_shaman_tauren
+	border = GFX_event_narrative_frame_religion
+
+	is_triggered_only = yes
+
+	trigger = {
+		OR = {
+			has_character_modifier = training_self_shaman
+			has_character_modifier = training_mentor_shaman
+		}
+	}
+
+	option = {
+		name = EXCELLENT
+
+		add_class_trait_effect = yes
+	}
+}
+
+#########################
+# Druid
+#########################
+
+# Notification of the beginning of self-training
+narrative_event = {
+	id = WCCLS.801
+	title = EVTTITLE_WCCLS_1
+	desc = EVTDESC_WCCLS_801
+	picture = GFX_evt_druid_night_elf
+	border = GFX_event_narrative_frame_religion
+
+	immediate = {
+		add_character_modifier = {
+			name = training_self_druid
+			duration = -1
+		}
+		character_event = { id = WCCLS.2152 }
+		narrative_event = {
+			id = WCCLS.900
+			days = 1460
+		}
+	}
+
+	is_triggered_only = yes
+
+	option = {
+		name = EXCELLENT
+	}
+}
+
+# FROM suggests to heal your wounds
+letter_event = {
+	id = WCCLS.805
+	desc = EVTDESC_WCCLS_805
+	border = GFX_event_letter_frame_religion
+
+	is_triggered_only = yes
+
+	option = {
+		name = ACCEPT
+
+		if = {
+			limit = { trait = severely_injured }
+			tooltip = { remove_trait = severely_injured }
+			character_event = { id = RIP.11000 }
+			hidden_effect = { FROMFROM = { remove_3_mana_effect = yes } }
+		}
+		else = {
+			tooltip = { remove_trait = wounded }
+			character_event = { id = 6081 }
+			hidden_effect = { FROMFROM = { remove_1_mana_effect = yes } }
+		}
+	}
+	option = {
+		name = DECLINE
+
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+
+# FROMFROM bless the earth of ROOT
+character_event = {
+	id = WCCLS.810
+	desc = {
+		trigger = { NOT = { character = FROMFROM } }
+		text = EVTDESC_WCCLS_810_another
+	}
+	desc = {
+		trigger = { character = FROMFROM }
+		text = EVTDESC_WCCLS_810_yourself
+	}
+	picture = GFX_evt_stone_church
+	border = GFX_event_normal_frame_economy
+
+	is_triggered_only = yes
+
+	option = {
+		name = EXCELLENT
+
+		event_target:target_province = { tooltip = { add_province_modifier = { name = druid_blessing duration = 1825 } } }
+	}
+}
+
+# Notification of the end of the training
+narrative_event = {
+	id = WCCLS.900
+	title = EVTTITLE_WCCLS_100
+	desc = EVTDESC_WCCLS_900
+	picture = GFX_evt_druid_night_elf
+	border = GFX_event_narrative_frame_religion
+
+	is_triggered_only = yes
+
+	trigger = {
+		is_incapable = no
+		OR = {
+			has_character_modifier = training_self_druid
+			has_character_modifier = training_mentor_druid
+		}
+	}
+	
+	fail_trigger_effect = {
+		if = {
+			limit = { is_incapable = yes }
+			character_event = { id = WCCLS.1450 }
+		}
+	}
+
+	option = {
+		name = EXCELLENT
+
+		# if = {
+			# limit = {
+				# OR = {
+					# religion = old_ways
+					# event_target:mentor = { religion = old_ways }
+				# }
+			# }
+			# random = {
+				# chance = 90
+				# if = {
+					# limit = { is_female = yes }
+					# add_trait = harvest_witch
+				# }
+				# if = {
+					# limit = { is_female = no }
+					# add_trait = harvest_warlock
+				# }
+				# modifier = {
+					# factor = 0.5
+					# event_target:mentor = {
+						# NOR = {
+							# trait = harvest_witch
+							# trait = harvest_warlock
+						# }
+					# }
+				# }
+			# }
+		# }
+
+		add_class_trait_effect = yes
+	}
+}
+
+#########################
+# Loa Priest
+#########################
+
+# Notification of the beginning of self-training
+narrative_event = {
+	id = WCCLS.901
+	title = EVTTITLE_WCCLS_1
+	desc = EVTDESC_WCCLS_901
+	picture = GFX_evt_loas_worship
+	border = GFX_event_narrative_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+		add_character_modifier = {
+			name = training_self_loa_priest
+			duration = -1
+		}
+		character_event = { id = WCCLS.2152 }
+		narrative_event = {
+			id = WCCLS.1000
+			days = 1460
+		}
+	}
+
+	option = {
+		name = EXCELLENT
+	}
+}
+
+# bad_voodoo
+# Gives stressed or depressed or weak or slow or stutter or lisp to ROOT
+# If FROM fails, gives quick or strong to ROOT
+character_event = {
+	id = WCCLS.905
+	desc = EVTDESC_WCCLS_905
+	picture = GFX_evt_loas_worship
+	border = GFX_event_normal_frame_intrigue
+
+	is_triggered_only = yes
+
+	trigger = {
+		event_target:target_doll = { is_alive = yes }
+	}
+
+	option = {
+		name = EXCELLENT
+
+		event_target:target_doll = {
+			show_scope_change = no
+
+			trigger_switch = {
+				on_trigger = has_character_flag
+				bad_voodoo_depressed_flag = { tooltip = { add_trait = depressed } }
+				bad_voodoo_stressed_flag = { tooltip = { add_trait = stressed } }
+				bad_voodoo_lisp_flag = { tooltip = { add_trait = lisp } }
+				bad_voodoo_slow_flag = { tooltip = { add_trait = slow } }
+				bad_voodoo_stutter_flag = { tooltip = { add_trait = stutter } }
+				bad_voodoo_weak_flag = { tooltip = { add_trait = weak } }
+			}
+		}
+	}
+
+	after = {
+		if = {
+			limit = { event_target:target_doll = { has_character_flag = bad_voodoo_nothing_flag } }
+			character_event = { id = WCCLS.907 days = 7 }
+		}
+		else = { event_target:target_doll = { character_event = { id = WCCLS.906 days = 4 } } }
+	}
+}
+character_event = {
+	id = WCCLS.906
+	desc = {
+		trigger = {
+			OR = {
+				has_character_flag = bad_voodoo_depressed_flag
+				has_character_flag = bad_voodoo_stressed_flag
+			}
+		}
+		text = EVTDESC_WCCLS_906_stressed
+	}
+	desc = {
+		trigger = {
+			OR = {
+				has_character_flag = bad_voodoo_lisp_flag
+				has_character_flag = bad_voodoo_slow_flag
+				has_character_flag = bad_voodoo_stutter_flag
+				has_character_flag = bad_voodoo_weak_flag
+			}
+		}
+		text = EVTDESC_WCCLS_906_weak
+	}
+	desc = {
+		trigger = {
+			OR = {
+				has_character_flag = bad_voodoo_quick_flag
+				has_character_flag = bad_voodoo_strong_flag
+			}
+		}
+		text = EVTDESC_WCCLS_906_strong
+	}
+	picture = GFX_evt_loas_worship
+	border = GFX_event_normal_frame_intrigue
+
+	is_triggered_only = yes
+
+	option = {
+		name = {
+			trigger = {
+				NOR = {
+					has_character_flag = bad_voodoo_quick_flag
+					has_character_flag = bad_voodoo_strong_flag
+				}
+			}
+			text = ALAS
+		}
+		name = {
+			trigger = {
+				OR = {
+					has_character_flag = bad_voodoo_quick_flag
+					has_character_flag = bad_voodoo_strong_flag
+				}
+			}
+			text = EXCELLENT
+		}
+
+		trigger_switch = {
+			on_trigger = has_character_flag
+			bad_voodoo_depressed_flag = {
+				add_trait = depressed
+				clr_character_flag = bad_voodoo_depressed_flag
+				clr_character_flag = bad_voodoo_ongoing_flag
+			}
+			bad_voodoo_stressed_flag = {
+				add_trait = stressed
+				clr_character_flag = bad_voodoo_stressed_flag
+				clr_character_flag = bad_voodoo_ongoing_flag
+			}
+			bad_voodoo_lisp_flag = {
+				add_trait = lisp
+				clr_character_flag = bad_voodoo_lisp_flag
+				clr_character_flag = bad_voodoo_ongoing_flag
+			}
+			bad_voodoo_slow_flag = {
+				add_trait = slow
+				clr_character_flag = bad_voodoo_slow_flag
+				clr_character_flag = bad_voodoo_ongoing_flag
+			}
+			bad_voodoo_stutter_flag = {
+				add_trait = stutter
+				clr_character_flag = bad_voodoo_stutter_flag
+				clr_character_flag = bad_voodoo_ongoing_flag
+			}
+			bad_voodoo_weak_flag = {
+				add_trait = weak
+				clr_character_flag = bad_voodoo_weak_flag
+				clr_character_flag = bad_voodoo_ongoing_flag
+			}
+			bad_voodoo_quick_flag = { add_trait = quick }
+			bad_voodoo_strong_flag = { add_trait = strong }
+		}
+	}
+
+	after = {
+		if = {
+			limit = {
+				OR = {
+					has_character_flag = bad_voodoo_quick_flag
+					has_character_flag = bad_voodoo_strong_flag
+				}
+			}
+			FROM = { character_event = { id = WCCLS.907 days = 3 } }
+		}
+	}
+}
+character_event = {
+	id = WCCLS.907
+	desc = {
+		trigger = { event_target:target_doll = { has_character_flag = bad_voodoo_nothing_flag } }
+		text = EVTDESC_WCCLS_907_nothing
+	}
+	desc = {
+		trigger = { event_target:target_doll = { NOT = { has_character_flag = bad_voodoo_nothing_flag } } }
+		text = EVTDESC_WCCLS_907_strong
+	}
+	picture = GFX_evt_loas_worship
+	border = GFX_event_normal_frame_intrigue
+
+	is_triggered_only = yes
+
+	trigger = {
+		event_target:target_doll = { is_alive = yes }
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS_907
+
+		event_target:target_doll = {
+			show_scope_change = no
+
+			trigger_switch = {
+				on_trigger = has_character_flag
+				bad_voodoo_nothing_flag = {
+					clr_character_flag = bad_voodoo_nothing_flag
+				}
+				bad_voodoo_quick_flag = {
+					tooltip = { add_trait = quick }
+					clr_character_flag = bad_voodoo_quick_flag
+				}
+				bad_voodoo_strong_flag = {
+					tooltip = { add_trait = strong }
+					clr_character_flag = bad_voodoo_strong_flag
+				}
+			}
+		}
+	}
+
+	after = {
+		event_target:target_doll = { clr_character_flag = bad_voodoo_ongoing_flag }
+	}
+}
+
+# Notification of the end of the training
+narrative_event = {
+	id = WCCLS.1000
+	title = EVTTITLE_WCCLS_100
+	desc = EVTDESC_WCCLS_1000
+	picture = GFX_evt_loas_worship
+	border = GFX_event_narrative_frame_religion
+
+	is_triggered_only = yes
+
+	trigger = {
+		is_incapable = no
+		OR = {
+			has_character_modifier = training_self_loa_priest
+			has_character_modifier = training_mentor_loa_priest
+		}
+	}
+	
+	fail_trigger_effect = {
+		if = {
+			limit = { is_incapable = yes }
+			character_event = { id = WCCLS.1450 }
+		}
+	}
+
+	option = {
+		name = EXCELLENT
+
+		add_class_trait_effect = yes
+	}
+}
+
+#########################
+# Death Knight
+#########################
+
+# Ќету такого, но если будет, то вот заготовка
+
+# # Notification of the beginning of self-training
+# narrative_event = {
+	# id = WCCLS.1001
+	# title = EVTTITLE_WCCLS_1
+	# desc = EVTDESC_WCCLS_1001
+	# picture = GFX_evt_death_knight_teron_gorefiend
+
+	# is_triggered_only = yes
+
+	# immediate = {
+		# add_character_modifier = {
+			# name = training_self_death_knight
+			# duration = -1
+		# }
+		# character_event = { id = WCCLS.2152 }
+		# narrative_event = {
+			# id = WCCLS.1100
+			# days = 1460
+		# }
+	# }
+
+	# option = {
+		# name = EXCELLENT
+	# }
+# }
+
+# Notification of the end of the training
+narrative_event = {
+	id = WCCLS.1100
+	title = EVTTITLE_WCCLS_100
+	desc = EVTDESC_WCCLS_1100
+	picture = GFX_evt_death_knight_teron_gorefiend
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	trigger = {
+		OR = {
+			has_character_modifier = training_self_death_knight
+			has_character_modifier = training_mentor_death_knight
+		}
+	}
+
+	option = {
+		name = EXCELLENT
+
+		add_class_trait_effect = yes
+	}
+}
+
+#########################
+# Necromancer
+#########################
+
+# Notification of the beginning of self-training
+narrative_event = {
+	id = WCCLS.1101
+	title = EVTTITLE_WCCLS_1
+	desc = EVTDESC_WCCLS_1101
+	picture = GFX_evt_necromancer_human
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	immediate = {
+		add_character_modifier = {
+			name = training_self_necromancer
+			duration = -1
+		}
+		character_event = { id = WCCLS.2152 }
+		narrative_event = {
+			id = WCCLS.1200
+			days = 1460
+		}
+	}
+
+	option = {
+		name = EXCELLENT
+	}
+}
+
+# Evisceration of the body
+character_event = {
+	id = WCCLS.1105
+	desc = {
+		trigger = {
+			FROM = { has_character_flag = normal_corpse_flag }
+		}
+		text = EVTDESC_WCCLS_1105_normal_corpse
+	}
+	desc = {
+		trigger = {
+			FROM = { has_character_flag = brawny_corpse_flag }
+		}
+		text = EVTDESC_WCCLS_1105_brawny_corpse
+	}
+	desc = {
+		trigger = {
+			FROM = { has_character_flag = frail_corpse_flag }
+		}
+		text = EVTDESC_WCCLS_1105_frail_corpse
+	}
+	picture = GFX_evt_apothecary
+	border = GFX_event_normal_frame_intrigue
+
+	is_triggered_only = yes
+
+	immediate = {
+		FROM = { death = { death_reason = death_missing } }
+	}
+
+	option = {
+		name = EXCELLENT
+	}
+}
+
+# Notification of the end of the training
+narrative_event = {
+	id = WCCLS.1200
+	title = EVTTITLE_WCCLS_100
+	desc = EVTDESC_WCCLS_1200
+	picture = GFX_evt_necromancer_human
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	trigger = {
+		OR = {
+			has_character_modifier = training_self_necromancer
+			has_character_modifier = training_mentor_necromancer
+		}
+	}
+
+	option = {
+		name = EXCELLENT
+
+		add_class_trait_effect = yes
+	}
+}
+
+#########################
+# Shadow Priest
+#########################
+
+# Notification of the beginning of self-training
+narrative_event = {
+	id = WCCLS.1201
+	title = EVTTITLE_WCCLS_1
+	desc = EVTDESC_WCCLS_1201
+	picture = GFX_evt_shadow_acolytes
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	immediate = {
+		add_character_modifier = {
+			name = training_self_shadow_priest
+			duration = -1
+		}
+		character_event = { id = WCCLS.2152 }
+		narrative_event = {
+			id = WCCLS.1300
+			days = 1460
+		}
+	}
+
+	option = {
+		name = EXCELLENT
+	}
+}
+
+# drive_crazy
+# Adds stressed or depressed or lunatic trait to ROOT
+# If FROM fails gives lunatic trait to FROM or do nothing
+character_event = {
+	id = WCCLS.1205
+	desc = {
+		trigger = {
+			event_target:target_crazy = {
+				OR = {
+					has_character_flag = drive_crazy_lunatic_flag
+					has_character_flag = drive_crazy_depressed_flag
+					has_character_flag = drive_crazy_stressed_flag
+				}
+			}
+		}
+		text = EVTDESC_WCCLS_1205_success
+	}
+	desc = {
+		trigger = { event_target:target_crazy = { has_character_flag = drive_crazy_fail_flag } }
+		text = EVTDESC_WCCLS_1205_fail
+	}
+	desc = {
+		trigger = { event_target:target_crazy = { has_character_flag = drive_crazy_epic_fail_flag } }
+		text = EVTDESC_WCCLS_1205_epic_fail
+	}
+	picture = GFX_evt_black_empire
+	border = GFX_event_normal_frame_intrigue
+
+	is_triggered_only = yes
+
+	trigger = {
+		event_target:target_crazy = { is_alive = yes }
+	}
+
+	option = {
+		name = {
+			trigger = {
+				event_target:target_crazy = {
+					NOR = {
+						has_character_flag = drive_crazy_fail_flag
+						has_character_flag = drive_crazy_fail_flag
+					}
+				}
+			}
+			text = EXCELLENT
+		}
+		name = {
+			trigger = { event_target:target_crazy = { has_character_flag = drive_crazy_fail_flag } }
+			text = ALAS
+		}
+		name = {
+			trigger = { event_target:target_crazy = { has_character_flag = drive_crazy_epic_fail_flag } }
+			text = SHUT_UP
+		}
+
+		event_target:target_crazy = {
+			show_scope_change = no
+
+			trigger_switch = {
+				on_trigger = has_character_flag
+				# Success
+				drive_crazy_lunatic_flag = { tooltip = { add_trait = lunatic } }
+				drive_crazy_depressed_flag = { tooltip = { add_trait = depressed } }
+				drive_crazy_stressed_flag = { tooltip = { add_trait = stressed } }
+				# Fail
+				drive_crazy_fail_flag = {
+					clr_character_flag = drive_crazy_fail_flag
+					clr_character_flag = drive_crazy_ongoing_flag
+				}
+				drive_crazy_epic_fail_flag = {
+					ROOT = {
+						show_scope_change = no
+						add_trait = lunatic
+					}
+					clr_character_flag = drive_crazy_epic_fail_flag
+					clr_character_flag = drive_crazy_ongoing_flag
+				}
+			}
+		}
+	}
+
+	after = {
+		event_target:target_crazy = {
+			if = {
+				limit = {
+					OR = {
+						has_character_flag = drive_crazy_lunatic_flag
+						has_character_flag = drive_crazy_depressed_flag
+						has_character_flag = drive_crazy_stressed_flag
+					}
+				}
+				character_event = { id = WCCLS.1206 }
+			}
+		}
+	}
+}
+character_event = {
+	id = WCCLS.1206
+	desc = EVTDESC_WCCLS_1206
+	picture = GFX_evt_black_empire
+	border = GFX_event_normal_frame_intrigue
+
+	is_triggered_only = yes
+	hide_from = yes
+
+	option = {
+		name = SHUT_UP
+
+		trigger_switch = {
+			on_trigger = has_character_flag
+			drive_crazy_lunatic_flag = {
+				add_trait = lunatic
+				clr_character_flag = drive_crazy_lunatic_flag
+			}
+			drive_crazy_depressed_flag = {
+				add_trait = depressed
+				clr_character_flag = drive_crazy_depressed_flag
+			}
+			drive_crazy_stressed_flag = {
+				add_trait = stressed
+				clr_character_flag = drive_crazy_stressed_flag
+			}
+		}
+	}
+
+	after = {
+		clr_character_flag = drive_crazy_ongoing_flag
+	}
+}
+
+# summon_void_creature
+# Creates creature_nraqi
+# If FROM fails, kills FROM
+character_event = {
+	id = WCCLS.1215
+	desc = {
+		trigger = { NOT = { has_character_flag = summon_void_creature_fail_flag } }
+		text = EVTDESC_WCCLS_1215_success
+	}
+	desc = {
+		trigger = { has_character_flag = summon_void_creature_fail_flag }
+		text = EVTDESC_WCCLS_1215_fail
+	}
+	picture = GFX_evt_nraqi
+	border = GFX_event_normal_frame_intrigue
+	
+	is_triggered_only = yes
+	
+	immediate = {
+		create_character = {
+			female = no
+			dynasty = none
+			culture = nraqi religion = ROOT secret_religion = ROOT
+			trait = creature_nraqi
+			trait = cruel
+			random_traits = yes
+			age = 300
+			flag = void_creature
+		}
+		new_character = {
+			save_event_target_as = target_nraqi
+
+			remove_education_effect = yes
+			random_list = {
+				16 = {
+					add_trait = skilled_tactician
+					add_trait = class_warrior_5
+					give_nickname = nick_the_devourer
+				}
+				16 = {
+					add_trait = brilliant_strategist
+					add_trait = class_warrior_6
+					give_nickname = nick_the_devourer
+				}
+				16 = {
+					add_trait = intricate_webweaver
+					add_trait = class_rogue_5
+					give_nickname = nick_the_slitherer
+				}
+				16 = {
+					add_trait = elusive_shadow
+					add_trait = class_rogue_6
+					give_nickname = nick_the_slitherer
+				}
+				16 = {
+					add_trait = scholarly_theologian
+					add_trait = class_shadow_priest_5
+					give_nickname = nick_the_seeker
+				}
+				16 = {
+					add_trait = mastermind_theologian
+					add_trait = class_shadow_priest_6
+					give_nickname = nick_the_seeker
+				}
+			}
+			if = {
+				limit = { ROOT = { has_character_flag = summon_void_creature_secret_flag } }
+				set_secret_religion = old_gods_worship
+			}
+		}
+	}
+	
+	option = {
+		trigger = { NOT = { has_character_flag = summon_void_creature_fail_flag } }
+		name = EXCELLENT
+		
+		reverse_opinion = { modifier = opinion_loyal_servant who = event_target:target_nraqi }
+	}
+	
+	option = {
+		trigger = { has_character_flag = summon_void_creature_fail_flag }
+		name = ARGH
+		
+		death = { death_reason = death_execution_eaten killer = event_target:target_nraqi }
+		hidden_effect = { event_target:target_nraqi = { death = { death_reason = death_missing } } }
+	}
+	
+	after = {
+		clr_character_flag = summon_void_creature_ongoing_flag
+		clr_character_flag = summon_void_creature_success_flag
+		clr_character_flag = summon_void_creature_secret_flag
+		clr_character_flag = summon_void_creature_fail_flag
+	}
+}
+
+# Notification of the end of the training
+narrative_event = {
+	id = WCCLS.1300
+	title = EVTTITLE_WCCLS_100
+	desc = EVTDESC_WCCLS_1300
+	picture = GFX_evt_shadow_acolytes
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	trigger = {
+		OR = {
+			has_character_modifier = training_self_shadow_priest
+			has_character_modifier = training_mentor_shadow_priest
+		}
+	}
+
+	option = {
+		name = EXCELLENT
+
+		add_class_trait_effect = yes
+
+		hidden_effect = { character_event = { id = WCVOD.170 days = 60 } }		# Changes religion
+	}
+}
+
+# Something went wrong during class training
+character_event = {
+	id = WCCLS.1450
+	desc = EVTDESC_WCCLS_1450
+	picture = GFX_evt_recieve_letter
+	border = GFX_event_normal_frame_intrigue
+	
+	is_triggered_only = yes
+	
+	immediate = {
+		reset_experience_effect = yes
+		remove_training_modifiers_effect = yes
+	}
+	
+	option = {
+		name = ALAS
+	}
+}
+
+###########################################
+# Correspondence between mentor and student
+###########################################
+
+# Choses class after ask_to_be_your_mentor or offer_to_be_mentor decision
+character_event = {
+	id = WCCLS.1500
+	desc = {
+		trigger = {
+			character = event_target:student
+			is_adult = yes
+		}
+		text = EVTDESC_WCCLS_1500
+	}
+	desc = {
+		trigger = { NOT = { character = event_target:student } }
+		text = EVTDESC_WCCLS_1500_other
+	}
+	desc = {
+		trigger = {
+			character = event_target:student
+			is_adult = no
+		}
+		text = EVTDESC_WCCLS_1500_underage
+	}
+	picture = GFX_evt_recieve_letter
+
+	is_triggered_only = yes
+
+	# Mage
+	option = {
+		trigger = {
+			event_target:student = {
+				OR = {
+					potential_mage_wo_training_trigger = yes
+					is_weak_mage_class_trigger = yes
+				}
+			}
+			event_target:mentor = { potential_mentor_mage_trigger = yes }
+		}
+		name = A_MAGE
+
+		event_target:student = { set_character_flag = training_mentor_mage_flag }
+		event_target:student = {
+			set_character_flag = training_mentor_mage_flag
+			if = {
+				limit = {
+					NOT = { guardian = { character = event_target:mentor } }
+					NOT = { educator = { character = event_target:mentor } }
+				}
+				event_target:mentor = { letter_event = { id = WCCLS.2100 days = 1 } }
+			}
+			else = {
+				custom_tooltip = {
+					text = starts_training_tooltip
+					hidden_effect = { character_event = { id = WCCLS.2150 } }
+				}
+			}
+		}
+	}
+
+	# Hunter
+	option = {
+		trigger = {
+			event_target:student = {
+				OR = {
+					potential_hunter_wo_training_trigger = yes
+					is_weak_hunter_class_trigger = yes
+				}
+			}
+			event_target:mentor = { potential_mentor_hunter_trigger = yes }
+		}
+		name = A_HUNTER
+
+		event_target:student = {
+			set_character_flag = training_mentor_hunter_flag
+			if = {
+				limit = {
+					NOT = { guardian = { character = event_target:mentor } }
+					NOT = { educator = { character = event_target:mentor } }
+				}
+				event_target:mentor = { letter_event = { id = WCCLS.2100 days = 1 } }
+			}
+			else = {
+				custom_tooltip = {
+					text = starts_training_tooltip
+					hidden_effect = { character_event = { id = WCCLS.2150 } }
+				}
+			}
+		}
+	}
+
+	# Warrior
+	option = {
+		trigger = {
+			event_target:student = {
+				OR = {
+					potential_warrior_wo_training_trigger = yes
+					is_weak_warrior_class_trigger = yes
+				}
+			}
+			event_target:mentor = { potential_mentor_warrior_trigger = yes }
+		}
+		name = A_WARRIOR
+
+		event_target:student = {
+			set_character_flag = training_mentor_warrior_flag
+			if = {
+				limit = {
+					NOT = { guardian = { character = event_target:mentor } }
+					NOT = { educator = { character = event_target:mentor } }
+				}
+				event_target:mentor = { letter_event = { id = WCCLS.2100 days = 1 } }
+			}
+			else = {
+				custom_tooltip = {
+					text = starts_training_tooltip
+					hidden_effect = { character_event = { id = WCCLS.2150 } }
+				}
+			}
+		}
+	}
+
+	# Paladin
+	option = {
+		trigger = {
+			event_target:student = {
+				OR = {
+					potential_paladin_wo_training_trigger = yes
+					is_weak_paladin_class_trigger = yes
+				}
+			}
+			event_target:mentor = { potential_mentor_paladin_trigger = yes }
+		}
+		name = A_PALADIN
+
+		event_target:student = {
+			set_character_flag = training_mentor_paladin_flag
+			if = {
+				limit = {
+					NOT = { guardian = { character = event_target:mentor } }
+					NOT = { educator = { character = event_target:mentor } }
+				}
+				event_target:mentor = { letter_event = { id = WCCLS.2100 days = 1 } }
+			}
+			else = {
+				custom_tooltip = {
+					text = starts_training_tooltip
+					hidden_effect = { character_event = { id = WCCLS.2150 } }
+				}
+			}
+		}
+	}
+
+	# Priest
+	option = {
+		trigger = {
+			event_target:student = {
+				OR = {
+					potential_priest_wo_training_trigger = yes
+					is_weak_priest_class_trigger = yes
+				}
+			}
+			event_target:mentor = { potential_mentor_priest_trigger = yes }
+		}
+		name = A_PRIEST
+
+		event_target:student = {
+			set_character_flag = training_mentor_priest_flag
+			if = {
+				limit = {
+					NOT = { guardian = { character = event_target:mentor } }
+					NOT = { educator = { character = event_target:mentor } }
+				}
+				event_target:mentor = { letter_event = { id = WCCLS.2100 days = 1 } }
+			}
+			else = {
+				custom_tooltip = {
+					text = starts_training_tooltip
+					hidden_effect = { character_event = { id = WCCLS.2150 } }
+				}
+			}
+		}
+	}
+
+	# Rogue
+	option = {
+		trigger = {
+			event_target:student = {
+				OR = {
+					potential_rogue_wo_training_trigger = yes
+					is_weak_rogue_class_trigger = yes
+				}
+			}
+			event_target:mentor = { potential_mentor_rogue_trigger = yes }
+		}
+		name = A_ROGUE
+
+		event_target:student = {
+			set_character_flag = training_mentor_rogue_flag
+			if = {
+				limit = {
+					NOT = { guardian = { character = event_target:mentor } }
+					NOT = { educator = { character = event_target:mentor } }
+				}
+				event_target:mentor = { letter_event = { id = WCCLS.2100 days = 1 } }
+			}
+			else = {
+				custom_tooltip = {
+					text = starts_training_tooltip
+					hidden_effect = { character_event = { id = WCCLS.2150 } }
+				}
+			}
+		}
+	}
+
+	# Warlock
+	option = {
+		trigger = {
+			event_target:student = {
+				OR = {
+					potential_warlock_wo_training_trigger = yes
+					is_weak_warlock_class_trigger = yes
+				}
+			}
+			event_target:mentor = { potential_mentor_warlock_trigger = yes }
+		}
+		name = A_WARLOCK
+
+		event_target:student = {
+			set_character_flag = training_mentor_warlock_flag
+			if = {
+				limit = {
+					NOT = { guardian = { character = event_target:mentor } }
+					NOT = { educator = { character = event_target:mentor } }
+				}
+				event_target:mentor = { letter_event = { id = WCCLS.2100 days = 1 } }
+			}
+			else = {
+				custom_tooltip = {
+					text = starts_training_tooltip
+					hidden_effect = { character_event = { id = WCCLS.2150 } }
+				}
+			}
+		}
+	}
+
+	# Shaman
+	option = {
+		trigger = {
+			event_target:student = {
+				OR = {
+					potential_shaman_wo_training_trigger = yes
+					is_weak_shaman_class_trigger = yes
+				}
+			}
+			event_target:mentor = { potential_mentor_shaman_trigger = yes }
+		}
+		name = A_SHAMAN
+
+		event_target:student = {
+			set_character_flag = training_mentor_shaman_flag
+			if = {
+				limit = {
+					NOT = { guardian = { character = event_target:mentor } }
+					NOT = { educator = { character = event_target:mentor } }
+				}
+				event_target:mentor = { letter_event = { id = WCCLS.2100 days = 1 } }
+			}
+			else = {
+				custom_tooltip = {
+					text = starts_training_tooltip
+					hidden_effect = { character_event = { id = WCCLS.2150 } }
+				}
+			}
+		}
+	}
+
+	# Druid
+	option = {
+		trigger = {
+			event_target:student = {
+				OR = {
+					potential_druid_wo_training_trigger = yes
+					is_weak_druid_class_trigger = yes
+				}
+			}
+			event_target:mentor = { potential_mentor_druid_trigger = yes }
+		}
+		name = A_DRUID
+
+		event_target:student = {
+			set_character_flag = training_mentor_druid_flag
+			if = {
+				limit = {
+					NOT = { guardian = { character = event_target:mentor } }
+					NOT = { educator = { character = event_target:mentor } }
+				}
+				event_target:mentor = { letter_event = { id = WCCLS.2100 days = 1 } }
+			}
+			else = {
+				custom_tooltip = {
+					text = starts_training_tooltip
+					hidden_effect = { character_event = { id = WCCLS.2150 } }
+				}
+			}
+		}
+	}
+
+	# Loa Priest
+	option = {
+		trigger = {
+			event_target:student = {
+				OR = {
+					potential_loa_priest_wo_training_trigger = yes
+					is_weak_loa_priest_class_trigger = yes
+				}
+			}
+			event_target:mentor = { potential_mentor_loa_priest_trigger = yes }
+		}
+		name = A_LOA_PRIEST
+
+		event_target:student = {
+			set_character_flag = training_mentor_loa_priest_flag
+			if = {
+				limit = {
+					NOT = { guardian = { character = event_target:mentor } }
+					NOT = { educator = { character = event_target:mentor } }
+				}
+				event_target:mentor = { letter_event = { id = WCCLS.2100 days = 1 } }
+			}
+			else = {
+				custom_tooltip = {
+					text = starts_training_tooltip
+					hidden_effect = { character_event = { id = WCCLS.2150 } }
+				}
+			}
+		}
+	}
+
+	# Death Knight
+	option = {
+		trigger = {
+			event_target:student = {
+				OR = {
+					potential_death_knight_wo_training_trigger = yes
+					is_weak_death_knight_class_trigger = yes
+				}
+			}
+			event_target:mentor = { potential_mentor_death_knight_trigger = yes }
+		}
+		name = A_DEATH_KNIGHT
+
+		event_target:student = {
+			set_character_flag = training_mentor_death_knight_flag
+			if = {
+				limit = {
+					NOT = { guardian = { character = event_target:mentor } }
+					NOT = { educator = { character = event_target:mentor } }
+				}
+				event_target:mentor = { letter_event = { id = WCCLS.2100 days = 1 } }
+			}
+			else = {
+				custom_tooltip = {
+					text = starts_training_tooltip
+					hidden_effect = { character_event = { id = WCCLS.2150 } }
+				}
+			}
+		}
+	}
+
+	# Necromancer
+	option = {
+		trigger = {
+			event_target:student = {
+				OR = {
+					potential_necromancer_wo_training_trigger = yes
+					is_weak_necromancer_class_trigger = yes
+				}
+			}
+			event_target:mentor = { potential_mentor_necromancer_trigger = yes }
+		}
+		name = A_NECROMANCER
+
+		event_target:student = {
+			set_character_flag = training_mentor_necromancer_flag
+			if = {
+				limit = {
+					NOT = { guardian = { character = event_target:mentor } }
+					NOT = { educator = { character = event_target:mentor } }
+				}
+				event_target:mentor = { letter_event = { id = WCCLS.2100 days = 1 } }
+			}
+			else = {
+				custom_tooltip = {
+					text = starts_training_tooltip
+					hidden_effect = { character_event = { id = WCCLS.2150 } }
+				}
+			}
+		}
+	}
+
+	# Shadow Priest
+	option = {
+		trigger = {
+			event_target:student = {
+				OR = {
+					potential_shadow_priest_wo_training_trigger = yes
+					is_weak_shadow_priest_class_trigger = yes
+				}
+			}
+			event_target:mentor = { potential_mentor_shadow_priest_trigger = yes }
+		}
+		name = A_SHADOW_PRIEST
+
+		event_target:student = {
+			set_character_flag = training_mentor_shadow_priest_flag
+			if = {
+				limit = {
+					NOT = { guardian = { character = event_target:mentor } }
+					NOT = { educator = { character = event_target:mentor } }
+				}
+				event_target:mentor = { letter_event = { id = WCCLS.2100 days = 1 } }
+			}
+			else = {
+				custom_tooltip = {
+					text = starts_training_tooltip
+					hidden_effect = { character_event = { id = WCCLS.2150 } }
+				}
+			}
+		}
+	}
+
+	# Cancel
+	option = {
+		name = EVTOPTD_WCCLS_1500
+
+		event_target:student = {
+			show_scope_change = no
+			clr_training_mentor_flag_effect = yes
+			opinion = { who = event_target:mentor modifier = opinion_rejected_request_for_mentoring }
+		}
+	}
+}
+
+# Mentor: student asks you
+letter_event = {
+	id = WCCLS.2100
+	desc = EVTDESC_WCCLS_2100
+
+	is_triggered_only = yes
+
+	option = {														# Mentor accepts
+		name = EVTOPTA_WCCLS_2100
+
+		event_target:student = { letter_event = { id = WCCLS.2101 days = 1 } }
+
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 15
+				OR = {
+					opinion = { who = event_target:student value = 75 }
+					AND = {
+						OR = {
+							trait = kind
+							trait = charitable
+							trait = diligent
+						}
+						opinion = { who = event_target:student value = 25 }
+					}
+					event_target:student =  {
+						ai = yes
+						NOT = { wealth = 25 }
+					}
+				}
+			}
+		}
+	}
+	option = {														# Mentor requires payment
+		name = EVTOPTB_WCCLS_2100
+
+		event_target:student = { letter_event = { id = WCCLS.2102 days = 1 } }
+
+		ai_chance = {
+			factor = 5
+			# It's impossible to say "no" to Khadgar :3
+			modifier = {
+				factor = 0
+				event_target:student = { has_character_flag = is_khadgar }
+			}
+			modifier = {
+				factor = 0
+				has_opinion_modifier = { who = event_target:student modifier = opinion_loyal_servant }
+			}
+		}
+	}
+	option = {														# Mentor refuses
+		name = EVTOPTC_WCCLS_2100
+
+		event_target:student = {
+			show_scope_change = no
+			letter_event = { id = WCCLS.2103 days = 1 }
+			clr_training_mentor_flag_effect = yes
+			opinion = { who = event_target:mentor modifier = opinion_rejected_request_for_mentoring }
+		}
+
+		ai_chance = {
+			factor = 1
+			# It's impossible to say "no" to Khadgar :3
+			modifier = {
+				factor = 0
+				event_target:student = { has_character_flag = is_khadgar }
+			}
+			modifier = {
+				factor = 0
+				has_opinion_modifier = { who = event_target:student modifier = opinion_loyal_servant }
+			}
+		}
+	}
+}
+
+# Student: mentor accepts
+letter_event = {
+	id = WCCLS.2101
+	desc = EVTDESC_WCCLS_2101
+
+	is_triggered_only = yes
+
+	option = {
+		name = EXCELLENT
+
+		custom_tooltip = {
+			text = starts_training_tooltip
+			hidden_effect = { character_event = { id = WCCLS.2150 } }
+		}
+	}
+}
+
+# Student: mentor requires payment
+letter_event = {
+	id = WCCLS.2102
+	desc = EVTDESC_WCCLS_2102
+
+	is_triggered_only = yes
+
+	option = {
+		name = OK
+
+		event_target:mentor = { letter_event = { id = WCCLS.2104 days = 1 } }
+		custom_tooltip = {
+			text = starts_training_tooltip
+			hidden_effect = { character_event = { id = WCCLS.2150 } }
+		}
+		wealth = -25
+
+		ai_chance = {
+			factor = 90
+			modifier = {
+				factor = 1.2
+				ai_ambition = 75
+
+			}
+			modifier = {
+				factor = 1.2
+				ai_ambition = 50
+
+			}
+			modifier = {
+				factor = 1.2
+				ai_ambition = 25
+
+			}
+			modifier = {
+				factor = 0
+				NOT = { wealth = 25 }
+			}
+		}
+	}
+
+	option = {
+		name = EVTOPTB_WCCLS_2102
+
+		event_target:mentor = { letter_event = { id = WCCLS.2105 days = 1 } }
+		event_target:student = {
+			show_scope_change = no
+			clr_training_mentor_flag_effect = yes
+			opinion = { who = event_target:mentor modifier = opinion_rejected_request_for_mentoring }
+		}
+
+		ai_chance = {
+			factor = 10
+			modifier = {
+				factor = 2.6
+				is_ruler = yes
+				ai_greed = 100
+				NOT = { wealth = 250 }
+			}
+			modifier = {
+				factor = 2.6
+				is_ruler = yes
+				ai_greed = 50
+				NOT = { wealth = 125 }
+			}
+			modifier = {
+				factor = 2.6
+				is_ruler = yes
+				ai_greed = 25
+				NOT = { wealth = 63 }
+			}
+		}
+	}
+}
+
+# Student: mentor refuses
+letter_event = {
+	id = WCCLS.2103
+	desc = EVTDESC_WCCLS_2103
+
+	is_triggered_only = yes
+
+	option = {
+		name = ALAS
+
+		tooltip = {
+			event_target:student = {
+				show_scope_change = no
+				clr_training_mentor_flag_effect = yes
+				opinion = { who = event_target:mentor modifier = opinion_rejected_request_for_mentoring }
+			}
+		}
+	}
+}
+
+# Mentor: student accepts to pay money
+letter_event = {
+	id = WCCLS.2104
+	desc = EVTDESC_WCCLS_2104
+
+	is_triggered_only = yes
+
+	option = {
+		name = EXCELLENT
+
+		wealth = 25
+	}
+}
+
+# Mentor: student refuses to pay money
+letter_event = {
+	id = WCCLS.2105
+	desc = EVTDESC_WCCLS_2105
+
+	is_triggered_only = yes
+
+	option = {
+		name = ALAS
+
+		tooltip = {
+			event_target:student = {
+				show_scope_change = no
+				clr_training_mentor_flag_effect = yes
+				opinion = { who = event_target:mentor modifier = opinion_rejected_request_for_mentoring }
+			}
+		}
+	}
+}
+
+# Event-sorter
+character_event = {
+	id = WCCLS.2150
+
+	hide_window = yes
+	is_triggered_only = yes
+
+	immediate = {
+		event_target:mentor = {
+			opinion = { who = event_target:student modifier = opinion_student years = 5 }
+			character_event = { id = WCCLS.2151 days = 1095 }				# Removes opinion when the training is done
+		}
+		opinion = { who = event_target:mentor modifier = opinion_wc_mentor years = 5 }
+
+		if = {
+			limit = {
+				has_character_flag = training_mentor_mage_flag
+			}
+			add_character_modifier = {
+				name = training_mentor_mage
+				duration = -1
+			}
+			clr_character_flag = training_mentor_mage_flag
+			narrative_event = { id = WCCLS.100 days = 1095 }
+		}
+		if = {
+			limit = {
+				has_character_flag = training_mentor_hunter_flag
+			}
+			add_character_modifier = { name = training_mentor_hunter duration = -1 }
+			clr_character_flag = training_mentor_hunter_flag
+			narrative_event = { id = WCCLS.200 days = 1095 }
+		}
+		if = {
+			limit = {
+				has_character_flag = training_mentor_warrior_flag
+			}
+			add_character_modifier = {
+				name = training_mentor_warrior
+				duration = -1
+			}
+			clr_character_flag = training_mentor_warrior_flag
+			narrative_event = { id = WCCLS.300 days = 1095 }
+		}
+		if = {
+			limit = {
+				has_character_flag = training_mentor_paladin_flag
+			}
+			add_character_modifier = {
+				name = training_mentor_paladin
+				duration = -1
+			}
+			clr_character_flag = training_mentor_paladin_flag
+			narrative_event = { id = WCCLS.400 days = 1095 }
+		}
+		if = {
+			limit = {
+				has_character_flag = training_mentor_priest_flag
+			}
+			add_character_modifier = {
+				name = training_mentor_priest
+				duration = -1
+			}
+			clr_character_flag = training_mentor_priest_flag
+			narrative_event = { id = WCCLS.500 days = 1095 }
+		}
+		if = {
+			limit = {
+				has_character_flag = training_mentor_rogue_flag
+			}
+			add_character_modifier = {
+				name = training_mentor_rogue
+				duration = -1
+			}
+			clr_character_flag = training_mentor_rogue_flag
+			narrative_event = { id = WCCLS.600 days = 1095 }
+		}
+		if = {
+			limit = {
+				has_character_flag = training_mentor_warlock_flag
+			}
+			add_character_modifier = {
+				name = training_mentor_warlock
+				duration = -1
+			}
+			clr_character_flag = training_mentor_warlock_flag
+			narrative_event = { id = WCCLS.700 days = 1095 }
+		}
+		if = {
+			limit = {
+				has_character_flag = training_mentor_shaman_flag
+			}
+			add_character_modifier = {
+				name = training_mentor_shaman
+				duration = -1
+			}
+			clr_character_flag = training_mentor_shaman_flag
+			narrative_event = { id = WCCLS.800 days = 1095 }
+		}
+		if = {
+			limit = {
+				has_character_flag = training_mentor_druid_flag
+			}
+			add_character_modifier = {
+				name = training_mentor_druid
+				duration = -1
+			}
+			clr_character_flag = training_mentor_druid_flag
+			narrative_event = { id = WCCLS.900 days = 1095 }
+		}
+		if = {
+			limit = {
+				has_character_flag = training_mentor_loa_priest_flag
+			}
+			add_character_modifier = {
+				name = training_mentor_loa_priest
+				duration = -1
+			}
+			clr_character_flag = training_mentor_loa_priest_flag
+			narrative_event = { id = WCCLS.1000 days = 1095 }
+		}
+		if = {
+			limit = {
+				has_character_flag = training_mentor_death_knight_flag
+			}
+			add_character_modifier = {
+				name = training_mentor_death_knight
+				duration = -1
+			}
+			clr_character_flag = training_mentor_death_knight_flag
+			narrative_event = { id = WCCLS.1100 days = 1095 }
+		}
+		if = {
+			limit = {
+				has_character_flag = training_mentor_necromancer_flag
+			}
+			add_character_modifier = {
+				name = training_mentor_necromancer
+				duration = -1
+			}
+			clr_character_flag = training_mentor_necromancer_flag
+			narrative_event = { id = WCCLS.1200 days = 1095 }
+		}
+		if = {
+			limit = {
+				has_character_flag = training_mentor_shadow_priest_flag
+			}
+			add_character_modifier = {
+				name = training_mentor_shadow_priest
+				duration = -1
+			}
+			clr_character_flag = training_mentor_shadow_priest_flag
+			narrative_event = { id = WCCLS.1300 days = 1095 }
+		}
+		character_event = { id = WCCLS.2152 }
+	}
+}
+
+# Removes one student from the mentor
+character_event = {
+	id = WCCLS.2151
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		event_target:student = { remove_opinion = { who = ROOT modifier = opinion_teaching_me } }
+	}
+}
+
+# Level up/changes class after training
+character_event = {
+	id = WCCLS.2152
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		event_target:mentor = { count_experience_effect = yes }
+		recount_experience_effect = yes
+		if = {
+			limit = { is_training_self_trigger = yes }
+			random_list = {
+				10 = {
+					change_variable = { which = wc_experience value = 1 }
+					trigger_switch = {
+						on_trigger = has_character_modifier
+						training_self_mage 				= { change_variable = { which = wc_experience_mage 				value = 1 } }
+						training_self_hunter 			= { change_variable = { which = wc_experience_hunter 			value = 1 } }
+						training_self_warrior 			= { change_variable = { which = wc_experience_warrior 			value = 1 } }
+						training_self_paladin 			= { change_variable = { which = wc_experience_paladin 			value = 1 } }
+						training_self_priest 			= { change_variable = { which = wc_experience_priest 			value = 1 } }
+						training_self_rogue 			= { change_variable = { which = wc_experience_rogue 			value = 1 } }
+						training_self_warlock 			= { change_variable = { which = wc_experience_warlock 			value = 1 } }
+						training_self_shaman 			= { change_variable = { which = wc_experience_shaman 			value = 1 } }
+						training_self_druid 			= { change_variable = { which = wc_experience_druid 			value = 1 } }
+						training_self_loa_priest		= { change_variable = { which = wc_experience_loa_priest 		value = 1 } }
+						training_self_death_knight 		= { change_variable = { which = wc_experience_death_knight 		value = 1 } }
+						training_self_necromancer 		= { change_variable = { which = wc_experience_necromancer 		value = 1 } }
+						training_self_shadow_priest 	= { change_variable = { which = wc_experience_shadow_priest 	value = 1 } }
+					}
+					modifier = {
+						factor = 0
+						check_variable = { which = wc_experience value = 10 }
+					}
+				}
+				10 = {
+					change_variable = { which = wc_experience value = 2 }
+					trigger_switch = {
+						on_trigger = has_character_modifier
+						training_self_mage 				= { change_variable = { which = wc_experience_mage 				value = 2 } }
+						training_self_hunter 			= { change_variable = { which = wc_experience_hunter 			value = 2 } }
+						training_self_warrior 			= { change_variable = { which = wc_experience_warrior 			value = 2 } }
+						training_self_paladin 			= { change_variable = { which = wc_experience_paladin 			value = 2 } }
+						training_self_priest 			= { change_variable = { which = wc_experience_priest 			value = 2 } }
+						training_self_rogue 			= { change_variable = { which = wc_experience_rogue 			value = 2 } }
+						training_self_warlock 			= { change_variable = { which = wc_experience_warlock 			value = 2 } }
+						training_self_shaman 			= { change_variable = { which = wc_experience_shaman 			value = 2 } }
+						training_self_druid 			= { change_variable = { which = wc_experience_druid 			value = 2 } }
+						training_self_loa_priest		= { change_variable = { which = wc_experience_loa_priest 		value = 2 } }
+						training_self_death_knight 		= { change_variable = { which = wc_experience_death_knight 		value = 2 } }
+						training_self_necromancer 		= { change_variable = { which = wc_experience_necromancer 		value = 2 } }
+						training_self_shadow_priest 	= { change_variable = { which = wc_experience_shadow_priest 	value = 2 } }
+					}
+					modifier = {
+						factor = 0
+						check_variable = { which = wc_experience value = 9 }
+					}
+				}
+			}
+		}
+		if = {
+			limit = { is_training_mentor_trigger = yes }
+			trigger_switch = {
+				on_trigger = has_character_modifier
+				training_mentor_mage = {
+					event_target:mentor = { ROOT = { set_variable = { which = wc_experience_difference which = wc_experience_mage which = PREV } } }
+					subtract_variable = { which = wc_experience_difference which = wc_experience_mage }
+				}
+				training_mentor_hunter = {
+					event_target:mentor = { ROOT = { set_variable = { which = wc_experience_difference which = wc_experience_hunter which = PREV } } }
+					subtract_variable = { which = wc_experience_difference which = wc_experience_hunter }
+				}
+				training_mentor_warrior = {
+					event_target:mentor = { ROOT = { set_variable = { which = wc_experience_difference which = wc_experience_warrior which = PREV } } }
+					subtract_variable = { which = wc_experience_difference which = wc_experience_warrior }
+				}
+				training_mentor_paladin = {
+					event_target:mentor = { ROOT = { set_variable = { which = wc_experience_difference which = wc_experience_paladin which = PREV } } }
+					subtract_variable = { which = wc_experience_difference which = wc_experience_paladin }
+				}
+				training_mentor_priest = {
+					event_target:mentor = { ROOT = { set_variable = { which = wc_experience_difference which = wc_experience_priest which = PREV } } }
+					subtract_variable = { which = wc_experience_difference which = wc_experience_priest }
+				}
+				training_mentor_rogue = {
+					event_target:mentor = { ROOT = { set_variable = { which = wc_experience_difference which = wc_experience_rogue which = PREV } } }
+					subtract_variable = { which = wc_experience_difference which = wc_experience_rogue }
+				}
+				training_mentor_warlock = {
+					event_target:mentor = { ROOT = { set_variable = { which = wc_experience_difference which = wc_experience_warlock which = PREV } } }
+					subtract_variable = { which = wc_experience_difference which = wc_experience_warlock }
+				}
+				training_mentor_shaman = {
+					event_target:mentor = { ROOT = { set_variable = { which = wc_experience_difference which = wc_experience_shaman which = PREV } } }
+					subtract_variable = { which = wc_experience_difference which = wc_experience_shaman }
+				}
+				training_mentor_druid = {
+					event_target:mentor = { ROOT = { set_variable = { which = wc_experience_difference which = wc_experience_druid which = PREV } } }
+					subtract_variable = { which = wc_experience_difference which = wc_experience_druid }
+				}
+				training_mentor_loa_priest = {
+					event_target:mentor = { ROOT = { set_variable = { which = wc_experience_difference which = wc_experience_loa_priest which = PREV } } }
+					subtract_variable = { which = wc_experience_difference which = wc_experience_loa_priest }
+				}
+				training_mentor_death_knight = {
+					event_target:mentor = { ROOT = { set_variable = { which = wc_experience_difference which = wc_experience_death_knight which = PREV } } }
+					subtract_variable = { which = wc_experience_difference which = wc_experience_death_knight }
+				}
+				training_mentor_necromancer = {
+					event_target:mentor = { ROOT = { set_variable = { which = wc_experience_difference which = wc_experience_necromancer which = PREV } } }
+					subtract_variable = { which = wc_experience_difference which = wc_experience_necromancer }
+				}
+				training_mentor_shadow_priest = {
+					event_target:mentor = { ROOT = { set_variable = { which = wc_experience_difference which = wc_experience_shadow_priest which = PREV } } }
+					subtract_variable = { which = wc_experience_difference which = wc_experience_shadow_priest }
+				}
+			}
+			if = {
+				limit = {
+					NOT = { check_variable = { which = wc_experience value = 10 } }
+					check_variable = { which = wc_experience_difference value = 1 }
+				}
+				change_variable = { which = wc_experience value = 1 }
+				trigger_switch = {
+					on_trigger = has_character_modifier
+					training_mentor_mage 			= { change_variable = { which = wc_experience_mage 				value = 1 } }
+					training_mentor_hunter 			= { change_variable = { which = wc_experience_hunter 			value = 1 } }
+					training_mentor_warrior 		= { change_variable = { which = wc_experience_warrior 			value = 1 } }
+					training_mentor_paladin 		= { change_variable = { which = wc_experience_paladin 			value = 1 } }
+					training_mentor_priest 			= { change_variable = { which = wc_experience_priest 			value = 1 } }
+					training_mentor_rogue 			= { change_variable = { which = wc_experience_rogue 			value = 1 } }
+					training_mentor_warlock 		= { change_variable = { which = wc_experience_warlock 			value = 1 } }
+					training_mentor_shaman 			= { change_variable = { which = wc_experience_shaman 			value = 1 } }
+					training_mentor_druid 			= { change_variable = { which = wc_experience_druid 			value = 1 } }
+					training_mentor_loa_priest		= { change_variable = { which = wc_experience_loa_priest 		value = 1 } }
+					training_mentor_death_knight 	= { change_variable = { which = wc_experience_death_knight 		value = 1 } }
+					training_mentor_necromancer 	= { change_variable = { which = wc_experience_necromancer 		value = 1 } }
+					training_mentor_shadow_priest 	= { change_variable = { which = wc_experience_shadow_priest 	value = 1 } }
+				}
+				random_list = {
+					10 = {
+						change_variable = { which = wc_experience value = 1 }
+						trigger_switch = {
+							on_trigger = has_character_modifier
+							training_mentor_mage 			= { change_variable = { which = wc_experience_mage 				value = 1 } }
+							training_mentor_hunter 			= { change_variable = { which = wc_experience_hunter 			value = 1 } }
+							training_mentor_warrior 		= { change_variable = { which = wc_experience_warrior 			value = 1 } }
+							training_mentor_paladin 		= { change_variable = { which = wc_experience_paladin 			value = 1 } }
+							training_mentor_priest 			= { change_variable = { which = wc_experience_priest 			value = 1 } }
+							training_mentor_rogue 			= { change_variable = { which = wc_experience_rogue 			value = 1 } }
+							training_mentor_warlock 		= { change_variable = { which = wc_experience_warlock 			value = 1 } }
+							training_mentor_shaman 			= { change_variable = { which = wc_experience_shaman 			value = 1 } }
+							training_mentor_druid 			= { change_variable = { which = wc_experience_druid 			value = 1 } }
+							training_mentor_loa_priest		= { change_variable = { which = wc_experience_loa_priest 		value = 1 } }
+							training_mentor_death_knight 	= { change_variable = { which = wc_experience_death_knight 		value = 1 } }
+							training_mentor_necromancer 	= { change_variable = { which = wc_experience_necromancer 		value = 1 } }
+							training_mentor_shadow_priest 	= { change_variable = { which = wc_experience_shadow_priest 	value = 1 } }
+						}
+						modifier = {
+							factor = 2
+							is_weak_trigger = yes
+						}
+						modifier = {
+							factor = 2
+							is_dumb_trigger = yes
+						}
+						modifier = {
+							factor = 1.5
+							OR = {
+								trait = slothful
+								trait = indolent
+							}
+						}
+						modifier = {
+							factor = 1.5
+							has_mental_disorder_trigger = yes
+						}
+						modifier = {
+							factor = 0
+							check_variable = { which = wc_experience value = 10 }
+						}
+						modifier = {
+							factor = 0
+							NOT = { check_variable = { which = wc_experience_difference value = 1 } }
+						}
+					}
+					10 = {
+						change_variable = { which = wc_experience value = 2 }
+						trigger_switch = {
+							on_trigger = has_character_modifier
+							training_mentor_mage 			= { change_variable = { which = wc_experience_mage 				value = 2 } }
+							training_mentor_hunter 			= { change_variable = { which = wc_experience_hunter 			value = 2 } }
+							training_mentor_warrior 		= { change_variable = { which = wc_experience_warrior 			value = 2 } }
+							training_mentor_paladin 		= { change_variable = { which = wc_experience_paladin 			value = 2 } }
+							training_mentor_priest 			= { change_variable = { which = wc_experience_priest 			value = 2 } }
+							training_mentor_rogue 			= { change_variable = { which = wc_experience_rogue 			value = 2 } }
+							training_mentor_warlock 		= { change_variable = { which = wc_experience_warlock 			value = 2 } }
+							training_mentor_shaman 			= { change_variable = { which = wc_experience_shaman 			value = 2 } }
+							training_mentor_druid 			= { change_variable = { which = wc_experience_druid 			value = 2 } }
+							training_mentor_loa_priest		= { change_variable = { which = wc_experience_loa_priest 		value = 2 } }
+							training_mentor_death_knight 	= { change_variable = { which = wc_experience_death_knight 		value = 2 } }
+							training_mentor_necromancer 	= { change_variable = { which = wc_experience_necromancer 		value = 2 } }
+							training_mentor_shadow_priest 	= { change_variable = { which = wc_experience_shadow_priest 	value = 2 } }
+						}
+						modifier = {
+							factor = 2
+							is_weak_trigger = yes
+						}
+						modifier = {
+							factor = 2
+							is_dumb_trigger = yes
+						}
+						modifier = {
+							factor = 1.5
+							OR = {
+								trait = slothful
+								trait = indolent
+							}
+						}
+						modifier = {
+							factor = 1.5
+							has_mental_disorder_trigger = yes
+						}
+						modifier = {
+							factor = 0
+							check_variable = { which = wc_experience value = 9 }
+						}
+						modifier = {
+							factor = 0
+							NOT = { check_variable = { which = wc_experience_difference value = 2 } }
+						}
+					}
+					10 = {
+						change_variable = { which = wc_experience value = 3 }
+						trigger_switch = {
+							on_trigger = has_character_modifier
+							training_mentor_mage 			= { change_variable = { which = wc_experience_mage 				value = 3 } }
+							training_mentor_hunter 			= { change_variable = { which = wc_experience_hunter 			value = 3 } }
+							training_mentor_warrior 		= { change_variable = { which = wc_experience_warrior 			value = 3 } }
+							training_mentor_paladin 		= { change_variable = { which = wc_experience_paladin 			value = 3 } }
+							training_mentor_priest 			= { change_variable = { which = wc_experience_priest 			value = 3 } }
+							training_mentor_rogue 			= { change_variable = { which = wc_experience_rogue 			value = 3 } }
+							training_mentor_warlock 		= { change_variable = { which = wc_experience_warlock 			value = 3 } }
+							training_mentor_shaman 			= { change_variable = { which = wc_experience_shaman 			value = 3 } }
+							training_mentor_druid 			= { change_variable = { which = wc_experience_druid 			value = 3 } }
+							training_mentor_loa_priest		= { change_variable = { which = wc_experience_loa_priest 		value = 3 } }
+							training_mentor_death_knight 	= { change_variable = { which = wc_experience_death_knight 		value = 3 } }
+							training_mentor_necromancer 	= { change_variable = { which = wc_experience_necromancer 		value = 3 } }
+							training_mentor_shadow_priest 	= { change_variable = { which = wc_experience_shadow_priest 	value = 3 } }
+						}
+						modifier = {
+							factor = 1.5
+							OR = {
+								trait = slothful
+								trait = indolent
+							}
+						}
+						modifier = {
+							factor = 1.5
+							has_mental_disorder_trigger = yes
+						}
+						modifier = {
+							factor = 0
+							check_variable = { which = wc_experience value = 8 }
+						}
+						modifier = {
+							factor = 0
+							NOT = { check_variable = { which = wc_experience_difference value = 3 } }
+						}
+					}
+					10 = {
+						change_variable = { which = wc_experience value = 4 }
+						trigger_switch = {
+							on_trigger = has_character_modifier
+							training_mentor_mage 			= { change_variable = { which = wc_experience_mage 				value = 4 } }
+							training_mentor_hunter 			= { change_variable = { which = wc_experience_hunter 			value = 4 } }
+							training_mentor_warrior 		= { change_variable = { which = wc_experience_warrior 			value = 4 } }
+							training_mentor_paladin 		= { change_variable = { which = wc_experience_paladin 			value = 4 } }
+							training_mentor_priest 			= { change_variable = { which = wc_experience_priest 			value = 4 } }
+							training_mentor_rogue 			= { change_variable = { which = wc_experience_rogue 			value = 4 } }
+							training_mentor_warlock 		= { change_variable = { which = wc_experience_warlock 			value = 4 } }
+							training_mentor_shaman 			= { change_variable = { which = wc_experience_shaman 			value = 4 } }
+							training_mentor_druid 			= { change_variable = { which = wc_experience_druid 			value = 4 } }
+							training_mentor_loa_priest		= { change_variable = { which = wc_experience_loa_priest 		value = 4 } }
+							training_mentor_death_knight 	= { change_variable = { which = wc_experience_death_knight 		value = 4 } }
+							training_mentor_necromancer 	= { change_variable = { which = wc_experience_necromancer 		value = 4 } }
+							training_mentor_shadow_priest 	= { change_variable = { which = wc_experience_shadow_priest 	value = 4 } }
+						}
+						modifier = {
+							factor = 1.5
+							OR = {
+								trait = slothful
+								trait = indolent
+							}
+						}
+						modifier = {
+							factor = 1.5
+							has_mental_disorder_trigger = yes
+						}
+						modifier = {
+							factor = 0
+							check_variable = { which = wc_experience value = 7 }
+						}
+						modifier = {
+							factor = 0
+							NOT = { check_variable = { which = wc_experience_difference value = 4 } }
+						}
+					}
+					10 = {
+						change_variable = { which = wc_experience value = 5 }
+						trigger_switch = {
+							on_trigger = has_character_modifier
+							training_mentor_mage 			= { change_variable = { which = wc_experience_mage 				value = 5 } }
+							training_mentor_hunter 			= { change_variable = { which = wc_experience_hunter 			value = 5 } }
+							training_mentor_warrior 		= { change_variable = { which = wc_experience_warrior 			value = 5 } }
+							training_mentor_paladin 		= { change_variable = { which = wc_experience_paladin 			value = 5 } }
+							training_mentor_priest 			= { change_variable = { which = wc_experience_priest 			value = 5 } }
+							training_mentor_rogue 			= { change_variable = { which = wc_experience_rogue 			value = 5 } }
+							training_mentor_warlock 		= { change_variable = { which = wc_experience_warlock 			value = 5 } }
+							training_mentor_shaman 			= { change_variable = { which = wc_experience_shaman 			value = 5 } }
+							training_mentor_druid 			= { change_variable = { which = wc_experience_druid 			value = 5 } }
+							training_mentor_loa_priest		= { change_variable = { which = wc_experience_loa_priest 		value = 5 } }
+							training_mentor_death_knight 	= { change_variable = { which = wc_experience_death_knight 		value = 5 } }
+							training_mentor_necromancer 	= { change_variable = { which = wc_experience_necromancer 		value = 5 } }
+							training_mentor_shadow_priest 	= { change_variable = { which = wc_experience_shadow_priest 	value = 5 } }
+						}
+						modifier = {
+							factor = 1.5
+							OR = {
+								trait = diligent
+								trait = conscientious
+							}
+						}
+						modifier = {
+							factor = 1.5
+							OR = {
+								trait = ambitious
+								trait = willful
+							}
+						}
+						modifier = {
+							factor = 0
+							check_variable = { which = wc_experience value = 6 }
+						}
+						modifier = {
+							factor = 0
+							NOT = { check_variable = { which = wc_experience_difference value = 5 } }
+						}
+					}
+					10 = {
+						change_variable = { which = wc_experience value = 6 }
+						trigger_switch = {
+							on_trigger = has_character_modifier
+							training_mentor_mage 			= { change_variable = { which = wc_experience_mage 				value = 6 } }
+							training_mentor_hunter 			= { change_variable = { which = wc_experience_hunter 			value = 6 } }
+							training_mentor_warrior 		= { change_variable = { which = wc_experience_warrior 			value = 6 } }
+							training_mentor_paladin 		= { change_variable = { which = wc_experience_paladin 			value = 6 } }
+							training_mentor_priest 			= { change_variable = { which = wc_experience_priest 			value = 6 } }
+							training_mentor_rogue 			= { change_variable = { which = wc_experience_rogue 			value = 6 } }
+							training_mentor_warlock 		= { change_variable = { which = wc_experience_warlock 			value = 6 } }
+							training_mentor_shaman 			= { change_variable = { which = wc_experience_shaman 			value = 6 } }
+							training_mentor_druid 			= { change_variable = { which = wc_experience_druid 			value = 6 } }
+							training_mentor_loa_priest		= { change_variable = { which = wc_experience_loa_priest 		value = 6 } }
+							training_mentor_death_knight 	= { change_variable = { which = wc_experience_death_knight 		value = 6 } }
+							training_mentor_necromancer 	= { change_variable = { which = wc_experience_necromancer 		value = 6 } }
+							training_mentor_shadow_priest 	= { change_variable = { which = wc_experience_shadow_priest 	value = 6 } }
+						}
+						modifier = {
+							factor = 1.5
+							OR = {
+								trait = diligent
+								trait = conscientious
+							}
+						}
+						modifier = {
+							factor = 1.5
+							OR = {
+								trait = ambitious
+								trait = willful
+							}
+						}
+						modifier = {
+							factor = 0
+							check_variable = { which = wc_experience value = 5 }
+						}
+						modifier = {
+							factor = 0
+							NOT = { check_variable = { which = wc_experience_difference value = 6 } }
+						}
+					}
+					10 = {
+						change_variable = { which = wc_experience value = 7 }
+						trigger_switch = {
+							on_trigger = has_character_modifier
+							training_mentor_mage 			= { change_variable = { which = wc_experience_mage 				value = 7 } }
+							training_mentor_hunter 			= { change_variable = { which = wc_experience_hunter 			value = 7 } }
+							training_mentor_warrior 		= { change_variable = { which = wc_experience_warrior 			value = 7 } }
+							training_mentor_paladin 		= { change_variable = { which = wc_experience_paladin 			value = 7 } }
+							training_mentor_priest 			= { change_variable = { which = wc_experience_priest 			value = 7 } }
+							training_mentor_rogue 			= { change_variable = { which = wc_experience_rogue 			value = 7 } }
+							training_mentor_warlock 		= { change_variable = { which = wc_experience_warlock 			value = 7 } }
+							training_mentor_shaman 			= { change_variable = { which = wc_experience_shaman 			value = 7 } }
+							training_mentor_druid 			= { change_variable = { which = wc_experience_druid 			value = 7 } }
+							training_mentor_loa_priest		= { change_variable = { which = wc_experience_loa_priest 		value = 7 } }
+							training_mentor_death_knight 	= { change_variable = { which = wc_experience_death_knight 		value = 7 } }
+							training_mentor_necromancer 	= { change_variable = { which = wc_experience_necromancer 		value = 7 } }
+							training_mentor_shadow_priest 	= { change_variable = { which = wc_experience_shadow_priest 	value = 7 } }
+						}
+						modifier = {
+							factor = 1.5
+							OR = {
+								trait = diligent
+								trait = conscientious
+							}
+						}
+						modifier = {
+							factor = 1.5
+							OR = {
+								trait = ambitious
+								trait = willful
+							}
+						}
+						modifier = {
+							factor = 0
+							check_variable = { which = wc_experience value = 4 }
+						}
+						modifier = {
+							factor = 0
+							NOT = { check_variable = { which = wc_experience_difference value = 7 } }
+						}
+					}
+					10 = {
+						change_variable = { which = wc_experience value = 8 }
+						trigger_switch = {
+							on_trigger = has_character_modifier
+							training_mentor_mage 			= { change_variable = { which = wc_experience_mage 				value = 8 } }
+							training_mentor_hunter 			= { change_variable = { which = wc_experience_hunter 			value = 8 } }
+							training_mentor_warrior 		= { change_variable = { which = wc_experience_warrior 			value = 8 } }
+							training_mentor_paladin 		= { change_variable = { which = wc_experience_paladin 			value = 8 } }
+							training_mentor_priest 			= { change_variable = { which = wc_experience_priest 			value = 8 } }
+							training_mentor_rogue 			= { change_variable = { which = wc_experience_rogue 			value = 8 } }
+							training_mentor_warlock 		= { change_variable = { which = wc_experience_warlock 			value = 8 } }
+							training_mentor_shaman 			= { change_variable = { which = wc_experience_shaman 			value = 8 } }
+							training_mentor_druid 			= { change_variable = { which = wc_experience_druid 			value = 8 } }
+							training_mentor_loa_priest		= { change_variable = { which = wc_experience_loa_priest 		value = 8 } }
+							training_mentor_death_knight 	= { change_variable = { which = wc_experience_death_knight 		value = 8 } }
+							training_mentor_necromancer 	= { change_variable = { which = wc_experience_necromancer 		value = 8 } }
+							training_mentor_shadow_priest 	= { change_variable = { which = wc_experience_shadow_priest 	value = 8 } }
+						}
+						modifier = {
+							factor = 2
+							is_strong_trigger = yes
+						}
+						modifier = {
+							factor = 2
+							is_smart_trigger = yes
+						}
+						modifier = {
+							factor = 1.5
+							OR = {
+								trait = diligent
+								trait = conscientious
+							}
+						}
+						modifier = {
+							factor = 1.5
+							OR = {
+								trait = ambitious
+								trait = willful
+							}
+						}
+						modifier = {
+							factor = 0
+							check_variable = { which = wc_experience value = 3 }
+						}
+						modifier = {
+							factor = 0
+							NOT = { check_variable = { which = wc_experience_difference value = 7 } }
+						}
+					}
+					10 = {
+						change_variable = { which = wc_experience value = 9 }
+						trigger_switch = {
+							on_trigger = has_character_modifier
+							training_mentor_mage 			= { change_variable = { which = wc_experience_mage 				value = 9 } }
+							training_mentor_hunter 			= { change_variable = { which = wc_experience_hunter 			value = 9 } }
+							training_mentor_warrior 		= { change_variable = { which = wc_experience_warrior 			value = 9 } }
+							training_mentor_paladin 		= { change_variable = { which = wc_experience_paladin 			value = 9 } }
+							training_mentor_priest 			= { change_variable = { which = wc_experience_priest 			value = 9 } }
+							training_mentor_rogue 			= { change_variable = { which = wc_experience_rogue 			value = 9 } }
+							training_mentor_warlock 		= { change_variable = { which = wc_experience_warlock 			value = 9 } }
+							training_mentor_shaman 			= { change_variable = { which = wc_experience_shaman 			value = 9 } }
+							training_mentor_druid 			= { change_variable = { which = wc_experience_druid 			value = 9 } }
+							training_mentor_loa_priest		= { change_variable = { which = wc_experience_loa_priest 		value = 9 } }
+							training_mentor_death_knight 	= { change_variable = { which = wc_experience_death_knight 		value = 9 } }
+							training_mentor_necromancer 	= { change_variable = { which = wc_experience_necromancer 		value = 9 } }
+							training_mentor_shadow_priest 	= { change_variable = { which = wc_experience_shadow_priest 	value = 9 } }
+						}
+						modifier = {
+							factor = 2
+							is_strong_trigger = yes
+						}
+						modifier = {
+							factor = 2
+							is_smart_trigger = yes
+						}
+						modifier = {
+							factor = 1.5
+							OR = {
+								trait = diligent
+								trait = conscientious
+							}
+						}
+						modifier = {
+							factor = 1.5
+							OR = {
+								trait = ambitious
+								trait = willful
+							}
+						}
+						modifier = {
+							factor = 0
+							check_variable = { which = wc_experience value = 2 }
+						}
+						modifier = {
+							factor = 0
+							NOT = { check_variable = { which = wc_experience_difference value = 8 } }
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+# on_adolescence starts class training
+character_event = {
+	id = WCCLS.3000
+
+	is_triggered_only = yes
+	hide_window = yes
+	
+	only_capable = yes
+	prisoner = no
+	
+	trigger = {
+		is_alive = yes
+		is_dying = no
+	}
+
+	immediate = {
+		if = {
+			limit = {
+				guardian = {
+					has_class_trait_trigger = yes
+					is_alternative_class_trigger = no
+				}
+			}
+			guardian = { character_event = { id = WCCLS.3003 } }
+		}
+		else = {
+			if = {
+				limit = {
+					educator = {
+						has_class_trait_trigger = yes
+						is_alternative_class_trigger = no
+					}
+				}
+				educator = { character_event = { id = WCCLS.3003 } }
+			}
+		}
+	}
+}
+character_event = {
+	id = WCCLS.3003
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		if = {
+			limit = {
+				ask_to_be_your_mentor_decision_potential = yes
+				ask_to_be_your_mentor_decision_allowed = yes
+			}
+			log = "[Root.GetBestName] chosen as class mentor of [From.GetBestName]"
+			save_event_target_as = mentor
+			FROM = {
+				save_event_target_as = student
+				opinion = { modifier = opinion_teaching_me who = ROOT }
+				set_character_flag = sent_letter_to_mentor
+				if = {
+					limit = { is_ruler = no }
+					liege = { character_event = { id = WCCLS.1500 } }
+				}
+				else = { character_event = { id = WCCLS.1500 } }
+			}
+		}
+	}
+}
+
+# Level up magic class
+character_event = {
+	id = WCCLS.7999
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	min_age = 16
+	only_capable = yes
+	prisoner = no
+
+	trigger = {
+		is_alive = yes
+		is_dying = no
+		
+		NOT = { check_variable = { which = wc_experience value = 10 } }
+		OR = {
+			is_magic_class_trigger = yes
+			is_combined_class_trigger = yes
+		}
+		is_alternative_class_trigger = no
+		is_training_self_trigger = no
+		is_training_mentor_trigger = no
+	}
+
+	weight_multiplier = {
+		days = 1
+		modifier = {
+			factor = 0.27
+			immortal = yes
+		}
+		modifier = {
+			factor = 0.5
+			is_combined_class_trigger = yes
+		}
+		modifier = {
+			factor = 0.5
+			is_dumb_trigger = yes
+		}
+		modifier = {
+			factor = 0.67
+			trait = slothful
+		}
+		modifier = {
+			factor = 0.67
+			has_mental_disorder_trigger = yes
+		}
+		modifier = {
+			factor = 1.15
+			intrigue = 10
+		}
+		modifier = {
+			factor = 1.15
+			intrigue = 15
+		}
+		modifier = {
+			factor = 1.15
+			intrigue = 20
+		}
+		modifier = {
+			factor = 1.15
+			intrigue = 25
+		}
+		modifier = {
+			factor = 1.15
+			intrigue = 30
+		}
+		modifier = {
+			factor = 1.33
+			learning = 10
+		}
+		modifier = {
+			factor = 1.33
+			learning = 15
+		}
+		modifier = {
+			factor = 1.33
+			learning = 20
+		}
+		modifier = {
+			factor = 1.33
+			learning = 25
+		}
+		modifier = {
+			factor = 1.33
+			learning = 30
+		}
+		modifier = {
+			factor = 2
+			trait = diligent
+		}
+		modifier = {
+			factor = 2
+			OR = {
+				is_smart_trigger = yes
+				trait = sorcerer
+			}
+		}
+	}
+
+	immediate = {
+		count_experience_effect = yes
+		if = {
+			limit = { NOT = { check_variable = { which = wc_experience value = 10 } } }
+			character_event = { id = WCCLS.8000 }
+		}
+	}
+}
+character_event = {
+	id = WCCLS.8000
+	desc = EVTDESC_WCCLS_8000
+	picture = GFX_evt_ritual_scroll
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+		magic_class_level_up_effect = yes
+	}
+
+	option = {
+		name = EXCELLENT
+		add_class_trait_effect = yes
+	}
+}
+
+# Level up physical class
+character_event = {
+	id = WCCLS.8004
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	min_age = 16
+	only_capable = yes
+	prisoner = no
+
+	trigger = {
+		is_alive = yes
+		is_dying = no
+		
+		NOT = { check_variable = { which = wc_experience value = 10 } }
+		OR = {
+			is_physical_class_trigger = yes
+			is_combined_class_trigger = yes
+		}
+		is_alternative_class_trigger = no
+		is_training_self_trigger = no
+		is_training_mentor_trigger = no
+	}
+
+	weight_multiplier = {
+		days = 1
+		modifier = {
+			factor = 0.27
+			immortal = yes
+		}
+		modifier = {
+			factor = 0.5
+			is_combined_class_trigger = yes
+		}
+		modifier = {
+			factor = 0.5
+			is_weak_trigger = yes
+		}
+		modifier = {
+			factor = 0.67
+			trait = slothful
+		}
+		modifier = {
+			factor = 0.67
+			has_mental_disorder_trigger = yes
+		}
+		modifier = {
+			factor = 1.15
+			intrigue = 10
+		}
+		modifier = {
+			factor = 1.15
+			intrigue = 15
+		}
+		modifier = {
+			factor = 1.15
+			intrigue = 20
+		}
+		modifier = {
+			factor = 1.15
+			intrigue = 25
+		}
+		modifier = {
+			factor = 1.15
+			intrigue = 30
+		}
+		modifier = {
+			factor = 1.33
+			martial = 10
+		}
+		modifier = {
+			factor = 1.33
+			martial = 15
+		}
+		modifier = {
+			factor = 1.33
+			martial = 20
+		}
+		modifier = {
+			factor = 1.33
+			martial = 25
+		}
+		modifier = {
+			factor = 1.33
+			martial = 30
+		}
+		modifier = {
+			factor = 2
+			trait = diligent
+		}
+		modifier = {
+			factor = 2
+			is_strong_trigger = yes
+		}
+	}
+
+	immediate = {
+		count_experience_effect = yes
+		if = {
+			limit = { NOT = { check_variable = { which = wc_experience value = 10 } } }
+			character_event = { id = WCCLS.8005 }
+		}
+	}
+}
+character_event = {
+	id = WCCLS.8005
+	desc = EVTDESC_WCCLS_8005
+	picture = GFX_evt_ritual_scroll
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+		physical_class_level_up_effect = yes
+	}
+
+	option = {
+		name = EXCELLENT
+
+		add_class_trait_effect = yes
+	}
+}
+
+character_event = {
+	id = WCCLS.10000
+	desc = EVTDESC_WCCLS_10000
+	picture = GFX_evt_druid_night_elf
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+		character_event = {
+			id = WCCLS.10001 days = 7
+		}
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.10000
+	}
+}
+character_event = {
+	id = WCCLS.10001
+	desc = EVTDESC_WCCLS_10001
+	picture = GFX_evt_druid_night_elf
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+		character_event = {
+			id = WCCLS.10002 days = 7
+		}
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.10001
+	}
+}
+character_event = {
+	id = WCCLS.10002
+	desc = EVTDESC_WCCLS_10002
+	picture = GFX_evt_druid_night_elf
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+		character_event = {
+			id = WCCLS.10003 days = 7
+		}
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.10002
+	}
+}
+character_event = {
+	id = WCCLS.10003
+	desc = EVTDESC_WCCLS_10003
+	picture = GFX_evt_druid_night_elf
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+		character_event = {
+			id = WCCLS.10004 days = 7
+		}
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.10003
+	}
+}
+character_event = {
+	id = WCCLS.10004
+	desc = EVTDESC_WCCLS_10004
+	picture = GFX_evt_druid_night_elf
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+		character_event = {
+			id = WCCLS.10005 days = 7
+		}
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.10004
+	}
+}
+character_event = {
+	id = WCCLS.10005
+	desc = EVTDESC_WCCLS_10005
+	picture = GFX_evt_druid_night_elf
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+		character_event = {
+			id = WCCLS.10006 days = 7
+		}
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.10005
+	}
+}
+character_event = {
+	id = WCCLS.10006
+	desc = EVTDESC_WCCLS_10006
+	picture = GFX_evt_druid_night_elf
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+		character_event = {
+			id = WCCLS.10007 days = 7
+		}
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.10006
+	}
+}
+character_event = {
+	id = WCCLS.10007
+	desc = EVTDESC_WCCLS_10007
+	picture = GFX_evt_druid_night_elf
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+	random_list = {
+			20 = {
+			set_character_flag = cat_form_1
+			}
+			20 = {
+			set_character_flag = cat_form_2
+			}
+			20 = {
+			set_character_flag = cat_form_3
+			}
+			20 = {
+			set_character_flag = cat_form_4
+			}
+			20 = {
+			set_character_flag = cat_form_5
+			}
+		}
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.10007
+		clr_character_flag = do_not_disturb
+		set_character_flag = cat_form
+		if = {
+			limit = {
+			ai = yes
+			NOT = {
+				has_character_flag = prefers_bear_form
+				has_character_flag = prefers_talon_form
+				has_character_flag = prefers_stag_form
+			}
+			}
+		    set_character_flag = prefers_cat_form
+		}
+	}
+}
+
+character_event = {
+	id = WCCLS.10020
+	desc = EVTDESC_WCCLS_10020
+	picture = GFX_evt_druid_night_elf
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+		character_event = {
+			id = WCCLS.10021 days = 7
+		}
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.10020
+	}
+}
+character_event = {
+	id = WCCLS.10021
+	desc = EVTDESC_WCCLS_10021
+	picture = GFX_evt_druid_night_elf
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+		character_event = {
+			id = WCCLS.10022 days = 7
+		}
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.10021
+	}
+}
+character_event = {
+	id = WCCLS.10022
+	desc = EVTDESC_WCCLS_10022
+	picture = GFX_evt_druid_night_elf
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+		character_event = {
+			id = WCCLS.10023 days = 7
+		}
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.10022
+	}
+}
+character_event = {
+	id = WCCLS.10023
+	desc = EVTDESC_WCCLS_10023
+	picture = GFX_evt_druid_night_elf
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+		character_event = {
+			id = WCCLS.10024 days = 7
+		}
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.10023
+	}
+}
+character_event = {
+	id = WCCLS.10024
+	desc = EVTDESC_WCCLS_10024
+	picture = GFX_evt_druid_night_elf
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+		character_event = {
+			id = WCCLS.10025 days = 7
+		}
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.10024
+	}
+}
+character_event = {
+	id = WCCLS.10025
+	desc = EVTDESC_WCCLS_10025
+	picture = GFX_evt_druid_night_elf
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+		character_event = {
+			id = WCCLS.10026 days = 7
+		}
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.10025
+	}
+}
+character_event = {
+	id = WCCLS.10026
+	desc = EVTDESC_WCCLS_10026
+	picture = GFX_evt_druid_night_elf
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+		character_event = {
+			id = WCCLS.10027 days = 7
+		}
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.10026
+	}
+}
+character_event = {
+	id = WCCLS.10027
+	desc = EVTDESC_WCCLS_10027
+	picture = GFX_evt_druid_night_elf
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+	random_list = {
+			20 = {
+			set_character_flag = bear_form_1
+			}
+			20 = {
+			set_character_flag = bear_form_2
+			}
+			20 = {
+			set_character_flag = bear_form_3
+			}
+			20 = {
+			set_character_flag = bear_form_4
+			}
+			20 = {
+			set_character_flag = bear_form_5
+			}
+		}
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.10027
+		clr_character_flag = do_not_disturb
+		set_character_flag = bear_form
+		if = {
+			limit = {
+			ai = yes
+			NOT = {
+				has_character_flag = prefers_cat_form
+				has_character_flag = prefers_talon_form
+				has_character_flag = prefers_stag_form
+			}
+			}
+		    set_character_flag = prefers_bear_form
+		}
+	}
+}
+
+character_event = {
+	id = WCCLS.10040
+	desc = EVTDESC_WCCLS_10040
+	picture = GFX_evt_druid_night_elf
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+		character_event = {
+			id = WCCLS.10041 days = 7
+		}
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.10040
+	}
+}
+character_event = {
+	id = WCCLS.10041
+	desc = EVTDESC_WCCLS_10041
+	picture = GFX_evt_druid_night_elf
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+		character_event = {
+			id = WCCLS.10042 days = 7
+		}
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.10041
+	}
+}
+character_event = {
+	id = WCCLS.10042
+	desc = EVTDESC_WCCLS_10042
+	picture = GFX_evt_druid_night_elf
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+		character_event = {
+			id = WCCLS.10043 days = 7
+		}
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.10042
+	}
+}
+character_event = {
+	id = WCCLS.10043
+	desc = EVTDESC_WCCLS_10043
+	picture = GFX_evt_druid_night_elf
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+		character_event = {
+			id = WCCLS.10044 days = 7
+		}
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.10043
+	}
+}
+character_event = {
+	id = WCCLS.10044
+	desc = EVTDESC_WCCLS_10044
+	picture = GFX_evt_druid_night_elf
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+		character_event = {
+			id = WCCLS.10045 days = 7
+		}
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.10044
+	}
+}
+character_event = {
+	id = WCCLS.10045
+	desc = EVTDESC_WCCLS_10045
+	picture = GFX_evt_druid_night_elf
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+		character_event = {
+			id = WCCLS.10046 days = 7
+		}
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.10045
+	}
+}
+character_event = {
+	id = WCCLS.10046
+	desc = EVTDESC_WCCLS_10046
+	picture = GFX_evt_druid_night_elf
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+		character_event = {
+			id = WCCLS.10047 days = 7
+		}
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.10046
+	}
+}
+character_event = {
+	id = WCCLS.10047
+	desc = EVTDESC_WCCLS_10047
+	picture = GFX_evt_druid_night_elf
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.10047
+		clr_character_flag = do_not_disturb
+		set_character_flag = talon_form
+		if = {
+			limit = {
+			ai = yes
+			NOT = {
+				has_character_flag = prefers_cat_form
+				has_character_flag = prefers_bear_form
+				has_character_flag = prefers_stag_form
+			}
+			}
+		    set_character_flag = prefers_talon_form
+		}
+	}
+}
+
+character_event = {
+	id = WCCLS.10060
+	desc = EVTDESC_WCCLS_10060
+	picture = GFX_evt_druid_night_elf
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.10060
+		character_event = { id = WCCLS.10061 }
+	}
+}
+character_event = {
+	id = WCCLS.10061
+	desc = EVTDESC_WCCLS_10061
+	picture = GFX_evt_druid_night_elf
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+		set_character_flag = mastering_stag_form
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.10061
+		trigger = {
+			NOT = { has_character_modifier = blessing_of_malorne }
+		}
+		character_event = { id = WCSAD.110 }
+		character_event = { id = WCCLS.10062 days = 20 }
+	}
+	
+	option = {
+		name = EVTOPTB_WCCLS.10061
+		trigger = {
+			has_character_modifier = blessing_of_malorne 
+		}
+		character_event = { id = WCCLS.10062 }
+	}
+}
+character_event = {
+	id = WCCLS.10062
+	desc = EVTDESC_WCCLS_10062
+	picture = GFX_evt_druid_night_elf
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+		clr_character_flag = mastering_stag_form
+		set_character_flag = do_not_disturb
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.10062
+		character_event = { id = WCCLS.10063 }
+	}
+}
+character_event = {
+	id = WCCLS.10063
+	desc = EVTDESC_WCCLS_10063
+	picture = GFX_evt_druid_night_elf
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.10063
+		character_event = { id = WCCLS.10064 }
+	}
+}
+character_event = {
+	id = WCCLS.10064
+	desc = EVTDESC_WCCLS_10064
+	picture = GFX_evt_druid_night_elf
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+	random_list = {
+			50 = {
+			set_character_flag = stag_form_1
+			}
+			50 = {
+			set_character_flag = stag_form_2
+			}
+
+		}
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.10064
+		clr_character_flag = do_not_disturb
+		set_character_flag = stag_form
+		add_trait = stag_form_mastered
+		if = {
+			limit = {
+			ai = yes
+			NOT = {
+				has_character_flag = prefers_cat_form
+				has_character_flag = prefers_bear_form
+				has_character_flag = prefers_talon_form
+			}
+			}
+		    set_character_flag = prefers_stag_form
+		}
+	}
+}
+character_event = {
+	id = WCCLS.10100
+	desc = EVTDESC_WCCLS_10100
+	picture = GFX_evt_druid_night_elf
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.10100
+		character_event = { id = WCCLS.10101 }
+	}
+}
+character_event = {
+	id = WCCLS.10101
+	desc = EVTDESC_WCCLS_10101
+	picture = GFX_evt_druid_night_elf
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+		set_character_flag = mastering_cat_form
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS_10101
+		trigger = {
+			NOT = { has_character_modifier = blessing_of_ashamane }
+		}
+		set_character_flag = do_not_disturb
+		character_event = { id = WCSAD.92 }
+		character_event = { id = WCCLS.10102 days = 20 }
+	}
+	
+	option = {
+		name = EVTOPTB_WCCLS_10101
+		trigger = {
+			has_character_modifier = blessing_of_ashamane 
+		}
+		character_event = { id = WCCLS.10102 }
+	}
+}
+character_event = {
+	id = WCCLS.10102
+	desc = EVTDESC_WCCLS_10102
+	picture = GFX_evt_druid_night_elf
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+		clr_character_flag = mastering_cat_form
+		set_character_flag = do_not_disturb
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.1010102
+		character_event = { id = WCCLS.10103 }
+	}
+}
+character_event = {
+	id = WCCLS.10103
+	desc = EVTDESC_WCCLS_10103
+	picture = GFX_evt_druid_night_elf
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.1010103
+		character_event = { id = WCCLS.10104 }
+	}
+}
+character_event = {
+	id = WCCLS.10104
+	desc = EVTDESC_WCCLS_10104
+	picture = GFX_evt_druid_night_elf
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.1010104
+		clr_character_flag = do_not_disturb
+		clr_character_flag = cat_form
+		set_character_flag = master_cat_form
+		add_trait = cat_form_mastered
+	}
+}
+
+character_event = {
+	id = WCCLS.10120
+	desc = EVTDESC_WCCLS_10120
+	picture = GFX_evt_druid_night_elf
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.10120
+		character_event = { id = WCCLS.10121 }
+	}
+}
+character_event = {
+	id = WCCLS.10121
+	desc = EVTDESC_WCCLS_10121
+	picture = GFX_evt_druid_night_elf
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+		set_character_flag = mastering_bear_form
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS_10121
+		trigger = {
+			NOT = { has_character_modifier = blessing_of_ursoc }
+		}
+		set_character_flag = do_not_disturb
+		character_event = { id = WCSAD.100 }
+		character_event = { id = WCCLS.10122 days = 20 }
+	}
+	
+	option = {
+		name = EVTOPTB_WCCLS_10121
+		trigger = {
+			has_character_modifier = blessing_of_ursoc 
+		}
+		character_event = { id = WCCLS.10122 }
+	}
+}
+character_event = {
+	id = WCCLS.10122
+	desc = EVTDESC_WCCLS_10122
+	picture = GFX_evt_druid_night_elf
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+		clr_character_flag = mastering_bear_form
+		set_character_flag = do_not_disturb
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.1010122
+		character_event = { id = WCCLS.10123 }
+	}
+}
+character_event = {
+	id = WCCLS.10123
+	desc = EVTDESC_WCCLS_10123
+	picture = GFX_evt_druid_night_elf
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.1010123
+		character_event = { id = WCCLS.10124 }
+	}
+}
+character_event = {
+	id = WCCLS.10124
+	desc = EVTDESC_WCCLS_10124
+	picture = GFX_evt_druid_night_elf
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.10124
+		clr_character_flag = do_not_disturb
+		clr_character_flag = bear_form
+		set_character_flag = master_bear_form
+		add_trait = bear_form_mastered
+	}
+}
+character_event = {
+	id = WCCLS.10140
+	desc = EVTDESC_WCCLS_10140
+	picture = GFX_evt_druid_night_elf
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.10140
+		character_event = { id = WCCLS_10141 }
+	}
+}
+character_event = {
+	id = WCCLS.10141
+	desc = EVTDESC_WCCLS_10141
+	picture = GFX_evt_druid_night_elf
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+		set_character_flag = mastering_talon_form
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS_10141
+		trigger = {
+			NOT = { has_character_modifier = blessing_of_aviana }
+		}
+		set_character_flag = do_not_disturb
+		character_event = { id = WCSAD.95 }
+		character_event = { id = WCCLS_10142 days = 20 }
+	}
+	
+	option = {
+		name = EVTOPTB_WCCLS_10141
+		trigger = {
+			has_character_modifier = blessing_of_aviana 
+		}
+		character_event = { id = WCCLS_10142 }
+	}
+}
+character_event = {
+	id = WCCLS.10142
+	desc = EVTDESC_WCCLS_10142
+	picture = GFX_evt_druid_night_elf
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+		clr_character_flag = mastering_talon_form
+		set_character_flag = do_not_disturb
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.10142
+		character_event = { id = WCCLS_10143 }
+	}
+}
+character_event = {
+	id = WCCLS.10143
+	desc = EVTDESC_WCCLS_10143
+	picture = GFX_evt_druid_night_elf
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.10143
+		character_event = { id = WCCLS_10144 }
+	}
+}
+character_event = {
+	id = WCCLS.10144
+	desc = EVTDESC_WCCLS_10144
+	picture = GFX_evt_druid_night_elf
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.10144
+		clr_character_flag = do_not_disturb
+		clr_character_flag = talon_form
+		set_character_flag = master_talon_form
+		add_trait = talon_form_mastered
+	}
+}
+character_event = {
+	id = WCCLS.10200
+	desc = EVTDESC_WCCLS_10200
+	picture = GFX_evt_paladin_human
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.10200
+		trigger = {
+			can_write_guardianship_libram = yes
+		}
+		set_character_flag = do_not_disturb
+		set_character_flag = wrote_libram
+		character_event = { id = WCCLS.10201 days = 360 random = 360 }
+	}
+	option = {
+		name = EVTOPTB_WCCLS.10200
+		trigger = {
+			can_write_righteousness_libram = yes
+		}
+		set_character_flag = do_not_disturb
+		set_character_flag = wrote_libram
+		character_event = { id = WCCLS.10202 days = 360 random = 360 }
+	}
+	option = {
+		name = EVTOPTC_WCCLS.10200
+		trigger = {
+			can_write_reckoning_libram = yes
+		}
+		set_character_flag = do_not_disturb
+		set_character_flag = wrote_libram
+		character_event = { id = WCCLS.10203 days = 360 random = 360 }
+	}
+	option = {
+		name = EVTOPTD_WCCLS.10200
+		trigger = {
+			can_write_devoutness_libram = yes
+		}
+		set_character_flag = do_not_disturb
+		set_character_flag = wrote_libram
+		character_event = { id = WCCLS.10204 days = 360 random = 360 }
+	}
+}
+character_event = {
+	id = WCCLS.10201
+	desc = EVTDESC_WCCLS.10201
+	picture = GFX_evt_paladin_human
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+		random_list = {
+			50 = {
+				add_artifact = libram_of_guardianship_01
+			}
+			30 = {
+				add_artifact = libram_of_guardianship_02
+			}
+			20 = {
+				add_artifact = libram_of_guardianship_03
+			}
+		}
+		
+		new_artifact = {
+			set_name = "Libram of [FromFrom.GetDynName]"
+		}
+		clr_character_flag = do_not_disturb
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.10201
+	}
+}
+character_event = {
+	id = WCCLS.10202
+	desc = EVTDESC_WCCLS.10202
+	picture = GFX_evt_paladin_human
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+		random_list = {
+			50 = {
+				add_artifact = libram_of_righteousness_01
+			}
+			30 = {
+				add_artifact = libram_of_righteousness_02
+			}
+			20 = {
+				add_artifact = libram_of_righteousness_03
+			}
+		}
+		
+		new_artifact = {
+			set_name = "Libram of [FromFrom.GetDynName]"
+		}
+		clr_character_flag = do_not_disturb
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.10202
+	}
+}
+character_event = {
+	id = WCCLS.10203
+	desc = EVTDESC_WCCLS.10203
+	picture = GFX_evt_paladin_human
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+		random_list = {
+			50 = {
+				add_artifact = libram_of_reckoning_01
+			}
+			30 = {
+				add_artifact = libram_of_reckoning_02
+			}
+			20 = {
+				add_artifact = libram_of_reckoning_03
+			}
+		}
+		
+		new_artifact = {
+			set_name = "Libram of [FromFrom.GetDynName]"
+		}
+		clr_character_flag = do_not_disturb
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.10203
+	}
+}
+character_event = {
+	id = WCCLS.10204
+	desc = EVTDESC_WCCLS.10204
+	picture = GFX_evt_paladin_human
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+		random_list = {
+			50 = {
+				add_artifact = libram_of_devoutness_01
+			}
+			30 = {
+				add_artifact = libram_of_devoutness_02
+			}
+			20 = {
+				add_artifact = libram_of_devoutness_03
+			}
+		}
+		
+		new_artifact = {
+			set_name = "Libram of [FromFrom.GetDynName]"
+		}
+		clr_character_flag = do_not_disturb
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.10204
+	}
+}
+
+character_event = {
+	id = WCCLS.10300
+	desc = {
+	  trigger = {
+		NOT = { trait = creature_nathrezim }
+	  }
+		text = EVTDESC_WCCLS_10300
+	}
+
+	desc = {
+	  trigger = {
+		trait = creature_nathrezim
+	  }
+		text = EVTDESC_WCCLS_10300_alt
+}
+	picture = GFX_evt_runeblade
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+		if = {
+		  limit = {
+			NOT = { trait = creature_nathrezim }
+		  }
+		  set_character_flag = forged_runeblade
+		}
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.10300
+		set_character_flag = do_not_disturb
+		
+		character_event = { id = WCCLS.10301 days = 30 random = 60 }
+	}
+	option = {
+		name = EVTOPTB_WCCLS.10300
+		set_character_flag = do_not_disturb
+		
+		character_event = { id = WCCLS.10302 days = 30 random = 60 }
+	}
+	option = {
+		name = EVTOPTC_WCCLS.10300
+		set_character_flag = do_not_disturb
+		
+		character_event = { id = WCCLS.10303 days = 30 random = 60 }
+	}
+}
+character_event = {
+	id = WCCLS.10301
+	desc = EVTDESC_WCCLS.10301
+	picture = GFX_evt_runeblade
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+		random_list = {
+			50 = {
+				add_artifact = runeblade_unholy_1
+			}
+			30 = {
+				add_artifact = runeblade_unholy_2
+			}
+			20 = {
+				add_artifact = runeblade_unholy_3
+			}
+		}
+		clr_character_flag = do_not_disturb
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.10301
+	}
+}
+character_event = {
+	id = WCCLS.10302
+	desc = EVTDESC_WCCLS.10302
+	picture = GFX_evt_runeblade
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+		random_list = {
+			50 = {
+				add_artifact = runeblade_blood_1
+			}
+			30 = {
+				add_artifact = runeblade_blood_2
+			}
+			20 = {
+				add_artifact = runeblade_blood_3
+			}
+		}
+		clr_character_flag = do_not_disturb
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.10302
+	}
+}
+character_event = {
+	id = WCCLS.10303
+	desc = EVTDESC_WCCLS.10303
+	picture = GFX_evt_runeblade
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+		random_list = {
+			50 = {
+				add_artifact = runeblade_frost_1
+			}
+			30 = {
+				add_artifact = runeblade_frost_2
+			}
+			20 = {
+				add_artifact = runeblade_frost_3
+			}
+		}
+		clr_character_flag = do_not_disturb
+	}
+
+	option = {
+		name = EVTOPTA_WCCLS.10303
+	}
+}

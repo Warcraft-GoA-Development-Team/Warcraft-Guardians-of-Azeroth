@@ -1,0 +1,550 @@
+namespace = WCPRM
+
+### Primitive Rites ###
+# Sends invites
+character_event = {
+	id = WCPRM.100
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		set_character_flag = holding_primitive_rites_flag
+		set_character_flag = do_not_disturb
+		
+		save_event_target_as = target_rites_holder
+		any_vassal = {
+			limit = {
+				is_untouchable_trigger = no
+				
+				is_adult = yes
+				is_incapable = no
+				prisoner = no
+				is_inaccessible_trigger = no
+				NOT = { has_character_flag = do_not_disturb }
+
+				war = no
+
+				religion = ROOT
+			}
+			letter_event = { id = WCPRM.101 }
+		}
+		character_event = { id = WCPRM.115 days = 15 }		# Starts the rites
+		character_event = { id = WCPRM.495 days = 45 }		# Ends the rites
+	}
+}
+# FROM invites you to the rites
+letter_event = {
+	id = WCPRM.101
+	desc = EVTDESC_WCPRM_101
+	border = GFX_event_letter_frame_religion
+
+	is_triggered_only = yes
+
+	option = {
+		name = ACCEPT
+
+		set_character_flag = attending_primitive_rites_flag
+		set_character_flag = do_not_disturb
+
+		character_event = { id = WCPRM.495 days = 45 }		# Ends the rites
+
+		ai_chance = {
+			factor = 85
+			modifier = {
+				factor = 0.1
+				NOT = { opinion = { who = FROM value = -25 } }
+			}
+		}
+	}
+	option = {
+		name = DECLINE
+
+		reverse_opinion = { modifier = opinion_very_disappointed who = FROM years = 5 }
+
+		FROM = { letter_event = { id = WCPRM.102 } }
+
+		ai_chance = {
+			factor = 15
+		}
+	}
+}
+# Notifies that FROM has rejected invite
+letter_event = {
+	id = WCPRM.102
+	desc = EVTDESC_WCPRM_102
+	border = GFX_event_letter_frame_religion
+
+	is_triggered_only = yes
+
+	option = {
+		name = ALAS
+	}
+}
+# Starts the rites
+character_event = {
+	id = WCPRM.115
+	picture = GFX_evt_tribal_shrine
+	desc = EVTDESC_WCPRM_115
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+	
+	immediate = {
+		# Plan of the feast ;)
+		hidden_effect = {
+			if = {
+				limit = { has_character_flag = holding_primitive_rites_flag }
+				character_event = { id = WCPRM.120 days = 3 random = 24 }		# Sacrifice
+				random = {
+					chance = 50
+					character_event = { id = WCPRM.125 days = 3 random = 24 }	# Cannibalism
+					modifier = {
+						factor = 0.01
+						OR = {
+							religion = water_deities
+							religion = cult_of_the_candle
+							religion = primitive_shamanism
+						}
+					}
+				}
+				random = {
+					chance = 50
+					character_event = { id = WCPRM.130 days = 3 random = 24 }	# Murder
+				}
+				random = {
+					chance = 50
+					character_event = { id = WCPRM.135 days = 3 random = 24 }	# Friend
+				}
+				any_vassal = {
+					limit = { has_character_flag = attending_primitive_rites_flag }
+					character_event = { id = WCPRM.115 }
+				}
+			}
+			random = {
+				chance = 50
+				character_event = { id = WCPRM.140 days = 3 random = 24 }		# Ambitions
+			}
+			random = {
+				chance = 50
+				character_event = { id = WCPRM.145 days = 3 random = 24 }		# Gluttonous
+			}
+		}
+	}
+
+	option = {
+		name = EXCELLENT
+	}
+}
+# Sacrifice
+character_event = {
+	id = WCPRM.120
+	picture = GFX_evt_tribal_shrine
+	desc = EVTDESC_WCPRM_120
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	# Sacrifice a prisoner
+	option = {
+		trigger = { num_of_prisoners = 1 }
+		name = EVTOPTA_WCPRM_120
+
+		random_courtier = {
+			limit = {
+				# is_adult = yes
+				prisoner = yes
+			}
+			hidden_effect = { character_event = { id = WCLOA.101 } }	# Suitable description
+			prev_sacrifice_this_effect = yes
+		}
+
+		ai_chance = {
+			factor = 80
+		}
+	}
+	# Sacrifice own blood
+	option = {
+		trigger = {
+			NOR = {
+				trait = wounded
+				trait = severely_injured
+			}
+		}
+		name = EVTOPTB_WCPRM_120
+
+		add_trait_wounded_effect = yes
+
+		piety = 100
+
+		ai_chance = {
+			factor = 4
+		}
+	}
+	# Sacrifice animal blood
+	option = {
+		trigger = { prestige = 100 }
+		name = EVTOPTC_WCPRM_120
+
+		prestige = -100
+		piety = 50
+
+		ai_chance = {
+			factor = 15
+		}
+	}
+	# Nothing
+	option = {
+		name = EVTOPTD_WCPRM_120
+
+		piety = -50
+
+		ai_chance = {
+			factor = 1
+		}
+	}
+}
+# Cannibalism
+character_event = {
+	id = WCPRM.125
+	picture = GFX_evt_tribal_shrine
+	desc = EVTDESC_WCLOA_110
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+	
+	immediate = {
+		if = {
+			limit = { has_character_flag = holding_primitive_rites_flag }
+			any_vassal = {
+				limit = { has_character_flag = attending_primitive_rites_flag }
+				character_event = { id = WCPRM.125 }
+			}
+		}
+	}
+
+	option = {
+		name = EVTOPTA_WCLOA_110
+
+		if = { limit = { NOT = { trait = cannibal_trait } } add_trait = cannibal_trait }
+
+		prestige = 25
+		piety = 25
+
+		ai_chance = {
+			factor = 75
+
+			modifier = {
+				factor = 1.73
+				has_evil_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.73
+				has_unpleasant_trait_trigger = yes
+			}
+		}
+	}
+	option = {
+		trigger = { NOT = { trait = cannibal_trait } }
+		name = EVTOPTB_WCLOA_110
+
+		prestige = -50
+
+		ai_chance = {
+			factor = 25
+
+			modifier = {
+				factor = 3
+				has_benevolent_trait_trigger = yes
+			}
+			modifier = {
+				factor = 3
+				has_pleasant_trait_trigger = yes
+			}
+		}
+	}
+}
+# Murder
+character_event = {
+	id = WCPRM.130
+	picture = GFX_evt_tribal_shrine
+	desc = EVTDESC_WCPRM_130
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	trigger = {
+		any_courtier = {
+			is_untouchable_trigger = no
+			
+			is_adult = yes
+			is_incapable = no
+			prisoner = no
+			is_inaccessible_trigger = no
+
+			OR = {
+				has_evil_trait_trigger = yes
+				has_unpleasant_trait_trigger = yes
+			}
+		}
+		any_courtier = {
+			is_untouchable_trigger = no
+			
+			is_adult = yes
+			is_incapable = no
+			prisoner = no
+			is_inaccessible_trigger = no
+
+			is_unimportant_trigger = yes
+			NOR = {		# To make sure that these are two different courtiers
+				has_evil_trait_trigger = yes
+				has_unpleasant_trait_trigger = yes
+			}
+		}
+	}
+
+	immediate = {
+		if = {
+			limit = { has_character_flag = holding_primitive_rites_flag }
+			random_courtier = {
+				limit = {
+					is_untouchable_trigger = no
+					
+					is_adult = yes
+					is_incapable = no
+					prisoner = no
+					is_inaccessible_trigger = no
+
+					OR = {
+						has_evil_trait_trigger = yes
+						has_unpleasant_trait_trigger = yes
+					}
+				}
+				save_event_target_as = target_murderer
+			}
+			random_courtier = {
+				limit = {
+					is_untouchable_trigger = no
+					
+					is_adult = yes
+					is_incapable = no
+					prisoner = no
+					is_inaccessible_trigger = no
+					
+					NOT = { character = event_target:target_victim }
+
+					is_unimportant_trigger = yes
+					NOR = {		# To make sure that these are two different courtiers
+						has_evil_trait_trigger = yes
+						has_unpleasant_trait_trigger = yes
+					}
+				}
+				save_event_target_as = target_victim
+				death = { death_reason = death_murder killer = event_target:target_murderer }
+			}
+		}
+		if = {
+			limit = { is_ruler = yes }
+			any_vassal = {
+				limit = { has_character_flag = attending_primitive_rites_flag }
+				character_event = { id = WCPRM.130 }
+			}
+		}
+	}
+
+	option = {
+		name = EVTOPTA_WCPRM_130
+
+		add_trait_silently_arbitrary_effect = yes
+		remove_trait_silently_just_effect = yes
+
+		ai_chance = {
+			factor = 75
+
+			modifier = {
+				factor = 1.73
+				has_evil_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.73
+				has_unpleasant_trait_trigger = yes
+			}
+		}
+	}
+	option = {
+		name = EVTOPTB_WCPRM_130
+
+		if = {
+			limit = { NOT = { trait = just } }
+			random = {
+				chance = 50
+				if = { 
+					limit = { NOT = { trait = arbitrary } } 
+					add_trait = just 
+				}
+				else = { remove_trait = arbitrary }
+			}
+		}
+
+		ai_chance = {
+			factor = 25
+
+			modifier = {
+				factor = 3
+				has_benevolent_trait_trigger = yes
+			}
+			modifier = {
+				factor = 3
+				has_pleasant_trait_trigger = yes
+			}
+		}
+	}
+}
+# Friend
+character_event = {
+	id = WCPRM.135
+	picture = GFX_evt_tribal_shrine
+	desc = EVTDESC_WCPRM_135
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+	
+	trigger = {
+		any_vassal = {
+			NOT = { is_friend = ROOT }
+
+			has_character_flag = attending_primitive_rites_flag
+			opinion = { who = ROOT value = 0 }
+		}
+	}
+
+	immediate = {
+		random_vassal = {
+			limit = {
+				NOT = { is_friend = ROOT }
+
+				has_character_flag = attending_primitive_rites_flag
+				opinion = { who = ROOT value = 0 }
+			}
+			save_event_target_as = target_friend
+		}
+	}
+
+	option = {
+		name = EXCELLENT
+
+		add_friend = event_target:target_friend
+		hidden_effect = { event_target:target_friend = { character_event = { id = WCPRM.136 } } }
+	}
+}
+# Friend (other character)
+character_event = {
+	id = WCPRM.136
+	picture = GFX_evt_tribal_shrine
+	desc = EVTDESC_WCPRM_135
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+	
+	option = {
+		name = EXCELLENT
+		
+		tooltip = { add_friend = FROM }
+	}
+}
+# Ambitions
+character_event = {
+	id = WCPRM.140
+	picture = GFX_evt_tribal_shrine
+	desc = EVTDESC_WCPRM_140
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCPRM_140
+		
+		add_trait_silently_ambitious_effect = yes
+		remove_trait_silently_content_effect = yes
+		
+		prestige = 100
+	}
+}
+# Gluttonous
+character_event = {
+	id = WCPRM.145
+	picture = GFX_evt_tribal_shrine
+	desc = EVTDESC_WCPRM_145
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCPRM_145
+		
+		random = {
+			chance = 15
+			add_trait_gluttonous_effect = yes
+			remove_trait_temperate_effect = yes
+			modifier = {
+				factor = 0
+				trait = gluttonous
+			}
+		}
+		event_target:target_rites_holder = {
+			any_vassal = {
+				limit = { has_character_flag = attending_primitive_rites_flag }
+				opinion = { modifier = opinion_glad who = ROOT years = 5 }
+			}
+		}
+		
+		ai_chance = {
+			factor = 95
+			modifier = {
+				factor = 0
+				trait = temperate
+			}
+		}
+	}
+	option = {
+		name = EVTOPTB_WCPRM_145
+		
+		random = {
+			chance = 15
+			add_trait_temperate_effect = yes
+			remove_trait_silently_gluttonous_effect = yes
+			modifier = {
+				factor = 0
+				trait = gluttonous
+			}
+		}
+		
+		ai_chance = {
+			factor = 5
+		}
+	}
+}
+# Ends the rites
+character_event = {
+	id = WCPRM.495
+	picture = GFX_evt_tribal_shrine
+	desc = EVTDESC_WCPRM_495
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+		clr_character_flag = attending_primitive_rites_flag
+		clr_character_flag = do_not_disturb
+	}
+
+	option = {
+		name = EXCELLENT
+
+		if = {
+			limit = { has_character_flag = holding_primitive_rites_flag }
+			clr_character_flag = holding_primitive_rites_flag
+			add_character_modifier = { name = held_primitive_rites years = 1 }
+		}
+	}
+}

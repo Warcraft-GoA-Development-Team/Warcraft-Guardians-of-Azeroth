@@ -1,0 +1,294 @@
+namespace = WCCOU
+
+character_event = {
+	id = WCCOU.90
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		character_event = { id = WCCOU.100 }
+		character_event = { id = WCCOU.110 }
+		character_event = { id = WCCOU.120 }
+		character_event = { id = WCCOU.130 }
+		character_event = { id = WCCOU.140 }
+	}
+}
+character_event = {
+	id = WCCOU.100
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		create_random_diplomat = {
+			random_traits = yes
+			dynasty = NONE
+			female = no
+			age = 30
+			religion = ROOT
+			culture = ROOT
+			attributes = {
+				diplomacy = 6
+			}
+		}
+		new_character = {
+			character_event = { id = WCSUP.1 }
+			character_event = { id = WCSUP.5 }
+		}
+	}
+}
+character_event = {
+	id = WCCOU.110
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		create_random_soldier = {
+			random_traits = yes
+			dynasty = NONE
+			female = no
+			age = 30
+			religion = ROOT
+			culture = ROOT
+			attributes = {
+				martial = 6
+			}
+		}
+		new_character = {
+			character_event = { id = WCSUP.1 }
+			character_event = { id = WCSUP.5 }
+		}
+	}
+}
+character_event = {
+	id = WCCOU.120
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		create_random_steward = {
+			random_traits = yes
+			dynasty = NONE
+			female = no
+			age = 30
+			religion = ROOT
+			culture = ROOT
+			attributes = {
+				stewardship = 6
+			}
+		}
+		new_character = {
+			character_event = { id = WCSUP.1 }
+			character_event = { id = WCSUP.5 }
+		}
+	}
+}
+character_event = {
+	id = WCCOU.130
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		create_random_intriguer = {
+			random_traits = yes
+			dynasty = NONE
+			female = no
+			age = 30
+			religion = ROOT
+			culture = ROOT
+			attributes = {
+				intrigue = 6
+			}
+		}
+		new_character = {
+			character_event = { id = WCSUP.1 }
+			character_event = { id = WCSUP.5 }
+		}
+	}
+}
+character_event = {
+	id = WCCOU.140
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		create_random_priest = {
+			random_traits = yes
+			dynasty = NONE
+			female = no
+			age = 30
+			religion = ROOT
+			culture = ROOT
+			attributes = {
+				learning = 6
+			}
+		}
+		new_character = {
+			character_event = { id = WCSUP.1 }
+			character_event = { id = WCSUP.5 }
+		}
+	}
+}
+
+# Accept character into family
+character_event = {
+	id = WCCOU.200
+	desc = {
+		trigger = { trait = undead }
+		text = EVTDESC_WCCOU_200_undead
+		picture = GFX_evt_cemetery
+	}
+	desc = {
+		trigger = { trait = demon }
+		text = EVTDESC_WCCOU_200_demon
+		picture = GFX_evt_fel_storm
+	}
+	desc = {
+		trigger = { is_uncursed_titanforged_trigger = yes }
+		text = EVTDESC_WCCOU_200_titanforged
+		picture = GFX_evt_mechagnome
+	}
+	desc = {
+		trigger = { has_character_flag = void_creature }
+		text = EVTDESC_WCCOU_200_void
+		picture = GFX_evt_nraqi
+	}
+	desc = {
+		trigger = { 
+			NOR = {
+				trait = undead
+				trait = demon
+				has_character_flag = void_creature
+			}
+		}
+		text = EVTDESC_WCCOU_200_other
+		picture = GFX_evt_council
+	}
+	border = GFX_event_normal_frame_diplomacy
+	
+	is_triggered_only = yes
+	
+	only_playable = yes
+	min_age = 16
+	prisoner = no
+	
+	trigger = {
+		is_alive = yes
+		is_dying = no
+		
+		is_lowborn = no
+		OR = {
+			can_marry_trigger = no
+			can_has_children_trigger = no
+		}
+		NOT = { num_of_dynasty_members = 8 }
+	}
+	
+	weight_multiplier = {
+		days = 1
+		
+		modifier = {
+			factor = 2
+			NOT = { num_of_dynasty_members = 4 }
+		}
+	}
+	
+	immediate = {
+		if = {
+			limit = { event_target:target_new_member = { is_alive = yes } }
+			# Nothing
+		}
+		else = {
+			create_character = {
+				female = no
+				dynasty = none
+				culture = ROOT religion = ROOT
+				random_traits = yes
+				age = 40
+			}
+			new_character = {
+				save_event_target_as = target_new_member
+				if = {
+					limit = { ROOT = { trait = undead } }
+					character_event = { id = WCRAC.10 } 	# Adds race trait
+					if = {
+						limit = { can_be_undead_trigger = yes }
+						save_event_target_as = target_necromancer
+						character_event = { id = WCPOD.5013 }	# Turns into undead
+					}
+					break = yes
+				}
+				if = {
+					limit = { ROOT = { trait = demon } }
+					character_event = { id = WCRAC.10 } 	# Adds race trait
+					if = {
+						limit = { is_susceptible_to_fel_corruption_trigger = yes }
+						set_variable = { which = fel_corruption value = 100 }
+						character_event = { id = WCFEL.10 }
+					}
+					break = yes
+				}
+				if = {
+					limit = { ROOT = { is_uncursed_titanforged_trigger = yes } }
+					character_event = { id = WCRAC.10 } 	# Adds race trait
+					break = yes
+				}
+				if = {
+					limit = { ROOT = { has_character_flag = void_creature } }
+					culture = nraqi
+					add_trait = creature_nraqi
+					add_trait_void_creature_effect = yes
+					set_graphical_culture = nraqi
+					break = yes
+				}
+				character_event = { id = WCRAC.10 } 	# Adds race trait
+			}
+		}
+	}
+	
+	option = {
+		name = EVTOPTA_WCCOU_200
+		
+		event_target:target_new_member = {
+			dynasty = ROOT
+			opinion = { modifier = opinion_loyal_servant who = ROOT }
+		}
+	}
+	
+	option = {
+		name = EVTOPTB_WCCOU_200
+		
+		hidden_effect = {
+			event_target:target_new_member = { death = { death_reason = death_missing } }
+		}
+	}
+}
+
+# KILLS UNIMPORTANT CHARACTERS
+character_event = {
+	id = WCCOU.500
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	only_playable = yes
+	
+	trigger = {
+		any_courtier = {
+			count = 50
+		}
+	}
+	
+	immediate = {
+		log = "(IMPORTANT) Court of [Root.GetBestName] was purged"
+		any_courtier = {
+			limit = { is_unimportant_trigger = yes }
+			death = { death_reason = death_missing }
+		}
+	}
+}

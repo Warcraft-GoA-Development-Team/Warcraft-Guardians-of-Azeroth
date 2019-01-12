@@ -1,0 +1,3216 @@
+namespace = WCTHW
+
+# When shit happens, Medivh tries to fix it
+province_event = {
+	id = WCTHW.50
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		# Exodus of the Horde
+		province_event = { id = WCTHW.99 }
+
+		# Terror of the Tides (the naga)
+		holder_scope = { narrative_event = { id = WCVOD.700 days = 10 } }
+
+		# Foundation of Theramore
+		province_event = { id = WCTHW.145 days = 30 }
+	}
+}
+#######################
+#	Horde
+#######################
+
+### Exodus of the Horde ###
+# Medivh's Vision
+# Ping event
+province_event = {
+	id = WCTHW.99
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	trigger = {
+		NOT = { has_global_flag = horde_was_reborned_flag }
+
+		e_horde = { has_holder = no }
+	}
+
+	immediate = {
+		set_global_flag = horde_was_reborned_flag
+
+		### Chooses a new Warchief of the Horde
+		# Claimants have the highest priority
+		if = {
+			limit = {
+				e_horde = {
+					any_claimant = {
+						is_untouchable_trigger = no
+
+						is_alive = yes
+						is_adult = yes
+						is_incapable = no
+						prisoner = no
+						is_inaccessible_trigger = no
+						is_consort = no
+
+						trait = creature_orc
+						religion_group = shamanism_group
+						culture_group = orc_group
+
+						is_in_political_faction_trigger = no
+					}
+				}
+			}
+			random_character = {
+				limit = {
+					is_untouchable_trigger = no
+
+					is_alive = yes
+					is_adult = yes
+					is_incapable = no
+					prisoner = no
+					is_inaccessible_trigger = no
+					is_consort = no
+
+					trait = creature_orc
+					religion_group = shamanism_group
+					culture_group = orc_group
+
+					has_claim = e_horde
+					is_in_political_faction_trigger = no
+				}
+				narrative_event = { id = WCTHW.100 }
+			}
+			break = yes
+		}
+		# Thrall have a more higher priority
+		if = {
+			limit = {
+				any_character = {
+					is_untouchable_trigger = no
+
+					is_alive = yes
+					is_adult = yes
+					is_incapable = no
+					prisoner = no
+					is_inaccessible_trigger = no
+					is_consort = no
+
+					trait = creature_orc
+					religion_group = shamanism_group
+					culture_group = orc_group
+
+					has_character_flag = is_thrall
+					is_in_political_faction_trigger = no
+				}
+			}
+			random_character = {
+				limit = {
+					is_untouchable_trigger = no
+
+					is_alive = yes
+					is_adult = yes
+					is_incapable = no
+					prisoner = no
+					is_inaccessible_trigger = no
+					is_consort = no
+
+					trait = creature_orc
+					religion_group = shamanism_group
+					culture_group = orc_group
+
+					has_character_flag = is_thrall
+					is_in_political_faction_trigger = no
+				}
+				narrative_event = { id = WCTHW.100 }
+			}
+			break = yes
+		}
+		# Prestigious characters have a more higher priority
+		if = {
+			limit = {
+				any_character = {
+					is_untouchable_trigger = no
+
+					is_alive = yes
+					is_adult = yes
+					is_incapable = no
+					prisoner = no
+					is_inaccessible_trigger = no
+					is_consort = no
+
+					trait = creature_orc
+					religion_group = shamanism_group
+					culture_group = orc_group
+
+					prestige = 500
+					is_in_political_faction_trigger = no
+				}
+			}
+			random_character = {
+				limit = {
+					is_untouchable_trigger = no
+
+					is_alive = yes
+					is_adult = yes
+					is_incapable = no
+					prisoner = no
+					is_inaccessible_trigger = no
+					is_consort = no
+
+					trait = creature_orc
+					religion_group = shamanism_group
+					culture_group = orc_group
+
+					prestige = 500
+					is_in_political_faction_trigger = no
+				}
+				narrative_event = { id = WCTHW.100 }
+			}
+			break = yes
+		}
+		# Any orc professing shamanism
+		if = {
+			limit = {
+				any_character = {
+					is_untouchable_trigger = no
+
+					is_alive = yes
+					is_adult = yes
+					is_incapable = no
+					prisoner = no
+					is_inaccessible_trigger = no
+					is_consort = no
+
+					trait = creature_orc
+					religion_group = shamanism_group
+					culture_group = orc_group
+
+					is_in_political_faction_trigger = no
+				}
+			}
+			random_character = {
+				limit = {
+					is_untouchable_trigger = no
+
+					is_alive = yes
+					is_adult = yes
+					is_incapable = no
+					prisoner = no
+					is_inaccessible_trigger = no
+					is_consort = no
+
+					trait = creature_orc
+					religion_group = shamanism_group
+					culture_group = orc_group
+
+					is_in_political_faction_trigger = no
+				}
+				narrative_event = { id = WCTHW.100 }
+			}
+		}
+	}
+}
+# Main event
+narrative_event = {
+	id = WCTHW.100
+	title = EVTTITLE_WCTHW_100
+	desc = EVTDESC_WCTHW_100
+	picture = GFX_evt_durotar
+	border = GFX_event_narrative_frame_diplomacy
+
+	is_triggered_only = yes
+
+	immediate = {
+		log = "WCTHW.100 fired for [Root.GetBestName]"
+		if = {
+			limit = { is_ruler = yes }
+			primary_title = { save_event_target_as = target_primary_title }
+		}
+	}
+
+	# Sail to Kalimdor!
+	option = {
+		name = EVTOPTA_WCTHW_100
+
+		add_trait_silently_kind_effect = yes
+		remove_trait_silently_cruel_effect = yes
+		remove_trait_envious_effect = yes
+
+		hidden_effect = {
+			# Invites other clans
+			while = {
+				limit = { always = yes }
+				count = 5
+				random_independent_ruler = {
+					limit = {
+						lower_real_tier_than = EMPEROR
+
+						NOT = { has_character_flag = invitation_to_sail_is_sent_flag }
+
+						trait = creature_orc
+						religion_group = shamanism_group
+						culture_group = orc_group
+					}
+					set_character_flag = invitation_to_sail_is_sent_flag
+
+					letter_event = { id = WCTHW.105 days = 3 }
+				}
+			}
+			73 = { province_event = { id = WCTHW.109 days = 10 } }
+		}
+	}
+
+	# NO!
+	option = {
+		name = EVTOPTB_WCTHW_100
+
+		clr_global_flag = horde_was_reborned_flag
+
+		custom_tooltip = {
+			text = stops_the_event_chain
+		}
+
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+# Do you want to sail to Kalimdor with FROM?
+letter_event = {
+	id = WCTHW.105
+	desc = EVTDESC_WCTHW_105
+	border = GFX_event_letter_frame_diplomacy
+
+	is_triggered_only = yes
+
+	option = {
+		name = ACCEPT
+
+		FROM = { letter_event = { id = WCTHW.106 } }
+		hidden_effect = {
+			primary_title = { set_title_flag = clan_sailed_to_kalimdor_flag }
+		}
+	}
+	option = {
+		name = DECLINE
+
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+# FROM want to sail to Kalimdor with you
+letter_event = {
+	id = WCTHW.106
+	desc = EVTDESC_WCTHW_106
+	border = GFX_event_letter_frame_diplomacy
+
+	is_triggered_only = yes
+
+	option = {
+		name = EXCELLENT
+	}
+}
+# Storm, trolls and naga
+# Ping event
+province_event = {
+	id = WCTHW.109
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		if = {
+			limit = { FROM = { is_alive = yes } }
+			FROM = { narrative_event = { id = WCTHW.110 } }
+			break = yes
+		}
+		if = {
+			limit = { event_target:target_primary_title = { has_holder = yes } }
+			event_target:target_primary_title = {
+				holder_scope = { narrative_event = { id = WCTHW.110 } }
+			}
+			break = yes
+		}
+		province_event = { id = WCTHW.119 days = 30 }
+	}
+}
+# Main event
+narrative_event = {
+	id = WCTHW.110
+	title = EVTTITLE_WCTHW_100
+	desc = EVTDESC_WCTHW_110
+	picture = GFX_evt_sea_serpent
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+
+	trigger = {
+		3625 = {
+			holder_scope = {
+				top_liege = {
+					religion = cult_of_loa
+					trait = creature_troll
+				}
+			}
+		}
+	}
+
+	fail_trigger_effect = {
+		73 = { province_event = { id = WCTHW.119 days = 10 } }
+	}
+
+	immediate = {
+		3625 = {
+			holder_scope = {
+				top_liege = {
+					narrative_event = { id = WCTHW.111 }
+					primary_title = { save_event_target_as = target_troll_primary_title }
+				}
+			}
+		}
+	}
+
+	option = {
+		name = EVTOPTA_WCTHW_110
+
+		hidden_effect = { 73 = { province_event = { id = WCTHW.114 days = 5 } } }
+	}
+}
+# Storm led orcs and naga to your shores
+narrative_event = {
+	id = WCTHW.111
+	title = EVTTITLE_WCTHW_100
+	desc = EVTDESC_WCTHW_111
+	picture = GFX_evt_sea_serpent
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCTHW_111
+	}
+}
+# Ships are almost repaired, do you want to sail without trolls?
+# Ping event
+province_event = {
+	id = WCTHW.114
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		if = {
+			limit = { FROM = { is_alive = yes } }
+			FROM = { narrative_event = { id = WCTHW.115 } }
+			break = yes
+		}
+		if = {
+			limit = { event_target:target_primary_title = { has_holder = yes } }
+			event_target:target_primary_title = {
+				holder_scope = { narrative_event = { id = WCTHW.115 } }
+			}
+			break = yes
+		}
+		province_event = { id = WCTHW.119 days = 30 }
+	}
+}
+# Main event
+narrative_event = {
+	id = WCTHW.115
+	title = EVTTITLE_WCTHW_100
+	desc = EVTDESC_WCTHW_115
+	picture = GFX_evt_sea_serpent
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+	
+	trigger = {
+		3625 = {
+			holder_scope = {
+				top_liege = {
+					religion = cult_of_loa
+					trait = creature_troll
+				}
+			}
+		}
+	}
+
+	fail_trigger_effect = {
+		73 = { province_event = { id = WCTHW.119 days = 10 } }
+	}
+
+	# No, we will not abandon them!
+	option = {
+		name = EVTOPTA_WCTHW_115
+
+		add_trait_silently_brave_effect = yes
+		remove_trait_silently_craven_effect = yes
+
+		3625 = {
+			holder_scope = {
+				top_liege = {
+					opinion = { modifier = opinion_very_grateful who = ROOT years = 10 }
+					primary_title = {
+						set_title_flag = trolls_sailed_to_kalimdor_flag
+					}
+				}
+			}
+		}
+	}
+	# Retreat to the ships!
+	option = {
+		name = EVTOPTB_WCTHW_115
+
+		3625 = {
+			holder_scope = {
+				top_liege = {
+					opinion = { modifier = opinion_hate who = ROOT years = 10 }
+				}
+			}
+		}
+
+		ai_chance = {
+			factor = 0
+		}
+	}
+
+	after = {
+		3625 = {
+			holder_scope = {
+				top_liege = {
+					narrative_event = { id = WCTHW.116 }
+				}
+			}
+		}
+		73 = { province_event = { id = WCTHW.119 days = 10 } }
+	}
+}
+# Notifies about what orcs have done
+narrative_event = {
+	id = WCTHW.116
+	title = EVTTITLE_WCTHW_100
+	desc = {
+		trigger = { primary_title = { has_title_flag = trolls_sailed_to_kalimdor_flag } }
+		text = EVTDESC_WCTHW_116_case_01
+	}
+	desc = {
+		trigger = { primary_title = { NOT = { has_title_flag = trolls_sailed_to_kalimdor_flag } } }
+		text = EVTDESC_WCTHW_116_case_02
+	}
+	picture = GFX_evt_sea_serpent
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+
+	immediate = {
+		if = {
+			limit = { primary_title = { NOT = { has_title_flag = trolls_sailed_to_kalimdor_flag } } }
+			3625 = { province_event = { id = WCVOD.705 } }
+		}
+	}
+
+	option = {
+		name = {
+			trigger = { primary_title = { has_title_flag = trolls_sailed_to_kalimdor_flag } }
+			text = EVTOPTA_WCTHW_116_case_01
+		}
+		name = {
+			trigger = { primary_title = { NOT = { has_title_flag = trolls_sailed_to_kalimdor_flag } } }
+			text = EVTOPTA_WCTHW_116_case_02
+		}
+	}
+}
+# End of voyage
+# Ping event
+province_event = {
+	id = WCTHW.119
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		if = {
+			limit = { FROM = { is_alive = yes } }
+			FROM = { narrative_event = { id = WCTHW.120 } }
+			break = yes
+		}
+		if = {
+			limit = { event_target:target_primary_title = { has_holder = yes } }
+			event_target:target_primary_title = {
+				holder_scope = { narrative_event = { id = WCTHW.120 } }
+			}
+			break = yes
+		}
+		create_character = {
+			female = no
+			dynasty = none
+			culture = frostwolf religion = orcish_shamanism
+			trait = creature_orc
+			trait = brilliant_strategist
+			trait = class_shaman_8
+			trait = kind trait = just trait = brave
+			random_traits = yes
+			age = 25
+		}
+		new_character = {
+			narrative_event = { id = WCTHW.120 }
+		}
+	}
+}
+# Main event
+narrative_event = {
+	id = WCTHW.120
+	title = EVTTITLE_WCTHW_100
+	desc = EVTDESC_WCTHW_120
+	picture = GFX_evt_durotar
+	border = GFX_event_narrative_frame_diplomacy
+
+	is_triggered_only = yes
+
+	major = yes
+
+	immediate = {
+		3043 = {
+			capital_holding = { convert_tribal_to_castle_effect = yes }
+			county = { grant_title_no_opinion = ROOT }
+			culture = ROOT
+			religion = ROOT
+			any_province_holding = { grant_title_no_opinion = ROOT }
+		}
+		d_orgrimmar = {
+			any_direct_de_jure_vassal_title = {
+				limit = { holder_scope = { government = uncolonized_government } }
+				grant_title_no_opinion = ROOT
+				location = {
+					culture = ROOT
+					religion = ROOT
+				}
+			}
+			grant_title_no_opinion = ROOT
+		}
+		d_drygulch = {
+			any_direct_de_jure_vassal_title = {
+				limit = { holder_scope = { government = uncolonized_government } }
+				grant_title_no_opinion = ROOT
+				location = {
+					culture = ROOT
+					religion = ROOT
+				}
+			}
+			grant_title_no_opinion = ROOT
+		}
+		d_sarkoth = {
+			any_direct_de_jure_vassal_title = {
+				limit = { holder_scope = { government = uncolonized_government } }
+				grant_title_no_opinion = ROOT
+				location = {
+					culture = ROOT
+					religion = ROOT
+				}
+			}
+			grant_title_no_opinion = ROOT
+		}
+		capital_scope = {
+			ROOT = {
+				spawn_unit = {
+					owner = ROOT
+					province = PREV
+					home = PREV
+					troops = {
+						archers = { 600 600 }
+						light_infantry = { 900 900 }
+						heavy_infantry = { 1125 1125 }
+						light_cavalry = { 150 150 }
+						knights = { 225 225 }
+					}
+					cannot_inherit = no
+					attrition = 1.0
+					reinforces = yes
+					maintenance = no
+				}
+			}
+		}
+		set_defacto_liege = THIS
+		if = {
+			limit = { is_government_potential = tribal_monarchy_government }
+			set_government_type = tribal_monarchy_government
+		}
+		narrative_event = { id = WCPLF.100 }			# Foundation of the Horde (faction)
+		event_target:target_troll_primary_title = {
+			if = {
+				limit = { has_title_flag = trolls_sailed_to_kalimdor_flag }
+
+				clr_title_flag = trolls_sailed_to_kalimdor_flag
+
+				holder_scope = {
+					3057 = {
+						capital_holding = { convert_tribal_to_castle_effect = yes }
+						county = { grant_title_no_opinion = PREV }
+						culture = PREV
+						religion = PREV
+						any_province_holding = { grant_title_no_opinion = PREV }
+					}
+					d_echo_isles = {
+						any_direct_de_jure_vassal_title = {
+							limit = { holder_scope = { government = uncolonized_government } }
+							grant_title_no_opinion = PREVPREV
+							location = {
+								culture = PREVPREVPREV
+								religion = PREVPREVPREV
+							}
+						}
+					}
+					create_character = {
+						female = yes
+						dynasty = none
+						culture = naga religion = old_gods_worship
+						trait = creature_naga
+						trait = proud trait = cruel
+						random_traits = yes
+						age = 300
+						flag = void_creature
+					}
+					new_character = {
+						remove_education_effect = yes
+						random_list = {
+							10 = {
+								add_trait = detached_priest
+								add_trait = class_mage_3
+							}
+							30 = {
+								add_trait = martial_cleric
+								add_trait = class_mage_4
+							}
+							45 = {
+								add_trait = scholarly_theologian
+								add_trait = class_mage_5
+							}
+							15 = {
+								add_trait = mastermind_theologian
+								add_trait = class_mage_6
+							}
+						}
+						save_event_target_as = target_naga
+					}
+					any_demesne_title = {
+						limit = {
+							tier = COUNT
+
+							region = world_south_seas
+						}
+						grant_title_no_opinion = { target = event_target:target_naga type = invasion }
+						location = {
+							culture = event_target:target_naga
+							religion = event_target:target_naga
+						}
+					}
+					event_target:target_naga = {
+						if = {
+							limit = { is_government_potential = feudal_government }
+							set_government_type = feudal_government
+						}
+						set_defacto_liege = THIS
+					}
+					set_defacto_liege = ROOT
+				}
+			}
+		}
+	}
+
+	option = {
+		trigger = {
+			OR = {
+				character = ROOT
+				primary_title = {
+					OR = {
+						has_title_flag = clan_sailed_to_kalimdor_flag
+						has_title_flag = trolls_sailed_to_kalimdor_flag
+					}
+				}
+			}
+		}
+		name = EVTOPTA_WCTHW_120
+
+		primary_title = {
+			show_scope_change = no
+			if = {
+				limit = { has_title_flag = clan_sailed_to_kalimdor_flag }
+
+				clr_title_flag = clan_sailed_to_kalimdor_flag
+
+				ROOT = {
+					show_scope_change = no
+					random_demesne_title = {
+						limit = {
+							NOT = { title = c_orgrimmar }
+							tier = COUNT
+
+							de_jure_liege_or_above = k_barrens
+						}
+						grant_title = { target = PREVPREVPREV }
+						location = {
+							culture = PREVPREVPREVPREV
+							religion = PREVPREVPREVPREV
+						}
+					}
+					set_defacto_vassal = PREV
+				}
+			}
+		}
+	}
+
+	option = {
+		trigger = {
+			NOR = {
+				character = ROOT
+				primary_title = {
+					OR = {
+						has_title_flag = clan_sailed_to_kalimdor_flag
+						has_title_flag = trolls_sailed_to_kalimdor_flag
+					}
+				}
+			}
+		}
+		name = INTERESTING
+	}
+}
+
+### Foundation of Theramore ###
+# Medivh's Vision
+# Ping event
+province_event = {
+	id = WCTHW.145
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	trigger = {
+		NOT = { has_global_flag = foundation_of_theramore_flag }
+	}
+
+	immediate = {
+		set_global_flag = foundation_of_theramore_flag
+
+		### Chooses a leader of Theramore
+		# Jaina have the highest priority
+		if = {
+			limit = {
+				c_48081 = {
+					is_untouchable_trigger = no
+
+					is_alive = yes
+					is_adult = yes
+					is_incapable = no
+					prisoner = no
+					is_inaccessible_trigger = no
+					is_consort = no
+
+					trait = creature_human
+					OR = {
+						religion_group = light_group
+						religion_group = secular_group
+						religion_group = arcane_group
+						religion = tidemother
+					}
+
+					has_character_flag = is_jaina
+				}
+			}
+			c_48081 = { narrative_event = { id = WCTHW.150 } }
+			break = yes
+		}
+		# Kind prestigious humans have a more higher priority
+		if = {
+			limit = {
+				any_character = {
+					is_untouchable_trigger = no
+
+					is_alive = yes
+					is_adult = yes
+					is_incapable = no
+					prisoner = no
+					is_inaccessible_trigger = no
+					is_consort = no
+
+					trait = creature_human
+					OR = {
+						religion_group = light_group
+						religion_group = secular_group
+						religion_group = arcane_group
+						religion = tidemother
+					}
+					trait = kind
+				}
+			}
+			random_character = {
+				limit = {
+					is_untouchable_trigger = no
+
+					is_alive = yes
+					is_adult = yes
+					is_incapable = no
+					prisoner = no
+					is_inaccessible_trigger = no
+					is_consort = no
+
+					trait = creature_human
+					OR = {
+						religion_group = light_group
+						religion_group = secular_group
+						religion_group = arcane_group
+						religion = tidemother
+					}
+					trait = kind
+				}
+				narrative_event = { id = WCTHW.150 }
+			}
+			break = yes
+		}
+		# Any kind character
+		if = {
+			limit = {
+				any_character = {
+					is_untouchable_trigger = no
+
+					is_alive = yes
+					is_adult = yes
+					is_incapable = no
+					prisoner = no
+					is_inaccessible_trigger = no
+					is_consort = no
+
+					OR = {
+						religion_group = light_group
+						religion_group = secular_group
+						religion_group = arcane_group
+						religion = tidemother
+					}
+					trait = kind
+				}
+			}
+			random_character = {
+				limit = {
+					is_untouchable_trigger = no
+
+					is_alive = yes
+					is_adult = yes
+					is_incapable = no
+					prisoner = no
+					is_inaccessible_trigger = no
+					is_consort = no
+
+					OR = {
+						religion_group = light_group
+						religion_group = secular_group
+						religion_group = arcane_group
+						religion = tidemother
+					}
+					trait = kind
+				}
+				narrative_event = { id = WCTHW.150 }
+			}
+		}
+	}
+}
+# Main event
+narrative_event = {
+	id = WCTHW.150
+	title = EVTTITLE_WCTHW_150
+	desc = EVTDESC_WCTHW_150
+	picture = GFX_evt_merchant_ship_at_sea_republic
+	border = GFX_event_narrative_frame_diplomacy
+
+	is_triggered_only = yes
+
+	immediate = {
+		log = "WCTHW.150 fired for [Root.GetBestName]"
+		if = {
+			limit = { is_ruler = yes }
+			primary_title = { save_event_target_as = target_primary_title }
+		}
+	}
+
+	# I will save these people!
+	option = {
+		name = EVTOPTA_WCTHW_150
+
+		add_trait_silently_kind_effect = yes
+		remove_trait_silently_cruel_effect = yes
+		remove_trait_envious_effect = yes
+
+		hidden_effect = { 73 = { province_event = { id = WCTHW.154 days = 30 } } }
+	}
+
+	# This is madness!
+	option = {
+		name = EVTOPTB_WCTHW_150
+
+		clr_global_flag = foundation_of_theramore_flag
+
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+# End of voyage
+# Ping event
+province_event = {
+	id = WCTHW.154
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		if = {
+			limit = { FROM = { is_alive = yes } }
+			FROM = { narrative_event = { id = WCTHW.155 } }
+			break = yes
+		}
+		if = {
+			limit = { event_target:target_primary_title = { has_holder = yes } }
+			event_target:target_primary_title = {
+				holder_scope = { narrative_event = { id = WCTHW.155 } }
+			}
+			break = yes
+		}
+		create_character = {
+			female = yes
+			dynasty = none
+			culture = tirassian religion = holy_light
+			trait = creature_human
+			trait = mastermind_theologian
+			trait = class_mage_8
+			trait = kind trait = just trait = brave
+			random_traits = yes
+			age = 30
+		}
+		new_character = {
+			narrative_event = { id = WCTHW.155 }
+		}
+	}
+}
+# Main event
+narrative_event = {
+	id = WCTHW.155
+	title = EVTTITLE_WCTHW_150
+	desc = EVTDESC_WCTHW_155
+	picture = GFX_evt_merchant_ship_at_sea_republic
+	border = GFX_event_narrative_frame_diplomacy
+
+	is_triggered_only = yes
+
+	major = yes
+	show_root = yes
+
+	immediate = {
+		3140 = {
+			capital_holding = { convert_tribal_to_castle_effect = yes }
+			county = { grant_title_no_opinion = ROOT }
+			culture = ROOT
+			religion = ROOT
+			any_province_holding = { grant_title_no_opinion = ROOT }
+		}
+		capital_scope = {
+			ROOT = {
+				spawn_unit = {
+					owner = ROOT
+					province = PREV
+					home = PREV
+					troops = {
+						archers = { 600 600 }
+						light_infantry = { 900 900 }
+						heavy_infantry = { 1125 1125 }
+						light_cavalry = { 150 150 }
+						knights = { 225 225 }
+					}
+					cannot_inherit = no
+					attrition = 1.0
+					reinforces = yes
+					maintenance = no
+				}
+				spawn_fleet = {
+					province = closest # closest sea zone
+					owner = ROOT
+					disband_on_peace = yes
+					troops = {
+						galleys = { 100 100 }
+					}
+				}
+			}
+		}
+		d_theramore = {
+			any_direct_de_jure_vassal_title = {
+				limit = { holder_scope = { government = uncolonized_government } }
+				grant_title_no_opinion = PREVPREV
+				location = {
+					culture = ROOT
+					religion = ROOT
+				}
+			}
+		}
+		d_nittawosew = {
+			any_direct_de_jure_vassal_title = {
+				limit = { holder_scope = { government = uncolonized_government } }
+				grant_title_no_opinion = PREVPREV
+				location = {
+					culture = ROOT
+					religion = ROOT
+				}
+			}
+		}
+		set_defacto_liege = THIS
+	}
+
+	option = {
+		trigger = { character = ROOT }
+		name = EVTOPTA_WCTHW_155
+	}
+
+	option = {
+		trigger = { NOT = { character = ROOT } }
+		name = INTERESTING
+	}
+}
+
+### Corruption of the Sunwell ###
+# on_siege_won_leader
+character_event = {
+	id = WCTHW.998
+
+	is_triggered_only = yes
+	hide_window = yes
+	
+	only_playable = yes
+
+	trigger = {
+		evil_public_religion_trigger = yes
+		FROM = { has_building = tp_sunwell }
+	}
+
+	immediate = {
+		narrative_event = { id = WCTHW.1000 }
+	}
+}
+narrative_event = {
+	id = WCTHW.1000
+	title = EVTTITLE_WCTHW_1000
+	picture = GFX_evt_corrupted_sunwell_fel
+	desc = {
+		trigger = {
+			ROOT = {
+				OR = {
+					religion = orcish_fel
+					religion = burning_legion_religion
+				}
+			}
+		}
+		text = EVTDESC_WCTHW_1000
+		picture = GFX_evt_corrupted_sunwell_fel
+	}
+	desc = {
+		trigger = {
+			ROOT = {
+				OR = {
+					religion = death_god
+					religion = old_gods_worship
+				}
+			}
+		}
+		text = EVTDESC_WCTHW_1000
+		picture = GFX_evt_corrupted_sunwell_scourge
+	}
+	border = GFX_event_narrative_frame_war
+
+	major = yes
+	is_triggered_only = yes
+
+	immediate = {
+		b_sunwell = { remove_building = tp_sunwell }
+		ROOT = {
+			trigger_switch = {
+				on_trigger = religion
+				orcish_fel = { b_sunwell = { add_building = tp_felwell } }
+				burning_legion_religion = { b_sunwell = { add_building = tp_felwell } }
+				death_god = { b_sunwell = { add_building = tp_sunwellcorrupted } }
+				old_gods_worship = { b_sunwell = { add_building = tp_voidwell } }
+			}
+		}
+		73 = { province_event = { id = WCTHW.1009 days = 60 } }
+	}
+
+	option = {
+		name = {
+			trigger = {
+				evil_true_religion_trigger = yes
+			}
+			text = EXCELLENT
+		}
+		name = {
+			trigger = { evil_true_religion_trigger = no }
+			text = ALAS
+		}
+
+		if = {
+			limit = { character = ROOT }
+			prestige = 500
+			piety = 500
+		}
+	}
+}
+
+### Renaming of high elves ###
+province_event = {
+	id = WCTHW.1009
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		# High King of Quel'Thalas
+		if = {
+			limit = {
+				e_quelthalas = {
+					has_holder = yes
+					holder_scope = {
+						trait = creature_high_elf
+						evil_public_religion_trigger = no
+					}
+				}
+			}
+			e_quelthalas = { holder_scope = { narrative_event = { id = WCTHW.1010 } } }
+			break = yes
+		}
+		# King of Quel'Thalas
+		if = {
+			limit = {
+				k_quelthalas = {
+					has_holder = yes
+					holder_scope = {
+						trait = creature_high_elf
+						evil_public_religion_trigger = no
+					}
+				}
+			}
+			k_quelthalas = { holder_scope = { narrative_event = { id = WCTHW.1010 } } }
+			break = yes
+		}
+		# Top liege of the Sunwell
+		b_sunwell = {
+			holder_scope = {
+				top_liege = {
+					if = {
+						limit = {
+							trait = creature_high_elf
+							evil_public_religion_trigger = no
+						}
+						narrative_event = { id = WCTHW.1010 }
+					}
+				}
+			}
+		}
+	}
+}
+narrative_event = {
+	id = WCTHW.1010
+	title = EVTTITLE_WCTHW_1010
+	picture = GFX_evt_sunwell
+	desc = EVTDESC_WCTHW_1010
+	border = GFX_event_narrative_frame_diplomacy
+
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCTHW_1010
+
+		remove_trait = creature_high_elf
+		add_trait = creature_blood_elf
+		culture = blood_elf
+		hidden_effect = {
+			any_demesne_province = {
+				limit = { culture = high_elf }
+				culture = blood_elf
+			}
+		}
+
+		custom_tooltip = {
+			text = proclaims_your_people_the_blood_elves
+			hidden_effect = { narrative_event = { id = WCTHW.1015 } }
+		}
+	}
+	option = {
+		name = EVTOPTB_WCTHW_1010
+
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+narrative_event = {
+	id = WCTHW.1015
+	title = EVTTITLE_WCTHW_1015
+	picture = GFX_evt_sunwell
+	desc = EVTDESC_WCTHW_1015
+	border = GFX_event_narrative_frame_diplomacy
+
+	is_triggered_only = yes
+
+	major = yes
+
+	option = {
+		trigger = {
+			OR = {
+				trait = creature_high_elf
+				trait = creature_blood_elf
+			}
+		}
+		name = EVTOPTA_WCTHW_1010
+		if = {
+			limit = { trait = creature_high_elf }
+			remove_trait = creature_high_elf
+		}
+		if = {
+			limit = { NOT = { trait = creature_blood_elf } }
+			add_trait = creature_blood_elf
+		}
+		if = {
+			limit = { NOT = { culture = blood_elf } }
+			culture = blood_elf
+		}
+		hidden_effect = {
+			any_demesne_province = {
+				limit = { culture = high_elf }
+				culture = blood_elf
+			}
+			if = {
+				limit = { is_ruler = yes }
+				any_courtier_or_vassal = {
+					limit = {
+						OR = {
+							is_ruler = no
+							tier = BARON
+						}
+					}
+					add_trait = creature_blood_elf
+					culture = blood_elf
+				}
+			}
+		}
+
+		ai_chance = {
+			factor = 90
+			modifier = {
+				factor = 0.01
+				NOT = { location = { region = world_eastern_kingdoms_quelthalas } }
+			}
+		}
+	}
+	option = {
+		trigger = { trait = creature_high_elf }
+		name = EVTOPTB_WCTHW_1010
+
+		ai_chance = {
+			factor = 10
+		}
+	}
+	option = {
+		trigger = {
+			NOR = {
+				trait = creature_high_elf
+				trait = creature_blood_elf
+			}
+		}
+		name = EVTOPTC_WCTHW_1015	# Reaction of other races
+	}
+}
+
+### Magical addiction ###
+#
+# Ways to satisfy the addiction:
+# - Be a worshiper of fel_group or consuming_fel_magic_flag
+# - Be a worshiper of void_group or consuming_void_magic_flag
+# - Mana crystals
+# P.S. If character is consuming_<fel/void>_magic_flag, it's also receiving fel/void corruption
+# (check events WCFEL.95 and WCVOD.95)
+#
+# Satisfy magical addiction of others (if you're a Fel/Void worshiper)
+# character_event = {
+	# id = WCTHW.1045
+	# picture = GFX_evt_vorna_the_wretched
+	# desc = EVTDESC_WCTHW_1045
+	# border = GFX_event_normal_frame_religion
+
+	# is_triggered_only = yes
+
+	# # The Fel will help them!
+	# option = {
+		# trigger = { true_religion_group = fel_group }
+		# name = EVTOPTA_WCTHW_1045
+
+		# if = {
+			# limit = { has_secret_religion = yes }
+			# convert_to_secret_religion = yes
+		# }
+		# suggest_fel_source_effect = yes
+	# }
+	# # Look into the Void!
+	# option = {
+		# trigger = { true_religion_group = void_group }
+		# name = EVTOPTB_WCTHW_1045
+
+		# if = {
+			# limit = { has_secret_religion = yes }
+			# convert_to_secret_religion = yes
+		# }
+		# suggest_void_source_effect = yes
+	# }
+	# # They're not prepared!
+	# option = {
+		# name = EVTOPTC_WCTHW_1045
+
+		# ai_chance = {
+			# factor = 0
+		# }
+	# }
+# }
+# Magical addiction
+character_event = {
+	id = WCTHW.1050
+	picture = GFX_evt_vorna_the_wretched
+	desc = EVTDESC_WCTHW_1050
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+	
+	only_capable = yes
+	only_playable = yes
+
+	trigger = {
+		is_incapable = no
+		is_playable = yes
+		
+		is_alive = yes
+		is_dying = no
+
+		OR = {
+			is_susceptible_to_fel_corruption_trigger = yes
+			is_susceptible_to_void_corruption_trigger = yes
+		}
+		OR = {
+			trait = creature_blood_elf
+			trait = creature_high_elf
+		}
+		NOR = {
+			dark_true_religion_trigger = yes
+			has_character_flag = consuming_fel_magic_flag
+			has_character_flag = consuming_void_magic_flag
+		}
+
+		b_sunwell = { has_building = tp_sunwellcorrupted }
+		# Independent elves outside Quel'thalas don't feel magical addiction
+		OR = {
+			location = { region = world_eastern_kingdoms_quelthalas }
+			b_sunwell = { same_realm = ROOT }
+		}
+	}
+
+	immediate = {
+		set_character_flag = magical_addiction_timer_flag
+		# liege = {
+			# if = {
+				# limit = {
+					# NOT = { has_character_flag = tried_to_satisfy_others_hunger_flag }
+					# OR = {
+						# trait = creature_blood_elf
+						# trait = creature_high_elf
+					# }
+					# OR = {
+						# true_religion_group = fel_group
+						# true_religion_group = void_group
+					# }
+				# }
+				# set_character_flag = tried_to_satisfy_others_hunger_flag
+				# character_event = { id = WCTHW.1045 days = 7 }
+			# }
+		# }
+	}
+
+	# Try to get a mana crystal
+	option = {
+		name = EVTOPTA_WCTHW_1050
+
+		if = { limit = { trait = has_magical_withdrawal } remove_trait = has_magical_withdrawal }
+		if = {
+			limit = { had_character_flag = { flag = magical_addiction_timer_flag days = 7300 } }
+			scaled_wealth = { value = -0.90 max = -500 min = -25 }
+		}
+		else = {
+			if = {
+				limit = { had_character_flag = { flag = magical_addiction_timer_flag days = 3650 } }
+				scaled_wealth = { value = -0.72 max = -500 min = -25 }
+			}
+			else = {
+				if = {
+					limit = { had_character_flag = { flag = magical_addiction_timer_flag days = 1825 } }
+					scaled_wealth = { value = -0.54 max = -500 min = -25 }
+				}
+				else = {
+					if = {
+						limit = { had_character_flag = { flag = magical_addiction_timer_flag days = 730 } }
+						scaled_wealth = { value = -0.36 max = -500 min = -25 }
+					}
+					else = {
+						scaled_wealth = { value = -0.18 max = -500 min = -25 }
+					}
+				}
+			}
+		}
+
+		ai_chance = {
+			factor = 40
+			modifier = {
+				factor = 0.01
+
+				is_playable = yes
+				NOT = { wealth = 0 }
+			}
+		}
+	}
+	# Find another way
+	option = {
+		trigger = {
+			is_adult = yes
+			is_playable = yes
+
+			NOT = { has_character_flag = tried_to_find_way_to_satisfy_hunger_flag }
+
+			learning = 10
+		}
+		name = EVTOPTB_WCTHW_1050
+
+		set_character_flag = tried_to_find_way_to_satisfy_hunger_flag
+
+		character_event = { id = WCTHW.1055 days = 30 random = 30 }
+
+		ai_chance = {
+			factor = 9
+			modifier = {
+				factor = 2
+				independent = yes
+			}
+			modifier = {
+				factor = 1.5
+				trait = diligent
+			}
+			modifier = {
+				factor = 1.5
+				trait = ambitious
+			}
+			modifier = {
+				factor = 1.5
+				trait = stubborn
+			}
+			modifier = {
+				factor = 0
+				NOT = { trait = cynical }
+			}
+		}
+	}
+	# If your liege are consuming Fel/Void magic
+	option = {
+		trigger = {
+			OR = {
+				ai = no
+				NOT = { has_character_flag = ai_refused_dark_magic_flag }
+			}
+			liege = {
+				OR = {
+					religion_group = fel_group
+					religion_group = void_group
+					has_character_flag = consuming_fel_magic_flag
+					has_character_flag = consuming_void_magic_flag
+				}
+			}
+		}
+		name = EVTOPTC_WCTHW_1050
+
+		liege = {
+			show_scope_change = no
+			if = {
+				limit = {
+					OR = {
+						religion_group = fel_group
+						religion_group = void_group
+					}
+				}
+				ROOT = {
+					show_scope_change = no
+					religion = PREV
+				}
+			}
+		}
+		if = {
+			limit = { liege = { has_character_flag = consuming_fel_magic_flag } }
+			set_character_flag = consuming_fel_magic_flag
+		}
+		if = {
+			limit = { liege = { has_character_flag = consuming_void_magic_flag } }
+			set_character_flag = consuming_void_magic_flag
+		}
+		if = {
+			limit = {
+				liege = {
+					OR = {
+						religion_group = fel_group
+						has_character_flag = consuming_fel_magic_flag
+					}
+				}
+			}
+			add_15_fel_corruption_effect = yes
+			suggest_fel_source_effect = yes
+		}
+		if = {
+			limit = {
+				liege = {
+					OR = {
+						religion_group = void_group
+						has_character_flag = consuming_void_magic_flag
+					}
+				}
+			}
+			add_15_void_corruption_effect = yes
+			suggest_void_source_effect = yes
+		}
+
+		ai_chance = {
+			factor = 50
+		}
+	}
+	# I can't...
+	option = {
+		name = EVTOPTD_WCTHW_1050
+
+		if = { limit = { NOT = { trait = has_magical_withdrawal } } add_trait = has_magical_withdrawal }
+
+		ai_chance = {
+			factor = 1
+		}
+	}
+}
+# Another ways
+character_event = {
+	id = WCTHW.1055
+	picture = GFX_evt_vorna_the_wretched
+	desc = EVTDESC_WCTHW_1055
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	trigger = {
+		NOR = {
+			true_religion_group = fel_group
+			true_religion_group = void_group
+			has_character_flag = consuming_fel_magic_flag
+			has_character_flag = consuming_void_magic_flag
+		}
+	}
+
+	# Use Fel magic
+	option = {
+		name = EVTOPTA_WCTHW_1055
+
+		set_character_flag = chose_fel_magic_flag
+		long_character_event = { id = WCTHW.1060 days = 15 random = 15 }
+
+		ai_chance = {
+			factor = 75
+		}
+	}
+	# Use Void magic
+	option = {
+		name = EVTOPTB_WCTHW_1055
+
+		set_character_flag = chose_void_magic_flag
+		long_character_event = { id = WCTHW.1060 days = 15 random = 15 }
+
+		ai_chance = {
+			factor = 25
+		}
+	}
+	# Refuse this idea
+	option = {
+		name = EVTOPTC_WCTHW_1055
+
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+long_character_event = {
+	id = WCTHW.1060
+	desc = {
+		trigger = { has_character_flag = chose_fel_magic_flag }
+		text = EVTDESC_WCTHW_1060_fel
+		picture = GFX_evt_fel_storm
+	}
+	desc = {
+		trigger = { has_character_flag = chose_void_magic_flag }
+		text = EVTDESC_WCTHW_1060_void
+		picture = GFX_evt_voidwalker
+	}
+	border = GFX_event_long_frame_religion
+
+	is_triggered_only = yes
+
+	trigger = {
+		NOR = {
+			true_religion_group = fel_group
+			true_religion_group = void_group
+			has_character_flag = consuming_fel_magic_flag
+			has_character_flag = consuming_void_magic_flag
+		}
+	}
+
+	# This is a necessary measure!
+	option = {
+		name = EVTOPTA_WCTHW_1060
+
+		if = {
+			limit = { has_character_flag = chose_fel_magic_flag }
+			clr_character_flag = chose_fel_magic_flag
+			set_character_flag = consuming_fel_magic_flag
+			add_15_fel_corruption_effect = yes
+			suggest_fel_source_effect = yes
+		}
+		if = {
+			limit = { has_character_flag = chose_void_magic_flag }
+			clr_character_flag = chose_void_magic_flag
+			set_character_flag = consuming_void_magic_flag
+			add_15_void_corruption_effect = yes
+			suggest_void_source_effect = yes
+		}
+	}
+	# We will never sink so low!
+	option = {
+		name = EVTOPTB_WCTHW_1060
+
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+# FROM has found way to satisfy hunger
+letter_event = {
+	id = WCTHW.1065
+	desc = EVTDESC_WCTHW_1065
+	border = GFX_event_letter_frame_religion
+
+	is_triggered_only = yes
+
+	# This is a necessary measure!
+	option = {
+		name = EVTOPTA_WCTHW_1060
+
+		liege = {
+			show_scope_change = no
+			if = {
+				limit = {
+					OR = {
+						religion_group = fel_group
+						religion_group = void_group
+					}
+				}
+				ROOT = {
+					show_scope_change = no
+					religion = PREV
+				}
+			}
+		}
+		if = {
+			limit = { liege = { has_character_flag = consuming_fel_magic_flag } }
+			set_character_flag = consuming_fel_magic_flag
+		}
+		if = {
+			limit = { liege = { has_character_flag = consuming_void_magic_flag } }
+			set_character_flag = consuming_void_magic_flag
+		}
+		if = {
+			limit = {
+				liege = {
+					OR = {
+						religion_group = fel_group
+						has_character_flag = consuming_fel_magic_flag
+					}
+				}
+			}
+			add_15_fel_corruption_effect = yes
+			suggest_fel_source_effect = yes
+		}
+		if = {
+			limit = {
+				liege = {
+					OR = {
+						religion_group = void_group
+						has_character_flag = consuming_void_magic_flag
+					}
+				}
+			}
+			add_15_void_corruption_effect = yes
+			suggest_void_source_effect = yes
+		}
+
+		ai_chance = {
+			factor = 90
+		}
+	}
+	# We will never sink so low!
+	option = {
+		name = EVTOPTB_WCTHW_1060
+
+		set_character_flag = ai_refused_dark_magic_flag
+		reverse_opinion = { modifier = opinion_very_disappointed who = FROM years = 5 }
+		FROM = { letter_event = { id = WCTHW.1066 } }
+
+		ai_chance = {
+			factor = 10
+			modifier = {
+				factor = 2
+				has_benevolent_trait_trigger = yes
+			}
+			modifier = {
+				factor = 2
+				has_pleasant_trait_trigger = yes
+			}
+			modifier = {
+				factor = 2
+				has_pious_trait_trigger = yes
+			}
+		}
+	}
+}
+# FROM has refused to use Fel/Void magic
+letter_event = {
+	id = WCTHW.1066
+	desc = EVTDESC_WCTHW_1066
+	border = GFX_event_letter_frame_religion
+
+	is_triggered_only = yes
+
+	option = {
+		name = ALAS
+	}
+}
+
+# Start event
+narrative_event = {
+	id = WCTHW.1100
+	picture = GFX_evt_sunwell
+	title = EVTTITLE_WCTHW_1100
+	desc = EVTDESC_WCTHW_1100
+	border = GFX_event_narrative_frame_religion
+
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCTHW_1100
+
+		if = {
+			limit = {
+				OR = {
+					religion_group = fel_group
+					religion_group = void_group
+					has_character_flag = consuming_fel_magic_flag
+					has_character_flag = consuming_void_magic_flag
+				}
+			}
+			hidden_effect = { 73 = { province_event = { id = WCTHW.1105 days = 15 } } }
+		}
+		else = {
+			hidden_effect = { 73 = { province_event = { id = WCTHW.1110 days = 15 } } }
+		}
+	}
+}
+# Stop the restoring of the Sunwell
+character_event = {
+	id = WCTHW.1101
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	trigger = {
+		OR = {
+			AND = {
+				NOR = {
+					has_global_flag = voidwell_restoring_flag
+					has_global_flag = felwell_restoring_flag
+				}
+				evil_public_religion_trigger = yes
+			}
+			AND =  {
+				has_global_flag = voidwell_restoring_flag
+				NOR = {
+					religion_group = void_group
+					has_character_flag = consuming_void_magic_flag
+				}
+			}
+			AND = {
+				has_global_flag = felwell_restoring_flag
+				NOR = {
+					religion_group = fel_group
+					has_character_flag = consuming_fel_magic_flag
+				}
+			}
+		}
+	}
+
+	immediate = {
+		clr_global_flag = sunwell_is_being_restored_flag
+		clr_global_flag = voidwell_restoring_flag
+		clr_global_flag = felwell_restoring_flag
+		clr_global_flag = sunwell_naaru_spark_flag
+		character_event = { id = WCTHW.1102 }
+	}
+}
+character_event = {
+	id = WCTHW.1102
+	picture = GFX_evt_sunwell
+	desc =  EVTDESC_WCTHW_1102
+	border = GFX_event_normal_frame_war
+
+	is_triggered_only = yes
+
+	option = {
+		name = I_SEE
+	}
+}
+# Arcane magic let us down: check event
+province_event = {
+	id = WCTHW.1105
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		if = {
+			limit = { has_global_flag = sunwell_is_being_restored_flag }
+			b_sunwell = { holder_scope = { top_liege = { narrative_event = { id = WCTHW.1106 } } } }
+		}
+	}
+}
+# Arcane magic let us down: main event
+narrative_event = {
+	id = WCTHW.1106
+	picture = GFX_evt_sunwell
+	title = EVTTITLE_WCTHW_1100
+	desc = EVTDESC_WCTHW_1106
+	border = GFX_event_narrative_frame_religion
+
+	is_triggered_only = yes
+
+	option = {
+		trigger = {
+			OR = {
+				religion_group = void_group
+				has_character_flag = consuming_void_magic_flag
+			}
+		}
+		name = EVTOPTA_WCTHW_1106
+
+		if = {
+			limit = { secret_religion_group = void_group }
+			convert_to_secret_religion = yes
+		}
+		else = {
+			if = { limit = { has_secret_religion = yes } clear_secret_religion = yes }
+			religion = voidfarer
+		}
+
+		hidden_effect = {
+			set_global_flag = voidwell_restoring_flag
+			73 = { province_event = { id = WCTHW.1115 days = 60 } }
+		}
+
+		ai_chance = {
+			factor = 40
+			modifier = {
+				factor = 0.5
+				NOT = { true_religion_group = void_group }
+			}
+			modifier = {
+				factor = 0
+				NOT = { trait = cynical }
+			}
+		}
+	}
+	option = {
+		trigger = {
+			OR = {
+				religion_group = fel_group
+				has_character_flag = consuming_fel_magic_flag
+			}
+		}
+		name = EVTOPTB_WCTHW_1106
+
+		if = {
+			limit = { secret_religion_group = fel_group }
+			convert_to_secret_religion = yes
+		}
+		else = {
+			if = { limit = { has_secret_religion = yes } clear_secret_religion = yes }
+			religion = illidari
+		}
+
+		hidden_effect = {
+			set_global_flag = felwell_restoring_flag
+			73 = { province_event = { id = WCTHW.1115 days = 60 } }
+		}
+
+		ai_chance = {
+			factor = 40
+			modifier = {
+				factor = 0.5
+				NOT = { true_religion_group = fel_group }
+			}
+			modifier = {
+				factor = 0
+				NOT = { trait = cynical }
+			}
+		}
+	}
+	option = {
+		name = EVTOPTC_WCTHW_1106
+
+		hidden_effect = { 73 = { province_event = { id = WCTHW.1110 days = 15 } } }
+
+		ai_chance = {
+			factor = 60
+		}
+	}
+}
+# Anveena: check event
+province_event = {
+	id = WCTHW.1110
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		b_sunwell = {
+			holder_scope = {
+				top_liege = {
+					character_event = { id = WCTHW.1101 }
+					if = {
+						limit = { has_global_flag = sunwell_is_being_restored_flag }
+						narrative_event = { id = WCTHW.1111 }
+					}
+				}
+			}
+		}
+	}
+}
+# Anveena: main event
+narrative_event = {
+	id = WCTHW.1111
+	picture = GFX_evt_sunwell
+	title = EVTTITLE_WCTHW_1100
+	desc = EVTDESC_WCTHW_1111
+	border = GFX_event_narrative_frame_religion
+
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCTHW_1111
+
+		hidden_effect = { 73 = { province_event = { id = WCTHW.1115 days = 60 } } }
+	}
+}
+# Start of the restoring: check event
+province_event = {
+	id = WCTHW.1115
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		b_sunwell = {
+			holder_scope = {
+				top_liege = {
+					character_event = { id = WCTHW.1101 }
+					if = {
+						limit = { has_global_flag = sunwell_is_being_restored_flag }
+						narrative_event = { id = WCTHW.1116 }
+					}
+				}
+			}
+		}
+	}
+}
+# Start of the restoring: main event
+narrative_event = {
+	id = WCTHW.1116
+	picture = GFX_evt_sunwell
+	title = EVTTITLE_WCTHW_1100
+	desc = {
+		trigger = {
+			NOR = {
+				has_global_flag = felwell_restoring_flag
+				has_global_flag = voidwell_restoring_flag
+			}
+		}
+		text = EVTDESC_WCTHW_1116_normal
+	}
+	desc = {
+		trigger = { has_global_flag = voidwell_restoring_flag }
+		text = EVTDESC_WCTHW_1116_void
+		picture = GFX_evt_corrupted_sunwell_scourge
+	}
+	desc = {
+		trigger = { has_global_flag = felwell_restoring_flag }
+		text = EVTDESC_WCTHW_1116_fel
+		picture = GFX_evt_corrupted_sunwell_fel
+	}
+	border = GFX_event_narrative_frame_religion
+
+	is_triggered_only = yes
+
+	option = {
+		name = {
+			trigger = {
+				NOR = {
+					has_global_flag = felwell_restoring_flag
+					has_global_flag = voidwell_restoring_flag
+				}
+			}
+			text = EVTOPTA_WCTHW_1100
+		}
+		name = {
+			trigger = { has_global_flag = voidwell_restoring_flag }
+			text = EVTOPTA_WCTHW_1116_void
+		}
+		name = {
+			trigger = { has_global_flag = felwell_restoring_flag }
+			text = EVTOPTA_WCTHW_1116_fel
+		}
+
+		if = {
+			limit = {
+				NOR = {
+					has_global_flag = felwell_restoring_flag
+					has_global_flag = voidwell_restoring_flag
+				}
+				has_global_flag = draenei_fell_on_azeroth_flag
+			}
+			hidden_effect = { 73 = { province_event = { id = WCTHW.1120 days = 30 } } }
+		}
+		else = { 73 = { province_event = { id = WCTHW.1125 days = 60 } } }
+	}
+}
+# Spark of naaru: check event
+province_event = {
+	id = WCTHW.1120
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		b_sunwell = {
+			holder_scope = {
+				top_liege = {
+					character_event = { id = WCTHW.1101 }
+					if = {
+						limit = { has_global_flag = sunwell_is_being_restored_flag }
+						narrative_event = { id = WCTHW.1121 }
+					}
+				}
+			}
+		}
+	}
+}
+# Spark of naaru: main event
+narrative_event = {
+	id = WCTHW.1121
+	picture = GFX_evt_sunwell
+	title = EVTTITLE_WCTHW_1100
+	desc = EVTDESC_WCTHW_1121
+	border = GFX_event_narrative_frame_religion
+
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCTHW_1121
+
+		set_global_flag = sunwell_naaru_spark_flag
+	}
+	option = {
+		name = EVTOPTA_WCTHW_1121
+
+		ai_chance = {
+			factor = 0
+		}
+	}
+	after = {
+		73 = { province_event = { id = WCTHW.1125 days = 30 } }
+	}
+}
+# The Well is restored!: check event
+province_event = {
+	id = WCTHW.1125
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		b_sunwell = {
+			holder_scope = {
+				top_liege = {
+					character_event = { id = WCTHW.1101 }
+					if = {
+						limit = { has_global_flag = sunwell_is_being_restored_flag }
+						narrative_event = { id = WCTHW.1126 }
+					}
+				}
+			}
+		}
+	}
+}
+# The Well restored!: main event
+narrative_event = {
+	id = WCTHW.1126
+	picture = GFX_evt_sunwell
+	title = EVTTITLE_WCTHW_1126
+	desc = {
+		trigger = {
+			b_sunwell = {
+				OR = {
+					has_building = tp_sunwell
+					has_building = tp_sunwell_light
+				}
+			}
+		}
+		text = EVTDESC_WCTHW_1126_normal
+		picture = GFX_evt_sunwell
+	}
+	desc = {
+		trigger = { b_sunwell = { has_building = tp_voidwell } }
+		text = EVTDESC_WCTHW_1126_void
+		picture = GFX_evt_corrupted_sunwell_scourge
+	}
+	desc = {
+		trigger = { b_sunwell = { has_building = tp_felwell } }
+		text = EVTDESC_WCTHW_1126_fel
+		picture = GFX_evt_corrupted_sunwell_fel
+	}
+	border = GFX_event_narrative_frame_religion
+
+	is_triggered_only = yes
+	major = yes
+
+	immediate = {
+		clr_global_flag = sunwell_is_being_restored_flag
+		b_sunwell = {
+			remove_building = tp_sunwell
+			remove_building = tp_sunwellcorrupted
+			remove_building = tp_sunwell_light
+			remove_building = tp_felwell
+			remove_building = tp_voidwell
+		}
+		if = {
+			limit = {
+				NOR = {
+					has_global_flag = sunwell_naaru_spark_flag
+					has_global_flag = felwell_restoring_flag
+					has_global_flag = voidwell_restoring_flag
+				}
+			}
+			b_sunwell = { add_building = tp_sunwell }
+		}
+		else = {
+			trigger_switch = {
+				on_trigger = has_global_flag
+				sunwell_naaru_spark_flag = {
+					b_sunwell = { add_building = tp_sunwell_light }
+					clr_global_flag = sunwell_naaru_spark_flag
+				}
+				felwell_restoring_flag = {
+					b_sunwell = { add_building = tp_felwell }
+					clr_global_flag = felwell_restoring_flag
+				}
+				voidwell_restoring_flag = {
+					b_sunwell = { add_building = tp_voidwell }
+					clr_global_flag = voidwell_restoring_flag
+				}
+			}
+		}
+	}
+
+	option = {
+		name = {
+			trigger = {
+				OR = {
+					trait = creature_blood_elf
+					trait = creature_high_elf
+				}
+				OR = {
+					character = ROOT
+					AND = {
+						b_sunwell = {
+							OR = {
+								has_building = tp_sunwell
+								has_building = tp_sunwell_light
+							}
+						}
+						evil_true_religion_trigger = no
+					}
+					AND = {
+						b_sunwell = { has_building = tp_voidwell }
+						true_religion_group = void_group
+					}
+					AND = {
+						b_sunwell = { has_building = tp_felwell }
+						true_religion_group = fel_group
+					}
+				}
+			}
+			text = EVTOPTA_WCTHW_1100
+		}
+		name = {
+			trigger = {
+				NOR = {
+					character = ROOT
+					AND = {
+						b_sunwell = {
+							OR = {
+								has_building = tp_sunwell
+								has_building = tp_sunwell_light
+							}
+						}
+						evil_true_religion_trigger = no
+					}
+					AND = {
+						b_sunwell = { has_building = tp_voidwell }
+						true_religion_group = void_group
+					}
+					AND = {
+						b_sunwell = { has_building = tp_felwell }
+						true_religion_group = fel_group
+					}
+				}
+			}
+			name = FOOLS
+		}
+		name = {
+			trigger = {
+				NOR = {
+					trait = creature_blood_elf
+					trait = creature_high_elf
+				}
+				OR = {
+					character = ROOT
+					AND = {
+						b_sunwell = {
+							OR = {
+								has_building = tp_sunwell
+								has_building = tp_sunwell_light
+							}
+						}
+						evil_true_religion_trigger = no
+					}
+					AND = {
+						b_sunwell = { has_building = tp_voidwell }
+						true_religion_group = void_group
+					}
+					AND = {
+						b_sunwell = { has_building = tp_felwell }
+						true_religion_group = fel_group
+					}
+				}
+			}
+			text = OK
+		}
+
+		if = {
+			limit = { character = ROOT }
+			prestige = 500
+			piety = 500
+		}
+	}
+}
+
+
+### "Arthas's" event chain ###
+# Introductory event
+narrative_event = {
+	id = WCTHW.2000
+	title = EVTTITLE_WCTHW_2000
+	picture = GFX_evt_stone_church
+	desc = EVTDESC_WCTHW_2000
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+
+	trigger = {
+		e_scourge = { has_holder = yes }
+	}
+
+	immediate = {
+		imprison = no
+		save_event_target_as = target_champion
+		realm = { save_event_target_as = target_realm }
+	}
+
+	option = {
+		name = EVTOPTA_WCTHW_2000
+
+		if = {
+			limit = { NOT = { trait = stubborn } }
+			add_trait = stubborn
+		}
+		if = {
+			limit = { NOT = { trait = proud } }
+			random = {
+				chance = 50
+				if = {
+					limit = { trait = humble }
+					remove_trait = humble
+				}
+				add_trait = proud
+				hidden_tooltip = { character_event = { id = 38261 } } # Notify Proud
+			}
+		}
+
+		hidden_effect = { narrative_event = { id = WCTHW.2005 days = 20 } }
+	}
+}
+# Horrors of the Plague
+narrative_event = {
+	id = WCTHW.2005
+	title = EVTTITLE_WCTHW_2000
+	picture = GFX_evt_plague_eruptor
+	desc = EVTDESC_WCTHW_2005
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+
+	trigger = {
+		e_scourge = { has_holder = yes }
+	}
+
+	option = {
+		name = EVTOPTA_WCTHW_2005
+
+		if = {
+			limit = { NOT = { trait = wroth } }
+			if = {
+				limit = { trait = patient }
+				remove_trait = patient
+			}
+			add_trait = wroth
+		}
+		if = {
+			limit = { NOT = { trait = cynical } }
+			random = {
+				chance = 50
+				if = {
+					limit = { trait = zealous }
+					remove_trait = zealous
+				}
+				add_trait = cynical
+				hidden_tooltip = { character_event = { id = 38258 } } #notify cynical
+			}
+		}
+
+		hidden_effect = { narrative_event = { id = WCTHW.2010 days = 15 } }
+	}
+}
+# Purge is a good thought
+narrative_event = {
+	id = WCTHW.2010
+	title = EVTTITLE_WCTHW_2000
+	picture = GFX_evt_culling
+	desc = EVTDESC_WCTHW_2010
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+
+	trigger = {
+		e_scourge = { has_holder = yes }
+	}
+
+	immediate = {
+		c_stratholme = {
+			location = {
+				if = {
+					limit = {
+						NOT = { has_province_modifier = undead_province }
+						religion_group = light_group
+					}
+					save_event_target_as = target_province
+					break = yes
+				}
+			}
+		}
+		if = {
+			limit = {
+				any_realm_province = {
+					religion_group = light_group
+					NOT = { has_province_modifier = undead_province }
+					has_disease = yes
+				}
+			}
+			random_realm_province = {
+				limit = {
+					religion_group = light_group
+					NOT = { has_province_modifier = undead_province }
+					has_disease = yes
+				}
+				save_event_target_as = target_province
+				break = yes
+			}
+		}
+		if = {
+			limit = {
+				any_province = {
+					religion_group = light_group
+					NOT = { has_province_modifier = undead_province }
+					has_disease = yes
+				}
+			}
+			random_province = {
+				limit = {
+					religion_group = light_group
+					NOT = { has_province_modifier = undead_province }
+					has_disease = yes
+				}
+				save_event_target_as = target_province
+				break = yes
+			}
+		}
+		if = {
+			limit = {
+				any_province = {
+					religion_group = light_group
+					NOT = { has_province_modifier = undead_province }
+				}
+			}
+			random_province = {
+				limit = {
+					religion_group = light_group
+					NOT = { has_province_modifier = undead_province }
+				}
+				save_event_target_as = target_province
+			}
+		}
+	}
+
+	option = {
+		name = EVTOPTA_WCTHW_2010
+
+		prestige = -100
+
+		if = {
+			limit = { NOT = { trait = cynical } }
+			if = {
+				limit = { trait = zealous }
+				remove_trait = zealous
+			}
+			add_trait = cynical
+		}
+
+		event_target:target_province = {
+			hidden_effect = {
+				set_variable = { which = prosperity_value value = 0 }
+				remove_province_modifier = prosperity_modifier_1
+				remove_province_modifier = prosperity_modifier_2
+				remove_province_modifier = prosperity_modifier_3
+				remove_province_modifier = depopulated_1
+				remove_province_modifier = depopulated_2
+			}
+			if = {
+				limit = { NOT = { has_province_modifier = depopulated_3 } }
+				add_province_modifier = { name = depopulated_3 duration = -1 }
+			}
+		}
+
+		event_target:target_province = {
+			hidden_effect = {
+				province_event = { id = WCTHW.2013 }
+				any_province_character = {
+					limit = {
+						NOT = { character = ROOT }
+						NOT = { has_minor_title = title_commander }
+					}
+					random = {
+						chance = 75
+						death = {
+							death_reason = death_battle
+							killer = ROOT
+						}
+					}
+				}
+			}
+		}
+	}
+	option = {
+		name = EVTOPTB_WCTHW_2010
+
+		ai_chance = {
+			factor = 0
+		}
+	}
+
+	after = {
+		hidden_effect = { narrative_event = { id = WCTHW.2015 days = 1 } }
+	}
+}
+# Tells the world about what you did
+narrative_event = {
+	id = WCTHW.2011
+	title = EVTTITLE_WCTHW_2011
+	picture = GFX_evt_culling
+	desc = EVTDESC_WCTHW_2011
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+
+	major = yes
+	show_from_from = yes
+
+	option = {
+		name = {
+			trigger = {
+				NOT = { character = ROOT }
+				is_aggressive_trigger = no
+			}
+			text = EVTOPTA_WCTHW_2011_case_01
+		}
+		name = {
+			trigger = { character = ROOT }
+			text = EVTOPTA_WCTHW_2011_case_02
+		}
+		name = {
+			trigger = {
+				NOT = { character = ROOT }
+				is_aggressive_trigger = yes
+			}
+			text = EXCELLENT
+		}
+	}
+}
+# Ping event
+province_event = {
+	id = WCTHW.2013
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		FROM = { narrative_event = { id = WCTHW.2011 } }
+	}
+}
+# A short trip to Northrend
+narrative_event = {
+	id = WCTHW.2015
+	title = EVTTITLE_WCTHW_2000
+	picture = GFX_evt_icecrown
+	desc = EVTDESC_WCTHW_2015
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+
+	trigger = {
+		e_scourge = { has_holder = yes }
+	}
+
+	immediate = {
+		hidden_effect = {
+			e_scourge = {
+				holder_scope = {
+					# Creates Mal'Ganis
+					create_character = {
+						name = "Mal'Ganis"
+						dynasty = none
+						religion = burning_legion_religion
+						culture = nathrezim
+						female = no
+						age = 30000
+						attributes = {
+							martial=3 diplomacy=6 stewardship=4 intrigue=4 learning=3
+						}
+						trait = intricate_webweaver
+						trait = creature_nathrezim
+						trait = class_warlock_6
+						trait = demon
+						trait = patient trait = deceitful trait = humble trait = arbitrary trait = cruel trait = cynical trait = gregarious trait = erudite
+					}
+					new_character = {
+						save_event_target_as = target_dreadlord
+					}
+				}
+			}
+		}
+	}
+
+	option = {
+		name = EVTOPTA_WCTHW_2015
+
+		event_target:target_dreadlord = { show_portrait = yes }
+
+		prestige = 100
+
+		hidden_effect = { narrative_event = { id = WCTHW.2020 days = 10 } }
+	}
+	option = {
+		name = EVTOPTB_WCTHW_2015
+
+		prestige = 25
+
+		custom_tooltip = {
+			text = you_manage_to_avoid_your_fate_tooltip
+		}
+
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+# Arrival in Northrend
+narrative_event = {
+	id = WCTHW.2020
+	title = EVTTITLE_WCTHW_2000
+	picture = GFX_evt_icecrown
+	desc = EVTDESC_WCTHW_2020
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+
+	trigger = {
+		e_scourge = { has_holder = yes }
+	}
+
+	immediate = {
+		if = {
+			limit = { is_ruler = yes }
+			spawn_unit = {
+				owner = ROOT
+				leader = ROOT
+				province = 802			# Menethil Shore
+				home = 802				# Menethil Shore
+				troops = {
+					archers = { 325 325 }
+					light_infantry = { 400 400 }
+					heavy_infantry = { 600 600 }
+					light_cavalry = { 100 100 }
+					knights = { 75 75 }
+				}
+				attrition = 0
+				maintenance_multiplier = 0
+				reinforces = no
+			}
+		}
+		hidden_effect = {
+			e_scourge = { holder_scope = { narrative_event = { id = WCTHW.2021 } } }
+			any_close_relative = { character_event = { id = WCTHW.2030 } }
+		}
+	}
+
+	option = {
+		name = EVTOPTA_WCTHW_2020
+
+		prestige = 25
+
+		if = {
+			limit = { NOT = { trait = wroth } }
+			if = {
+				limit = { trait = patient }
+				remove_trait = patient
+			}
+			add_trait = wroth
+		}
+
+		hidden_effect = { character_event = { id = WCTHW.2035 days = 10 } }
+	}
+}
+# The Lich King's reaction to target_champion's arrival in Northrend
+narrative_event = {
+	id = WCTHW.2021
+	title = EVTTITLE_WCTHW_2021
+	picture = GFX_evt_icecrown
+	desc = EVTDESC_WCTHW_2021
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+
+	trigger = {
+		e_scourge = { has_holder = yes }
+	}
+
+	option = {
+		name = EXCELLENT
+	}
+}
+# Ends event chain if you left Northrend
+narrative_event = {
+	id = WCTHW.2025
+	title = EVTTITLE_WCTHW_2000
+	picture = GFX_evt_icecrown
+	desc = EVTDESC_WCTHW_2025
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			e_scourge = { holder_scope = { narrative_event = { id = WCTHW.2026 } } }
+			any_close_relative = { character_event = { id = WCTHW.2031 } }
+		}
+	}
+
+	option = {
+		name = EVTOPTB_WCTHW_2015
+
+		custom_tooltip = {
+			text = you_manage_to_avoid_your_fate_tooltip
+		}
+	}
+}
+# The Lich King's reaction to target_champion's leaving of Northrend
+narrative_event = {
+	id = WCTHW.2026
+	title = EVTTITLE_WCTHW_2021
+	picture = GFX_evt_icecrown
+	desc = EVTDESC_WCTHW_2026
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+
+	option = {
+		name = ALAS
+
+		add_artifact = frostmourne
+		hidden_effect = {
+			new_artifact = {
+				set_creation_date = 591.11.1
+				set_artifact_original_owner = event_target:target_lich_king
+			}
+		}
+	}
+}
+# Close relative's reaction to target_champion's arrival in Northrend
+character_event = {
+	id = WCTHW.2030
+	picture = GFX_evt_icecrown
+	desc = EVTDESC_WCTHW_2030
+	border = GFX_event_normal_frame_war
+
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCTHW_2030
+	}
+}
+# Close relative's reaction to target_champion's leaving of Northrend
+character_event = {
+	id = WCTHW.2031
+	picture = GFX_evt_icecrown
+	desc = EVTDESC_WCTHW_2031
+	border = GFX_event_normal_frame_war
+
+	is_triggered_only = yes
+
+	option = {
+		name = EXCELLENT
+	}
+}
+# Desertion in the army: сheck event
+character_event = {
+	id = WCTHW.2035
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		if = {
+			limit = {
+				e_scourge = { has_holder = yes }
+				OR = {
+					location = { region = world_northrend }
+					ai = yes
+				}
+			}
+			narrative_event = { id = WCTHW.2036 }
+			break = yes
+		}
+		narrative_event = { id = WCTHW.2025 }
+	}
+}
+# Desertion in the army: main event
+narrative_event = {
+	id = WCTHW.2036
+	title = EVTTITLE_WCTHW_2000
+	picture = GFX_evt_icecrown
+	desc = EVTDESC_WCTHW_2036
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCTHW_2036
+
+		prestige = -25
+
+		if = {
+			limit = { NOT = { trait = deceitful } }
+			if = {
+				limit = { trait = honest }
+				remove_trait = honest
+			}
+			add_trait = deceitful
+		}
+	}
+
+	option = {
+		name = EVTOPTB_WCTHW_2036
+
+		prestige = -100
+
+		ai_chance = {
+			factor = 0
+		}
+	}
+
+	after = {
+		hidden_effect = { character_event = { id = WCTHW.2040 days = 2 } }
+	}
+}
+# Rumors about a powerful artifact: сheck event
+character_event = {
+	id = WCTHW.2040
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		if = {
+			limit = {
+				e_scourge = { has_holder = yes }
+				OR = {
+					location = { region = world_northrend }
+					ai = yes
+				}
+			}
+			narrative_event = { id = WCTHW.2041 }
+			break = yes
+		}
+		narrative_event = { id = WCTHW.2025 }
+	}
+}
+# Rumors about a powerful artifact: main event
+narrative_event = {
+	id = WCTHW.2041
+	title = EVTTITLE_WCTHW_2000
+	picture = GFX_evt_scourge_army
+	desc = EVTDESC_WCTHW_2041
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCTHW_2041
+
+		prestige = 100
+
+		hidden_effect = { character_event = { id = WCTHW.2045 days = 2 } }
+	}
+}
+# Frostmourne cave: сheck event
+character_event = {
+	id = WCTHW.2045
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		if = {
+			limit = {
+				e_scourge = { has_holder = yes }
+				OR = {
+					location = { region = world_northrend }
+					ai = yes
+				}
+			}
+			narrative_event = { id = WCTHW.2046 }
+			break = yes
+		}
+		narrative_event = { id = WCTHW.2025 }
+	}
+}
+# Frostmourne cave: main event
+narrative_event = {
+	id = WCTHW.2046
+	title = EVTTITLE_WCTHW_2000
+	picture = GFX_evt_icecrown
+	desc = EVTDESC_WCTHW_2046
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+
+	trigger = {
+		e_scourge = { has_holder = yes }
+	}
+
+	immediate = {
+		e_scourge = { holder_scope = { save_event_target_as = target_lich_king } }
+	}
+
+	option = {
+		name = EVTOPTA_WCTHW_2046
+
+		add_artifact = frostmourne
+		hidden_effect = {
+			new_artifact = {
+				set_creation_date = 591.11.1
+				set_artifact_original_owner = event_target:target_lich_king
+			}
+		}
+
+		hidden_effect = { narrative_event = { id = WCTHW.2050 days = 1 } }
+	}
+}
+# The Last Vestiges of the Sanity
+narrative_event = {
+	id = WCTHW.2050
+	title = EVTTITLE_WCTHW_2000
+	picture = GFX_evt_icecrown
+	desc = EVTDESC_WCTHW_2050
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCTHW_2050
+
+		if = {
+			limit = { e_scourge = { has_holder = yes } }
+			hidden_effect = { narrative_event = { id = WCTHW.2055 days = 10 } }
+		}
+		else = {
+			death = { death_reason = death_missing }
+		}
+	}
+}
+# The Homecoming
+narrative_event = {
+	id = WCTHW.2055
+	title = EVTTITLE_WCTHW_2000
+	picture = GFX_evt_stone_church
+	desc = {
+		trigger = { has_character_flag = homecoming_close_relative_desc_flag }
+		text = EVTDESC_WCTHW_2055_case_01
+	}
+	desc = {
+		trigger = { has_character_flag = homecoming_not_close_relative_desc_flag }
+		text = EVTDESC_WCTHW_2055_case_02
+	}
+	desc = {
+		trigger = { has_character_flag = homecoming_inde_ruler_desc_flag }
+		text = EVTDESC_WCTHW_2055_case_03
+	}
+	desc = {
+		trigger = { has_character_flag = homecoming_ruined_homeland_desc_flag }
+		text = EVTDESC_WCTHW_2055_case_04
+	}
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+
+	trigger = {
+		e_scourge = { has_holder = yes }
+	}
+
+	fail_trigger_effect = {
+		death = { death_reason = death_missing }
+	}
+
+	immediate = {
+		if = {
+			limit = {
+				is_ruler = yes
+				NOR = {
+					is_feudal = yes
+					is_tribal = yes
+				}
+			}
+			abdicate = yes
+		}
+		if = {
+			limit = {
+				is_ruler = yes
+				independent = yes
+				OR = {
+					is_feudal = yes
+					is_tribal = yes
+				}
+			}
+			set_character_flag = homecoming_inde_ruler_desc_flag
+			break = yes
+		}
+		event_target:target_realm = {
+			if = {
+				limit = {
+					has_holder = yes
+					holder_scope = {
+						independent = yes
+
+						evil_public_religion_trigger = no
+					}
+				}
+				holder_scope = { save_event_target_as = target_ruler }
+				ROOT  = {
+					if = {
+						limit = { event_target:target_ruler = { is_close_relative = ROOT } }
+						set_character_flag = homecoming_close_relative_desc_flag
+					}
+					else = { set_character_flag = homecoming_not_close_relative_desc_flag }
+				}
+			}
+			else = {
+				ROOT = { set_character_flag = homecoming_ruined_homeland_desc_flag }
+			}
+		}
+	}
+
+	option = {
+		name = {
+			trigger = {
+				NOR = {
+					has_character_flag = homecoming_inde_ruler_desc_flag
+					has_character_flag = homecoming_ruined_homeland_desc_flag
+				}
+			}
+			text = EVTOPTA_WCTHW_2055_case_01
+		}
+		name = {
+			trigger = {
+				OR = {
+					has_character_flag = homecoming_inde_ruler_desc_flag
+					has_character_flag = homecoming_ruined_homeland_desc_flag
+				}
+			}
+			text = EVTOPTA_WCTHW_2055_case_02
+		}
+
+		tooltip = { add_trait_undead_effect = yes }
+		custom_tooltip = {
+			text = becomes_death_knight
+			hidden_effect = {
+				set_character_flag = transition_into_death_knight_flag
+				e_scourge = { holder_scope = { save_event_target_as = target_necromancer } }
+				character_event = { id = WCPOD.5013 }
+			}
+		}
+		religion = death_god
+
+		tooltip = {
+			event_target:target_ruler = {
+				abdicate_to = ROOT
+				death = {
+					death_reason = death_murder_butchered
+					killer = ROOT
+				}
+			}
+		}
+
+		hidden_effect = {
+			if = {
+				limit = { NOT = { has_character_flag = homecoming_ruined_homeland_desc_flag } }
+				if = {
+					limit = { NOT = { has_character_flag = homecoming_inde_ruler_desc_flag } }
+					event_target:target_ruler = {
+						narrative_event = { id = WCTHW.2056 }
+					}
+				}
+				else = {
+					narrative_event = { id = WCTHW.2057 }
+				}
+			}
+		}
+	}
+}
+# target_ruler's reaction
+narrative_event = {
+	id = WCTHW.2056
+	title = EVTTITLE_WCTHW_2056
+	picture = GFX_evt_scourge_army
+	desc = {
+		trigger = { FROM = { has_character_flag = homecoming_close_relative_desc_flag } }
+		text = EVTDESC_WCTHW_2056_case_01
+	}
+	desc = {
+		trigger = { FROM = { has_character_flag = homecoming_close_relative_desc_flag } }
+		text = EVTDESC_WCTHW_2056_case_02
+	}
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCTHW_2056
+
+		abdicate_to = FROM
+		death = {
+			death_reason = death_murder_butchered
+			killer = FROM
+		}
+
+		hidden_effect = {
+			FROM = {
+				narrative_event = { id = WCTHW.2057 }
+			}
+		}
+	}
+}
+# Tells the world about what you did
+narrative_event = {
+	id = WCTHW.2057
+	title = EVTTITLE_WCTHW_2057
+	picture = GFX_evt_scourge_army
+	desc = {
+		trigger = { ROOT = { NOT = { has_character_flag = homecoming_inde_ruler_desc_flag } } }
+		text = EVTDESC_WCTHW_2057_case_01
+	}
+	desc = {
+		trigger = { ROOT = { has_character_flag = homecoming_inde_ruler_desc_flag } }
+		text = EVTDESC_WCTHW_2057_case_02
+	}
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+
+	major = yes
+	show_root = yes
+	hide_from = yes
+
+	option = {
+		name = {
+			trigger = {
+				NOT = { character = ROOT }
+				is_aggressive_trigger = no
+			}
+			text = EVTOPTA_WCTHW_2057_case_01
+		}
+		name = {
+			trigger = { character = ROOT }
+			text = EVTOPTA_WCTHW_2057_case_02
+		}
+		name = {
+			trigger = {
+				NOT = { character = ROOT }
+				is_aggressive_trigger = yes
+			}
+			text = EXCELLENT
+		}
+	}
+}

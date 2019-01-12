@@ -1,0 +1,217 @@
+plague_of_undeath = {
+	rip = yes
+	contagiousness = 0.2
+	outbreak_chance = 0.01
+	effect = {
+		local_tax_modifier = -0.75
+		supply_limit = -4
+		max_attrition = 0.075
+	}
+	icon = 4
+	tooltip = PLAGUE_OF_UNDEATH_INFO
+	months = 12
+	trait = undead
+	character_infection_chances = {
+		months = 6
+	}
+	on_character_infection = {
+		if = {
+			limit = {
+				e_scourge = { has_holder = yes }
+
+				can_get_sick_trigger = yes
+				NOR = {
+					in_command = yes	# I want to give commanders a chance
+					has_character_flag = immune_plague_of_undeath
+					has_character_flag = got_plague_of_undeath
+				}
+				is_susceptible_to_plague_character_trigger = yes
+			}
+			random_list = {
+				90 = { # Get the disease
+					modifier = {
+						factor = 0
+						has_character_modifier = in_seclusion
+					}
+					modifier = {
+						factor = 0
+						AND = {
+							is_nomadic = yes
+							NOT = { is_unimportant_trigger = yes }
+						}
+					}
+					modifier = {
+						factor = 0.5
+						AND = {
+							is_tribal = yes
+							NOT = { is_unimportant_trigger = yes }
+						}
+					}
+					modifier = {
+						factor = 5000
+						is_unimportant_trigger = yes
+					}
+					#clr_character_flag = got_plague_of_undeath #clear out other diseases
+					clr_character_flag = got_bubonic_plague
+					clr_character_flag = got_aztec_disease
+					clr_character_flag = got_smallpox
+					clr_character_flag = got_measles
+					clr_character_flag = got_typhus
+					clr_character_flag = got_typhoid_fever
+					clr_character_flag = got_tuberculosis
+					clr_character_flag = got_syphilis
+					clr_character_flag = got_pneumonia
+					clr_character_flag = got_cancer
+					clr_character_flag = got_rabies
+					clr_character_flag = got_gout
+					clr_character_flag = got_flu
+					clr_character_flag = got_dysentery
+					clr_character_flag = got_food_poisoning
+					clr_character_flag = disease_not_serious
+
+					set_character_flag = got_plague_of_undeath
+					set_character_flag = developing_illness
+					character_event = { id = WCPOD.5012 }
+				}
+				10 = { # Nothing happens
+				}
+			}
+		}
+	}
+	on_province_infection = {
+		if = {
+			limit = {
+				e_scourge = { has_holder = yes }
+
+				is_susceptible_to_plague_province_trigger = yes
+			}
+			province_event = { id = WCPOD.10000 days = 15 }
+		}
+		if = {
+			limit = {
+				has_global_flag = plague_of_northrend_triggered_flag
+				province_id = 798
+			}
+			holder_scope = { top_liege = { narrative_event = { id = WCPOD.2000 } } }
+			clr_global_flag = plague_of_northrend_triggered_flag
+			set_global_flag = plague_of_northrend_happened_flag
+		}
+		if = {
+			limit = {
+				has_global_flag = plague_of_lordaeron_triggered_flag
+				province_id = 315
+			}
+			holder_scope = { top_liege = { narrative_event = { id = WCPOD.2000 } } }
+			clr_global_flag = plague_of_lordaeron_triggered_flag
+			set_global_flag = plague_of_lordaeron_happened_flag
+		}
+		if = {
+			limit = {
+				has_global_flag = plague_of_azeroth_triggered_flag
+				province_id = 37
+			}
+			holder_scope = { top_liege = { narrative_event = { id = WCPOD.2000 } } }
+			clr_global_flag = plague_of_azeroth_triggered_flag
+			set_global_flag = plague_of_azeroth_happened_flag
+		}
+	}
+	always_get_message = yes
+	color = { 255 0 0 }
+	major = yes
+	
+	timeperiod = {	# The Plague of Northrend
+		start_date = 300.1.1
+		end_date = 800.1.1
+		
+		months = 0
+
+		outbreak_chance = 1
+
+		can_outbreak = {
+			has_global_flag = plague_of_northrend_triggered_flag
+		}
+		
+		spread_through_water = no
+
+		max_total_provinces = 60
+		min_nb_province = 5		# ignored if 0
+		max_nb_province = 10	# ignored if 0
+
+		one_only = yes
+
+		outbreak_scenario = {
+			chance = 1.0
+			start_provinces = {
+				798					# Comes via Wintergarde
+			}
+		}
+	}
+	timeperiod = {	# The Plague of Lordaeron
+		start_date = 300.1.1
+		end_date = 800.1.1
+		
+		months = 0
+
+		outbreak_chance = 1
+
+		can_outbreak = {
+			has_global_flag = plague_of_lordaeron_triggered_flag
+		}
+		
+		spread_through_water = no
+
+		max_total_provinces = 60
+		min_nb_province = 5		# ignored if 0
+		max_nb_province = 10	# ignored if 0
+
+		one_only = yes
+
+		outbreak_scenario = {
+			chance = 1.0
+			start_provinces = {
+				315					# Comes via Andorhal
+			}
+			excluded_regions = {
+				world_eastern_kingdoms_azeroth
+				world_eastern_kingdoms_khaz_modan
+				world_eastern_kingdoms_lordaeron_alterac_mountains
+				world_eastern_kingdoms_lordaeron_baradin_bay
+				world_eastern_kingdoms_quelthalas
+				world_eastern_kingdoms_lordaeron_the_hinterlands
+			}
+		}
+	}
+	timeperiod = {	# The Plague of Azeroth
+		start_date = 300.1.1
+		end_date = 800.1.1
+		
+		months = 0
+
+		outbreak_chance = 1
+
+		can_outbreak = {
+			always = no
+		}
+		
+		spread_through_water = no
+		
+		max_total_provinces = 60
+		min_nb_province = 5		# ignored if 0
+		max_nb_province = 10	# ignored if 0
+
+		one_only = yes
+
+		outbreak_scenario = {
+			chance = 1.0
+			start_provinces = {
+				37
+			}
+			excluded_regions = {
+				world_eastern_kingdoms_lordaeron 
+				world_eastern_kingdoms_khaz_modan
+			}
+		}
+	}
+
+	disease_gfx = disease_gfx_bubonic_plague
+}

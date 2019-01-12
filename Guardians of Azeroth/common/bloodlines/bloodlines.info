@@ -1,0 +1,73 @@
+Bloodlines are modifiers that can be inherited through characters and show up in various interfaces. Bloodlines can be saved in event targets.
+
+Bloodline file syntax:
+<Bloodline type name> = { # The bloodline name plus "_desc" will be used for its description
+	inheritance = <all_descendants/matrilineal/patrilineal/no_inheritance> - Optional. Sets the inheritance rules for the bloodline type. Defaults to all_descendants.
+	matrilineal_override = yes - Optional. If set, in matrilineal marriages or when there's no known father, the mother will be able to pass on the bloodline even if it is patrilineal, and the father will be able to pass on the bloodline even if it is matrilineal. Defaults to "yes"; set to "no" to disable
+	allow_bastards = <yes/no> - Optional. Sets the bastard rules for the bloodline type. Defaults to no.
+	flags = { <flag> <flag> ... } - Optional. Sets default flags for bloodlines created of this type.
+	command_modifier = { <modifier> } - Optional. Defines command modifiers that should affect all members of the bloodline.
+	<modifiers> - Optional. Defines character modifiers that should affect all members of the bloodline.
+	picture = GFX_something_or_other - Optional. What picture to use for the bloodline in the bloodline window. If not defined, GFX_bloodlines_placeholder_symbol will be used
+	active = { # What's required of the bloodline holder in order to get the effect. If not defined, they'll always get the effect. ROOT is the holder. FROM is the bloodline
+		some triggers
+	}
+}
+
+
+Related script interface:
+	Triggers: 
+		is_bloodline_member_of - Returns true iff current scope <character> is a member of RightHand-Side(RHS) scope <bloodline>.
+        is_bloodline_founder_of - Returns true iff current scope <character> is the founding member of RHS scope <bloodline>. 
+		is_bloodline_active - Returns true iff current scope <character> is has <bloodline> active. Only checks the trigger, *NOT* the presence of the bloodline 
+        shares_any_bloodline_with - Returns true iff the current scope <character> and the RHS scope <character> have at least one bloodline in common with one another.
+        bloodline - returns true iff the current scope <bloodline> is the exact same bloodline as the RHS scope <bloodline>.
+        has_bloodline_flag - Returns true iff the current scope <bloodline> has the script flag defined on the RHS.
+		had_bloodline_flag - Returns true iff the current scope <bloodline> has had the script flag for the defined time period
+		{
+			flag - Obligatory, flag to be checked
+			years/months/days - Obligatory, time since the flag should have been set
+		}
+		
+	Scope changes:
+        any/random_bloodline_member - Scopes from a bloodline to all it's living members.
+        any/random_bloodline_member_including_dead - Scopes from a bloodline to all of it's members.
+        any/random_bloodline - Scopes to every bloodline currently existing.
+        any/random_owned_bloodline - Scopes to every bloodline that the current scope <character> is a member of.
+		founder - Used in a bloodline scope, scopes to the founder
+		new_bloodline - The bloodline you just created in script
+		
+	Effects:
+		create_bloodline - The current scope <character> becomes the founder of a bloodline.
+		{
+			type = <bloodline> - Obligatory. Defines the type of bloodline from which to inherit the bloodlines modifier
+			religion = <religion> - Optional. Associates the bloodline with a religion connecting it with the religion view
+			society = <society> - Optional. Associates the bloodline with a society connecting it with the society view
+			inheritance = <all_descendants/matrilineal/patrilineal/no_inheritance> - Optional. Overrides the base types inheritance rules
+			allow_bastards = <yes/no> - Optional. Overrides the base types bastard rules
+		}
+		
+        add_to_bloodline - Adds the current scope <character> as a member to the RHS scope <bloodline>
+        add_bloodline_member - Adds the RHS scope <character> as a member the the current scope <bloodline>
+        remove_from_bloodline - Removes the current scope <character> from the RHS scope <bloodline>
+        remove_bloodline_member - Removes the RHS scope <character from the current scope <bloodline>
+        destroy_bloodline - Removes the current bloodline from the game
+        set_bloodline_flag - Adds a script flag to the current scope <bloodline>
+        clr_bloodline_flag - Removes a script flag from the current scope <bloodline>
+		set_name = "LOC_KEY" - Sets the name of the bloodline
+		set_description = "LOC_KEY" - Sets the description of the bloodline
+		
+	History effects:
+	create_bloodline = {
+		type = <bloodline> - Obligatory. Defines the type of bloodline from which to inherit the bloodlines modifier
+		has_dlc = <dlc> - Optional. What DLC to lock it behind
+		desc = LOC_KEY - Optional. What description to give it
+		name = LOC_KEY - Optional. What name to give it
+		
+Custom loc:
+	Bloodlines can be referenced in custom loc via saved event targets, and via things that provide bloodlines as scopes (E.G., bloodline names and descriptions have "FROM" as the bloodline itself).
+	Within a bloodline scope, you can do the following:
+	
+	Founder - Promote to the founder of the bloodline
+	
+	GetFoundationDate - Get the date the bloodline was founded

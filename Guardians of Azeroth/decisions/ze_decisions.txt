@@ -1,0 +1,727 @@
+targetted_decisions = {
+	create_mercenary_company_feudal = {
+		only_playable = yes
+		filter = home_court
+		ai_target_filter = home_court
+		ai_check_interval = 60
+		
+		from_potential = {
+			# Warcraft
+			is_untouchable_trigger = no
+			can_rule_peacefully_trigger = yes
+			
+			is_playable = yes
+			is_landed = yes
+			mercenary = no
+			holy_order = no
+			has_dlc = "Zeus"
+		
+			OR = {
+				ai = no
+				AND = {
+					OR = {
+						trait = brilliant_strategist
+						trait = fortune_builder
+					}
+					OR = {
+						higher_tier_than = COUNT
+						AND = {
+							is_republic = yes
+							higher_tier_than = BARON
+						}
+					}
+					NOR = {
+						is_primary_war_attacker = yes
+						is_primary_war_defender = yes
+					}
+				}
+			}
+			NOR = {
+				government = nomadic_government
+				has_character_modifier = mercenary_traditions
+			}
+		}
+		
+		potential = {
+			# Warcraft
+			is_untouchable_trigger = no
+			can_rule_peacefully_trigger = yes
+			
+			can_be_mercenary_leader_potential_trigger = yes
+			NAND = {
+				is_child_of = FROM
+				any_owned_bloodline = {
+					has_bloodline_flag = bloodline_mercenary_traditions
+				}
+				FROM = {
+					any_owned_bloodline = {
+						has_bloodline_flag = bloodline_mercenary_traditions
+					}
+				}
+			}
+		}
+		
+		allow = {
+			can_be_mercenary_leader_allow_trigger = yes
+			FROM = {
+				NOT = { has_mercenary_band = yes }
+				wealth = 50
+			}
+		}
+		effect = {
+			FROM = {
+				wealth = -50
+				custom_tooltip = {
+					text = CREATE_DYNAMIC_MERC_TOOLTIP
+					hidden_tooltip = {
+						primary_title = {
+							create_title = {
+								tier = DUKE
+								name = DYNAMIC_MERCENARY_COMPANY_FEUDAL
+								landless = yes
+								temporary = yes
+								adventurer = yes
+								custom_created = yes
+								culture = ROOT
+								holder = ROOT
+								base_title = THIS
+								mercenary = yes
+								replace_captain_on_death = yes
+								siphons_income_to_creator = 0.15
+								ruler = "CAPTAIN"
+								ruler_female = "CAPTAIN"
+								foa = "CAPTAIN_FOA"
+							}
+						}
+						ROOT = {
+							set_defacto_liege = THIS
+							any_spouse = { move_character = ROOT }
+							any_child = { move_character = ROOT }
+						}
+					}
+				}
+			}
+			set_character_flag = is_mercenary_leader
+			set_character_flag = mercenary_ambition_1
+			primary_title = {
+				set_title_flag = ze_dyn_merc
+				set_title_flag = not_hired
+			}
+		}
+		revoke_allowed = {
+			always = no
+		}
+		ai_will_do = {
+			factor = 0.05
+			
+			modifier = { 
+				factor = 0
+				controls_religion = yes
+			}
+			
+		}
+	}
+
+	dissolve_mercenary_company_feudal = {
+		only_playable = yes
+		ai_target_filter = dynasty
+		ai_check_interval = 36
+		
+		from_potential = {
+			is_playable = yes
+			is_landed = yes
+			has_dlc = "Zeus"
+		}
+		potential = {
+			replace_mercenary_captain_potential_trigger = yes
+		}
+		allow = {
+			replace_mercenary_captain_allow_trigger = yes
+		}
+		effect = {
+			character_event = { id = ZE.11020 }
+		}
+		revoke_allowed = {
+			always = no
+		}
+		ai_will_do = {
+			factor = 0
+		}
+	}
+
+	change_council_job = {
+		only_rulers = yes
+		filter = realm
+		ai_target_filter = self 
+		ai_check_interval = 12
+		
+		from_potential = {
+			has_dlc = "Zeus"
+			is_ruler = yes
+		}
+		potential = {
+			change_council_job_potential_trigger = yes
+		}
+		allow = {
+			NOT = {
+				has_character_modifier = in_seclusion
+			}
+		}
+		effect = {
+			hidden_tooltip = {
+				character_event = { id = ZE.6020 }
+			}
+		}
+		revoke_allowed = {
+			always = no
+		}
+		ai_will_do = {
+			factor = 0
+		}
+	}
+	
+	ask_wards_liege_to_allow_culture_religion_swap = {
+		only_playable = yes
+		filter = sub_realm
+		ai_target_filter = court
+		ai_check_interval = 12
+		
+		from_potential = {
+			is_playable = yes
+			has_dlc = "Zeus"
+		}
+		
+		potential = {
+			prisoner = no
+			is_adult = no
+			is_landed = no
+			NOR = { 
+				has_character_flag = guardian_asked_to_change_focus
+				has_focus = focus_ch_heritage
+				character = FROM
+			}
+			
+			host = {
+				OR = {
+					character = FROM
+					is_liege_or_above = FROM
+				}
+			}
+			NOT = { liege = { character = FROM } }
+			NOT = {
+				educator = {
+					culture = ROOT
+					religion = ROOT
+				}
+			}
+		}
+		
+		allow = { 
+			NOT = { 
+				age = 10
+			}
+		}
+		
+		effect = {
+			set_character_flag = guardian_asked_to_change_focus
+			if = {
+				limit = {
+					liege = { character = FROM }
+				}
+				hidden_tooltip = {
+					clear_focus = yes
+				}
+				set_focus = focus_ch_heritage
+				break = yes
+			}
+			hidden_tooltip = {
+				liege = {
+					letter_event = { id = ZE.2130 days = 5 }
+				}
+			}
+		}
+		revoke_allowed = {
+			always = no
+		}
+		ai_will_do = {
+			factor = 1
+			modifier = {
+				factor = 0
+				NOT = { host = { character = FROM } }
+			}
+			modifier = {
+				factor = 0
+				NOT = {
+					educator = {
+						culture = FROM
+						religion = FROM
+					}
+				}
+			}
+			modifier = {
+				factor = 0.5
+			}
+		}
+	}
+	
+	change_wards_focus_to_heritage  = {
+		only_playable = yes
+		filter = court
+		ai_target_filter = court
+		ai_check_interval = 12
+		
+		from_potential = {
+			is_playable = yes
+			has_dlc = "Zeus"
+		}
+		
+		potential = {
+			is_adult = no
+			NOR = { 
+				has_character_flag = guardian_asked_to_change_focus
+				has_focus = focus_ch_heritage
+				character = FROM
+			}
+			host = { character = FROM }
+			OR = {
+				liege = { character = FROM }
+				prisoner = yes
+			}
+			OR = {
+				is_landed = no
+				is_liege_or_above = FROM
+				prisoner = yes
+			}
+			NOT = {
+				educator = {
+					culture = ROOT
+					religion = ROOT
+				}
+			}
+		}
+		
+		allow = { 
+			NOT = { 
+				age = 10
+			}
+		}
+		
+		effect = {
+			set_character_flag = guardian_asked_to_change_focus
+			if = {
+				limit = {
+					OR = {
+						liege = { character = FROM }
+						prisoner = yes
+					}
+				}
+				hidden_tooltip = {
+					clear_focus = yes
+				}
+				set_focus = focus_ch_heritage
+				break = yes
+			}
+			hidden_tooltip = {
+				liege = {
+					letter_event = { id = ZE.2130 days = 5 }
+				}
+			}
+		}
+		revoke_allowed = {
+			always = no
+		}
+		ai_will_do = {
+			factor = 1
+			modifier = {
+				factor = 0.5
+			}
+			modifier = {
+				factor = 0
+				NOT = {
+					educator = {
+						culture = FROM
+						religion = FROM
+					}
+				}
+			}
+		}
+	}
+
+	ask_for_pardon = {
+		only_playable = yes
+		filter = liege
+		ai_target_filter = liege
+		ai_check_interval = 12
+		
+		from_potential = {
+			# Warcraft
+			is_untouchable_trigger = no
+			can_rule_peacefully_trigger = yes
+			
+			has_dlc = "Zeus"
+			is_playable = yes
+			NOT = { is_incapable = yes }
+			
+		}
+		potential = {
+			# Warcraft
+			is_untouchable_trigger = no
+			can_rule_peacefully_trigger = yes
+			
+			NOT = { is_incapable = yes }
+			owes_favor_to = FROM
+			FROM = { is_liege_or_above = ROOT }
+		}
+		allow = {
+			ROOT = {
+				OR = {
+					has_opinion_modifier = { who = FROM modifier = declared_war } 
+					has_opinion_modifier = { who = FROM modifier = opinion_dishonorable } 
+					has_opinion_modifier = { who = FROM modifier = opinion_traitor } 
+					has_opinion_modifier = { who = FROM modifier = opinion_rebel_traitor } 
+					has_opinion_modifier = { who = FROM modifier = opinion_regicide_traitor } 
+					has_opinion_modifier = { who = FROM modifier = opinion_killed_close_kin } 
+					has_opinion_modifier = { who = FROM modifier = opinion_refused_abdicate_title } 
+					has_opinion_modifier = { who = FROM modifier = opinion_fatwa_target } 
+					has_opinion_modifier = { who = FROM modifier = opinion_refused_order } 
+					has_opinion_modifier = { who = FROM modifier = opinion_witch } 
+					has_opinion_modifier = { who = FROM modifier = opinion_takfir } 
+					has_opinion_modifier = { who = FROM modifier = opinion_unfaithful_wife } 
+					has_opinion_modifier = { who = FROM modifier = opinion_cuckolded } 
+					has_opinion_modifier = { who = FROM modifier = opinion_charge_heresiarch } 
+					has_opinion_modifier = { who = FROM modifier = opinion_charge_infidel } 
+					has_opinion_modifier = { who = FROM modifier = opinion_charge_deviant } 
+					has_opinion_modifier = { who = FROM modifier = opinion_charge_illegitimate } 
+					has_opinion_modifier = { who = FROM modifier = opinion_charge_traitor } 
+					has_opinion_modifier = { who = FROM modifier = opinion_charge_slanderer } 
+					has_opinion_modifier = { who = FROM modifier = abuse_of_office } 
+				}
+			}
+		}
+		effect = {
+			hidden_tooltip = {
+				FROM = { save_event_target_as = pardon_target }
+				character_event = { id = ZE.8120 }
+			}
+		}
+		revoke_allowed = {
+			always = no
+		}
+		ai_will_do = {
+			factor = 1000
+		}
+	}
+	
+	change_composition_mercenary_company_feudal = {
+		only_playable = yes
+		ai_target_filter = dynasty
+		ai_check_interval = 36
+		
+		from_potential = {
+			is_playable = yes
+			is_landed = yes
+			has_dlc = "Zeus"
+			has_mercenary_band = yes
+		}
+		potential = {
+			replace_mercenary_captain_potential_trigger = yes
+		}
+		allow = {
+			FROM = {
+				wealth = 50
+			}
+			replace_mercenary_captain_allow_trigger = yes
+		}
+		effect = {
+			character_event = { id = ZE.23100 }
+		}
+		revoke_allowed = {
+			always = no
+		}
+		ai_will_do = {
+			factor = 0.001
+		}
+	}
+	
+	send_troops_mercenary_company_feudal = {
+		only_playable = yes
+		ai_target_filter = dynasty
+		ai_check_interval = 36
+		
+		from_potential = {
+			is_playable = yes
+			is_landed = yes
+			has_dlc = "Zeus"
+			has_mercenary_band = yes
+		}
+		potential = {
+			replace_mercenary_captain_potential_trigger = yes
+		}
+		allow = {
+			FROM = {
+				wealth = 50
+			}
+			replace_mercenary_captain_allow_trigger = yes
+		}
+		effect = {
+			character_event = { id = ZE.23105 }
+		}
+		revoke_allowed = {
+			always = no
+		}
+		ai_will_do = {
+			factor = 0.001
+		}
+	}
+	
+	introduce_heir = {
+		only_playable = yes
+		is_high_prio = yes
+		
+		filter = home_court
+		ai_target_filter = home_court
+		ai_check_interval = 12
+	
+		from_potential = {
+			# Warcraft
+			is_untouchable_trigger = no
+			can_rule_peacefully_trigger = yes
+			
+			is_playable = yes
+			has_ambition = obj_groom_an_heir
+			prisoner = no
+			NOR = { 
+				is_incapable = yes
+				is_inaccessible_trigger = yes
+			}
+			war = no
+		}
+		
+		potential = {
+			# Warcraft
+			is_untouchable_trigger = no
+			can_rule_peacefully_trigger = yes
+			
+			is_alive = yes
+			NOR = {
+				any_sibling = {
+					AND = {
+						is_alive = yes
+						has_character_flag = introduced_heir
+					}
+				}
+				has_character_flag = introduced_heir
+			}
+			is_child_of = FROM
+		}
+		allow = {
+			is_primary_heir = FROM
+			age = 12
+			NOR = {
+				is_landed = yes
+				prisoner = yes
+				is_adult = yes
+				custom_tooltip = {
+					text = bastard_eunuch_celibate_or_incapable_tt
+					OR = {
+						trait = bastard
+						trait = eunuch
+						trait = celibate
+						is_incapable = yes
+					}
+				}
+				is_ascetic_trigger = yes
+			}
+			is_inaccessible_trigger = no
+			host = { character = FROM }
+			FROM = { num_of_vassals = 7 }
+		}
+		effect = {
+			custom_tooltip = {
+				text = introduce_heir_custom_tooltip
+				hidden_tooltip = {
+					set_character_flag = introduced_heir
+					save_event_target_as = introduced_heir
+					FROM = { character_event = { id = ZE.22900 } }
+				}
+			}
+		}
+		
+		revoke_allowed = {
+			always = no
+		}
+		
+		ai_will_do = {
+			factor = 1
+			
+			modifier = {
+				factor = 0.1
+				always = yes
+			}
+		}
+	}
+	
+	ask_wards_liege_to_allow_faith_focus = {
+		only_playable = yes
+		filter = sub_realm
+		ai_target_filter = court
+		ai_check_interval = 12
+		
+		from_potential = {
+			is_playable = yes
+			has_dlc = "Zeus"
+		}
+		
+		potential = {
+			prisoner = no
+			is_adult = no
+			is_landed = no
+			NOR = {
+				has_character_flag = guardian_asked_to_change_focus
+				has_focus = focus_ch_faith
+				character = FROM
+			}
+			
+			host = {
+				OR = {
+					character = FROM
+					is_liege_or_above = FROM
+				}
+			}
+			NOT = { liege = { character = FROM } }
+			
+			NOT = {
+				educator = {
+					religion = ROOT
+				}
+			}
+		}
+		
+		allow = {
+			NOT = {
+				age = 10
+			}
+		}
+		
+		effect = {
+			set_character_flag = guardian_asked_to_change_focus
+			if = {
+				limit = {
+					liege = { character = FROM }
+				}
+				hidden_tooltip = {
+					clear_focus = yes
+				}
+				set_focus = focus_ch_faith
+				break = yes
+			}
+			hidden_tooltip = {
+				liege = {
+					letter_event = { id = ZE.2140 days = 5 }
+				}
+			}
+		}
+		revoke_allowed = {
+			always = no
+		}
+		ai_will_do = {
+			factor = 1
+			modifier = {
+				factor = 0
+				NOT = { host = { character = FROM } }
+			}
+			modifier = {
+				factor = 0
+				NOT = {
+					educator = {
+						religion = FROM
+					}
+				}
+			}
+			modifier = {
+				factor = 0.5
+			}
+		}
+	}
+	
+	change_wards_focus_to_faith  = {
+		only_playable = yes
+		filter = court
+		ai_target_filter = court
+		ai_check_interval = 12
+		
+		from_potential = {
+			is_playable = yes
+			has_dlc = "Zeus"
+		}
+		
+		potential = {
+			is_adult = no
+			NOR = {
+				has_character_flag = guardian_asked_to_change_focus
+				has_focus = focus_ch_faith
+				character = FROM
+			}
+			host = { character = FROM }
+			OR = {
+				liege = { character = FROM }
+				prisoner = yes
+			}
+			OR = {
+				is_landed = no
+				is_liege_or_above = FROM
+				prisoner = yes
+			}
+			NOT = {
+				educator = {
+					religion = ROOT
+				}
+			}
+		}
+		
+		allow = {
+			NOT = {
+				age = 10
+			}
+		}
+		
+		effect = {
+			set_character_flag = guardian_asked_to_change_focus
+			if = {
+				limit = {
+					OR = {
+						liege = { character = FROM }
+						prisoner = yes
+					}
+				}
+				hidden_tooltip = {
+					clear_focus = yes
+				}
+				set_focus = focus_ch_faith
+				break = yes
+			}
+			hidden_tooltip = {
+				liege = {
+					letter_event = { id = ZE.2140 days = 5 }
+				}
+			}
+		}
+		revoke_allowed = {
+			always = no
+		}
+		ai_will_do = {
+			factor = 1
+			modifier = {
+				factor = 0.5
+			}
+			modifier = {
+				factor = 0
+				NOT = {
+					educator = {
+						religion = FROM
+					}
+				}
+			}
+		}
+	}
+}

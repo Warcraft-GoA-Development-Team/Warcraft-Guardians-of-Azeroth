@@ -1,0 +1,681 @@
+################################################
+#
+# Events for Dynasty requests
+#
+# ID 66000 - 66999 are reserved
+#
+##################################################
+# Written by Johan Andersson
+
+#Ask for claim on title if a dynasty member is older and is childless
+#character_event = {
+#	id = 66000
+#	desc = EVTDESC66000
+#	picture = GFX_evt_emissary
+#	
+#	is_triggered_only = yes
+#	
+#	min_age = 16
+#	only_men = yes
+#	
+#	trigger = {
+#		num_of_children = 1
+#		is_landed = no
+#		NOT = { trait = eunuch }
+#		NOT = { is_ascetic_trigger = yes }
+#		any_dynasty_member = {
+#			demesne_size = 1
+#			NOT = { num_of_children = 1 }
+#			age = 35
+#			NOT = { has_law = succ_feudal_elective }
+#			OR = {
+#				is_feudal = yes
+#				is_tribal = yes
+#				is_nomadic = yes
+#			}
+#			NOT = { any_demesne_title = { claimed_by = root	} }
+#		}
+#		OR = {
+#			diplomacy = 12
+#			intrigue = 12
+#		}
+#	}
+#	
+#	weight_multiplier = {
+#		days = 1
+#		modifier = {
+#			factor = 10
+#			trait = ambitious
+#		}
+#		modifier = {
+#			factor = 5
+#			trait = proud
+#		}		
+#		modifier = {
+#			factor = 0.8
+#			trait = stressed
+#		}
+#		modifier = {
+#			factor = 0.8
+#			trait = depressed
+#		}
+#		modifier = {
+#			factor = 0.75
+#			trait = lunatic
+#		}
+#		modifier = {
+#			factor = 0.75
+#			trait = possessed
+#		}
+#		modifier = {
+#			factor = 0.9
+#			is_ill = yes
+#		}
+#		modifier = {
+#			factor = 0.8
+#			trait = pneumonic
+#		}
+#		modifier = {
+#			factor = 0.8
+#			trait = syphilitic
+#		}
+#		modifier = {
+#			factor = 0.5
+#			trait = leper
+#		}
+#		modifier = {
+#			factor = 0.9
+#			trait = wounded
+#		}
+#		modifier = {
+#			factor = 0.8
+#			is_maimed_trigger = yes
+#		}
+#		modifier = {
+#			factor = 0.5
+#			trait = infirm
+#		}
+#		modifier = {
+#			factor = 0.4
+#			is_incapable = yes
+#		}
+#		modifier = {
+#			factor = 0.5
+#			trait = drunkard
+#		}
+#		modifier = {
+#			factor = 0.5
+#			trait = has_tuberculosis
+#		}
+#		modifier = {
+#			factor = 0.5
+#			trait = has_typhoid_fever
+#		}
+#		modifier = {
+#			factor = 0.5
+#			trait = has_typhus
+#		}
+#		modifier = {
+#			factor = 0.5
+#			trait = has_bubonic_plague
+#		}
+#		modifier = {
+#			factor = 0.5
+#			trait = has_measles
+#		}		
+#		modifier = {
+#			factor = 0.5
+#			trait = has_small_pox
+#		}
+#				
+#	}
+#	
+#	option = {
+#		name = EVTOPTA66000 #ask for a claim
+#		ai_chance = {
+#			factor = 1
+#		}
+#		
+#		random_dynasty_member = {
+#			limit = {
+#				demesne_size = 1
+#				NOT = { num_of_children = 1 }
+#				age = 35
+#				NOT = { has_law = succ_feudal_elective }
+#				OR = {
+#					is_feudal = yes
+#					is_tribal = yes
+#					is_nomadic = yes
+#				}
+#				NOT = { any_demesne_title = { claimed_by = root	} }
+#			}
+#			character_event = {	id = 66010  days = 17	tooltip = EVTTOOLTIP66010 }
+#		}
+#	}
+#	
+#	option = {
+#		name = EVTOPTB66000 #ask for the actual title
+#		ai_chance = {
+#			factor = 1000
+#		}
+#		trigger = {
+#			any_dynasty_member = {
+#				NOT = { num_of_children = 1 }
+#				age = 35
+#				demesne_size = 2
+#				NOT = { has_law = succ_feudal_elective }
+#				OR = {
+#					is_feudal = yes
+#					is_tribal = yes
+#					is_nomadic = yes
+#				}
+#				NOT = { any_demesne_title = { claimed_by = root	} }
+#			}
+#		}
+#		
+#		random_dynasty_member = {
+#			limit = {
+#				NOT = { num_of_children = 1 }
+#				age = 35
+#				NOT = { has_law = succ_feudal_elective }
+#				OR = {
+#					is_feudal = yes
+#					is_tribal = yes
+#					is_nomadic = yes
+#				}
+#				NOT = { any_demesne_title = { claimed_by = root	} }
+#				demesne_size = 2
+#			}
+#			character_event = {	id = 66020 tooltip = EVTTOOLTIP66020 }
+#		}
+#	}
+#}	
+
+
+#Dynasty member asks for a claim
+character_event = {
+	id = 66010
+	desc = EVTDESC66010
+	picture = GFX_evt_emissary
+	
+	is_triggered_only = yes
+	
+	#no need for notifactions back, landless character gets it anyway.
+	option = {
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 2
+				from = { diplomacy = 14 }
+			}
+			modifier = {
+				factor = 2
+				from = { martial = 14 }
+			}
+			modifier = {
+				factor = 2
+				from = { intrigue = 14 }
+			}
+			modifier = {
+				factor = 1.5
+				opinion = { who = from value =  25 }
+			}
+			modifier = {
+				factor = 2
+				opinion = { who = from value =  50 }
+			}
+			modifier = {
+				factor = 3
+				opinion = { who = from value =  75 }
+			}
+		}
+		name = EVTOPTA66010 #accept demand for claim
+		prestige = -5
+		random_demesne_title = {
+			add_claim = FROM
+		}
+	}
+	
+	option = {
+		ai_chance = {
+			factor = 2
+			modifier = {
+				factor = 0
+				opinion = { who = from value =  80 }
+			}
+		}
+		name = EVTOPTB66010 #refuse outrageous demands.
+		FROM = {
+			opinion = {
+				modifier = dynastic_refused_claim
+				who = ROOT
+				years = 5
+			}
+		}
+	}
+}
+
+
+
+#Dynasty member asks for a title
+character_event = {
+	id = 66020
+	desc = EVTDESC66020
+	picture = GFX_evt_emissary
+	
+	is_triggered_only = yes
+	
+	#no need for notifactions back, landless character gets it anyway.
+	option = {
+		name = EVTOPTA66020 #accept demand for title
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 2
+				from = { diplomacy = 14 }
+			}
+			modifier = {
+				factor = 2
+				from = { martial = 14 }
+			}
+			modifier = {
+				factor = 2
+				from = { intrigue = 14 }
+			}
+			modifier = {
+				factor = 1.5
+				opinion = { who = from value =  25 }
+			}
+			modifier = {
+				factor = 2
+				opinion = { who = from value =  50 }
+			}
+			modifier = {
+				factor = 3
+				opinion = { who = from value =  75 }
+			}
+		}		
+		prestige = -5
+		random_demesne_title = {
+			limit = {
+				NOT = {	tier = duke }
+				NOT = {	tier = king }
+				NOT = {	tier = emperor }
+			}
+			grant_title = FROM
+		}
+		
+	}
+	
+	option = {
+		name = EVTOPTB66020 #refuse outrageous demands.
+		FROM = {
+			opinion = {
+				modifier = dynastic_refused_title
+				who = ROOT
+				years = 5
+			}
+		}
+	}
+}
+
+# Landless claimants can ask the Dynasty head to fight a war for your claim.
+# Fired from 'on_yearly_pulse'
+character_event = {
+	id = 66099
+	hide_window = yes
+	
+	is_triggered_only = yes
+	
+	capable_only = yes
+	prisoner = no
+	min_age = 16
+	
+	trigger = {
+		has_regent = no
+		war = no
+		is_tributary = no
+		is_nomadic = no
+		top_liege = {
+			OR = {
+				AND = {
+					has_dlc = "Conclave"
+					NOT = { has_law = vassal_wars_law_2 }
+				}
+				AND = {
+					NOT = { has_dlc = "Conclave"}
+					NOR = { 
+						has_law = crown_authority_2
+						has_law = crown_authority_3
+						has_law = crown_authority_4
+					}
+				}
+			}
+		}
+		any_dynasty_member = {
+			is_offmap_ruler = no
+			is_landed = no
+			is_incapable = no
+			is_adult = yes
+			is_liege_or_above = ROOT
+			OR = {
+				martial = 12
+				diplomacy = 12
+			}
+			any_claim = {
+				has_holder = yes
+				NOR = {
+					holder_scope = { # Not against nomads
+						is_nomadic = yes
+					}
+					holder_scope = { # Top liege not nomad
+						top_liege = {
+							is_nomadic = yes
+						}
+					}
+					holder_scope = { # Not in revolt
+						in_revolt = yes
+					}
+					holder_scope = { # Top liege not in revolt
+						top_liege = {
+							in_revolt = yes
+						}
+					}
+					holder_scope = { # Not the same realm
+						same_realm = ROOT 
+					} 
+					holder_scope = { # Not someone ROOT has a NAP with
+						has_non_aggression_pact_with = ROOT 
+					} 
+					holder_scope = { # ROOT can not have a NAP with the top liege either
+						top_liege = {
+							has_non_aggression_pact_with = ROOT
+						}
+					}
+					holder_scope = { # Not an ally of ROOT
+						is_allied_with = ROOT 
+					}
+					holder_scope = { # ROOT is not allied with the top liege
+						top_liege = {
+							is_allied_with = ROOT 
+						}
+					}
+					holder_scope = { # The target is not a tributary of ROOT
+						is_tributary = yes
+						suzerain = {
+							OR = {
+								character = ROOT
+								any_liege = {
+									character = ROOT
+								}
+							}
+						}
+					}
+					holder_scope = { # The targets top liege is not a tributary of ROOT
+						top_liege = {
+							is_tributary = yes
+							suzerain = {
+								OR = {
+									character = ROOT
+									any_liege = {
+										character = ROOT
+									}
+								}
+							}
+						}
+					}
+					holder_scope = { # There's no war declaration notification, so not against players...
+						ai = no
+					}
+				}
+			}
+		}
+	}
+	
+	weight_multiplier = {
+		factor = 1
+	}
+	
+	immediate = {
+		random_dynasty_member = {
+			limit = {
+				is_offmap_ruler = no
+				is_landed = no
+				is_liege_or_above = ROOT
+				is_incapable = no
+				is_adult = yes
+				OR = {
+					martial = 12
+					diplomacy = 12
+				}
+				any_claim = {
+					has_holder = yes
+					NOR = {
+						holder_scope = { # Not against nomads
+							is_nomadic = yes
+						}
+						holder_scope = { # Top liege not nomad
+							top_liege = {
+								is_nomadic = yes
+							}
+						}
+						holder_scope = { # Not in revolt
+							in_revolt = yes
+						}
+						holder_scope = { # Top liege not in revolt
+							top_liege = {
+								in_revolt = yes
+							}
+						}
+						holder_scope = { # Not the same realm
+							same_realm = ROOT 
+						} 
+						holder_scope = { # Not someone ROOT has a NAP with
+							has_non_aggression_pact_with = ROOT 
+						} 
+						holder_scope = { # ROOT can not have a NAP with the top liege either
+							top_liege = {
+								has_non_aggression_pact_with = ROOT
+							}
+						}
+						holder_scope = { # Not an ally of ROOT
+							is_allied_with = ROOT 
+						}
+						holder_scope = { # ROOT is not allied with the top liege
+							top_liege = {
+								is_allied_with = ROOT 
+							}
+						}
+						holder_scope = { # The target is not a tributary of ROOT
+							is_tributary = yes
+							suzerain = {
+								OR = {
+									character = ROOT
+									any_liege = {
+										character = ROOT
+									}
+								}
+							}
+						}
+						holder_scope = { # The targets top liege is not a tributary of ROOT
+							top_liege = {
+								is_tributary = yes
+								suzerain = {
+									OR = {
+										character = ROOT
+										any_liege = {
+											character = ROOT
+										}
+									}
+								}
+							}
+						}
+						holder_scope = { # There's no war declaration notification, so not against players...
+							ai = no
+						}
+					}
+				}
+			}
+			character_event = { id = 66100 }
+		}
+	}
+}
+
+character_event = {
+	id = 66100
+	desc = EVTDESC66100
+	picture = GFX_evt_emissary
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = EVTOPTA66100 #ask for the war!
+		
+		FROM = {
+			character_event = {	id = 66110 	days = 9 tooltip = EVTTOOLTIP66110 }
+		}		
+	}
+}
+
+character_event = {
+	id = 66110
+	desc = EVTDESC66110
+	picture = GFX_evt_emissary
+	
+	is_triggered_only = yes
+	
+	immediate = {
+		FROM = {
+			save_event_target_as = claimant
+			random_claim = {
+				limit = {
+					has_holder = yes
+					NOR = {
+						holder_scope = { # Not against nomads
+							is_nomadic = yes
+						}
+						holder_scope = { # Top liege not nomad
+							top_liege = {
+								is_nomadic = yes
+							}
+						}
+						holder_scope = { # Not in revolt
+							in_revolt = yes
+						}
+						holder_scope = { # Top liege not in revolt
+							top_liege = {
+								in_revolt = yes
+							}
+						}
+						holder_scope = { # Not the same realm
+							same_realm = ROOT 
+						} 
+						holder_scope = { # Not someone ROOT has a NAP with
+							has_non_aggression_pact_with = ROOT 
+						} 
+						holder_scope = { # ROOT can not have a NAP with the top liege either
+							top_liege = {
+								has_non_aggression_pact_with = ROOT
+							}
+						}
+						holder_scope = { # Not an ally of ROOT
+							is_allied_with = ROOT 
+						}
+						holder_scope = { # ROOT is not allied with the top liege
+							top_liege = {
+								is_allied_with = ROOT 
+							}
+						}
+						holder_scope = { # The target is not a tributary of ROOT
+							is_tributary = yes
+							suzerain = {
+								OR = {
+									character = ROOT
+									any_liege = {
+										character = ROOT
+									}
+								}
+							}
+						}
+						holder_scope = { # The targets top liege is not a tributary of ROOT
+							top_liege = {
+								is_tributary = yes
+								suzerain = {
+									OR = {
+										character = ROOT
+										any_liege = {
+											character = ROOT
+										}
+									}
+								}
+							}
+						}
+						holder_scope = { # There's no war declaration notification, so not against players...
+							ai = no
+						}
+					}
+				}
+				save_event_target_as = claimant_claim
+			}
+		}
+	}
+	
+	option = {
+		name = EVTOPTA66110 #go to war!
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 2
+				FROM = { diplomacy = 14 }
+			}
+			modifier = {
+				factor = 2
+				FROM = { martial = 14 }
+			}
+			modifier = {
+				factor = 2
+				FROM = { intrigue = 14 }
+			}
+			modifier = {
+				factor = 1.5
+				opinion = { who = FROM value =  25 }
+			}
+			modifier = {
+				factor = 2
+				opinion = { who = FROM value =  50 }
+			}
+			modifier = {
+				factor = 3
+				opinion = { who = FROM value =  75 }
+			}
+		}
+		event_target:claimant_claim = {
+			reverse_unsafe_war = {
+				target = event_target:claimant
+				casus_belli = other_claim
+				thirdparty = ROOT
+			}
+			log = "66110: [Root.GetBestName] starts war for [From.GetBestName]'s claim on [This.GetName]"
+		}
+	}	
+	
+	option = {
+		name = EVTOPTB66110 #refuse outrageous demands.
+		ai_chance = {
+			factor = 2
+			modifier = {
+				factor = 0
+				opinion = { who = FROM value = 80 }
+			}
+		}
+		
+		FROM = {
+			opinion = {
+				modifier = dynastic_refused_war
+				who = ROOT
+				years = 5
+			}
+		}
+		prestige = -10
+	}	
+}

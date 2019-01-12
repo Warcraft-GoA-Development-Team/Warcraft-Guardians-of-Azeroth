@@ -1,0 +1,414 @@
+namespace = WCSHM
+
+# Offers a gift
+character_event = {
+	id = WCSHM.100
+	desc = EVTDESC_WCSHM_100
+	picture = GFX_evt_bowing_dwarves
+	border = GFX_event_normal_frame_war
+	
+	is_triggered_only = yes
+	
+	option = {
+		trigger = {
+			scaled_wealth = 0.5
+			prestige = 200
+		}
+		name = EVTOPTA_WCSHM_100
+		
+		scaled_wealth = -0.5
+		prestige = -200
+		hidden_effect = { set_variable = { which = element_favor value = 1 } }
+	}
+	option = {
+		trigger = {
+			scaled_wealth = 1.0
+			prestige = 400
+		}
+		name = EVTOPTB_WCSHM_100
+		
+		scaled_wealth = -1.0
+		prestige = -400
+		hidden_effect = { set_variable = { which = element_favor value = 2 } }
+	}
+	option = {
+		trigger = {
+			scaled_wealth = 1.5
+			prestige = 600
+		}
+		name = EVTOPTC_WCSHM_100
+		
+		scaled_wealth = -1.5
+		prestige = -600
+		hidden_effect = { set_variable = { which = element_favor value = 3 } }
+	}
+	
+	after = {
+		character_event = { id = WCSHM.105 }
+	}
+}
+# Outcome
+character_event = {
+	id = WCSHM.105
+	desc = EVTDESC_WCSHM_105
+	picture = GFX_evt_bowing_dwarves
+	border = GFX_event_normal_frame_war
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = EXCELLENT
+		
+		if = {
+			limit = { check_variable = { which = element_favor value = 3 } }
+			add_character_modifier = { name = element_blessing_3 years = 1 }
+		}
+		else = {
+			if = {
+				limit = { check_variable = { which = element_favor value = 2 } }
+				add_character_modifier = { name = element_blessing_2 years = 1 }
+			}
+			else = { add_character_modifier = { name = element_blessing_1 years = 1 } }
+		}
+	}
+}
+
+### The War of the Three Hammers ###
+# You lose the war, use the power of the elements?
+character_event = {
+	id = WCSHM.7995
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		if = {
+			limit = {
+				war = yes
+				any_war = {
+					NOT = { war_score = -33 }
+				}
+			}
+			narrative_event = { id = WCSHM.8000 }
+		}
+		else = { character_event = { id = WCSHM.7995 days = 180 random = 180 } }	# Looped until Thaurissan dies
+	}
+}
+narrative_event = {
+	id = WCSHM.8000
+	title = EVTTITLE_WCSHM_8000
+	desc = EVTDESC_WCSHM_8000
+	picture = GFX_evt_demonwrath
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+
+	trigger = {
+		war = yes
+		any_war = {
+			NOT = { war_score = -33 }
+		}
+	}
+
+	# Convene the best mages!
+	option = {
+		name = EVTOPTA_WCSHM_8000
+
+		hidden_effect = { narrative_event = { id = WCSHM.8005 days = 3 } }
+	}
+
+	# We will do without the help of magic!
+	option = {
+		name = EVTOPTB_WCSHM_8000
+
+		custom_tooltip = {
+			text = stops_the_event_chain
+		}
+
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+# Summoning Ritual
+narrative_event = {
+	id = WCSHM.8005
+	title = EVTTITLE_WCSHM_8000
+	desc = EVTDESC_WCSHM_8005
+	picture = GFX_evt_ragnaros
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCSHM_8005
+
+		hidden_effect = { narrative_event = { id = WCSHM.8010 } }
+		death = { death_reason = death_murder_unknown_combustion }
+	}
+}
+# Notifies what happened
+narrative_event = {
+	id = WCSHM.8010
+	title = EVTTITLE_WCSHM_8000
+	desc = EVTDESC_WCSHM_8010
+	picture = GFX_evt_ragnaros
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+	major = yes
+
+	immediate = {
+		realm = { save_event_target_as = target_realm }
+		k_firelands = { holder_scope = { character_event = { id = WCSHM.8014 days = 4 } } }
+	}
+
+	option = {
+		trigger = {
+			NOR = {
+				true_religion_group = elemental_lords_group
+				evil_true_religion_trigger = yes
+			}
+		}
+		name = EVTOPTA_WCSHM_8010
+	}
+	option = {
+		trigger = {
+			OR = {
+				true_religion_group = elemental_lords_group
+				evil_true_religion_trigger = yes
+			}
+		}
+		name = FOOLS
+	}
+}
+# Head of fire_cult religion makes you obey
+# Ping event
+character_event = {
+	id = WCSHM.8014
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		log = "WCSHM.8014 fired for [Root.GetBestName]"
+
+		event_target:target_realm = {
+			holder_scope = {
+				letter_event = { id = WCSHM.8015 }
+				any_realm_lord = {
+					limit = {
+						higher_real_tier_than = BARON
+						
+						controls_religion = no
+						holy_order = no
+					}
+					letter_event = { id = WCSHM.8015 }
+				}
+			}
+		}
+	}
+}
+# Letter
+letter_event = {
+	id = WCSHM.8015
+	desc = EVTDESC_WCSHM_8015
+	border = GFX_event_letter_frame_war
+
+	is_triggered_only = yes
+
+	trigger = {
+		NOT = { true_religion = fire_cult }
+	}
+
+	# I don't have any other choice.
+	option = {
+		name = EVTOPTA_WCSHM_8015
+
+		clear_secret_religion = yes
+		religion = fire_cult
+
+		capital_scope = { 
+			if = {
+				limit = {
+					holder_scope = { character = PREVPREV }
+					NOT = { religion = fire_cult }
+				}
+				religion = fire_cult
+			}
+		}
+
+		prestige = -100
+
+		hidden_effect = {
+			any_close_relative = {
+				limit = {
+					is_ruler = no
+					host = { character = ROOT }
+					
+					NOT = { religion = fire_cult }
+				}
+				religion = fire_cult
+				clear_secret_religion = yes
+			}
+		}
+
+		ai_chance = {
+			factor = 50
+
+			modifier = {
+				factor = 1.32
+				trait = craven
+			}
+			modifier = {
+				factor = 1.32
+				trait = content
+			}
+			modifier = {
+				factor = 1.32
+				has_evil_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.32
+				has_impious_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.32
+				has_unpleasant_trait_trigger = yes
+			}
+		}
+	}
+	# I obey, but...
+	option = {
+		trigger = { independent = no }
+		name = EVTOPTB_WCSHM_8015
+
+		set_secret_religion = { target_type = public target = ROOT }
+		religion = fire_cult
+
+		prestige = -100
+
+		ai_chance = {
+			factor = 25
+
+			modifier = {
+				factor = 1.87
+				trait = craven
+			}
+			modifier = {
+				factor = 1.87
+				trait = content
+			}
+			modifier = {
+				factor = 1.32
+				has_benevolent_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.32
+				has_pleasant_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.32
+				has_pious_trait_trigger = yes
+			}
+		}
+	}
+	# No, I will not!
+	option = {
+		trigger = { independent = no }
+		name = EVTOPTC_WCSHM_8015
+
+		prestige = 100
+
+		ai_chance = {
+			factor = 25
+
+			modifier = {
+				factor = 1.35
+				trait = zealous
+			}
+			modifier = {
+				factor = 1.35
+				trait = brave
+			}
+			modifier = {
+				factor = 1.35
+				trait = ambitious
+			}
+			modifier = {
+				factor = 1.35
+				trait = stubborn
+			}
+			modifier = {
+				factor = 1.35
+				has_benevolent_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.35
+				has_pleasant_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.35
+				has_pious_trait_trigger = yes
+			}
+		}
+	}
+}
+
+# k_firelands declares war if you change religion
+character_event = {
+	id = WCSHM.8050
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	only_playable = yes
+	only_independent = yes
+	
+	trigger = {
+		NOT = { religion_group = elemental_lords_group }
+		FROM = { religion_group = elemental_lords_group }
+	}
+	
+	immediate = {
+		capital_scope = {
+			k_firelands = {
+				holder_scope = {
+					spawn_unit = {
+						province = PREVPREV
+						home = PREVPREV
+						owner = THIS
+						earmark = element_forces
+						troops = {
+							archers = { 1200 1200 }
+							light_infantry = { 1000 1000 }
+							heavy_infantry = { 1200 1200 }
+							artillery = { 200 200 }
+						}
+						attrition = 0
+						merge = yes
+						reinforces = no
+						maintenance = no
+					}
+					spawn_unit = {
+						province = PREVPREV
+						home = PREVPREV
+						owner = THIS
+						earmark = element_forces
+						troops = {
+							golems = { 400 400 }
+						}
+						attrition = 0
+						merge = yes
+						reinforces = no
+						maintenance = no
+					}
+					war = {
+						casus_belli = change_religion_cb
+						target = ROOT
+					}
+				}
+			}
+		}
+	}
+}

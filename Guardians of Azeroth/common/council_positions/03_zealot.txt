@@ -1,0 +1,173 @@
+### This file determines how the ai evaluates the council positions.
+# The ai will add all of the ai_selection entries under ai_selection_additive = {} for all of the positions.
+# If there's any of the positions with an ai_selection value higher than zero (0) the position with the HIGHEST score will be chosen by that ai.
+# If there's no position with an  ai_selection value higher than zero (0) the ai will go through the list of positions in order of the default selection value and pick the first position which fulfill the potential = {} trigger.
+
+### It also determines how a position will vote in the realm interactions the council is allowed to vote in. 
+# This is determined with a FOR trigger which checks if the voter will vote in favor of a decision. 
+# If that fails the voter will then go through the AGAINST trigger to see if it will vote against a decision. 
+# If both those triggers fail the voter will abstain from voting until swayed by the for or against side.
+
+### SCOPES AND SPECIAL TRIGGERS FOR WAR TARGET TRIGGER:
+#liege == FROM
+#target == FROMFROM
+
+### SCOPES AND SPECIAL TRIGGERS FOR WAR DECLARATION VOTES:
+#attacker == FROM
+#defender == FROMFROM
+#thirdparty == FROMFROMFROM
+#thirdparty_title == FROMFROMFROMFROM
+#stored_token_trigger = cb_type ### trigger that's available in the FROM or ROOT scope.
+
+zealot = {
+	icon = 3
+
+	potential = { # The player also needs to obey the potential triggers when choosing a position.
+		#NOT = { trait = cynical }
+		NOT = { trait = horse }
+		NOT = { trait = cat }
+	}
+	
+	default_selection = {
+		value = 0
+	}
+	
+	selection = {
+		value = 20
+		
+		# Warcraft
+		modifier = {
+			factor = 0
+			liege = { can_rule_peacefully_trigger = no }
+		}
+		
+		additive_power_diff_modifier = { # Adds the percentage of available troops from 'ROOT' to 'who' multiplied by factor to the score.
+			who = liege
+			factor = 0.45
+			always = yes
+		}
+		additive_compared_realm_size_modifier = { # Adds the percentage of realm size from 'ROOT' to 'who' multiplied by factor to the score.
+			who = liege
+			factor = 0.45
+			always = yes
+		}
+		additive_realm_size_modifier = { 
+			factor = 15
+			balance = 50
+			always = yes
+		}
+		additive_modifier = {
+			value = 25
+			trait = zealous
+		}
+		additive_modifier = {
+			value = 10
+			trait = humble
+		}
+		additive_modifier = {
+			value = 20
+			is_theocracy = yes
+		}
+		additive_modifier = {
+			value = 20
+			has_called_crusade = yes
+			liege = {
+				religion = ROOT
+				NOT = {
+					any_war = {
+						OR = {
+							using_cb = crusade
+							using_cb = new_crusade
+						}
+					}
+				}
+			}
+		}
+		additive_modifier = {
+			value = 5
+			piety = 5
+		}
+		additive_modifier = {
+			value = 5
+			OR = {
+				trait = crusader
+				trait = mujahid
+				trait = valhalla_bound
+			}
+		}
+		additive_modifier = {
+			value = 5
+			liege = {
+				NOT = {
+					piety = 0
+				}
+			}
+		}
+		additive_modifier = {
+			value = -5
+			liege = {
+				trait = zealous
+			}
+		}
+		additive_modifier = {
+			value = -10
+			liege = {
+				OR = {
+					trait = crusader
+					trait = mujahid
+					trait = valhalla_bound
+				}
+			}
+		}
+		additive_modifier = {
+			value = -10
+			liege = {
+				piety = 200
+			}
+		}
+		additive_modifier = {
+			value = -10
+			trait = content
+		}
+		additive_modifier = {
+			value = -50
+			trait = cynical
+		}
+		additive_modifier = {
+	   		value = -50
+	   		is_nomadic = yes
+	   		liege = {
+	    		has_character_modifier = greatest_of_khans
+	   		}
+	  	}
+	}
+	
+	war_target = {
+		FROMFROM = {
+			NOR = {
+				religion = ROOT
+				is_close_relative = ROOT
+			}
+			NOT = {
+				relative_power_including_allies_defender = {
+					who = FROM
+					power = 1.5
+				}
+			}
+		}
+	}
+
+	voting_patterns = {
+		special_case_for
+		me_pattern_for
+		selfish_pattern_for
+		selfish_pattern_against
+		family_pattern_for
+		family_pattern_against
+		zealot_pattern_for
+		zealot_pattern_against
+		interaction_pattern_for
+		interaction_pattern_against
+		preferred_war_target_pattern_against
+	}
+}

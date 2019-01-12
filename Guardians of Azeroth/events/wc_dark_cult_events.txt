@@ -1,0 +1,2533 @@
+namespace = WCDAC
+
+character_event = {
+	id = WCDAC.100
+	hide_window = yes
+
+	is_triggered_only = yes
+
+	immediate = {
+		FROM = {
+			set_character_flag = cult_of_the_damned_attempted_recruitment
+			set_character_flag = being_recruited_by_cult_of_the_damned
+			character_event = { id = WCCSO.7001 days = 3 }
+		}
+	}
+}
+character_event = {
+	id = WCDAC.101
+	hide_window = yes
+
+	is_triggered_only = yes
+
+	immediate = {
+		FROM = {
+			set_character_flag = shadow_council_attempted_recruitment
+			set_character_flag = being_recruited_by_shadow_council
+			character_event = { id = WCCSO.7001 days = 3 }
+		}
+	}
+}
+character_event = {
+	id = WCDAC.102
+	hide_window = yes
+
+	is_triggered_only = yes
+
+	immediate = {
+		FROM = {
+			set_character_flag = twilights_hammer_cult_attempted_recruitment
+			set_character_flag = being_recruited_by_twilights_hammer_cult
+			character_event = { id = WCCSO.7001 days = 3 }
+		}
+	}
+}
+
+# Notifies family/friend/lover/spouse what FROM have become
+# on_character_convert_religion
+character_event = {
+	id = WCDAC.149
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	trigger = {
+		evil_public_religion_trigger = yes
+		FROM = { evil_public_religion_trigger = no }
+	}
+
+	immediate = {
+		show_close_people_what_this_become_effect = yes
+	}
+}
+# Notification
+character_event = {
+	id = WCDAC.150
+	desc = {
+		trigger = { FROM = { trait = undead } }
+		text = EVTDESC_WCPOD_5014
+		picture = GFX_evt_cemetery
+	}
+	desc = {
+		trigger = { FROM = { trait = demon } }
+		text = EVTDESC_WCDAC_150_demon
+		picture = GFX_evt_burning_legion
+	}
+	# desc = {
+		# trigger = { FROM = { has_character_flag = void_creature } }
+		# text = EVTDESC_WCDAC_150_void_creature
+		# picture = GFX_evt_nraqi
+	# }
+	desc = {
+		trigger = { FROM = { trait = worgen } }
+		text = EVTDESC_WCDRU_5014
+		picture = GFX_evt_worgen
+	}
+	desc = {
+		trigger = {
+			FROM = {
+				NOR = {
+					trait = undead
+					trait = demon
+					has_character_flag = void_creature
+					trait = worgen
+				}
+			}
+		}
+		text = EVTDESC_WCDAC_150_evil
+		picture = GFX_evt_cemetery
+	}
+
+	is_triggered_only = yes
+
+	trigger = {
+		FROM = { is_alive = yes }
+	}
+
+	option = {
+		# You're glad if you share the same evil religion
+		name = {
+			trigger = {
+				evil_true_religion_trigger = yes
+				FROM = { evil_public_religion_trigger = yes }
+			}
+			text = EVTOPTB_WCPOD_5014_glad
+		}
+		# You're not shocked
+		name = {
+			trigger = {
+				OR = {
+					is_dark_being_trigger = yes
+					trait = worgen
+				}
+				FROM = {
+					OR = {
+						is_dark_being_trigger = yes
+						trait = worgen
+					}
+				}
+			}
+			text = EVTOPTB_WCPOD_5014_undead
+		}
+		# You're shocked
+		name = {
+			trigger = {
+				NOR = {
+					AND = {
+						evil_true_religion_trigger = yes
+						FROM = { evil_public_religion_trigger = yes }
+					}
+					AND = {
+						OR = {
+							is_dark_being_trigger = yes
+							trait = worgen
+						}
+						FROM = {
+							OR = {
+								is_dark_being_trigger = yes
+								trait = worgen
+							}
+						}
+					}
+				}
+			}
+			text = EVTOPTB_WCPOD_5014_shocked
+		}
+
+		ai_chance = {
+			factor = 10
+			modifier = {
+				factor = 3.16
+				opinion = { who = FROM value = 75 }
+			}
+			modifier = {
+				factor = 3.16
+				opinion = { who = FROM value = 50 }
+			}
+			modifier = {
+				factor = 3.16
+				opinion = { who = FROM value = 25 }
+			}
+			modifier = {
+				factor = 3.16
+				opinion = { who = FROM value = 10 }
+			}
+			modifier = {
+				factor = 0.01
+				ROOT = { FROM = { is_unholy_creature_to_prev_trigger = yes } }
+			}
+		}
+	}
+	# IT... isn't my son/daughter/etc anymore!
+	option = {
+		trigger = {
+			OR = {
+				AND = {
+					is_dark_being_trigger = no
+					NOT = { trait = worgen }
+					FROM = {
+						OR = {
+							is_dark_being_trigger = yes
+							trait = worgen
+						}
+					}
+				}
+				ROOT = { FROM = { is_unholy_creature_to_prev_trigger = yes } }
+			}
+		}
+		name = EVTOPTB_WCDAC_150
+
+		reverse_opinion = { modifier = opinion_accused_apostate who = FROM years = 20 }
+		if = {
+			limit = { is_married = FROM }
+			remove_spouse = FROM
+		}
+		if = {
+			limit = { is_friend = FROM }
+			remove_friend = FROM
+		}
+		if = {
+			limit = { is_lover = FROM }
+			remove_lover = FROM
+		}
+		hidden_effect = {
+			if = {
+				limit = {
+					is_ruler = no
+					liege = { character = FROM }
+				}
+				banish = yes
+			}
+			if = {
+				limit = {
+					is_ruler = yes
+					FROM = {
+						is_ruler = no
+						liege = { character = ROOT }
+					}
+				}
+				FROM = { banish = yes }
+			}
+		}
+
+		ai_chance = {
+			factor = 90
+		}
+	}
+}
+
+##########################
+#	JUST EVENTS
+##########################
+
+############################
+#	the Cult of the Damned
+############################
+
+# Power: Ask for Dark Gift
+# Ping event
+character_event = {
+	id = WCDAC.3910
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		FROM = {
+			e_scourge = { holder_scope = { save_event_target_as = target_necromancer } }
+			character_event = { id = WCPOD.5013 }
+		}
+	}
+}
+
+
+# Notification from decision join_the_scourge
+letter_event = {
+	id = WCDAC.3940
+	desc = EVTDESC_WCDAC_3940
+	border = GFX_event_letter_frame_intrigue
+
+	is_triggered_only = yes
+
+	option = {
+		name = EXCELLENT
+	}
+}
+
+# Notification from decision found_cult_of_the_damned_society
+narrative_event = {
+	id = WCDAC.3950
+	title = EVTTITLE_WCDAC_3950
+	desc = EVTDESC_WCDAC_3950
+	picture = GFX_evt_secret_ceremony
+
+	is_triggered_only = yes
+	hide_from = yes
+
+	major = yes
+
+	option = {
+		trigger = {
+			NOR = {
+				true_religion = death_god
+				is_aggressive_trigger = yes
+			}
+			trait = zealous
+		}
+		name = EVTOPTA_WCDAC_3950_zealous
+	}
+	option = {
+		trigger = {
+			NOR = {
+				true_religion = death_god
+				is_aggressive_trigger = yes
+			}
+			trait = cynical
+		}
+		name = EVTOPTA_WCDAC_3950_cynical
+	}
+	option = {
+		trigger = {
+			NOR = {
+				true_religion = death_god
+				is_aggressive_trigger = yes
+			}
+			NOR = {
+				trait = zealous
+				trait = cynical
+			}
+		}
+		name = EVTOPTA_WCDAC_3950_normal
+	}
+	option = {
+		trigger = { true_religion = death_god }
+		name = EVTOPTA_WCDAC_3950_death_god
+	}
+	option = {
+		trigger = {
+			NOT = { true_religion = death_god }
+			is_aggressive_trigger = yes
+		}
+		name = FOOLS
+	}
+}
+
+############################
+#	the Shadow Council
+############################
+# Appoints a Shadow Councilor to a free place
+character_event = {
+	id = WCDAC.4010
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	only_playable = yes
+
+	trigger = {
+		has_dlc = "Zeus"
+
+		is_alive = yes
+		is_dying = no
+
+		higher_tier_than = KING
+		primary_title = { has_law = law_voting_power_1 }
+		shadow_council = {
+			any_society_member = {
+				is_society_grandmaster = yes
+				reverse_has_opinion_modifier = { who = ROOT modifier = opinion_loyal_servant }
+			}
+		}
+		OR = {
+			NOT = { has_assigned_minor_title = title_shadow_council_member_1 }
+			NOT = { has_assigned_minor_title = title_shadow_council_member_2 }
+			NOT = { has_assigned_minor_title = title_shadow_council_member_3 }
+		}
+	}
+	immediate = {
+		save_event_target_as = target_loyal_ruler
+		shadow_council = {
+			random_society_member = {
+				limit = { is_society_grandmaster = yes }
+				character_event = { id = WCDAC.4014 days = 1 }
+			}
+		}
+	}
+}
+character_event = {
+	id = WCDAC.4014
+	desc = EVTDESC_WCDAC_4014
+	picture = GFX_evt_dark_portal_01
+
+	is_triggered_only = yes
+
+	# Appoint a local member of the Shadow Council
+	option = {
+		trigger = {
+			event_target:target_loyal_ruler = {
+				any_courtier_or_vassal = {
+					NOT = { character = ROOT }
+					NOT = { character = event_target:target_loyal_ruler }
+					has_job_title = no
+					has_minor_title = no
+					OR = {
+						AND = {
+							has_dlc = "Mystics"
+							society_member_of = shadow_council
+						}
+						AND = {
+							NOT = { has_dlc = "Mystics" }
+							OR = {
+								true_religion = orcish_fel
+								true_religion = burning_legion_religion
+							}
+						}
+					}
+				}
+			}
+		}
+		name = EVTOPTA_WCDAC_4014
+
+		event_target:target_loyal_ruler = {
+			random_courtier_or_vassal = {
+				limit = {
+					NOT = { character = ROOT }
+					NOT = { character = event_target:target_loyal_ruler }
+					has_job_title = no
+					has_minor_title = no
+					OR = {
+						AND = {
+							has_dlc = "Mystics"
+							society_member_of = shadow_council
+						}
+						AND = {
+							NOT = { has_dlc = "Mystics" }
+							OR = {
+								true_religion = orcish_fel
+								true_religion = burning_legion_religion
+							}
+						}
+					}
+				}
+				character_event = { id = WCDAC.4017 }
+			}
+		}
+		ai_chance = {
+			factor = 75
+		}
+	}
+	# Appoint your courtier
+	option = {
+		trigger = {
+			any_courtier = {
+				is_ruler = no
+
+				NOT = { character = ROOT }
+				NOT = { character = event_target:target_loyal_ruler }
+				has_job_title = no
+				has_minor_title = no
+				OR = {
+					AND = {
+						has_dlc = "Mystics"
+						society_member_of = shadow_council
+					}
+					AND = {
+						NOT = { has_dlc = "Mystics" }
+						OR = {
+							true_religion = orcish_fel
+							true_religion = burning_legion_religion
+						}
+					}
+				}
+			}
+		}
+		name = EVTOPTB_WCDAC_4014
+
+		random_courtier = {
+			limit = {
+				is_ruler = no
+
+				NOT = { character = ROOT }
+				NOT = { character = event_target:target_loyal_ruler }
+				has_job_title = no
+				has_minor_title = no
+				OR = {
+					AND = {
+						has_dlc = "Mystics"
+						society_member_of = shadow_council
+					}
+					AND = {
+						NOT = { has_dlc = "Mystics" }
+						OR = {
+							true_religion = orcish_fel
+							true_religion = burning_legion_religion
+						}
+					}
+				}
+			}
+			move_character = event_target:target_loyal_ruler
+			character_event = { id = WCDAC.4017 }
+		}
+		ai_chance = {
+			factor = 20
+		}
+	}
+	# Appoint a new character
+	option ={
+		name = EVTOPTC_WCDAC_4014
+		create_character = {
+			dynasty = none
+			religion = ROOT
+			culture = ROOT
+			female = no
+			age = 40
+			random_traits = yes
+		}
+		hidden_effect = {
+			new_character = {
+				if = {
+					limit = { has_dlc = "Mystics" }
+					join_society_shadow_council_effect = yes
+				}
+				character_event = { id = WCRAC.10 }
+				move_character = event_target:target_loyal_ruler
+				character_event = { id = WCDAC.4017 }
+			}
+		}
+		ai_chance = {
+			factor = 5
+		}
+	}
+}
+character_event = {
+	id = WCDAC.4017
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		FROM = { add_favor = ROOT }
+		opinion = { modifier = opinion_loyal_servant who = FROM }
+		if = {
+			limit = {
+				event_target:target_loyal_ruler = {
+					NOT = { has_assigned_minor_title = title_shadow_council_member_1 }
+				}
+			}
+			give_minor_title = title_shadow_council_member_1
+			break = yes
+		}
+		if = {
+			limit = {
+				event_target:target_loyal_ruler = {
+					NOT = { has_assigned_minor_title = title_shadow_council_member_2 }
+				}
+			}
+			give_minor_title = title_shadow_council_member_2
+			break = yes
+		}
+		if = {
+			limit = {
+				event_target:target_loyal_ruler = {
+					NOT = { has_assigned_minor_title = title_shadow_council_member_3 }
+				}
+			}
+			give_minor_title = title_shadow_council_member_3
+			break = yes
+		}
+	}
+}
+
+# Power: Shadow Favor
+# Your brother/sister asks for your favor
+letter_event = {
+	id = WCDAC.4020
+	desc = EVTDESC_WCDAC_4020
+
+	is_triggered_only = yes
+
+	# I'll do it
+	option = {
+		name = EVTOPTA_WCDAC_4020
+
+		tooltip = { reverse_add_favor = FROMFROM }
+		add_society_currency_tiny_effect = yes
+		FROMFROM = { letter_event = { id = WCDAC.4021 days = 1 } }
+
+		ai_chance = {
+			factor = 80
+
+			# FROMFROM is a more powerful ruler than me
+			modifier = {
+				factor = 1.2
+				FROMFROM = { higher_tier_than = ROOT }
+			}
+			# FROMFROM is an important member of my society
+			modifier = {
+				factor = 1.2
+				FROMFROM = { society_rank == 4 }
+			}
+			modifier = {
+				factor = 1.2
+				FROMFROM = { society_rank >= 3 }
+			}
+			# I have a good opinion towards FROMFROM
+			modifier = {
+				factor = 1.2
+				opinion = { who = FROMFROM value = 75 }
+			}
+			modifier = {
+				factor = 1.2
+				opinion = { who = FROMFROM value = 50 }
+			}
+			modifier = {
+				factor = 1.2
+				opinion = { who = FROMFROM value = 25 }
+			}
+			# I have a pleasant temper
+			modifier = {
+				factor = 1.2
+				has_benevolent_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.2
+				has_pleasant_trait_trigger = yes
+			}
+		}
+	}
+
+	# No
+	option = {
+		name = EVTOPTB_WCDAC_4020
+
+		FROMFROM = { letter_event = { id = WCDAC.4022 days = 1 } }
+
+		ai_chance = {
+			factor = 20
+
+			# I'm a more powerful ruler than FROMFROM
+			modifier = {
+				factor = 2.5
+				FROMFROM = { higher_tier_than = ROOT }
+			}
+			# I have a bad opinion towards FROMFROM
+			modifier = {
+				factor = 2.5
+				NOT = { opinion = { who = FROMFROM value = 1 } }
+			}
+			# I have a unpleasant temper
+			modifier = {
+				factor = 2.5
+				has_evil_trait_trigger = yes
+			}
+			modifier = {
+				factor = 2.5
+				has_unpleasant_trait_trigger = yes
+			}
+		}
+	}
+}
+# "Yes" letter event
+letter_event = {
+	id = WCDAC.4021
+	desc = EVTDESC_WCDAC_4021
+
+	is_triggered_only = yes
+
+	option = {
+		name = EXCELLENT
+
+		add_favor = FROM
+	}
+}
+
+# "No" letter event
+letter_event = {
+	id = WCDAC.4022
+	desc = EVTDESC_WCDAC_4022
+
+	is_triggered_only = yes
+
+	option = {
+		name = ALAS
+	}
+}
+
+# Power: Corrupt Character
+# Increases fel corruption
+character_event = {
+	id = WCDAC.4030
+	desc = EVTDESC_WCDAC_4030
+	picture = GFX_evt_fel_storm
+
+	is_triggered_only = yes
+	hide_from = yes
+
+	option = {
+		name = ALAS
+
+		add_5_fel_corruption_effect = yes
+	}
+}
+
+##########################
+# the Twilight's Hammer
+##########################
+
+###### The Twilight ######
+# Ping event
+province_event = {
+	id = WCDAC.4999
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		# Starts "The Voice from Beyond the Sea" event chain
+		province_event = { id = WCDAC.5029 days = 1825 }
+		d_twilights_hammer = {
+			if = {
+				limit = { has_holder = yes }
+				holder_scope = { narrative_event = { id = WCDAC.5000 } }
+				break = yes
+			}
+		}
+	}
+}
+# What's wrong with my clan?
+narrative_event = {
+	id = WCDAC.5000
+	title = EVTTITLE_WCDAC_5000
+	desc = EVTDESC_WCDAC_5000
+	picture = GFX_evt_voidwalker
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	# Find out from them what's going on
+	option = {
+		name = EVTOPTA_WCDAC_5000
+
+		add_5_void_corruption_effect = yes
+
+		hidden_effect = { 73 = { province_event = { id = WCDAC.5009 days = 3 } } }
+	}
+	# Suppress them!
+	option = {
+		name = EVTOPTB_WCDAC_5000
+
+		if = {
+			limit = { trait = kind }
+			remove_trait = kind
+		}
+
+		hidden_effect = { 73 = { province_event = { id = WCDAC.5004 days = 3 } } }
+
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+# Ping event
+province_event = {
+	id = WCDAC.5004
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		if = {
+			limit = { FROM = { is_alive = yes } }
+			FROM = { narrative_event = { id = WCDAC.5005 } }
+			break = yes
+		}
+		d_twilights_hammer = {
+			if = {
+				limit = { has_holder = yes }
+				holder_scope = { narrative_event = { id = WCDAC.5005 } }
+				break = yes
+			}
+		}
+	}
+}
+# You've lost your clan
+narrative_event = {
+	id = WCDAC.5005
+	title = EVTTITLE_WCDAC_5000
+	desc = EVTDESC_WCDAC_5005
+	picture = GFX_evt_voidwalker
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	# Yeah, I've lost my clan
+	option = {
+		name = EVTOPTA_WCDAC_5005
+
+		d_twilights_hammer = {
+			activate_title = { title = THIS status = no }
+			destroy_landed_title = THIS
+		}
+		if = {
+			limit = { liege = { NOT = { religion = old_gods_worship } } }
+			banish_religion = old_gods_worship
+			liege = {
+				show_scope_change = no
+				any_realm_province = {
+					limit = { religion = old_gods_worship }
+					show_scope_change = no
+					religion = PREV
+					culture = PREV
+				}
+			}
+		}
+	}
+}
+# Ping event
+province_event = {
+	id = WCDAC.5009
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		if = {
+			limit = { FROM = { is_alive = yes } }
+			FROM = { narrative_event = { id = WCDAC.5010 } }
+			break = yes
+		}
+		d_twilights_hammer = {
+			if = {
+				limit = { has_holder = yes }
+				holder_scope = { narrative_event = { id = WCDAC.5010 } }
+				break = yes
+			}
+		}
+	}
+}
+# They tells you the TRUTH!
+narrative_event = {
+	id = WCDAC.5010
+	title = EVTTITLE_WCDAC_5000
+	desc = EVTDESC_WCDAC_5010
+	picture = GFX_evt_voidwalker
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	# The Old Gods are good guys!
+	option = {
+		name = EVTOPTA_WCDAC_5010
+
+		add_5_void_corruption_effect = yes
+
+		if = {
+			limit = { trait = kind }
+			remove_trait = kind
+		}
+		if = {
+			limit = { trait = charitable }
+			remove_trait = charitable
+		}
+
+		hidden_effect = { 73 = { province_event = { id = WCDAC.5014 days = 90 } } }
+	}
+}
+# Ping event
+province_event = {
+	id = WCDAC.5014
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		if = {
+			limit = { FROM = { is_alive = yes } }
+			FROM = { narrative_event = { id = WCDAC.5015 } }
+			break = yes
+		}
+		d_twilights_hammer = {
+			if = {
+				limit = { has_holder = yes }
+				holder_scope = { narrative_event = { id = WCDAC.5015 } }
+				break = yes
+			}
+		}
+	}
+}
+# You believed in the Old Gods
+narrative_event = {
+	id = WCDAC.5015
+	title = EVTTITLE_WCDAC_5000
+	desc = EVTDESC_WCDAC_5015
+	picture = GFX_evt_voidwalker
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	# Hear the voice of the Old Gods!
+	option = {
+		name = EVTOPTA_WCDAC_5015
+
+		add_15_void_corruption_effect = yes
+
+		set_secret_religion = old_gods_worship
+		if = {
+			limit = { NOT = { trait = cruel } }
+			if = {
+				limit = { trait = kind }
+				remove_trait = kind
+			}
+			add_trait = cruel
+		}
+		add_artifact = twilight_canticle
+	}
+}
+
+###### The Voice from Beyond the Sea #######
+# Ping event
+province_event = {
+	id = WCDAC.5029
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		d_twilights_hammer = {
+			if = {
+				limit = {
+					has_holder = yes
+					holder_scope = { true_religion = old_gods_worship }
+				}
+				holder_scope = { narrative_event = { id = WCDAC.5030 } }
+				break = yes
+			}
+		}
+		if = {
+			limit = {
+				any_player = {
+					is_adult = yes
+					is_incapable = no
+					prisoner = no
+					is_inaccessible_trigger = no
+
+					independent = no
+
+					is_dark_being_trigger = no
+					is_humanoid_trigger = yes
+					true_religion = old_gods_worship
+
+					has_invader_title_trigger = no
+				}
+			}
+			random_player = {
+				limit = {
+					is_adult = yes
+					is_incapable = no
+					prisoner = no
+					is_inaccessible_trigger = no
+
+					independent = no
+
+					is_dark_being_trigger = no
+					is_humanoid_trigger = yes
+					true_religion = old_gods_worship
+
+					has_invader_title_trigger = no
+				}
+				narrative_event = { id = WCDAC.5030 }
+			}
+			break = yes
+		}
+		province_event = { id = WCDAC.5039 days = 90 }
+	}
+}
+# Beginning of Sea Travel
+narrative_event = {
+	id = WCDAC.5030
+	title = EVTTITLE_WCDAC_5030
+	desc = EVTDESC_WCDAC_5030
+	picture = GFX_evt_cthun
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	# I will fulfill the will of the Gods!
+	option = {
+		name = EVTOPTA_WCDAC_5030
+
+		hidden_effect = { 73 = { province_event = { id = WCDAC.5034 days = 60 } } }
+	}
+}
+# Ping event
+province_event = {
+	id = WCDAC.5034
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		FROM = {
+			if = {
+				limit = { is_alive = yes }
+				narrative_event = { id = WCDAC.5035 }
+				break = yes
+			}
+		}
+		d_twilights_hammer = {
+			if = {
+				limit = {
+					has_holder = yes
+					holder_scope = { true_religion = old_gods_worship }
+				}
+				holder_scope = { narrative_event = { id = WCDAC.5035 } }
+				break = yes
+			}
+		}
+		province_event = { id = WCDAC.5039 days = 90 }
+	}
+}
+# Arrival in Kalimdor
+narrative_event = {
+	id = WCDAC.5035
+	title = EVTTITLE_WCDAC_5030
+	desc = EVTDESC_WCDAC_5035
+	picture = GFX_evt_ahnqiraj
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	# Let's continue the journey.
+	option = {
+		name = EVTOPTA_WCDAC_5035
+
+		hidden_effect = { 73 = { province_event = { id = WCDAC.5039 days = 7 } } }
+	}
+}
+# Ping event
+province_event = {
+	id = WCDAC.5039
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		FROM = {
+			if = {
+				limit = { is_alive = yes }
+				narrative_event = { id = WCDAC.5040 }
+				break = yes
+			}
+		}
+		d_twilights_hammer = {
+			if = {
+				limit = {
+					has_holder = yes
+					holder_scope = { true_religion = old_gods_worship }
+				}
+				holder_scope = { narrative_event = { id = WCDAC.5040 } }
+				break = yes
+			}
+		}
+		create_character = {
+			dynasty = none
+			religion = old_gods_worship
+			culture = azerothian
+			female = no
+			age = 45
+			random_traits = yes
+			trait = creature_human
+			trait = cruel
+			trait = zealous
+			trait = ambitious
+		}
+		hidden_effect = {
+			new_character = {
+				remove_education_effect = yes
+				random_list = {
+					35 = {
+						add_trait = intricate_webweaver
+						add_trait = class_shadow_priest_6
+					}
+					30 = {
+						add_trait = intricate_webweaver
+						add_trait = class_shadow_priest_7
+					}
+					20 = {
+						add_trait = elusive_shadow
+						add_trait = class_shadow_priest_8
+					}
+					15 = {
+						add_trait = elusive_shadow
+						add_trait = class_shadow_priest_9
+					}
+				}
+
+				# Removes wrong traits
+				remove_trait = chaste
+				remove_trait = kind
+				remove_trait = charitable
+				remove_trait = humble
+				remove_trait = honest
+				remove_trait = trusting
+				narrative_event = { id = WCDAC.5040 }
+			}
+		}
+	}
+}
+# The Ruins of Ahn'Qiraj
+narrative_event = {
+	id = WCDAC.5040
+	title = EVTTITLE_WCDAC_5030
+	desc = EVTDESC_WCDAC_5040
+	picture = GFX_evt_ahnqiraj
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	immediate = {
+		religion = old_gods_worship
+		clear_event_target = yes
+		k_silithus = {
+			any_direct_de_jure_vassal_title = {
+				any_direct_de_jure_vassal_title = {
+					limit = { holder_scope = { government = uncolonized_government } }
+					grant_title_no_opinion = PREVPREVPREV
+					location = {
+						culture = ROOT
+						religion = ROOT
+					}
+				}
+			}
+		}
+		k_ahnqiraj = {
+			any_direct_de_jure_vassal_title = {
+				any_direct_de_jure_vassal_title = {
+					limit = { holder_scope = { government = uncolonized_government } }
+					grant_title_no_opinion = PREVPREVPREV
+					location = {
+						culture = ROOT
+						religion = ROOT
+					}
+				}
+			}
+		}
+		if = {
+			limit = {
+				is_ruler = yes
+				independent = no
+			}
+			top_liege = {
+				ROOT = {
+					any_vassal = {
+						limit = {
+							capital_holding = {
+								NOT = { de_jure_liege_or_above = k_silithus }
+								NOT = { de_jure_liege_or_above = k_ahnqiraj }
+							}
+						}
+						set_defacto_liege = PREVPREV
+					}
+					any_demesne_title = {
+						limit = {
+							tier = COUNT
+
+							NOT = { de_jure_liege_or_above = k_silithus }
+							NOT = { de_jure_liege_or_above = k_ahnqiraj }
+						}
+						grant_title_no_opinion = PREVPREV
+						location = {
+							culture = PREVPREVPREV
+							religion = PREVPREVPREV
+						}
+					}
+				}
+			}
+		}
+		set_defacto_liege = THIS
+		capital_scope = {
+			ROOT = {
+				spawn_unit = {
+					owner = ROOT
+					province = PREV
+					home = PREV
+					troops = {
+						archers = { 1000 1000 }
+						light_infantry = { 1500 1500 }
+						heavy_infantry = { 2000 2000 }
+						light_cavalry = { 375 375 }
+						knights = { 125 125 }
+					}
+					attrition = 0
+					merge = yes
+					maintenance = no
+				}
+			}
+		}
+	}
+
+	# I'll spread its will across Kalimdor!
+	option = {
+		name = EVTOPTA_WCDAC_5040
+
+		leave_society = yes
+		join_society_twilights_hammer_cult_effect = yes
+		set_society_grandmaster = yes # Set character as Grand Master
+		add_society_currency_massive_effect = yes # Give the Grand Master a start-up capital to induct members
+
+		add_35_void_corruption_effect = yes
+
+		hidden_effect = {
+			activate_title = { title = d_twilights_hammer status = no }
+			d_twilights_hammer = { destroy_landed_title = THIS }
+			any_playable_ruler = {
+				limit = {
+					ai = yes
+					tier = COUNT
+				}
+				character_event = { id = MNM.10030 }
+			}
+			narrative_event = { id = WCDAC.5050 }
+		}
+	}
+}
+# Notification of creation of the Twilight's Hammer Cult
+narrative_event = {
+	id = WCDAC.5050
+	title = EVTTITLE_WCDAC_5050
+	desc = EVTDESC_WCDAC_5050
+	picture = GFX_evt_shadow_acolytes
+
+	is_triggered_only = yes
+	hide_from = yes
+
+	major = yes
+
+	option = {
+		trigger = {
+			NOR = {
+				true_religion = old_gods_worship
+				is_aggressive_trigger = yes
+			}
+			trait = zealous
+		}
+		name = EVTOPTA_WCDAC_3950_zealous
+	}
+	option = {
+		trigger = {
+			NOR = {
+				true_religion = old_gods_worship
+				is_aggressive_trigger = yes
+			}
+			trait = cynical
+		}
+		name = EVTOPTA_WCDAC_3950_cynical
+	}
+	option = {
+		trigger = {
+			NOR = {
+				true_religion = old_gods_worship
+				is_aggressive_trigger = yes
+			}
+			NOR = {
+				trait = zealous
+				trait = cynical
+			}
+		}
+		name = EVTOPTA_WCDAC_3950_normal
+	}
+	option = {
+		trigger = { true_religion = old_gods_worship }
+		name = EVTOPTA_WCDAC_5050_old_gods_worship
+	}
+	option = {
+		trigger = {
+			NOT = { true_religion = old_gods_worship }
+			is_aggressive_trigger = yes
+		}
+		name = FOOLS
+	}
+}
+
+# Power: Attract Old Gods' Attention
+# Notifies that something is watching you
+character_event = {
+	id = WCDAC.5100
+	desc = EVTDESC_WCDAC_5100
+	picture = GFX_evt_cthun
+	border = GFX_event_normal_frame_intrigue
+
+	is_triggered_only = yes
+
+	hide_from = yes
+
+	# It's not good
+	option = {
+		name = EVTOPTA_WCDAC_5100
+		tooltip = { add_character_modifier = { name = dark_presence duration = 1825 } }
+	}
+}
+
+# Fired from decision patrons_old_gods_worship
+character_event = {
+	id = WCDAC.5110
+	desc = EVTDESC_WCDAC_5110
+	picture = GFX_evt_cthun
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCDAC_5110
+
+		add_character_modifier = {
+			name = follower_of_cthun
+			duration = -1
+		}
+		ai_chance = {
+			factor = 25
+			modifier = {
+				factor = 5
+				culture = qiraji
+			}
+			modifier = {
+				factor = 4
+				OR = {
+					has_education_stewardship_trigger = yes
+					has_education_learning_trigger = yes
+				}
+			}
+			modifier = {
+				factor = 0.1
+				NOT = { has_character_modifier = follower_of_cthun }
+			}
+			modifier = {
+				factor = 0
+				culture = nerubian
+			}
+			modifier = {
+				factor = 0
+				OR = {
+					has_landed_title = e_herald_nzoth
+					has_landed_title = e_herald_yoggsaron
+				}
+			}
+		}
+	}
+	option = {
+		name = EVTOPTB_WCDAC_5110
+
+		add_character_modifier = {
+			name = follower_of_yogg_saron
+			duration = -1
+		}
+		ai_chance = {
+			factor = 25
+			modifier = {
+				factor = 5
+				culture = nerubian
+			}
+			modifier = {
+				factor = 4
+				OR = {
+					has_education_intrigue_trigger = yes
+					has_education_learning_trigger = yes
+				}
+			}
+			modifier = {
+				factor = 0.1
+				NOT = { has_character_modifier = follower_of_yogg_saron }
+			}
+			modifier = {
+				factor = 0
+				culture = qiraji
+			}
+			modifier = {
+				factor = 0
+				OR = {
+					has_landed_title = e_herald_cthun
+					has_landed_title = e_herald_nzoth
+				}
+			}
+		}
+	}
+	option = {
+		name = EVTOPTC_WCDAC_5110
+		trigger = { NOT = { has_dlc = "Jade Dragon" }}
+		add_character_modifier = {
+			name = follower_of_yshaarj
+			duration = -1
+		}
+		ai_chance = {
+			factor = 25
+			modifier = {
+				factor = 5
+				culture = mantid
+			}
+			modifier = {
+				factor = 4
+				has_education_martial_trigger = yes
+			}
+			modifier = {
+				factor = 0.1
+				NOT = { has_character_modifier = follower_of_yshaarj }
+			}
+		}
+	}
+	option = {
+		name = EVTOPTD_WCDAC_5110
+
+		add_character_modifier = {
+			name = follower_of_nzoth
+			duration = -1
+		}
+		ai_chance = {
+			factor = 25
+			modifier = {
+				factor = 5
+				culture = naga
+			}
+			modifier = {
+				factor = 4
+				OR = {
+					has_education_diplomacy_trigger = yes
+					has_education_intrigue_trigger = yes
+				}
+			}
+			modifier = {
+				factor = 0.1
+				NOT = { has_character_modifier = follower_of_nzoth }
+			}
+			modifier = {
+				factor = 0
+				culture = qiraji
+			}
+			modifier = {
+				factor = 0
+				culture = nerubian
+			}
+			modifier = {
+				factor = 0
+				OR = {
+					has_landed_title = e_herald_cthun
+					has_landed_title = e_herald_yoggsaron
+				}
+			}
+		}
+	}
+}
+
+# Old Gods' Worship
+character_event = {
+	id = WCDAC.5125
+	desc = EVTDESC_WCDAC_5125
+	picture = GFX_evt_sacrifice
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	option = {
+		trigger = { piety = 200 }
+		name = EVTOPTA_WCDAC_5125
+
+		set_character_flag = medium_old_gods_sacrifice_flag
+
+		piety = -200
+
+		ai_chance = {
+			factor = 15
+		}
+	}
+	option = {
+		trigger = { num_of_prisoners = 1 }
+		name = EVTOPTB_WCDAC_5125
+
+		if = {
+			limit = { num_of_prisoners = 8 }
+			set_character_flag = major_old_gods_sacrifice_flag
+		}
+		else = {
+			if = {
+				limit = { num_of_prisoners = 4 }
+				set_character_flag = medium_old_gods_sacrifice_flag
+			}
+			else = {
+				set_character_flag = minor_old_gods_sacrifice_flag
+			}
+		}
+		any_courtier = {
+			limit = { prisoner = yes }
+			death = {
+				death_reason = death_sacrificed
+				killer = ROOT
+			}
+		}
+
+		ai_chance = {
+			factor = 75
+		}
+	}
+	option = {
+		trigger = { NOT = { trait = wounded } }
+		name = EVTOPTC_WCDAC_5125
+
+		set_character_flag = minor_old_gods_sacrifice_flag
+		add_trait_wounded_effect = yes
+
+		ai_chance = {
+			factor = 0
+		}
+	}
+	option = {
+		trigger = { piety = 500 }
+		name = EVTOPTD_WCDAC_5125
+
+		set_character_flag = major_old_gods_sacrifice_flag
+
+		piety = -500
+
+		ai_chance = {
+			factor = 10
+		}
+	}
+	after = {
+		character_event = { id = WCDAC.5130 }
+	}
+}
+character_event = {
+	id = WCDAC.5130
+	desc = {
+		trigger = { has_character_modifier = follower_of_cthun }
+		text = EVTDESC_WCDAC_5130_cthun
+		picture = GFX_evt_cthun
+	}
+	desc = {
+		trigger = { has_character_modifier = follower_of_yogg_saron }
+		text = EVTDESC_WCDAC_5130_yogg_saron
+		picture = GFX_evt_yogg_saron
+	}
+	desc = {
+		trigger = { has_character_modifier = follower_of_yshaarj }
+		text = EVTDESC_WCDAC_5130_yshaarj
+		picture = GFX_evt_yshaarj
+	}
+	desc = {
+		trigger = { has_character_modifier = follower_of_nzoth }
+		text = EVTDESC_WCDAC_5130_nzoth
+		picture = GFX_evt_nzoth
+	}
+	picture = GFX_evt_sacrifice
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	option = {
+		trigger = {
+			NOR = {
+				has_character_modifier = cthun_blessing_build_1
+				has_character_modifier = cthun_blessing_build_2
+				has_character_modifier = cthun_blessing_build_3
+				has_character_modifier = yogg_saron_blessing_learning_1
+				has_character_modifier = yogg_saron_blessing_learning_2
+				has_character_modifier = yogg_saron_blessing_learning_3
+				has_character_modifier = yshaarj_blessing_levy_1
+				has_character_modifier = yshaarj_blessing_levy_2
+				has_character_modifier = yshaarj_blessing_levy_3
+				has_character_modifier = nzoth_blessing_plot_power_1
+				has_character_modifier = nzoth_blessing_plot_power_2
+				has_character_modifier = nzoth_blessing_plot_power_3
+			}
+		}
+		name = {
+			trigger = { has_character_modifier = follower_of_cthun }
+			text = EVTOPTA_WCDAC_5130_cthun
+		}
+		name = {
+			trigger = { has_character_modifier = follower_of_yogg_saron }
+			text = EVTOPTA_WCDAC_5130_yogg_saron
+		}
+		name = {
+			trigger = { has_character_modifier = follower_of_yshaarj }
+			text = EVTOPTA_WCDAC_5130_yshaarj
+		}
+		name = {
+			trigger = { has_character_modifier = follower_of_nzoth }
+			text = EVTOPTA_WCDAC_5130_nzoth
+		}
+
+		trigger_switch = {
+			on_trigger = has_character_modifier
+			follower_of_cthun = {
+				trigger_switch = {
+					on_trigger = has_character_flag
+					minor_old_gods_sacrifice_flag = { add_character_modifier = { name = cthun_blessing_build_1 years = 1 } }
+					medium_old_gods_sacrifice_flag = { add_character_modifier = { name = cthun_blessing_build_2 years = 1 } }
+					major_old_gods_sacrifice_flag = { add_character_modifier = { name = cthun_blessing_build_3 years = 1 } }
+				}
+			}
+			follower_of_yogg_saron = {
+				trigger_switch = {
+					on_trigger = has_character_flag
+					minor_old_gods_sacrifice_flag = { add_character_modifier = { name = yogg_saron_blessing_learning_1 years = 1 } }
+					medium_old_gods_sacrifice_flag = { add_character_modifier = { name = yogg_saron_blessing_learning_2 years = 1 } }
+					major_old_gods_sacrifice_flag = { add_character_modifier = { name = yogg_saron_blessing_learning_3 years = 1 } }
+				}
+			}
+			follower_of_yshaarj = {
+				trigger_switch = {
+					on_trigger = has_character_flag
+					minor_old_gods_sacrifice_flag = { add_character_modifier = { name = yshaarj_blessing_levy_1 years = 1 } }
+					medium_old_gods_sacrifice_flag = { add_character_modifier = { name = yshaarj_blessing_levy_2 years = 1 } }
+					major_old_gods_sacrifice_flag = { add_character_modifier = { name = yshaarj_blessing_levy_3 years = 1 } }
+				}
+			}
+			follower_of_nzoth = {
+				trigger_switch = {
+					on_trigger = has_character_flag
+					minor_old_gods_sacrifice_flag = { add_character_modifier = { name = nzoth_blessing_plot_power_1 years = 1 } }
+					medium_old_gods_sacrifice_flag = { add_character_modifier = { name = nzoth_blessing_plot_power_2 years = 1 } }
+					major_old_gods_sacrifice_flag = { add_character_modifier = { name = nzoth_blessing_plot_power_3 years = 1 } }
+				}
+			}
+		}
+	}
+	option = {
+		trigger = {
+			NOR = {
+				has_character_modifier = cthun_blessing_demesne_size_1
+				has_character_modifier = cthun_blessing_demesne_size_2
+				has_character_modifier = cthun_blessing_demesne_size_3
+				has_character_modifier = yogg_saron_blessing_intrigue_1
+				has_character_modifier = yogg_saron_blessing_intrigue_2
+				has_character_modifier = yogg_saron_blessing_intrigue_3
+				has_character_modifier = yshaarj_blessing_siege_1
+				has_character_modifier = yshaarj_blessing_siege_2
+				has_character_modifier = yshaarj_blessing_siege_3
+				has_character_modifier = nzoth_blessing_opinion_1
+				has_character_modifier = nzoth_blessing_opinion_2
+				has_character_modifier = nzoth_blessing_opinion_3
+			}
+		}
+		name = {
+			trigger = { has_character_modifier = follower_of_cthun }
+			text = EVTOPTB_WCDAC_5130_cthun
+		}
+		name = {
+			trigger = { has_character_modifier = follower_of_yogg_saron }
+			text = EVTOPTB_WCDAC_5130_yogg_saron
+		}
+		name = {
+			trigger = { has_character_modifier = follower_of_yshaarj }
+			text = EVTOPTB_WCDAC_5130_yshaarj
+		}
+		name = {
+			trigger = { has_character_modifier = follower_of_nzoth }
+			text = EVTOPTB_WCDAC_5130_nzoth
+		}
+
+		trigger_switch = {
+			on_trigger = has_character_modifier
+			follower_of_cthun = {
+				trigger_switch = {
+					on_trigger = has_character_flag
+					minor_old_gods_sacrifice_flag = { add_character_modifier = { name = cthun_blessing_demesne_size_1 years = 1 } }
+					medium_old_gods_sacrifice_flag = { add_character_modifier = { name = cthun_blessing_demesne_size_2 years = 1 } }
+					major_old_gods_sacrifice_flag = { add_character_modifier = { name = cthun_blessing_demesne_size_3 years = 1 } }
+				}
+			}
+			follower_of_yogg_saron = {
+				trigger_switch = {
+					on_trigger = has_character_flag
+					minor_old_gods_sacrifice_flag = { add_character_modifier = { name = yogg_saron_blessing_intrigue_1 years = 1 } }
+					medium_old_gods_sacrifice_flag = { add_character_modifier = { name = yogg_saron_blessing_intrigue_2 years = 1 } }
+					major_old_gods_sacrifice_flag = { add_character_modifier = { name = yogg_saron_blessing_intrigue_3 years = 1 } }
+				}
+			}
+			follower_of_yshaarj = {
+				trigger_switch = {
+					on_trigger = has_character_flag
+					minor_old_gods_sacrifice_flag = { add_character_modifier = { name = yshaarj_blessing_siege_1 years = 1 } }
+					medium_old_gods_sacrifice_flag = { add_character_modifier = { name = yshaarj_blessing_siege_2 years = 1 } }
+					major_old_gods_sacrifice_flag = { add_character_modifier = { name = yshaarj_blessing_siege_3 years = 1 } }
+				}
+			}
+			follower_of_nzoth = {
+				trigger_switch = {
+					on_trigger = has_character_flag
+					minor_old_gods_sacrifice_flag = { add_character_modifier = { name = nzoth_blessing_opinion_1 years = 1 } }
+					medium_old_gods_sacrifice_flag = { add_character_modifier = { name = nzoth_blessing_opinion_2 years = 1 } }
+					major_old_gods_sacrifice_flag = { add_character_modifier = { name = nzoth_blessing_opinion_3 years = 1 } }
+				}
+			}
+		}
+	}
+	option = {
+		trigger = {
+			NOR = {
+				has_character_modifier = old_god_blessing_morale_1
+				has_character_modifier = old_god_blessing_morale_2
+				has_character_modifier = old_god_blessing_morale_3
+			}
+		}
+		name = EVTOPTC_WCDAC_5130
+
+		trigger_switch = {
+			on_trigger = has_character_flag
+			minor_old_gods_sacrifice_flag = { add_character_modifier = { name = old_god_blessing_morale_1 years = 1 } }
+			medium_old_gods_sacrifice_flag = { add_character_modifier = { name = old_god_blessing_morale_2 years = 1 } }
+			major_old_gods_sacrifice_flag = { add_character_modifier = { name = old_god_blessing_morale_3 years = 1 } }
+		}
+	}
+	option = {
+		name = EVTOPTD_WCDAC_5130
+
+		trigger_switch = {
+			on_trigger = has_character_flag
+			minor_old_gods_sacrifice_flag = { add_character_modifier = { name = old_god_blessing_piety_1 years = 1 } }
+			medium_old_gods_sacrifice_flag = { add_character_modifier = { name = old_god_blessing_piety_2 years = 1 } }
+			major_old_gods_sacrifice_flag = { add_character_modifier = { name = old_god_blessing_piety_3 years = 1 } }
+		}
+	}
+	after = {
+		clr_character_flag = minor_old_gods_sacrifice_flag
+		clr_character_flag = medium_old_gods_sacrifice_flag
+		clr_character_flag = major_old_gods_sacrifice_flag
+	}
+}
+
+##########################
+#	MISSIONS
+##########################
+
+############################
+#	the Cult of the Damned
+############################
+
+###### Infect grain ######
+
+#Ping event
+character_event = {
+	id = WCDAC.7023
+	hide_window = yes
+
+	is_triggered_only = yes
+
+	immediate = { FROM = { society_quest_event = { id = WCDAC.7024 days = 7 random = 7 } } }
+}
+
+#Assign event
+society_quest_event = {
+	id = WCDAC.7024
+	desc = EVTDESC_WCDAC_7024
+
+	is_triggered_only = yes
+
+	immediate = {
+		random_realm_province = {
+			limit = {
+				NOT = { religion = death_god }
+				NOT = { has_province_modifier = undead_province }
+				any_province_holding = { holder_scope = { NOT = { character = ROOT } } }
+			}
+			random_province_holding = {
+				limit = { holder_scope = { NOT = { character = ROOT } } }
+				save_event_target_as = infection_target
+			}
+		}
+
+		random_realm_province = {
+			limit = {
+				NOT = { holder_scope =  { character = ROOT } }
+				NOT = { religion = death_god }
+				NOT = { has_province_modifier = undead_province }
+			}
+			random_province_holding = {
+				save_event_target_as = infection_target
+			}
+		}
+	}
+
+	quest_target = event_target:infection_target
+
+	option = {
+		name = ACCEPT
+		event_target:infection_target = {
+			set_quest_target = {
+				id = quest_infect_grain
+				holder = ROOT
+			}
+		}
+	}
+	option  = {
+		name = DECLINE
+		custom_tooltip = { text = decline_quest_tooltip }
+
+		add_character_modifier = {
+			name = quest_cooldown_timer
+			hidden = yes
+			days = 1000
+		}
+
+		ai_chance = { factor = 0 }
+	}
+}
+
+# Introductory event
+long_character_event = {
+	id = WCDAC.7025
+	desc = EVTDESC_WCDAC_7025
+	picture = GFX_evt_secret_ceremony
+
+	is_triggered_only = yes
+
+	immediate = {
+		random_quest_target = {
+			limit = { is_quest_target_of = ROOT }
+			save_event_target_as =  infection_target
+		}
+		event_target:infection_target = {
+			location = { save_event_target_as = province_of_infection_target }
+			holder_scope = { save_event_target_as = holder_of_infection_target }
+		}
+	}
+
+	option = {
+		name  = EVTOPTA_WCDAC_7025
+		character_event = { id = WCDAC.7026 }
+	}
+}
+
+# Faces the guards
+character_event = {
+	id = WCDAC.7026
+	desc = EVTDESC_WCDAC_7026
+	picture = GFX_evt_secret_ceremony
+
+	is_triggered_only = yes
+
+	# Bribe the guards
+	option = {
+		name  = EVTOPTA_WCDAC_7026
+		scaled_wealth = { value = -0.05 min = -25 }
+		hidden_effect = {
+			set_character_flag = tried_to_bribe_flag
+			random_list = {
+				75 = {
+					set_character_flag = bribed_the_guards_flag
+					character_event = { id = WCDAC.7030 }
+				}
+				25 = {
+					set_character_flag = attacked_the_guards_flag
+					character_event = { id = WCDAC.7027 }
+					modifier = {
+						factor = 1.75
+						NOT = { diplomacy = 12 }
+					}
+					modifier = {
+						factor = 1.75
+						NOT = { diplomacy = 7 }
+					}
+					modifier = {
+						factor = 1.75
+						NOT = { diplomacy = 3 }
+					}
+				}
+			}
+		}
+		ai_chance = {
+			factor = 0
+		}
+	}
+	# Hide from the guards
+	option = {
+		name  = EVTOPTB_WCDAC_7026
+		hidden_effect = {
+			set_character_flag = tried_to_hide_flag
+			random_list = {
+				75 = {
+					set_character_flag = avoided_the_guards_flag
+					character_event = { id = WCDAC.7030 }
+				}
+				25 = {
+					set_character_flag = attacked_the_guards_flag
+					character_event = { id = WCDAC.7027 }
+					modifier = {
+						factor = 1.75
+						NOT = { intrigue = 12 }
+					}
+					modifier = {
+						factor = 1.75
+						NOT = { intrigue = 7 }
+					}
+					modifier = {
+						factor = 1.75
+						NOT = { intrigue = 3 }
+					}
+				}
+			}
+		}
+		ai_chance = {
+			factor = 1
+		}
+	}
+	# Attack the guards
+	option = {
+		name  = EVTOPTC_WCDAC_7026
+		hidden_effect = {
+			set_character_flag = tried_to_attack_flag
+			set_character_flag = attacked_the_guards_flag
+			character_event = { id = WCDAC.7027 }
+		}
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+
+# Struggles with the guards
+character_event = {
+	id = WCDAC.7027
+	desc = {
+		trigger = { has_character_flag = tried_to_bribe_flag }
+		text = EVTDESC_WCDAC_7027_case_01
+	}
+	desc = {
+		trigger = { has_character_flag = tried_to_hide_flag }
+		text = EVTDESC_WCDAC_7027_case_02
+	}
+	desc = {
+		trigger = { has_character_flag = tried_to_attack_flag }
+		text = EVTDESC_WCDAC_7027_case_03
+	}
+	picture = GFX_evt_secret_ceremony
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			event_target:holder_of_infection_target = {
+				create_character = {
+					dynasty = none
+					religion = THIS
+					culture = THIS
+					female = no
+					age = 40
+					attributes = {
+						martial=5 diplomacy=3 stewardship=3 intrigue=3 learning=3
+					}
+					random_traits = yes
+					trait = class_warrior_2
+					trait=misguided_warrior
+				}
+				new_character = {
+					save_event_target_as = target_guard
+					set_character_flag = quest_character_flag
+					clear_event_target = target_enemy
+					save_event_target_as = target_enemy
+				}
+			}
+		}
+		save_event_target_as = target_adventurer
+	}
+
+	# Attack him
+	option = {
+		name  = EVTOPTA_WCDAC_7027
+
+		# You win immediately
+		# I wanted to put duel with guard here, but don't have time - your Zuzu
+		character_event = { id = WCDAC.7030 }
+	}
+	# Run away
+	option = {
+		trigger = { }
+		name = EVTOPTB_WCDAC_7027
+
+		clr_quest = {
+			id = quest_infect_grain
+			failure = yes
+		}
+		hidden_effect = {
+			clr_character_flag = infection_in_progress
+			clr_character_flag = tried_to_bribe_flag
+			clr_character_flag = bribed_the_guards_flag
+			clr_character_flag = tried_to_hide_flag
+			clr_character_flag = avoided_the_guards_flag
+			clr_character_flag = tried_to_attack_flag
+			clr_character_flag = attacked_the_guards_flag
+		}
+	}
+
+	after = {
+		event_target:target_guard = { death = { death_reason = death_missing } }
+	}
+}
+
+# You imprisoned by the guards. Fail.
+character_event = {
+	id = WCDAC.7028
+	desc = EVTDESC_WCDAC_7028
+	picture = GFX_evt_into_the_dungeon
+
+	is_triggered_only = yes
+
+	immediate = {
+		event_target:target_guard = {
+			if = { limit = { is_alive = yes } death = { death_reason = death_missing } }
+		}
+	}
+
+	option = {
+		name = ALAS
+
+		clr_quest = {
+			id = quest_devil_worshipers_desecrate_temple
+			failure = yes
+		}
+		hidden_effect = {
+			clr_character_flag = infection_in_progress
+			clr_character_flag = tried_to_bribe_flag
+			clr_character_flag = bribed_the_guards_flag
+			clr_character_flag = tried_to_hide_flag
+			clr_character_flag = avoided_the_guards_flag
+			clr_character_flag = tried_to_attack_flag
+			clr_character_flag = attacked_the_guards_flag
+			increase_visibility_effect = yes
+		}
+	}
+}
+
+# The grain is infected. What to do with the witnesses?
+character_event = {
+	id = WCDAC.7030
+	desc = {
+		trigger = { has_character_flag = bribed_the_guards_flag }
+		text = EVTDESC_WCDAC_7030_case_01
+	}
+	desc = {
+		trigger = { has_character_flag = avoided_the_guards_flag }
+		text = EVTDESC_WCDAC_7030_case_02
+	}
+	desc = {
+		trigger = { has_character_flag = attacked_the_guards_flag }
+		text = EVTDESC_WCDAC_7030_case_03
+	}
+	picture = GFX_evt_secret_ceremony
+
+	is_triggered_only = yes
+
+	immediate = {
+		event_target:target_guard = {
+			if = { limit = { is_alive = yes } death = { death_reason = death_missing } }
+		}
+	}
+
+	# Eliminate if it's necessary.
+	option = {
+		name  = EVTOPTA_WCDAC_7030
+
+		hidden_effect = {
+			character_event = { id = WCDAC.7032 }
+
+			random_list = {
+				10 = { increase_visibility_effect = yes }
+				90 = {}
+			}
+		}
+
+		ai_chance = {
+			factor = 75
+		}
+	}
+	# Kill them all!
+	option = {
+		name  = EVTOPTB_WCDAC_7030
+
+		add_trait_cruel_effect = yes
+		remove_trait_kind_effect = yes
+		add_society_currency_minor_effect = yes
+
+		hidden_effect = {
+			character_event = { id = WCDAC.7032 }
+		}
+
+		ai_chance = {
+			factor = 25
+		}
+	}
+}
+
+# Finishing of the quest
+character_event = {
+	id = WCDAC.7032
+	desc = EVTDESC_WCDAC_7032
+	picture = GFX_evt_secret_ceremony
+
+	is_triggered_only = yes
+
+	option = {
+		name = EXCELLENT
+
+		clr_quest = quest_infect_grain
+		add_society_currency_medium_effect = yes
+
+		event_target:infection_target = {
+			add_holding_modifier = {
+				name = infected_holding
+				years = 5
+				hidden = yes
+			}
+		}
+
+		hidden_effect = {
+			clr_character_flag = infection_in_progress
+			clr_character_flag = tried_to_bribe_flag
+			clr_character_flag = bribed_the_guards_flag
+			clr_character_flag = tried_to_hide_flag
+			clr_character_flag = avoided_the_guards_flag
+			clr_character_flag = tried_to_attack_flag
+			clr_character_flag = attacked_the_guards_flag
+			random = {
+				chance = 50
+				minor_soul_corruption_effect = yes
+			}
+		}
+	}
+}
+
+
+### Disembowel character ###
+
+# Ping event
+character_event = {
+	id = WCDAC.7040
+	hide_window = yes
+
+	is_triggered_only = yes
+
+	immediate = { FROM = { society_quest_event = { id = WCDAC.7041 days = 7 random = 7 } } }
+}
+
+#Assign event
+society_quest_event = {
+	id = WCDAC.7041
+	desc = EVTDESC_WCDAC_7041
+	border = GFX_event_letter_frame_intrigue
+
+	is_triggered_only = yes
+
+	immediate = {
+		random_list = {
+			10 = { set_character_flag = disembowel_small_humanoid_flag }
+			10 = { set_character_flag = disembowel_medium_humanoid_flag }
+			5 = { set_character_flag = disembowel_large_humanoid_flag }
+		}
+	}
+
+	option = {
+		name = ACCEPT
+
+		if = {
+			limit = { has_character_flag = disembowel_small_humanoid_flag }
+			set_quest = quest_disembowel_small_humanoid
+		}
+		if = {
+			limit = { has_character_flag = disembowel_medium_humanoid_flag }
+			set_quest = quest_disembowel_medium_humanoid
+		}
+		if = {
+			limit = { has_character_flag = disembowel_large_humanoid_flag }
+			set_quest = quest_disembowel_large_humanoid
+		}
+	}
+
+	option = {
+		name = DECLINE
+		custom_tooltip = { text = decline_quest_tooltip }
+
+		add_character_modifier = {
+			name = quest_cooldown_timer
+			hidden = yes
+			days = 1000
+		}
+
+		ai_chance = { factor = 0 }
+	}
+
+	after = {
+		hidden_effect = {
+			clr_character_flag = disembowel_small_humanoid_flag
+			clr_character_flag = disembowel_medium_humanoid_flag
+			clr_character_flag = disembowel_large_humanoid_flag
+		}
+	}
+}
+
+### Turn into undead ###
+
+#Ping event
+character_event = {
+	id = WCDAC.7050
+	hide_window = yes
+
+	is_triggered_only = yes
+
+	immediate = { FROM = { society_quest_event = { id = WCDAC.7051 days = 7 random = 7 } } }
+}
+
+#Assign event
+society_quest_event = {
+	id = WCDAC.7051
+	desc = EVTDESC_WCDAC_7051
+
+	is_triggered_only = yes
+
+	immediate = {
+		random_courtier = {
+			limit = {
+				ai = yes
+				is_adult = yes
+				is_incapable = no
+				prisoner = no
+
+				NOT = { character = ROOT }
+				NOT = { has_character_flag = being_raised_flag }
+
+				is_dark_being_trigger = no
+				is_humanoid_trigger = yes
+				is_in_society = no
+			}
+			save_event_target_as = target_future_undead
+		}
+	}
+
+	quest_target = event_target:target_future_undead
+
+	option = {
+		name = ACCEPT
+		event_target:target_future_undead = {
+			set_quest_target = {
+				id = quest_turn_into_undead
+				holder = ROOT
+			}
+		}
+	}
+	option  = {
+		name = DECLINE
+		custom_tooltip = { text = decline_quest_tooltip }
+
+		add_character_modifier = {
+			name = quest_cooldown_timer
+			hidden = yes
+			days = 1000
+		}
+
+		ai_chance = { factor = 0 }
+	}
+}
+
+############################
+#	the Shadow Council
+############################
+
+### Drain a soul ###
+
+# Ping event
+character_event = {
+	id = WCDAC.8000
+	hide_window = yes
+
+	is_triggered_only = yes
+
+	immediate = { FROM = { society_quest_event = { id = WCDAC.8001 days = 7 random = 7 } } }
+}
+
+#Assign event
+society_quest_event = {
+	id = WCDAC.8001
+	desc = EVTDESC_WCDAC_8001
+	border = GFX_event_letter_frame_intrigue
+
+	is_triggered_only = yes
+
+	immediate = {
+		random_list = {
+			5 = { set_character_flag = drain_soul_ruler_flag }
+			10 = { set_character_flag = drain_soul_holy_person_flag }
+			10 = { set_character_flag = drain_soul_virgin_flag }
+		}
+	}
+
+	option = {
+		name = ACCEPT
+
+		if = {
+			limit = { has_character_flag = drain_soul_ruler_flag }
+			set_quest = quest_drain_soul_ruler
+		}
+		if = {
+			limit = { has_character_flag = drain_soul_holy_person_flag }
+			set_quest = quest_drain_soul_holy_person
+		}
+		if = {
+			limit = { has_character_flag = drain_soul_virgin_flag }
+			set_quest = quest_drain_soul_virgin
+		}
+	}
+
+	option = {
+		name = DECLINE
+		custom_tooltip = { text = decline_quest_tooltip }
+
+		add_character_modifier = {
+			name = quest_cooldown_timer
+			hidden = yes
+			days = 1000
+		}
+
+		ai_chance = { factor = 0 }
+	}
+
+	after = {
+		hidden_effect = {
+			clr_character_flag = drain_soul_ruler_flag
+			clr_character_flag = drain_soul_holy_person_flag
+			clr_character_flag = drain_soul_virgin_flag
+		}
+	}
+}
+
+### Mind Control ###
+
+#Ping event
+character_event = {
+	id = WCDAC.8010
+	hide_window = yes
+
+	is_triggered_only = yes
+
+	immediate = { FROM = { society_quest_event = { id = WCDAC.8011 days = 7 random = 7 } } }
+}
+
+#Assign event
+society_quest_event = {
+	id = WCDAC.8011
+	desc = {
+		trigger = { society_member_of = shadow_council }
+		text = EVTDESC_WCDAC_8011_council
+	}
+	desc = {
+		trigger = { society_member_of = twilights_hammer_cult }
+		text = EVTDESC_WCDAC_8011_cult
+	}
+
+	is_triggered_only = yes
+
+	immediate = {
+		random_courtier = {
+			limit = {
+				ai = yes
+				is_adult = yes
+				is_incapable = no
+				prisoner = no
+
+				NOT = { character = ROOT }
+				NOT = { has_character_flag = mind_control_attempt_flag }
+
+				is_dark_being_trigger = yes
+				is_humanoid_trigger = yes
+				is_in_society = no
+				NOT = { has_opinion_modifier = { who = ROOT modifier = opinion_loyal_servant } }
+				has_weak_character_trigger = yes
+			}
+			save_event_target_as = target_mind
+		}
+	}
+
+	quest_target = event_target:target_mind
+
+	option = {
+		name = ACCEPT
+		event_target:target_mind = {
+			set_quest_target = {
+				id = quest_control_mind
+				holder = ROOT
+			}
+		}
+	}
+	option  = {
+		name = DECLINE
+		custom_tooltip = { text = decline_quest_tooltip }
+
+		add_character_modifier = {
+			name = quest_cooldown_timer
+			hidden = yes
+			days = 1000
+		}
+
+		ai_chance = { factor = 0 }
+	}
+}
+
+# on_county_religion_change
+# Gives modifier to province if province's converted to evil religion
+province_event = {
+	id = WCDAC.9990
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	trigger = {
+		evil_public_religion_trigger = yes
+	}
+
+	immediate = {
+		if = {
+			limit = { NOT = { has_province_modifier = unholy_architecture } }
+			if = {
+				limit = { holder_scope = { ai = yes } }
+				add_province_modifier = { name = unholy_architecture years = 5 }
+			}
+			else = { add_province_modifier = { name = unholy_architecture years = 3 } }
+		}
+		if = {
+			limit = {
+				any_province_holding = {
+					holding_type = tribal
+				}
+			}
+			random_province_holding = {
+				limit = { holding_type = tribal }
+				convert_tribal_to_castle_effect = yes
+			}
+		}
+	}
+}
+
+######################
+# Clean-up events
+#####################
+
+# on_character_convert_religion and on_character_convert_secret_religion
+# If you converts to other religion removes some class and replaces it
+character_event = {
+	id = WCDAC.9995
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	trigger = {
+		OR = {
+			AND = {
+				is_paladin_class_trigger = yes
+				can_be_paladin_trigger = no
+			}
+			AND = {
+				has_priest_trait_trigger = yes
+				can_be_priest_trigger = no
+			}
+			AND = {
+				has_loa_priest_trigger = yes
+				can_be_loa_priest_trigger = no
+			}
+		}
+	}
+
+	immediate = {
+		if = {
+			limit = { is_paladin_class_trigger = yes }
+			add_character_modifier = { name = training_self_warrior duration = -1 }
+		}
+		if = {
+			limit = { has_sham_class_trait_trigger = yes }
+			clr_sham_flag_effect = yes
+			add_class_trait_effect = yes
+		}
+		else = {
+			if = {
+				limit = {
+					OR = {
+						is_priest_class_trigger = yes
+						is_loa_priest_class_trigger = yes
+					}
+				}
+				if = {
+					limit = {
+						OR = {
+							true_religion_group = void_group
+							true_religion = forsaken_cult
+						}
+					}
+					add_character_modifier = { name = training_self_shadow_priest duration = -1 }
+				}
+				else = {
+					if = {
+						limit = { true_religion_group = fel_group }
+						add_character_modifier = { name = training_self_warlock duration = -1 }
+					}
+					else = {
+						if  = {
+							limit = { true_religion_group = necromancy_group }
+							add_character_modifier = { name = training_self_necromancer duration = -1 }
+						}
+						else = {
+							add_character_modifier = { name = training_self_shaman duration = -1 }
+						}
+					}
+				}
+			}
+			character_event = { id = WCDAC.9996 }
+		}
+	}
+}
+# Sets new class
+character_event = {
+	id = WCDAC.9996
+	desc = {
+		trigger = {
+			OR =  {
+				is_paladin_class_trigger = yes
+				is_priest_class_trigger = yes
+			}
+		}
+		text = EVTDESC_WCDAC_9996_light_class
+		picture = GFX_evt_paladin_human
+	}
+	desc = {
+		trigger = { is_loa_priest_class_trigger = yes }
+		text = EVTDESC_WCDAC_9996_loa_class
+		picture = GFX_evt_loas_worship
+	}
+
+	is_triggered_only = yes
+
+	immediate = {
+		recount_experience_effect = yes
+	}
+
+	option = {
+		name = EVTOPTA_WCDAC_9996
+
+		add_class_trait_effect = yes
+	}
+}

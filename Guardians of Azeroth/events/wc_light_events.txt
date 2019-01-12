@@ -1,0 +1,634 @@
+namespace = WCLAT
+
+### The creation of the Ashbringer ###
+# Founds a dark crystal
+narrative_event = {
+	id = WCLAT.8000
+	title = EVTTITLE_WCLAT_8000
+	desc = EVTDESC_WCLAT_8000
+	picture = GFX_evt_desert
+	border = GFX_event_narrative_frame_religion
+
+	is_triggered_only = yes
+
+	only_playable = yes
+	min_age = 16
+	only_capable = yes
+	prisoner = no
+
+	trigger = {
+		is_alive = yes
+		is_dying = no
+		
+		NOT = { has_global_flag = ashbringer_event_chain_flag }
+		NOT = { has_character_flag = ashbringer_event_chain_happened_flag }
+
+		true_religion_group = light_group
+
+		has_global_flag = dark_portal_was_opened_flag
+	}
+
+	weight_multiplier = {
+		days = 1
+	}
+
+	immediate = {
+		set_global_flag = ashbringer_event_chain_flag
+		set_character_flag = ashbringer_event_chain_happened_flag
+	}
+
+	# Touch the crystal
+	option = {
+		name = EVTOPTA_WCLAT_8000
+
+		tooltip = { add_artifact = dark_crystal }
+		
+		hidden_effect = { narrative_event = { id = WCLAT.8005 } }
+	}
+
+	# Pass by
+	option = {
+		name = EVTOPTB_WCLAT_8000
+
+		custom_tooltip = {
+			text = stops_the_event_chain
+			hidden_effect = { clr_global_flag = ashbringer_event_chain_flag }
+		}
+
+		ai_chance = {
+			factor = 0
+		}
+	}
+
+	after = {
+		if = {
+			limit = { is_alive = no }
+			clr_global_flag = ashbringer_event_chain_flag
+		}
+	}
+}
+# You touched it
+narrative_event = {
+	id = WCLAT.8005
+	title = EVTTITLE_WCLAT_8000
+	desc = EVTDESC_WCLAT_8005
+	picture = GFX_evt_desert
+	border = GFX_event_narrative_frame_religion
+
+	is_triggered_only = yes
+
+	# I need to be careful with it
+	option = {
+		name = EVTOPTA_WCLAT_8005
+
+		health = -0.5
+
+		add_artifact = dark_crystal
+		new_artifact = {
+			set_creation_date = 1.1.1
+		}
+	}
+
+	# Throw out this thing!
+	option = {
+		name = EVTOPTB_WCLAT_8005
+
+		health = -0.5
+
+		custom_tooltip = {
+			text = stops_the_event_chain
+			hidden_effect = { clr_global_flag = ashbringer_event_chain_flag }
+		}
+
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+# Dark days came, this dark crystal is the last hope
+narrative_event = {
+	id = WCLAT.8010
+	title = EVTTITLE_WCLAT_8010
+	desc = EVTDESC_WCLAT_8010
+	picture = GFX_evt_ritual_scroll
+	border = GFX_event_narrative_frame_religion
+
+	is_triggered_only = yes
+
+	only_playable = yes
+	min_age = 16
+	only_capable = yes
+	prisoner = no
+
+	trigger = {
+		is_alive = yes
+		is_dying = no
+		
+		NOT = { has_character_flag = ongoing_creation_ashbringer_flag }
+
+		true_religion_group = light_group
+
+		has_artifact = dark_crystal
+	}
+
+	immediate = {
+		set_character_flag = ongoing_creation_ashbringer_flag
+	}
+
+	weight_multiplier = {
+		days = 1
+		modifier = {
+			factor = 4
+			top_liege = {
+				any_current_enemy = {
+					evil_public_religion_trigger = yes
+				}
+			}
+		}
+		modifier = {
+			factor = 1.5
+			trait = brave
+		}
+		modifier = {
+			factor = 1.25
+			trait = temperate
+		}
+		modifier = {
+			factor = 1.25
+			trait = stubborn
+		}
+		modifier = {
+			factor = 1.25
+			trait = ambitious
+		}
+	}
+
+	# We must try
+	option = {
+		name = EVTOPTA_WCLAT_8010
+
+		hidden_effect = { narrative_event = { id = WCLAT.8015 } }
+	}
+
+	# Throw out this thing!
+	option = {
+		name = EVTOPTB_WCLAT_8005
+
+		unsafe_destroy_artifact = dark_crystal
+
+		custom_tooltip = {
+			text = stops_the_event_chain
+			hidden_effect = {
+				clr_global_flag = ashbringer_event_chain_flag
+				clr_character_flag = ongoing_creation_ashbringer_flag
+			}
+		}
+	}
+}
+# Purifies the crystal
+narrative_event = {
+	id = WCLAT.8015
+	title = EVTTITLE_WCLAT_8010
+	desc = EVTDESC_WCLAT_8015
+	picture = GFX_evt_ritual_scroll
+	border = GFX_event_narrative_frame_religion
+
+	is_triggered_only = yes
+
+	# Forge a weapon!
+	option = {
+		name = EVTOPTA_WCLAT_8015
+
+		hidden_effect = { narrative_event = { id = WCLAT.8020 days = 30 } }
+	}
+}
+# Dwarves forged the weapon
+narrative_event = {
+	id = WCLAT.8020
+	title = EVTTITLE_WCLAT_8010
+	desc = EVTDESC_WCLAT_8020
+	picture = GFX_evt_ashbringer
+	border = GFX_event_narrative_frame_religion
+
+	is_triggered_only = yes
+
+	# Forge a weapon!
+	option = {
+		name = EVTOPTA_WCLAT_8020
+
+		add_artifact = ashbringer
+		if = {
+			limit = { has_nickname = no }
+			give_nickname = nick_the_ashbringer
+		}
+		hidden_effect = { unsafe_destroy_artifact = dark_crystal }
+	}
+}
+
+### The Scarlet Crusade and the Argent Dawn ###
+character_event = {
+	id = WCLAT.9000
+
+	is_triggered_only = yes
+	hide_window = yes
+	
+	ai = yes
+	only_playable = yes
+
+	trigger = {
+		ai = yes
+		is_playable = yes
+		is_landed = yes
+		
+		is_alive = yes
+		is_dying = no
+		
+		had_global_flag = { flag = plague_of_lordaeron_happened_flag years = 3 }
+
+		NOT = { religion_group = light_group }
+		
+		NOT = { d_scarlet_crusade = { has_holder = yes } }
+		top_liege = { NOT = { religion_group = light_group } }
+		e_lordaeron = {
+			OR = {
+				has_holder = no
+				holder_scope = { NOT = { religion_group = light_group } }
+			}
+		}
+		k_lordaeron = {
+			OR = {
+				has_holder = no
+				holder_scope = { NOT = { religion_group = light_group } }
+			}
+		}
+		any_demesne_province = {
+			religion = holy_light
+			culture = lordaeronian
+		}
+	}
+
+	immediate = {
+		log = "WCLAT.9000 fired for [Root.GetBestName]"
+				
+		# Creates d_argent_dawn
+		create_character = {
+			female = no
+			dynasty = none
+			culture=lordaeronian religion=holy_light
+			trait=brilliant_strategist
+			trait=creature_human
+			trait=class_paladin_7
+			trait=kind trait=just
+			age = 50
+		}
+		new_character = {
+			activate_title = { title = d_argent_dawn status = yes }
+			d_argent_dawn = { grant_title = PREV }
+			religion_authority = {
+				modifier = religious_order_formed
+				years = 10
+			}
+			religion_authority = {
+				modifier = religious_split_bad
+				years = 10
+			}
+			set_defacto_liege = THIS
+		}
+		
+		# Creates d_scarlet_crusade
+		random_demesne_province = {
+			limit = {
+				religion = holy_light
+				culture = lordaeronian
+			}
+			religion = scarlet_light
+			county = { save_event_target_as = target_county }
+		}
+		#Grand Crusader
+		if = {
+			limit = {
+				c_60021 = {		# Saidan
+					ai = yes
+
+					is_alive = yes
+
+					religion = holy_light
+					culture = lordaeronian
+					trait = zealous
+				}
+			}
+			c_60021 = { save_event_target_as = target_grand_crusader }
+		}
+		else = {
+			create_character = {
+				female = no
+				dynasty = none
+				culture = lordaeronian religion = scarlet_light
+				trait=brilliant_strategist
+				trait=creature_human
+				trait=class_paladin_7
+				trait=wroth trait=zealous
+				age = 50
+			}
+			new_character = { save_event_target_as = target_grand_crusader }
+		}
+		event_target:target_grand_crusader = {
+			religion = scarlet_light
+			clear_secret_religion = yes
+			activate_title = { title = d_scarlet_crusade status = yes }
+			d_scarlet_crusade = { grant_title = PREV }
+			religion_authority = {
+				modifier = religious_order_formed
+				years = 10
+			}
+			religion_authority = {
+				modifier = religious_split_good
+				years = 10
+			}
+			set_defacto_liege = THIS
+			event_target:target_county = { usurp_title = { target = PREV type = revolt } }
+			wealth = 500
+			narrative_event = { id = WCLAT.9001 }
+		}
+		#Grand Inquisitor
+		if = {
+			limit = {
+				c_60550 = {		# Isillien
+					ai = yes
+
+					is_alive = yes
+
+					religion = holy_light
+					culture = lordaeronian
+					trait = zealous
+				}
+			}
+			c_60550 = { save_event_target_as = target_grand_inquisitor }
+		}
+		else = {
+			create_character = {
+				dynasty = none
+				culture = lordaeronian religion = scarlet_light
+				trait=scholarly_theologian
+				trait=creature_human
+				trait=class_priest_6
+				trait=wroth trait=zealous add_trait=ambitious
+				age = 50
+			}
+			new_character = { save_event_target_as = target_grand_inquisitor }
+		}
+		event_target:target_grand_inquisitor = {
+			religion = scarlet_light
+			clear_secret_religion = yes
+			wealth = 500
+			
+			activate_title = { title = d_church_scarlet_light status = yes }
+			d_church_scarlet_light = { grant_title = PREV }
+			set_defacto_liege = THIS
+
+		}
+	}
+}
+narrative_event = {
+	id = WCLAT.9001
+	title = EVTTITLE_WLAT_9001
+	desc = EVTDESC_WLAT_9001
+	picture = GFX_evt_high_commander
+	portrait = event_target:target_grand_crusader
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+
+	major = yes
+	major_trigger = {
+		is_untouchable_trigger = no
+	}
+
+	# Support the Argent Dawn
+	option = {
+		trigger = { true_religion = holy_light }
+		name = EVTOPTA_WCLAT_9001
+
+		piety = 100
+		tooltip = {
+			d_argent_dawn = {
+				show_scope_change = no
+				holder_scope = {
+					show_scope_change = no
+					religion_authority = {
+						modifier = religious_split_bad
+						years = 10
+					}
+				}
+			}
+			d_scarlet_crusade = {
+				show_scope_change = no
+				holder_scope = {
+					show_scope_change = no
+					religion_authority = {
+						modifier = religious_split_good
+						years = 10
+					}
+				}
+			}
+		}
+
+		ai_chance = {
+			factor = 33
+			modifier = {
+				factor = 20
+				NOT = { culture = lordaeronian }
+			}
+			modifier = {
+				factor = 2
+				trait = kind
+			}
+			modifier = {
+				factor = 1.32
+				trait = just
+			}
+			modifier = {
+				factor = 1.32
+				has_benevolent_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.32
+				has_pleasant_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.32
+				has_pious_trait_trigger = yes
+			}
+		}
+	}
+
+	# Support the Scarlet Crusade
+	option = {
+		trigger = {
+			OR = {
+				AND = {
+					trait = creature_human
+					true_religion = holy_light
+				}
+				true_religion = scarlet_light
+			}
+
+			OR = {
+				AND = {
+					controls_religion = no
+					holy_order = no
+				}
+				true_religion = scarlet_light
+			}
+		}
+		name = EVTOPTB_WCLAT_9001
+		
+		tooltip = {
+			d_argent_dawn = {
+				show_scope_change = no
+				holder_scope = {
+					show_scope_change = no
+					religion_authority = {
+						modifier = religious_split_bad
+						years = 10
+					}
+				}
+			}
+			d_scarlet_crusade = {
+				show_scope_change = no
+				holder_scope = {
+					show_scope_change = no
+					religion_authority = {
+						modifier = religious_split_good
+						years = 10
+					}
+				}
+			}
+		}
+
+		religion = scarlet_light
+		if = {
+			limit = { has_secret_religion = yes }
+			clear_secret_religion = yes
+		}
+		if = {
+			limit = { NOT = { trait = zealous } }
+			if = {
+				limit = { trait = cynical }
+				remove_trait = cynical
+			}
+			add_trait = zealous
+		}
+
+		if = {
+			limit = {
+				is_ruler = yes
+				higher_real_tier_than = BARON
+			}
+			capital_scope = { 
+				if = {
+					limit = {
+						holder_scope = { character = PREVPREV }
+						NOT = { religion = scarlet_light }
+					}
+					religion = scarlet_light
+				}
+			}
+			
+			hidden_effect = {
+				any_close_relative = {
+					limit = {
+						is_ruler = no
+						host = { character = ROOT }
+						
+						religion = holy_light
+						NOT = { religion = scarlet_light }
+					}
+					religion = scarlet_light
+					clear_secret_religion = yes
+				}
+				any_courtier_or_vassal = {
+					limit = {
+						OR = {
+							is_ruler = no
+							tier = BARON
+						}
+						
+						religion = holy_light
+						NOT = { religion = scarlet_light }
+						OR = {
+							trait = zealous
+							has_evil_trait_trigger = yes
+							has_unpleasant_trait_trigger = yes
+							has_impious_trait_trigger = yes
+						}
+					}
+					religion = scarlet_light
+					clear_secret_religion = yes
+				}
+			}
+		}
+
+		ai_chance = {
+			factor = 66
+			modifier = {
+				factor = 2
+				trait = zealous
+			}
+			modifier = {
+				factor = 1.09
+				trait = cruel
+			}
+			modifier = {
+				factor = 1.09
+				trait = arbitrary
+			}
+			modifier = {
+				factor = 1.09
+				has_evil_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.09
+				has_unpleasant_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.09
+				has_impious_trait_trigger = yes
+			}
+		}
+	}
+
+	# Fools!
+	option = {
+		trigger = {
+			NOR = {
+				true_religion = holy_light
+				true_religion = scarlet_light
+			}
+		}
+		name = FOOLS
+		
+		tooltip = {
+			d_argent_dawn = {
+				show_scope_change = no
+				holder_scope = {
+					show_scope_change = no
+					religion_authority = {
+						modifier = religious_split_bad
+						years = 10
+					}
+				}
+			}
+			d_scarlet_crusade = {
+				show_scope_change = no
+				holder_scope = {
+					show_scope_change = no
+					religion_authority = {
+						modifier = religious_split_good
+						years = 10
+					}
+				}
+			}
+		}
+	}
+}

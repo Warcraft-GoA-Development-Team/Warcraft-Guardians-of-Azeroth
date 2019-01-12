@@ -1,0 +1,2283 @@
+namespace = WCFEL
+
+# Fel corruption
+# Stages:
+# 4) <99 - Demon
+# 3) 66-99 - Major exposure (fel form)
+# 2) 33-65 - Minor exposure (green skin, eyes)
+# 1) 0-32 - Natural form
+
+# Moves on to the next stage of fel corruption
+character_event = {
+	id = WCFEL.10
+	desc = {
+		trigger = { NOT = { check_variable = { which = fel_corruption value = 100 } } }
+		text = EVTDESC_WCFEL_10_case_01
+		picture = GFX_evt_fel_storm
+	}
+	desc = {
+		trigger = { check_variable = { which = fel_corruption value = 100 } }
+		text = EVTDESC_WCFEL_10_case_02
+		picture = GFX_evt_burning_legion
+	}
+	border = GFX_event_normal_frame_intrigue
+
+	is_triggered_only = yes
+	hide_from = yes
+	hide_new = yes
+
+	trigger = {
+		OR = {
+			AND = {
+				NOR = {
+					has_character_modifier = fel_corruption_1
+					has_character_modifier = fel_corruption_2
+					trait = demon
+				}
+				check_variable = { which = fel_corruption value = 33 }
+			}
+			AND = {
+				NOR = {
+					has_character_modifier = fel_corruption_2
+					trait = demon
+				}
+				check_variable = { which = fel_corruption value = 66 }
+			}
+			AND = {
+				NOT = { trait = undead }
+				NOT = { trait = demon }
+				check_variable = { which = fel_corruption value = 100 }
+			}
+		}
+	}
+
+	option = {
+		name = {
+			trigger = {
+				NOT = { true_religion_group = fel_group }
+				NOT = { check_variable = { which = fel_corruption value = 100 } }
+			}
+			text = ALAS
+		}
+		name = {
+			trigger = {
+				true_religion_group = fel_group
+				NOT = { check_variable = { which = fel_corruption value = 100 } }
+			}
+			text = EXCELLENT
+		}
+		name = {
+			trigger = { check_variable = { which = fel_corruption value = 100 } }
+			text = EVTOPTA_WCFEL_10
+		}
+
+		remove_fel_corruption_modifiers_effect = yes
+		add_fel_corruption_modifier_effect = yes
+		
+		# Stage effects
+		if = {
+			limit = { check_variable = { which = fel_corruption value = 66 } }
+			if = {
+				limit = { NOT = { true_religion_group = fel_group } }
+				character_event = { id = WCFEL.170 days = 3 }
+			}
+			else = {
+				if = {
+					limit = { secret_religion_group = fel_group }
+					convert_to_secret_religion = yes
+				}
+			}
+		}
+		hidden_effect = {
+			# Portrait changes
+			if = {
+				limit = { graphical_culture = orcbrowngfx }
+				set_graphical_culture = warsong
+			}
+			if = {
+				limit = { check_variable = { which = fel_corruption value = 66 } }
+				if = {
+					limit = { has_orc_gfx_trigger = yes }
+					if = {
+						limit = { trait = creature_orc }
+						remove_trait = creature_orc
+					}
+					if = {
+						limit = { NOT = { trait = creature_fel_orc } }
+						add_trait = creature_fel_orc
+					}
+					set_graphical_culture = orcfel
+				}
+			}
+			if = {
+				limit = { check_variable = { which = fel_corruption value = 100 } }
+				if = {
+					limit = { has_demon_gfx_trigger = no }
+					set_graphical_culture = demon_form
+				}
+			}
+			if = {
+				limit = {
+					is_pregnant = yes
+					can_has_children_trigger = no
+				}
+				death = { death_reason = death_natural }
+			}
+			else = {
+				# Notifies your family/spouse/friends/lovers
+				if = {
+					limit = { trait = demon }
+					show_close_people_what_this_become_effect = yes
+				}
+			}
+		}
+	}
+}
+
+# Moves on to the previous stage of fel corruption
+character_event = {
+	id = WCFEL.20
+	desc = EVTDESC_WCFEL_20
+	picture = GFX_evt_fel_storm
+	border = GFX_event_normal_frame_intrigue
+
+	is_triggered_only = yes
+	hide_from = yes
+	hide_new = yes
+
+	trigger = {
+		OR = {
+			AND = {
+				has_character_modifier = fel_corruption_1
+				NOT = { check_variable = { which = fel_corruption value = 33 } }
+			}
+			AND = {
+				has_character_modifier = fel_corruption_2
+				NOT = { check_variable = { which = fel_corruption value = 66 } }
+			}
+		}
+	}
+
+	option = {
+		name = {
+			trigger = { NOT = { true_religion_group = fel_group } }
+			text = EXCELLENT
+		}
+		name = {
+			trigger = { true_religion_group = fel_group }
+			text = ALAS
+		}
+
+		# Modifiers
+		remove_fel_corruption_modifiers_effect = yes
+		add_fel_corruption_modifier_effect = yes
+	}
+}
+
+# Increases/decreases fel corruption
+character_event = {
+	id = WCFEL.95
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	only_playable = yes
+	min_age = 16
+	only_capable = yes
+
+	trigger = {
+		is_alive = yes
+		is_dying = no
+		
+		NOT = { trait = demon }
+		OR = {
+			AND = {
+				AND = {
+					is_corruptible_warlock_trigger = no
+					is_susceptible_to_fel_corruption_trigger = no
+				}
+				NOT = { check_variable = { which = fel_corruption value = 0 } }
+			}
+			AND = {
+				OR = {
+					is_corruptible_warlock_trigger = yes
+					is_susceptible_to_fel_corruption_trigger = yes
+				}
+				NOT = { check_variable = { which = fel_corruption value = 100 } }
+				OR = {
+					# If you turned into felform, you'll receive a very very large "dose" of fel
+					AND = {
+						has_character_modifier = fel_corruption_2
+						NOT = { check_variable = { which = fel_corruption value = 70 } }	# Fel corruption "ceiling"
+					}
+					# If you're a high lvl warlock, you'll receive a very large "dose" of fel
+					AND = {
+						is_warlock_class_trigger = yes
+						is_weak_warlock_class_trigger = no
+						NOT = { check_variable = { which = fel_corruption value = 55 } }	# Fel corruption "ceiling"
+					}
+					# If you're a weak warlock, you'll receive an average "dose" of fel
+					AND = {
+						is_warlock_class_trigger = yes
+						is_weak_warlock_class_trigger = yes
+						NOT = { check_variable = { which = fel_corruption value = 45 } }	# Fel corruption "ceiling"
+					}
+					# If you're a fel worshiper, you'll receive an average "dose" of fel
+					AND = {
+						OR = {
+							true_religion_group = fel_group
+							has_character_flag = consuming_fel_magic_flag
+						}
+						NOT = { check_variable = { which = fel_corruption value = 40 } }	# Fel corruption "ceiling"
+					}
+					# If you're only located amoung the fel worshipers, you'll receive
+					# a small "dose" of fel, but, anyway, this will be enough for the minor exposure
+					AND = {
+						location = { religion_group = fel_group }
+						NOT = { check_variable = { which = fel_corruption value = 35 } }	# Fel corruption "ceiling"
+					}
+				}
+			}
+			AND = {
+				OR = {
+					is_corruptible_warlock_trigger = yes
+					is_susceptible_to_fel_corruption_trigger = yes
+				}
+				check_variable = { which = fel_corruption value = 1 }
+				NOR = {
+					has_character_modifier = fel_corruption_2
+					is_warlock_class_trigger = yes
+					true_religion_group = fel_group
+					location = { religion_group = fel_group }
+				}
+			}
+		}
+	}
+
+	immediate = {
+		if = {
+			limit = {
+				AND = {
+					is_corruptible_warlock_trigger = no
+					is_susceptible_to_fel_corruption_trigger = no
+				}
+				NOT = { check_variable = { which = fel_corruption value = 0 } }
+			}
+			character_event = { id = WCFEL.115 }
+			break = yes
+		}
+		if = {
+			limit = {
+				OR = {
+					is_corruptible_warlock_trigger = yes
+					is_susceptible_to_fel_corruption_trigger = yes
+				}
+				NOT = { check_variable = { which = fel_corruption value = 100 } }
+				OR = {
+					# If you turned into felform, you'll receive a very very large "dose" of fel
+					AND = {
+						has_character_modifier = fel_corruption_2
+						NOT = { check_variable = { which = fel_corruption value = 70 } }	# Fel corruption "ceiling"
+					}
+					# If you're a high lvl warlock, you'll receive a very large "dose" of fel
+					AND = {
+						is_warlock_class_trigger = yes
+						is_weak_warlock_class_trigger = no
+						NOT = { check_variable = { which = fel_corruption value = 55 } }	# Fel corruption "ceiling"
+					}
+					# If you're a weak warlock, you'll receive an average "dose" of fel
+					AND = {
+						is_warlock_class_trigger = yes
+						is_weak_warlock_class_trigger = yes
+						NOT = { check_variable = { which = fel_corruption value = 45 } }	# Fel corruption "ceiling"
+					}
+					# If you're Fel worshiper, you'll receive an average "dose" of fel
+					AND = {
+						OR = {
+							true_religion_group = fel_group
+							has_character_flag = consuming_fel_magic_flag
+						}
+						NOT = { check_variable = { which = fel_corruption value = 40 } }	# Fel corruption "ceiling"
+					}
+					# If you're only located among the fel worshipers, you'll receive
+					# a small "dose" of fel, but, anyway, this will be enough for the minor exposure
+					AND = {
+						location = { religion_group = fel_group }
+						NOT = { check_variable = { which = fel_corruption value = 35 } }	# Fel corruption "ceiling"
+					}
+				}
+			}
+			character_event = { id = WCFEL.100 }
+			break = yes
+		}
+		if = {
+			limit = { check_variable = { which = fel_corruption value = 1 } }
+			character_event = { id = WCFEL.110 }
+		}
+	}
+}
+
+# Increases fel corruption
+character_event = {
+	id = WCFEL.100
+	desc = EVTDESC_WCFEL_100
+	picture = GFX_evt_fel_storm
+	border = GFX_event_normal_frame_intrigue
+
+	is_triggered_only = yes
+
+	option = {
+		name = {
+			trigger = { NOT = { true_religion_group = fel_group } }
+			text = ALAS
+		}
+		name = {
+			trigger = { true_religion_group = fel_group }
+			text = EXCELLENT
+		}
+		add_5_fel_corruption_effect = yes
+		hidden_effect = { log = "Fel corruption of [Root.GetBestName] is [Root.fel_corruption.GetValue]" }
+	}
+}
+
+# Decreases fel corruption
+character_event = {
+	id = WCFEL.110
+	desc = EVTDESC_WCFEL_110
+	picture = GFX_evt_fel_storm
+	border = GFX_event_normal_frame_intrigue
+
+	is_triggered_only = yes
+
+	option = {
+		name = {
+			trigger = { NOT = { true_religion_group = fel_group } }
+			text = EXCELLENT
+		}
+		name = {
+			trigger = { true_religion_group = fel_group }
+			text = ALAS
+		}
+		remove_5_fel_corruption_effect = yes
+		hidden_effect = { log = "Fel corruption of [Root.GetBestName] is [Root.fel_corruption.GetValue]" }
+	}
+}
+
+# Removes fel corruption
+character_event = {
+	id = WCFEL.115
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		set_variable = { which = fel_corruption value = 0 }
+		log = "Fel corruption of [Root.GetBestName] is [Root.fel_corruption.GetValue]"
+	}
+}
+
+# If character isn't a fel worshiper, converts to the fel religions
+character_event = {
+	id = WCFEL.170
+	desc = EVTDESC_WCFEL_170
+	picture = GFX_evt_burning_legion
+
+	is_triggered_only = yes
+
+	trigger = { NOT = { true_religion_group = fel_group } }
+
+	# I'll not serve the Legion!
+	option = {
+		name = EVTOPTA_WCFEL_170
+
+		if = {
+			limit = {
+				OR = {
+					trait = demon
+					has_character_modifier = fel_corruption_2
+					liege = { religion = illidari }
+				}
+			}
+			if = { limit = { has_secret_religion = yes } clear_secret_religion = yes }
+			religion = illidari
+		}
+		else = { set_secret_religion = illidari }
+
+		ai_chance = {
+			factor = 60
+			modifier = {
+				factor = 2
+				has_benevolent_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.5
+				has_pleasant_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.5
+				has_pious_trait_trigger = yes
+			}
+		}
+	}
+
+	# I'll serve the Legion!
+	option = {
+		name = EVTOPTB_WCFEL_170
+
+		if = {
+			limit = {
+				OR = {
+					trait = demon
+					has_character_modifier = fel_corruption_2
+					liege = {
+						OR = {
+							religion = orcish_fel
+							religion = burning_legion_religion
+						}
+					}
+				}
+			}
+			if = { limit = { has_secret_religion = yes } clear_secret_religion = yes }
+			religion = burning_legion_religion
+		}
+		else = { set_secret_religion = burning_legion_religion }
+
+		ai_chance = {
+			factor = 40
+			modifier = {
+				factor = 2.25
+				has_impious_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.75
+				has_evil_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.75
+				has_unpleasant_trait_trigger = yes
+			}
+		}
+	}
+}
+
+# Moves on to the next stage of fel presence
+province_event = {
+	id = WCFEL.200
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	trigger = {
+		OR = {
+			AND = {
+				NOR = {
+					has_province_modifier = fel_presence_1
+					has_province_modifier = fel_presence_2
+					has_province_modifier = fel_presence_3
+					has_province_modifier = fel_presence_4
+				}
+				check_variable = { which = fel_presence value = 25 }
+			}
+			AND = {
+				NOR = {
+					has_province_modifier = fel_presence_2
+					has_province_modifier = fel_presence_3
+					has_province_modifier = fel_presence_4
+				}
+				check_variable = { which = fel_presence value = 50 }
+			}
+			AND = {
+				NOR = {
+					has_province_modifier = fel_presence_3
+					has_province_modifier = fel_presence_4
+				}
+				check_variable = { which = fel_presence value = 75 }
+			}
+			AND = {
+				NOT = { has_province_modifier = fel_presence_4 }
+				check_variable = { which = fel_presence value = 100 }
+			}
+		}
+	}
+
+	immediate = {
+		# Modifiers
+		remove_fel_presence_modifiers_effect = yes
+		add_fel_presence_modifier_effect = yes
+
+		owner = {
+			character_event = { id = WCFEL.201 }
+			any_liege = { character_event = { id = WCFEL.201 } }
+		}
+	}
+}
+# Notification
+character_event = {
+	id = WCFEL.201
+	desc = {
+		trigger = {
+			FROM = {
+				NOR = {
+					AND = {
+						has_province_modifier = fel_presence_2
+						NOT = { terrain = arctic }
+					}
+					has_province_modifier = fel_presence_3
+					has_province_modifier = fel_presence_4
+				}
+			}
+		}
+		text = EVTDESC_WCFEL_201_case_01
+	}
+	desc = {
+		trigger = { FROM = { has_province_modifier = fel_presence_2 } }
+		text = EVTDESC_WCFEL_201_case_02
+	}
+	desc = {
+		trigger = { FROM = { has_province_modifier = fel_presence_3 } }
+		text = EVTDESC_WCFEL_201_case_03
+	}
+	picture = GFX_evt_fel_storm
+	border = GFX_event_normal_frame_intrigue
+
+	is_triggered_only = yes
+	hide_from = yes
+	hide_new = yes
+
+	option = {
+		name = {
+			trigger = { NOT = { true_religion_group = fel_group } }
+			text = ALAS
+		}
+		name = {
+			trigger = { true_religion_group = fel_group }
+			text = EXCELLENT
+		}
+		tooltip = {
+			FROM = {
+				if = {
+					limit = { has_province_modifier = fel_presence_4 }
+					remove_province_modifier = fel_presence_3
+					add_province_modifier = { name = fel_presence_4 duration = -1 }
+				}
+				if = {
+					limit = { has_province_modifier = fel_presence_3 }
+					remove_province_modifier = fel_presence_2
+					add_province_modifier = { name = fel_presence_3 duration = -1 }
+				}
+				if = {
+					limit = { has_province_modifier = fel_presence_2 }
+					remove_province_modifier = fel_presence_1
+					add_province_modifier = { name = fel_presence_2 duration = -1 }
+				}
+				if = {
+					limit = { has_province_modifier = fel_presence_1 }
+					add_province_modifier = { name = fel_presence_1 duration = -1 }
+				}
+			}
+		}
+	}
+}
+
+# Moves on to the previous stage of fel presence
+province_event = {
+	id = WCFEL.205
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	trigger = {
+		OR = {
+			AND = {
+				has_province_modifier = fel_presence_3
+				NOT = { check_variable = { which = fel_presence value = 75 } }
+			}
+			AND = {
+				has_province_modifier = fel_presence_2
+				NOT = { check_variable = { which = fel_presence value = 50 } }
+			}
+			AND = {
+				has_province_modifier = fel_presence_1
+				NOT = { check_variable = { which = fel_presence value = 25 } }
+			}
+		}
+	}
+
+	immediate = {
+		# Modifiers
+		remove_fel_presence_modifiers_effect = yes
+		add_fel_presence_modifier_effect = yes
+
+		owner = {
+			character_event = { id = WCFEL.206 }
+			any_liege = { character_event = { id = WCFEL.206 } }
+		}
+	}
+}
+# Notification
+character_event = {
+	id = WCFEL.206
+	desc = {
+		trigger = { FROM = { NOT = { has_province_modifier = fel_presence_1 } } }
+		text = EVTDESC_WCFEL_206_case_01
+	}
+	desc = {
+		trigger = { FROM = { has_province_modifier = fel_presence_1 } }
+		text = EVTDESC_WCFEL_206_case_02
+	}
+	picture = GFX_evt_fel_storm
+	border = GFX_event_normal_frame_intrigue
+
+	is_triggered_only = yes
+	hide_from = yes
+	hide_new = yes
+
+	option = {
+		name = {
+			trigger = { NOT = { true_religion_group = fel_group } }
+			text = EXCELLENT
+		}
+		name = {
+			trigger = { true_religion_group = fel_group }
+			text = ALAS
+		}
+		tooltip = {
+			FROM = {
+				if = {
+					limit = {
+						NOR = {
+							has_province_modifier = fel_presence_1
+							has_province_modifier = fel_presence_2
+							has_province_modifier = fel_presence_3
+							has_province_modifier = fel_presence_4
+						}
+					}
+					remove_province_modifier = fel_presence_1
+				}
+				if = {
+					limit = { has_province_modifier = fel_presence_1 }
+					remove_province_modifier = fel_presence_2
+					add_province_modifier = { name = fel_presence_1 duration = -1 }
+				}
+				if = {
+					limit = { has_province_modifier = fel_presence_2 }
+					remove_province_modifier = fel_presence_3
+					add_province_modifier = { name = fel_presence_2 duration = -1 }
+				}
+				if = {
+					limit = { has_province_modifier = fel_presence_3 }
+					remove_province_modifier = fel_presence_4
+					add_province_modifier = { name = fel_presence_3 duration = -1 }
+				}
+			}
+		}
+	}
+}
+
+# Increases/decreases fel presence in a province
+character_event = {
+	id = WCFEL.220
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	only_rulers = yes
+
+	trigger = {
+		is_landed = yes
+		higher_real_tier_than = BARON
+		any_demesne_province = {
+			owner = { character = ROOT }
+			NOT = { religion_group = void_group }
+			OR = {
+				AND = {
+					NOT = { check_variable = { which = fel_presence value = 100 } }
+					OR = {
+						AND = {
+							religion_group = fel_group
+							NOT = { religion = illidari }
+							ROOT = {
+								trait = demon
+								NOT = { religion = illidari }
+							}
+							NOT = { check_variable = { which = fel_presence value = 85 } }	# Fel presence "ceiling"
+						}
+						AND = {
+							religion_group = fel_group
+							any_neighbor_province = { count = 4 religion_group = fel_group }
+							NOT = { check_variable = { which = fel_presence value = 80 } }	# Fel presence "ceiling"
+						}
+						AND = {
+							religion_group = fel_group
+							any_neighbor_province = { count = 3 religion_group = fel_group }
+							NOT = { check_variable = { which = fel_presence value = 75 } }	# Fel presence "ceiling"
+						}
+						AND = {
+							religion_group = fel_group
+							any_neighbor_province = { count = 2 religion_group = fel_group }
+							NOT = { check_variable = { which = fel_presence value = 60 } }	# Fel presence "ceiling"
+						}
+						AND = {
+							religion_group = fel_group
+							any_neighbor_province = { religion_group = fel_group }
+							NOT = { check_variable = { which = fel_presence value = 55 } }	# Fel presence "ceiling"
+						}
+						AND = {
+							any_neighbor_province = { count = 3 religion_group = fel_group }
+							NOT = { check_variable = { which = fel_presence value = 50 } }	# Fel presence "ceiling"
+						}
+						AND = {
+							religion_group = fel_group
+							NOT = { check_variable = { which = fel_presence value = 40 } }	# Fel presence "ceiling"
+						}
+						AND = {
+							any_neighbor_province = { count = 2 religion_group = fel_group }
+							NOT = { check_variable = { which = fel_presence value = 35 } }	# Fel presence "ceiling"
+						}
+						AND = {
+							any_neighbor_province = { religion_group = fel_group }
+							NOT = { check_variable = { which = fel_presence value = 25 } }	# Fel presence "ceiling"
+						}
+					}
+				}
+				AND = {
+					check_variable = { which = fel_presence value = 1 }
+					NOR = {
+						AND = {
+							religion_group = fel_group
+							NOT = { religion = illidari }
+							ROOT = {
+								trait = demon
+								NOT = { religion = illidari }
+							}
+						}
+						religion_group = fel_group
+						any_neighbor_province = { religion_group = fel_group }
+					}
+				}
+			}
+		}
+	}
+
+	immediate = {
+		any_demesne_province = {
+			limit = { owner = { character = ROOT } }
+			if = {
+				limit = {
+					NOT = { check_variable = { which = fel_presence value = 100 } }
+					OR = {
+						AND = {
+							religion_group = fel_group
+							NOT = { religion = illidari }
+							ROOT = {
+								trait = demon
+								NOT = { religion = illidari }
+							}
+							NOT = { check_variable = { which = fel_presence value = 85 } }	# Fel corruption "ceiling"
+						}
+						AND = {
+							religion_group = fel_group
+							any_neighbor_province = { count = 4 religion_group = fel_group }
+							NOT = { check_variable = { which = fel_presence value = 80 } }	# Fel corruption "ceiling"
+						}
+						AND = {
+							religion_group = fel_group
+							any_neighbor_province = { count = 3 religion_group = fel_group }
+							NOT = { check_variable = { which = fel_presence value = 75 } }	# Fel corruption "ceiling"
+						}
+						AND = {
+							religion_group = fel_group
+							any_neighbor_province = { count = 2 religion_group = fel_group }
+							NOT = { check_variable = { which = fel_presence value = 60 } }	# Fel corruption "ceiling"
+						}
+						AND = {
+							religion_group = fel_group
+							any_neighbor_province = { religion_group = fel_group }
+							NOT = { check_variable = { which = fel_presence value = 55 } }	# Fel corruption "ceiling"
+						}
+						AND = {
+							any_neighbor_province = { count = 3 religion_group = fel_group }
+							NOT = { check_variable = { which = fel_presence value = 50 } }	# Fel corruption "ceiling"
+						}
+						AND = {
+							religion_group = fel_group
+							NOT = { check_variable = { which = fel_presence value = 40 } }	# Fel corruption "ceiling"
+						}
+						AND = {
+							any_neighbor_province = { count = 2 religion_group = fel_group }
+							NOT = { check_variable = { which = fel_presence value = 35 } }	# Fel corruption "ceiling"
+						}
+						AND = {
+							any_neighbor_province = { religion_group = fel_group }
+							NOT = { check_variable = { which = fel_presence value = 25 } }	# Fel corruption "ceiling"
+						}
+					}
+				}
+				province_event = { id = WCFEL.235 }
+				break = yes
+			}
+			if = {
+				limit = { check_variable = { which = fel_presence value = 1 } }
+				province_event = { id = WCFEL.245 }
+			}
+		}
+	}
+}
+
+# Increases fel presence in a province
+province_event = {
+	id = WCFEL.235
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		change_variable = { which = fel_presence value = 4 }
+		if = {
+			limit = { check_variable = { which = fel_presence value = 100 } }
+			set_variable = { which = fel_presence value = 100 }
+		}
+		province_event = { id = WCFEL.200 }		# Moves on to the next stage of fel presence
+		log = "Fel presence in [Root.GetName] is [Root.fel_presence.GetValue]"
+	}
+}
+
+# Decreases fel presence in a province
+province_event = {
+	id = WCFEL.245
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		change_variable = { which = fel_presence value = -2 }
+		if = {
+			limit = { NOT = { check_variable = { which = fel_presence value = 0 } } }
+			set_variable = { which = fel_presence value = 0 }
+		}
+		province_event = { id = WCFEL.205 }		# Moves on to the previous stage of fel presence
+		log = "Fel presence in [Root.GetName] is [Root.fel_presence.GetValue]"
+	}
+}
+
+# Demon returns from the Twisting Nether
+character_event = {
+	id = WCFEL.900
+	desc = EVTDESC_WCFEL_900
+	picture = GFX_evt_fel_storm
+	border = GFX_event_normal_frame_intrigue
+
+	is_triggered_only = yes
+
+	option = {
+		name = EXCELLENT
+
+		remove_trait = in_twisting_nether
+	}
+}
+
+#############################
+#		Burning Legion		#
+#############################
+
+# Summons one of the Burning Legion commander
+character_event = {
+	id = WCFEL.1000
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		log = "WCFEL.1000 fired for [Root.GetBestName]"
+
+		3204 = { save_event_target_as = target_summoning_location }		# Zin-Malor
+
+		# Archimonde the Defiler
+		if = {
+			limit = { NOT = { has_global_flag = archimonde_was_summoned_flag } }
+			create_character = {
+				name = Archimonde
+				nickname = nick_the_defiler
+				dynasty = 46000
+				religion = burning_legion_religion
+				culture = eredar
+				female = no
+				age = 300
+				attributes = {
+					martial=7 diplomacy=4 stewardship=6 intrigue=6 learning=6
+				}
+				random_traits = no
+				trait = mastermind_theologian
+				trait = aggressive_leader
+				trait = creature_eredar
+				trait = class_warlock_9
+				trait = demon
+				trait = proud trait = patient trait = ambitious trait = arbitrary trait = cynical trait = cruel trait = stubborn trait = temperate
+			}
+			set_global_flag = archimonde_was_summoned_flag
+			new_character = { narrative_event = { id = WCFEL.1005 } }
+			break = yes
+		}
+		# Kil'jaeden the Deceiver
+		if = {
+			limit = { NOT = { has_global_flag = kiljaeden_was_summoned_flag } }
+			create_character = {
+				name = Kil'jaeden
+				nickname = nick_the_deceiver
+				dynasty = 46001
+				religion = burning_legion_religion
+				culture = eredar
+				female = no
+				age = 300
+				attributes = {
+					martial=7 diplomacy=4 stewardship=6 intrigue=6 learning=6
+				}
+				random_traits = no
+				trait = mastermind_theologian
+				trait = aggressive_leader
+				trait = creature_eredar
+				trait = class_warlock_9
+				trait = demon
+				trait = fair trait = proud trait = patient trait = deceitful trait = arbitrary trait = cynical trait = cruel trait = envious
+			}
+			set_global_flag = kiljaeden_was_summoned_flag
+			new_character = { narrative_event = { id = WCFEL.1005 } }
+			break = yes
+		}
+		# Random eredar
+		create_character = {
+			dynasty = random
+			religion = burning_legion_religion
+			culture = eredar
+			female = no
+			age = 300
+			trait = creature_eredar
+			trait = class_warlock_8
+			trait = demon
+			trait = cruel
+			random_traits = yes
+		}
+		new_character = {
+			remove_education_effect = yes
+			random_list = {
+				45 = { add_trait = brilliant_strategist }
+				20 = { add_trait = elusive_shadow }
+				35 = { add_trait = mastermind_theologian }
+			}
+
+			#Up intrigue and martial
+			random_list = {
+				33 = {
+					change_martial = 2
+					change_intrigue = 1
+				}
+				33 = {
+					change_martial = 3
+					change_intrigue = 2
+				}
+				33 = {
+					change_martial = 4
+					change_intrigue = 3
+				}
+			}
+
+			# Removes wrong traits
+			remove_trait = chariable
+			remove_trait = humble
+			remove_trait = honest
+			remove_trait = content
+			remove_trait = zealous
+			remove_trait = trusting
+
+			narrative_event = { id = WCFEL.1005 }
+		}
+	}
+}
+
+# Creates title of the Burning Legion, starts the Burning Crusade
+# FROM is summoner of the Legion
+narrative_event = {
+	id = WCFEL.1005
+	title = EVTTITLE_WCCLS_1005
+	desc = EVTDESC_WCFEL_1005
+	picture = GFX_evt_burning_legion
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+
+	major = yes
+
+	immediate = {
+		73 = { province_event = { id = WCTHW.50 } } # When shit happens, Medivh tries to fix it
+
+		activate_title = { title = e_burning_legion status = yes }
+		set_global_flag = burning_legion_invasion_flag
+		# Enables new buildings
+		if = {
+			limit = { NOT = { has_global_flag = advanced_legion_buildings_enabled } }
+			set_global_flag = advanced_legion_buildings_enabled
+		}	
+		e_burning_legion = { gain_title = ROOT }
+		FROM = {
+			if = {
+				limit = {
+					NOR = {
+						tier = EMPEROR
+						is_liege_or_above = e_scourge
+					}
+				}
+				set_defacto_liege = ROOT
+				random_demesne_title = {
+					gain_title_plus_barony_if_unlanded = ROOT
+				}
+			}
+		}
+		set_legion_government_effect = yes
+		wealth = 1000
+		prestige = 500
+		piety = 250
+
+		# Spawns troops
+		spawn_legion_troops_effect = yes
+		spawn_legion_troops_effect = yes
+		spawn_legion_troops_effect = yes
+		# spawn_legion_troops_effect = yes
+
+		# The Scourge forms an alliance with the Legion (or not) when it arrived
+		e_scourge = { holder_scope = { narrative_event = { id = WCUND.130 days = 7 } } }
+		# Declares war against the night elves
+		3264 = {
+			holder_scope = {
+				top_liege = {
+					if = {
+						limit = {
+							is_untouchable_trigger = no
+							
+							NOT = { religion = burning_legion_religion }
+							NOT = { true_religion = burning_legion_religion }
+						}
+						set_character_flag = total_invasion_exception_flag
+						ROOT = {
+							unsafe_war = {
+								target = PREV
+								casus_belli = total_invasion
+								thirdparty_title = PREV
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	option = {
+		name = {
+			trigger = { OR = { true_religion = burning_legion_religion true_religion = orcish_fel } }
+			text = EVTOPTA_WCFEL_1005_case_01
+		}
+		name = {
+			trigger = { NOR = { true_religion = burning_legion_religion true_religion = orcish_fel } }
+			text = EVTOPTA_WCFEL_1005_case_02
+		}
+	}
+}
+# character_event = {
+	# id = WCFEL.1009
+
+	# hide_window = yes
+	
+	# only_playable = yes
+	# has_global_flag = burning_legion_invasion_flag
+
+	# trigger = {
+		# has_landed_title = e_burning_legion
+		# has_regiments = no
+		# is_landed = no
+	# }
+
+	# mean_time_to_happen = {
+		# days = 1
+	# }
+
+	# immediate = {
+		# clr_character_flag = burning_legion_invasion_flag
+		# narrative_event = { id = WCFEL.1010 }
+	# }
+# }
+# The Burning Legion was defeated
+narrative_event = {
+	id = WCFEL.1010
+	title = EVTTITLE_WCCLS_1010
+	desc = EVTDESC_WCFEL_1010
+	picture = GFX_evt_burning_legion
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+	major = yes
+
+	immediate = {
+		activate_title = { title = e_burning_legion status = no }
+		e_burning_legion = { destroy_landed_title = THIS }
+	}
+
+	option = {
+		name = {
+			trigger = { OR = { true_religion = burning_legion_religion true_religion = orcish_fel } }
+			text = EVTOPTA_WCFEL_1010_case_01
+		}
+		name = {
+			trigger = { NOR = { true_religion = burning_legion_religion true_religion = orcish_fel } }
+			text = EVTOPTA_WCFEL_1010_case_02
+		}
+	}
+}
+
+#############################
+#		Random events		#
+#############################
+
+# Fel corruption events
+character_event = {
+	id = WCFEL.9900
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	min_age = 16
+	only_playable = yes
+	only_capable = yes
+	prisoner = no
+
+	trigger = {
+		is_alive = yes
+		is_dying = no
+		
+		is_susceptible_to_fel_corruption_trigger = yes
+		OR = {
+			NOT = { trait = demon }
+			NOT = { has_character_modifier = inflow_of_the_fel }
+		}
+	}
+
+	weight_multiplier = {
+		days = 1
+		modifier = {
+			factor = 2
+			OR = {
+				is_warlock_class_trigger = yes
+				true_religion_group = fel_group
+			}
+		}
+		modifier = {
+			factor = 1.6
+			trait = cynical
+		}
+		modifier = {
+			factor = 1.6
+			trait = demon
+		}
+		modifier = {
+			factor = 1.6
+			has_character_modifier = fel_corruption_2
+		}
+		modifier = {
+			factor = 1.6
+			has_character_modifier = fel_corruption_1
+		}
+		modifier = {
+			factor = 1.2
+			trait = ambitious
+		}
+		modifier = {
+			factor = 1.2
+			is_mage_class_trigger = yes
+		}
+		modifier = {
+			factor = 1.2
+			location = { has_province_modifier = fel_presence_1 }
+		}
+		modifier = {
+			factor = 1.2
+			location = { has_province_modifier = fel_presence_2 }
+		}
+		modifier = {
+			factor = 1.2
+			location = { has_province_modifier = fel_presence_3 }
+		}
+		modifier = {
+			factor = 1.2
+			location = { has_province_modifier = fel_presence_4 }
+		}
+	}
+
+	immediate = {
+		random_list = {
+			10 = {
+				character_event = { id = WCFEL.9950 }	# Founds a fel crystal
+				modifier = {
+					factor = 0
+					has_character_modifier = inflow_of_the_fel
+				}
+			}
+			10 = {
+				character_event = { id = WCFEL.9960 }	# Founds a chaos well
+				modifier = {
+					factor = 0
+					OR = {
+						ai = yes
+						is_ruler = no
+						trait = demon
+						has_character_modifier = drank_demon_blood
+					}
+				}
+			}
+			10 = {
+				narrative_event = { id = WCFEL.9970 }	# The Voice in the Head
+				modifier = {
+					factor = 0
+					is_ruler = no
+				}
+			}
+		}
+	}
+}
+
+# Founds a fel crystal
+character_event = {
+	id = WCFEL.9950
+	desc = EVTDESC_WCFEL_9950
+	picture = GFX_evt_fel_storm
+	border = GFX_event_normal_frame_intrigue
+
+	is_triggered_only = yes
+
+	# Use its power
+	option = {
+		name = {
+			trigger = { NOT = { trait = demon } }
+			text = EVTOPTA_WCFEL_9950
+		}
+		name = {
+			trigger = {
+				trait = demon
+			}
+			text = EXCELLENT
+		}
+		add_15_fel_corruption_effect = yes
+		add_character_modifier = { name = inflow_of_the_fel duration = 1825 }
+
+		ai_chance = {
+			factor = 26
+			modifier = {
+				factor = 3
+				has_impious_trait_trigger = yes
+			}
+			modifier = {
+				factor = 2.5
+				has_evil_trait_trigger = yes
+			}
+			modifier = {
+				factor = 2.5
+				has_unpleasant_trait_trigger = yes
+			}
+			modifier = {
+				factor = 0.01
+				trait = zealous
+				NOT = { true_religion_group = fel_group }
+			}
+		}
+	}
+
+	# Destroy it!
+	option = {
+		trigger = { NOT = { trait = demon } }
+		name = EVTOPTB_WCFEL_9950
+		random_list = {
+			25 = { remove_5_fel_corruption_effect = yes }
+			75 = { remove_15_fel_corruption_effect = yes }
+		}
+		ai_chance = {
+			factor = 74
+			modifier = {
+				factor = 2
+				has_benevolent_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.5
+				has_pleasant_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.5
+				has_pious_trait_trigger = yes
+			}
+			modifier = {
+				factor = 0.01
+				true_religion_group = fel_group
+			}
+		}
+	}
+}
+
+# Founds a chaos well
+character_event = {
+	id = WCFEL.9960
+	desc = EVTDESC_WCFEL_9960
+	picture = GFX_evt_annihilan
+	border = GFX_event_normal_frame_intrigue
+
+	is_triggered_only = yes
+
+	immediate = {
+		log = "WCFEL.9960 fired for [Root.GetBestName]"
+	}
+
+	# Share this power
+	option = {
+		name = EVTOPTB_WCFEL_9960
+		drink_demon_blood_effect = yes
+
+		ai_chance = {
+			factor = 18
+			modifier = {
+				factor = 3.5
+				has_impious_trait_trigger = yes
+			}
+			modifier = {
+				factor = 3
+				has_evil_trait_trigger = yes
+			}
+			modifier = {
+				factor = 3
+				has_unpleasant_trait_trigger = yes
+			}
+			modifier = {
+				factor = 0.01
+				trait = zealous
+				NOT = { true_religion_group = fel_group }
+			}
+		}
+	}
+
+	# Bury it
+	option = {
+		name = EVTOPTC_WCFEL_9960
+
+		ai_chance = {
+			factor = 82
+			modifier = {
+				factor = 2
+				has_benevolent_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.5
+				has_pleasant_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.5
+				has_pious_trait_trigger = yes
+			}
+			modifier = {
+				factor = 0.01
+				true_religion_group = fel_group
+			}
+		}
+	}
+}
+# FROM invites to share this power with you
+character_event = {
+	id = WCFEL.9961
+	desc = EVTDESC_WCFEL_9961
+	picture = GFX_evt_annihilan
+	border = GFX_event_normal_frame_intrigue
+
+	min_age = 16
+	capable_only = yes
+
+	is_triggered_only = yes
+
+	immediate = {
+		log = "WCFEL.9961 fired for [Root.GetBestName]"
+	}
+
+	# Accept
+	option = {
+		name = EVTOPTA_WCFEL_9961
+		drink_demon_blood_effect = yes
+
+		ai_chance = {
+			factor = 30
+			modifier = {
+				factor = 2
+				has_impious_trait_trigger = yes
+			}
+			modifier = {
+				factor = 2
+				has_evil_trait_trigger = yes
+			}
+			modifier = {
+				factor = 2
+				has_unpleasant_trait_trigger = yes
+			}
+			modifier = {
+				factor = 2
+				opinion = { who = FROM value = 25 }
+			}
+			modifier = {
+				factor = 2
+				opinion = { who = FROM value = 50 }
+			}
+			modifier = {
+				factor = 0.01
+				trait = zealous
+				NOT = { true_religion_group = fel_group }
+			}
+		}
+	}
+
+	# Refuse
+	option = {
+		name = EVTOPTB_WCFEL_9961
+
+		reverse_opinion = { modifier = opinion_hatred who = FROM years = 10 }
+		FROM = { letter_event = { id = WCFEL.9965 } }
+
+		ai_chance = {
+			factor = 70
+			modifier = {
+				factor = 2.43
+				has_benevolent_trait_trigger = yes
+			}
+			modifier = {
+				factor = 2.43
+				has_pleasant_trait_trigger = yes
+			}
+			modifier = {
+				factor = 2.43
+				has_pious_trait_trigger = yes
+			}
+			modifier = {
+				factor = 0.01
+				true_religion_group = fel_group
+			}
+		}
+	}
+}
+# FROM has refused to drink water
+letter_event = {
+	id = WCFEL.9965
+	desc = EVTDESC_WCFEL_9965
+	border = GFX_event_letter_frame_war
+
+	is_triggered_only = yes
+
+	option = {
+		name = ALAS
+	}
+}
+
+# The voice in the head: start
+narrative_event = {
+	id = WCFEL.9970
+	title = EVTTITLE_WCCLS_9970
+	desc = EVTDESC_WCFEL_9970
+	picture = GFX_evt_fel_storm
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	# Protect the mind from this whisper
+	option = {
+		trigger = {
+			NOR = { true_religion = burning_legion_religion true_religion = orcish_fel }
+			is_magic_class_trigger = yes
+		}
+		name = EVTOPTA_WCFEL_9970
+
+		remove_5_fel_corruption_effect = yes
+		custom_tooltip = {
+			text = stops_the_event_chain
+		}
+		ai_chance = {
+			factor = 75
+			modifier = {
+				factor = 2
+				has_benevolent_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.5
+				has_pleasant_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.5
+				has_pious_trait_trigger = yes
+			}
+			modifier = {
+				factor = 0.01
+				true_religion_group = fel_group
+				NOT = { religion = illidari }
+			}
+		}
+	}
+	# Try to ignore
+	option = {
+		trigger = {
+			NOR = { true_religion = burning_legion_religion true_religion = orcish_fel }
+			is_magic_class_trigger = no
+		}
+		name = EVTOPTB_WCFEL_9970
+
+		remove_5_fel_corruption_effect = yes
+		custom_tooltip = {
+			text = stops_the_event_chain
+		}
+		random = {
+			chance = 40
+			add_trait = stressed
+		}
+		random = {
+			chance = 10
+			add_trait = depressed
+		}
+		ai_chance = {
+			factor = 75
+			modifier = {
+				factor = 2
+				has_benevolent_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.5
+				has_pleasant_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.5
+				has_pious_trait_trigger = yes
+			}
+			modifier = {
+				factor = 0.01
+				true_religion_group = fel_group
+				NOT = { religion = illidari }
+			}
+		}
+	}
+	# Contact a demon
+	option = {
+		name = EVTOPTC_WCFEL_9970
+
+		add_5_fel_corruption_effect = yes
+		custom_tooltip = {
+			text = EVTOPTC_WCFEL_9970_tooltip
+			hidden_effect = { narrative_event = { id = WCFEL.9971 days = 3 } }
+		}
+		ai_chance = {
+			factor = 25
+			modifier = {
+				factor = 3
+				has_impious_trait_trigger = yes
+			}
+			modifier = {
+				factor = 2.5
+				has_evil_trait_trigger = yes
+			}
+			modifier = {
+				factor = 2.5
+				has_unpleasant_trait_trigger = yes
+			}
+			modifier = {
+				factor = 0.01
+				trait = zealous
+				NOT = { true_religion_group = fel_group }
+			}
+		}
+	}
+}
+# The voice in the head: the deal with a demon
+narrative_event = {
+	id = WCFEL.9971
+	title = EVTTITLE_WCCLS_9970
+	desc = EVTDESC_WCFEL_9971
+	picture = GFX_evt_fel_storm
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	# I don't want to make deals with creatures from the Twisting Nether.
+	option = {
+		name = EVTOPTA_WCFEL_9971
+		custom_tooltip = {
+			text = stops_the_event_chain
+		}
+		ai_chance = {
+			factor = 0
+		}
+	}
+	# This is very tempting... but what will I get in return?
+	option = {
+		trigger = { stewardship = 10 }
+		name = EVTOPTB_WCFEL_9971
+		tooltip_info = stewardship
+		custom_tooltip = {
+			text = EVTOPTB_WCFEL_9971_tooltip
+			hidden_effect = {
+				set_character_flag = made_deal_with_demon_flag
+				narrative_event = { id = WCFEL.9972 days = 3 }
+			}
+		}
+		ai_chance = {
+			factor = 99
+		}
+	}
+	# This is very tempting.
+	option = {
+		name = EVTOPTC_WCFEL_9971
+		custom_tooltip = {
+			text = EVTOPTC_WCFEL_9971_tooltip
+			hidden_effect = { narrative_event = { id = WCFEL.9972 days = 3 } }
+		}
+		ai_chance = {
+			factor = 1
+		}
+	}
+}
+# The voice in the head: preparation for summoning
+narrative_event = {
+	id = WCFEL.9972
+	title = EVTTITLE_WCCLS_9970
+	desc = EVTDESC_WCFEL_9972
+	picture = GFX_evt_fel_storm
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	only_rulers = yes
+
+	immediate = {
+		random_courtier = {
+			limit = {
+				prisoner = no
+				NOT = { dynasty = FROM }
+				NOT = { any_spouse = { character = ROOT } }
+				NOT = { trait = undead }
+				NOT = { trait = demon }
+			}
+			save_event_target_as = target_victim_for_ritual
+		}
+	}
+
+	# Use a soul shard
+	option = {
+		trigger = {
+			has_dlc = Mystics
+			has_artifact = soul_shard
+		}
+		name = EVTOPTC_WCFEL_9972
+
+		destroy_artifact = soul_shard
+
+		custom_tooltip = {
+			text = EVTOPTA_WCFEL_9972_tooltip
+			hidden_effect = { narrative_event = { id = WCFEL.9973 days = 3 } }
+		}
+	}
+	# Die!
+	option = {
+		name = EVTOPTA_WCFEL_9972
+
+		event_target:target_victim_for_ritual = {
+			death = {
+				death_reason = death_murder_unknown_butchered
+				killer = ROOT
+			}
+		}
+
+		custom_tooltip = {
+			text = EVTOPTA_WCFEL_9972_tooltip
+			hidden_effect = { narrative_event = { id = WCFEL.9973 days = 3 } }
+		}
+	}
+	# No, what was I thinking? This must be stopped immediately.
+	option = {
+		name = EVTOPTB_WCFEL_9972
+		custom_tooltip = {
+			text = stops_the_event_chain
+		}
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+# The voice in the head: ritual of summoning
+# Cases:
+# deceitful_nathrezim: nathrezim kills you and takes control over your demesne (only for AIs)
+# ambitious_annihilan: kills you and starts "burning raid"
+# deceitful_observer: kills you
+# normal_nathrezim: he gives you inflow_of_the_fel
+# normal_annihilan: he invites you to drink his blood
+# normal_observer: he upgrades your education
+# content_nathrezim: if you asked for something in return, this nathrezim will serve you and gives you inflow_of_the_fel
+# content_annihilan: if you asked for something in return, this annihilan will serve you and invites you to drink his blood
+# content_observer: if you asked for something in return, this observer will serve you and upgrades your education
+narrative_event = {
+	id = WCFEL.9973
+	title = EVTTITLE_WCCLS_9970
+	desc = {
+		trigger = { has_character_flag = summoned_deceitful_nathrezim_flag }
+		text = EVTDESC_WCFEL_9973_deceitful_nathrezim
+	}
+	desc = {
+		trigger = { has_character_flag = summoned_ambitious_annihilan_flag }
+		text = EVTDESC_WCFEL_9973_ambitious_annihilan
+	}
+	desc = {
+		trigger = { has_character_flag = summoned_deceitful_observer_flag }
+		text = EVTDESC_WCFEL_9973_deceitful_observer
+	}
+	desc = {
+		trigger = {
+			OR = {
+				has_character_flag = summoned_normal_nathrezim_flag
+				has_character_flag = summoned_normal_annihilan_flag
+				has_character_flag = summoned_normal_observer_flag
+			}
+		}
+		text = EVTDESC_WCFEL_9973_normal_case
+	}
+	desc = {
+		trigger = {
+			OR = {
+				has_character_flag = summoned_content_nathrezim_flag
+				has_character_flag = summoned_content_annihilan_flag
+				has_character_flag = summoned_content_observer_flag
+			}
+		}
+		text = EVTDESC_WCFEL_9973_good_case
+	}
+	picture = GFX_evt_fel_storm
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	immediate = {
+		random_list = {
+			# Bad cases
+			10 = {
+				set_character_flag = summoned_deceitful_nathrezim_flag
+				create_character = {
+					dynasty = none
+					religion = burning_legion_religion
+					culture = nathrezim
+					female = no
+					age = 300
+					attributes = {
+						martial=5 diplomacy=5 stewardship=5 intrigue=5 learning=5
+					}
+					trait = creature_nathrezim
+					trait = class_warlock_7
+					trait = demon
+					trait = elusive_shadow
+					trait = deceitful
+					trait = cruel
+					random_traits = yes
+				}
+				modifier = {
+					factor = 0
+					OR = {
+						ai = no
+						
+						is_ruler = no
+						NOR = {
+							is_feudal = yes
+							is_tribal = yes
+						}
+
+						trait = demon
+						true_religion = burning_legion_religion
+						true_religion = orcish_fel
+					}
+				}
+			}
+			10 = {
+				set_character_flag = summoned_ambitious_annihilan_flag
+				create_character = {
+					dynasty = none
+					religion = burning_legion_religion
+					culture = annihilan
+					female = no
+					age = 300
+					attributes = {
+						martial=5 diplomacy=5 stewardship=5 intrigue=5 learning=5
+					}
+					random_traits = no
+					trait = creature_annihilan
+					trait = class_warrior_7
+					trait = demon
+					trait = brilliant_strategist
+					trait = ambitious
+					trait = brave
+					trait = deceitful
+					trait = cruel
+				}
+				modifier = {
+					factor = 1500
+					has_character_flag = debug_mode_flag
+				}
+				modifier = {
+					factor = 0
+					OR = {
+						trait = demon
+						true_religion = burning_legion_religion
+						true_religion = orcish_fel
+					}
+				}
+			}
+			10 = {
+				set_character_flag = summoned_deceitful_observer_flag
+				create_character = {
+					dynasty = none
+					religion = burning_legion_religion
+					culture = observer
+					female = no
+					age = 300
+					attributes = {
+						martial=5 diplomacy=5 stewardship=5 intrigue=5 learning=5
+					}
+					random_traits = no
+					trait = creature_observer
+					trait = demon
+					trait = mastermind_theologian
+					trait = deceitful
+					trait = cruel
+					trait = erudite
+				}
+				modifier = {
+					factor = 0
+					OR = {
+						trait = demon
+						true_religion = burning_legion_religion
+						true_religion = orcish_fel
+					}
+				}
+			}
+
+			# Normal cases
+			60 = {
+				set_character_flag = summoned_normal_nathrezim_flag
+				create_character = {
+					dynasty = none
+					religion = burning_legion_religion
+					culture = nathrezim
+					female = no
+					age = 300
+					attributes = {
+						martial=5 diplomacy=5 stewardship=5 intrigue=5 learning=5
+					}
+					random_traits = no
+					trait = creature_nathrezim
+					trait = class_warlock_7
+					trait = demon
+					trait = elusive_shadow
+					trait = cruel
+				}
+			}
+			60 = {
+				set_character_flag = summoned_normal_annihilan_flag
+				create_character = {
+					dynasty = none
+					religion = burning_legion_religion
+					culture = annihilan
+					female = no
+					age = 300
+					attributes = {
+						martial=5 diplomacy=5 stewardship=5 intrigue=5 learning=5
+					}
+					random_traits = no
+					trait = creature_annihilan
+					trait = class_warrior_7
+					trait = demon
+					trait = brilliant_strategist
+					trait = brave
+					trait = cruel
+				}
+				modifier = {
+					factor = 0
+					OR = {
+						ai = yes
+
+						has_character_modifier = drank_demon_blood
+						
+						trait = demon
+						is_susceptible_to_fel_corruption_trigger = no
+					}
+				}
+			}
+			60 = {
+				set_character_flag = summoned_normal_observer_flag
+				create_character = {
+					dynasty = none
+					religion = burning_legion_religion
+					culture = observer
+					female = no
+					age = 300
+					attributes = {
+						martial=5 diplomacy=5 stewardship=5 intrigue=5 learning=5
+					}
+					random_traits = no
+					trait = creature_observer
+					trait = demon
+					trait = mastermind_theologian
+					trait = cruel
+					trait = erudite
+				}
+			}
+
+			# Good cases
+			30 = {
+				set_character_flag = summoned_content_nathrezim_flag
+				create_character = {
+					dynasty = none
+					religion = burning_legion_religion
+					culture = nathrezim
+					female = no
+					age = 300
+					attributes = {
+						martial=5 diplomacy=5 stewardship=5 intrigue=5 learning=5
+					}
+					random_traits = no
+					trait = creature_nathrezim
+					trait = class_warlock_7
+					trait = demon
+					trait = elusive_shadow
+					trait = content
+					trait = cruel
+				}
+				modifier = {
+					factor = 0.5
+					NOT = { has_character_flag = made_deal_with_demon_flag }
+				}
+			}
+			30 = {
+				set_character_flag = summoned_content_annihilan_flag
+				create_character = {
+					dynasty = none
+					religion = burning_legion_religion
+					culture = annihilan
+					female = no
+					age = 300
+					attributes = {
+						martial=5 diplomacy=5 stewardship=5 intrigue=5 learning=5
+					}
+					random_traits = no
+					trait = creature_annihilan
+					trait = class_warrior_7
+					trait = demon
+					trait = brilliant_strategist
+					trait = content
+					trait = brave
+					trait = cruel
+				}
+				modifier = {
+					factor = 0
+					OR = {
+						ai = yes
+
+						has_character_modifier = drank_demon_blood
+						
+						trait = demon
+						is_susceptible_to_fel_corruption_trigger = no
+					}
+				}
+				modifier = {
+					factor = 0.5
+					NOT = { has_character_flag = made_deal_with_demon_flag }
+				}
+			}
+			30 = {
+				set_character_flag = summoned_content_observer_flag
+				create_character = {
+					dynasty = none
+					religion = burning_legion_religion
+					culture = observer
+					female = no
+					age = 300
+					attributes = {
+						martial=5 diplomacy=5 stewardship=5 intrigue=5 learning=5
+					}
+					random_traits = no
+					trait = creature_observer
+					trait = demon
+					trait = mastermind_theologian
+					trait = content
+					trait = cruel
+					trait = erudite
+				}
+				modifier = {
+					factor = 0.5
+					NOT = { has_character_flag = made_deal_with_demon_flag }
+				}
+			}
+		}
+		new_character = { save_event_target_as = target_summoned_demon }
+	}
+
+	option = {
+		name = {
+			trigger = {
+				OR = {
+					has_character_flag = summoned_deceitful_nathrezim_flag
+					has_character_flag = summoned_ambitious_annihilan_flag
+					has_character_flag = summoned_deceitful_observer_flag
+				}
+			}
+			text = EVTOPTA_WCFEL_9973_bad_case
+		}
+		name = {
+			trigger = {
+				NOR = {
+					has_character_flag = summoned_deceitful_nathrezim_flag
+					has_character_flag = summoned_ambitious_annihilan_flag
+					has_character_flag = summoned_deceitful_observer_flag
+				}
+			}
+			text = EXCELLENT
+		}
+		trigger_switch = {
+			on_trigger = has_character_flag
+			summoned_deceitful_nathrezim_flag = {
+				event_target:target_summoned_demon = { wealth = ROOT }
+				clear_wealth = yes
+				abdicate_to = target_summoned_demon
+				death = {
+					death_reason = death_murder_butchered
+					killer = event_target:target_summoned_demon
+				}
+			}
+			summoned_ambitious_annihilan_flag = {
+				death = {
+					death_reason = death_murder_butchered
+					killer = event_target:target_summoned_demon
+				}
+				event_target:target_summoned_demon = {
+					set_character_flag = wc_raiding_adventurer_flag
+					character_event = { id = HL.100 }
+				}
+			}
+			summoned_deceitful_observer_flag = {
+				death = {
+					death_reason = death_murder_butchered
+					killer = event_target:target_summoned_demon
+				}
+				hidden_effect = {
+					event_target:target_summoned_demon = {
+						death = { death_reason = death_missing }
+					}
+				}
+			}
+			summoned_normal_nathrezim_flag = {
+				add_15_fel_corruption_effect = yes
+				add_character_modifier = { name = inflow_of_the_fel duration = 3650 }
+				hidden_effect = {
+					event_target:target_summoned_demon = {
+						death = { death_reason = death_missing }
+					}
+				}
+			}
+			summoned_normal_annihilan_flag = {
+				# Handled by option B of event WCFEL.9960
+				drink_demon_blood_effect = yes
+				hidden_effect = {
+					event_target:target_summoned_demon = {
+						death = { death_reason = death_missing }
+					}
+				}
+			}
+			summoned_normal_observer_flag = {
+				add_15_fel_corruption_effect = yes
+				if = {
+					limit = { has_top_tier_education_trait_trigger = yes }
+					random_list = {
+						20 = { change_diplomacy = 3 }
+						20 = { change_martial = 3 }
+						20 = { change_stewardship = 3 }
+						20 = { change_intrigue = 3 }
+						20 = { change_learning = 3 }
+					}
+				}
+				upgrade_education_effect = yes
+				if = {
+					limit = { NOT = { trait = erudite } }
+					add_trait = erudite
+				}
+				hidden_effect = {
+					event_target:target_summoned_demon = {
+						death = { death_reason = death_missing }
+					}
+				}
+			}
+			summoned_content_nathrezim_flag = {
+				add_15_fel_corruption_effect = yes
+				add_character_modifier = { name = inflow_of_the_fel duration = 3650 }
+				custom_tooltip = {
+					text = EVTOPTA_WCFEL_9973_good_case_tooltip
+				}
+			}
+			summoned_content_annihilan_flag = {
+				# Handled by option B of event WCFEL.9960
+				drink_demon_blood_effect = yes
+				custom_tooltip = {
+					text = EVTOPTA_WCFEL_9973_good_case_tooltip
+				}
+			}
+			summoned_content_observer_flag = {
+				add_15_fel_corruption_effect = yes
+				if = {
+					limit = { has_top_tier_education_trait_trigger = yes }
+					random_list = {
+						20 = { change_diplomacy = 3 }
+						20 = { change_martial = 3 }
+						20 = { change_stewardship = 3 }
+						20 = { change_intrigue = 3 }
+						20 = { change_learning = 3 }
+					}
+				}
+				upgrade_education_effect = yes
+				if = {
+					limit = { NOT = { trait = erudite } }
+					add_trait = erudite
+				}
+				custom_tooltip = {
+					text = EVTOPTA_WCFEL_9973_good_case_tooltip
+				}
+			}
+		}
+	}
+	after = {
+		hidden_effect = {
+			clr_character_flag = made_deal_with_demon_flag
+			clr_character_flag = summoned_deceitful_nathrezim_flag
+			clr_character_flag = summoned_ambitious_annihilan_flag
+			clr_character_flag = summoned_deceitful_observer_flag
+			clr_character_flag = summoned_normal_nathrezim_flag
+			clr_character_flag = summoned_normal_annihilan_flag
+			clr_character_flag = summoned_normal_observer_flag
+			clr_character_flag = summoned_content_nathrezim_flag
+			clr_character_flag = summoned_content_annihilan_flag
+			clr_character_flag = summoned_content_observer_flag
+		}
+	}
+}
+
+# Demonic Love: succubus falls in love
+narrative_event = {
+	id = WCFEL.9981
+	title = EVTTITLE_WCCLS_9981
+	desc = EVTDESC_WCFEL_9981
+	picture = GFX_evt_gift
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	trigger = {
+		event_target:target_succubus = {
+			is_alive = yes
+			is_friend = ROOT
+			NOT = { is_lover = ROOT }
+		}
+	}
+
+	# Nope
+	option = {
+		name = EVTOPTA_WCFEL_9981
+
+		if = {
+			limit = {
+				NOR = {
+					trait = chaste
+					trait = lustful
+				}
+			}
+			add_trait = chaste
+		}
+		if = { limit = { trait = lustful } remove_trait = lustful }
+
+		ai_chance = {
+			factor = 100
+		}
+	}
+	# Yea... yes, of course!
+	option = {
+		name = EVTOPTB_WCFEL_9981
+
+		if = {
+			limit = {
+				is_female = yes
+				NOT = { trait = homosexual }
+			}
+			add_trait = homosexual
+		}
+		if = {
+			limit = {
+				NOR = {
+					trait = chaste
+					trait = lustful
+				}
+			}
+			add_trait = lustful
+		}
+		if = { limit = { trait = chaste } remove_trait = chaste }
+		if = { limit = { trait = paranoid } remove_trait = paranoid }
+
+		ai_chance = {
+			factor = 0
+		}
+	}
+	# Yeah!
+	option = {
+		trigger = { trait = seducer }
+		tooltip_info = seducer
+		name = EVTOPTC_WCFEL_9981
+
+		if = {
+			limit = {
+				NOR = {
+					trait = chaste
+					trait = lustful
+				}
+			}
+			add_trait = lustful
+		}
+		if = { limit = { trait = chaste } remove_trait = chaste }
+		if = { limit = { trait = paranoid } remove_trait = paranoid }
+
+		ai_chance = {
+			factor = 0
+		}
+	}
+	# Yeah!
+	option = {
+		trigger = { trait = seductress }
+		tooltip_info = seductress
+		name = EVTOPTC_WCFEL_9981
+
+		if = {
+			limit = {
+				is_female = yes
+				NOT = { trait = homosexual }
+			}
+			add_trait = homosexual
+		}
+		if = {
+			limit = {
+				NOR = {
+					trait = chaste
+					trait = lustful
+				}
+			}
+			add_trait = lustful
+		}
+		if = { limit = { trait = chaste } remove_trait = chaste }
+		if = { limit = { trait = paranoid } remove_trait = paranoid }
+
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
