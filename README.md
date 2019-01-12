@@ -12,6 +12,6 @@ because the next generation (https://forum.paradoxplaza.com/forum/index.php?thre
 5. CK2 KofA.xml is a language file that can be used in the Notepad++ to help you with the language syntax
       - If you are using Atom editor in conjunction with Git/GitHub Desktop, install the language pack (https://atom.io/package/language-crusader-kings--i-i)
 
-# [Coding Guidelines](docs/DEVELOPMENT.md)
+# [Coding Guidelines](DEVELOPMENT.md)
  
-# [Vanilla Files Guidelines](docs/VANILLAFILES.md)
+# [Changing Vanilla Files](VANILLAFILES.md)
