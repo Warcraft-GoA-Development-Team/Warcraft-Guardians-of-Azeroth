@@ -2121,7 +2121,7 @@ character_event = {
 							factor = 0.1
 							location = { region = world_northrend }
 						}
-						character_event = { id = WCUND.1109 }
+						free_from_lich_king_effect = yes
 					}
 				}
 			}
@@ -2154,7 +2154,7 @@ character_event = {
 							factor = 0.1
 							location = { region = world_northrend }
 						}
-						character_event = { id = WCUND.1109 }
+						free_from_lich_king_effect = yes
 					}
 				}
 			}
@@ -2170,7 +2170,7 @@ character_event = {
 			hidden_effect = {
 				any_realm_character = {
 					limit = {
-						NOT = { character = ROOT }
+						NOT = { character = PREV }
 						trait = undead
 						NOT = { trait = champion_of_the_lich_king }
 						NOT = { has_landed_title = e_scourge }
@@ -2187,7 +2187,7 @@ character_event = {
 							factor = 0.1
 							location = { region = world_northrend }
 						}
-						character_event = { id = WCUND.1109 }
+						free_from_lich_king_effect = yes
 					}
 				}
 			}
@@ -2271,18 +2271,6 @@ character_event = {
 	picture = GFX_evt_scourge_army
 
 	is_triggered_only = yes
-	
-	trigger = {
-		trait = undead
-		NOT = { trait = champion_of_the_lich_king }
-		NOT = { has_landed_title = e_scourge }
-		e_scourge = {
-			has_holder = yes
-			holder_scope = {
-				religion = PREVPREV
-			}
-		}
-	}
 
 	immediate = {
 		log = "WCUND.1109 fired for [Root.GetBestName]"
@@ -2298,7 +2286,10 @@ character_event = {
 				show_scope_change = no
 				ROOT = {
 					show_scope_change = no
-					set_defacto_liege = THIS
+					if = {
+						limit = { independent = no }
+						set_defacto_liege = THIS
+					}
 					remove_opinion = { modifier = opinion_loyal_servant who = PREV }
 					opinion = { modifier = opinion_evil_tyrant who = PREV }
 					if = {
@@ -2328,10 +2319,43 @@ character_event = {
 				}
 			}
 		}
+		
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 1.59
+				has_benevolent_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.59
+				has_pleasant_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.59
+				has_pious_trait_trigger = yes
+			}
+		}
 	}
 
 	option = {
+		trigger = { NOT = { e_scourge = { holder_scope = { war_with = ROOT } } } }
 		name = EVTOPTB_WCCLS_1109
+		
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 1.59
+				has_evil_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.59
+				has_unpleasant_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.59
+				has_impious_trait_trigger = yes
+			}
+		}
 	}
 }
 
