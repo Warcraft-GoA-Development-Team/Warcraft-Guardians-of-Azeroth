@@ -4589,6 +4589,9 @@ new_crusade = {
 		ROOT = {
 			uses_new_crusade = yes
 			can_call_crusade = yes
+			hidden_tooltip = {
+				NOT = { has_character_modifier = cancel_crusade_cooldown }
+			}
 		}
 		
 		FROM = {
@@ -4953,6 +4956,7 @@ new_crusade = {
 							limit = {
 								any_owned_bloodline = {
 									has_bloodline_flag = grand_crusader_bloodline
+									bloodline_is_active_for = PREV
 								}
 							}
 							set_crusade_pot_multiplier = 0.2
@@ -5755,6 +5759,7 @@ new_crusade = {
 								religion = THIS
 								inheritance = matrilineal
 							}
+							set_bloodline_founder_religion_flag_effect = yes
 						}
 					}
 					else = {
@@ -5764,6 +5769,7 @@ new_crusade = {
 								religion = THIS
 								inheritance = patrilineal
 							}
+							set_bloodline_founder_religion_flag_effect = yes
 						}
 					}
 				}
@@ -20362,47 +20368,20 @@ powerful_vassal_takeover_war = { # Started from faction
 			limit = { has_law = succession_voting_power_0 }
 			add_law_w_cooldown = succession_voting_power_1
 		}
-		custom_tooltip = {
-			text = overthrow_text
-			hidden_tooltip = {
-				if = {
-					limit = { 
-						title = e_hre
-						has_title_flag = alternate_hre
-						NOR = { has_law = succ_feudal_elective has_law = succ_hre_elective }
-						has_law = law_voting_power_1
-						has_law = banish_voting_power_1
-						has_law = execution_voting_power_1
-						has_law = revoke_title_voting_power_1
-						has_law = grant_title_voting_power_1
-						has_law = imprison_voting_power_1
-						has_law = war_voting_power_1						
-					}
-					add_law_w_cooldown = succ_hre_elective
-				}
-				if = {
-					limit = { 
-						NOR = { 
-							title = e_hre 
-							has_title_flag = alternate_hre
-						}
-						NOR = { has_law = succ_feudal_elective has_law = succ_hre_elective }
-						has_law = law_voting_power_1
-						has_law = banish_voting_power_1
-						has_law = execution_voting_power_1
-						has_law = revoke_title_voting_power_1
-						has_law = grant_title_voting_power_1
-						has_law = imprison_voting_power_1
-						has_law = war_voting_power_1						
-					}
-					add_law_w_cooldown = succ_feudal_elective
-				}
-				if = {
-					limit = {
-						NOT = { has_law = succ_gavelkind }
-						NOR = { has_law = succ_feudal_elective has_law = succ_hre_elective }
-						NAND = {
-							has_law = succ_feudal_elective
+		if = { 
+			limit = { #Should not be changed from Imperial Elective
+				NOT = {	has_law = succ_byzantine_elective }
+			}
+			custom_tooltip = {
+				text = overthrow_text
+				hidden_tooltip = {
+					if = {
+						limit = { 
+							OR = { 
+								title = e_hre
+								has_title_flag = alternate_hre
+							}
+							NOR = { has_law = succ_feudal_elective has_law = succ_hre_elective }
 							has_law = law_voting_power_1
 							has_law = banish_voting_power_1
 							has_law = execution_voting_power_1
@@ -20411,8 +20390,42 @@ powerful_vassal_takeover_war = { # Started from faction
 							has_law = imprison_voting_power_1
 							has_law = war_voting_power_1						
 						}
+						add_law_w_cooldown = succ_hre_elective
 					}
-					add_law_w_cooldown = succ_gavelkind
+					if = {
+						limit = { 
+							NOR = { 
+								title = e_hre 
+								has_title_flag = alternate_hre
+							}
+							NOR = { has_law = succ_feudal_elective has_law = succ_hre_elective }
+							has_law = law_voting_power_1
+							has_law = banish_voting_power_1
+							has_law = execution_voting_power_1
+							has_law = revoke_title_voting_power_1
+							has_law = grant_title_voting_power_1
+							has_law = imprison_voting_power_1
+							has_law = war_voting_power_1						
+						}
+						add_law_w_cooldown = succ_feudal_elective
+					}
+					if = {
+						limit = {
+							NOT = { has_law = succ_gavelkind }
+							NOR = { has_law = succ_feudal_elective has_law = succ_hre_elective }
+							NAND = {
+								has_law = succ_feudal_elective
+								has_law = law_voting_power_1
+								has_law = banish_voting_power_1
+								has_law = execution_voting_power_1
+								has_law = revoke_title_voting_power_1
+								has_law = grant_title_voting_power_1
+								has_law = imprison_voting_power_1
+								has_law = war_voting_power_1						
+							}
+						}
+						add_law_w_cooldown = succ_gavelkind
+					}
 				}
 			}
 		}
