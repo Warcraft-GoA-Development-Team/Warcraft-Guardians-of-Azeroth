@@ -11,7 +11,7 @@ events.
         
 ### Rules for Submitting Bugs or Suggestions (Issues):
 
-1. Please label your issue with two labels: 
+1. Please detail your issue with two labels: 
 - Priority (Low, Medium, High, Critical)
 - Bug Type (Lore, Localization, Desync, etc)
 2. Please give the steps to recreate the issue that you are experiencing so we may better address it.
