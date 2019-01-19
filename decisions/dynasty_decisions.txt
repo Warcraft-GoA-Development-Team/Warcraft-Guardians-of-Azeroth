@@ -48,7 +48,17 @@ targetted_decisions = {
 			prisoner = no
 			custom_tooltip = {
 				text = is_not_busy_trigger_tooltip
-				hidden_tooltip = { NOR  = { has_character_flag = do_not_disturb is_inaccessible_trigger = yes } }
+				hidden_tooltip = {
+					# NOR  = { has_character_flag = do_not_disturb is_inaccessible_trigger = yes }
+					# Line above outcommented to account for Seclusion (below)
+					OR = {
+						in_seclusion = yes
+						NOR = {
+							has_character_flag = do_not_disturb
+							is_inaccessible_trigger = yes
+						}
+					}
+				}
 			}
 			custom_tooltip = {
 				NOT = { has_character_flag = attempting_suicide }
@@ -368,7 +378,6 @@ targetted_decisions = {
 					is_married = no
 					custom_tooltip = {
 						text = NOT_HEIR_TITLE_TT
-
 						NOT = {
                         	any_heir_title = { 
                             	always = yes
@@ -377,9 +386,31 @@ targetted_decisions = {
                     }
 				}
 				prisoner = yes
+				conditional_tooltip = {
+					trigger = { dynasty = FROM }
+					custom_tooltip = { #Matilde's Bloodline
+						text = BLOODLINE_EASIER_VOWS_TOOLTIP
+						AND = { 
+							FROM = { 
+								dynasty = ROOT
+								any_owned_bloodline = {
+									has_bloodline_flag = bloodline_easy_monks
+									bloodline_is_active_for = PREV
+								}
+							}
+							ROOT = { 
+								any_owned_bloodline = {
+									has_bloodline_flag = bloodline_easy_monks
+									bloodline_is_active_for = PREV
+								}
+							}
+						}
+					}
+				}
 			}
 			FROM = { piety = 50 }
 		}
+
 		effect = {
 			FROM = { piety = -50 }
 			add_ascetic_trait_effect = yes #Adds religion-based monk-traits.
