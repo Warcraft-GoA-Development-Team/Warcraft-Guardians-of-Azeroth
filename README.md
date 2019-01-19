@@ -1,6 +1,6 @@
 # General Notes and Guidelines
 
-1. If you want to commit changes that aren't yours or are completely generated, upload these changes to a separate branch. When you will be ready to create a pull request for this branch, please write in "(GDC)" at the end of your pull request title.
+1. If you want to commit changes that aren't yours or are completely generated or are moved from one place to another, please write in "(GDC)" at the end of your commit message.
 
 2. **DO NOT** change other people's lines without asking
 

@@ -23,4 +23,4 @@ events.
 ### General Repository Information:
 
 1. If your pull request is currently a work in progress and requires more commits before review/finalization, please write in "(WIP)" at the end of your pull request title. This will have GitHub mark it as a pull request that should not be merged yet.
-2. If you want to commit changes that aren't yours or are completely generated, upload these changes to a separate branch. When you will be ready to create a pull request for this branch, please write in "(GDC)" at the end of your pull request title.
+2. If you want to commit changes that aren't yours or are completely generated or are moved from one place to another, please write in "(GDC)" at the end of your commit message.
