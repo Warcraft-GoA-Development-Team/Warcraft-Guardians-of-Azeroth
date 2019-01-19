@@ -908,6 +908,48 @@ character_event = {
 		#	}
 
 		################## CLEAN UP EVENTS ####################
+			100 = { #You or your target have separately gone into Seclusion (somehow), clear target.
+				trigger = { 
+					OR = {
+						AND = { #They're in Seclusion, but you are not...
+							in_seclusion = no
+							persistent_event_target:sway_target = { in_seclusion = yes }
+						}
+						AND = { #You're in Seclusion, but they are not (and they are not at your location)...
+							in_seclusion = yes
+							persistent_event_target:sway_target = {
+								in_seclusion = no
+								NOT = { at_location = ROOT } # (Just in case you somehow kicked them out of your own Seclusion)
+							}
+						}
+						AND = { #You're in Seclusion at the same time, separately...
+							in_seclusion = yes
+							persistent_event_target:sway_target = {
+								in_seclusion = yes
+								NOT = { at_location = ROOT }
+							}
+						}
+						AND = { #You're in Seclusion at the same time, at the same location...
+							in_seclusion = yes
+							NOT = { trait = celibate }
+							is_adult = yes
+							NOT = { has_character_flag = seclusion_lazy_seduction }
+							persistent_event_target:sway_target = {
+								is_adult = yes
+								is_opposite_sex = ROOT
+								reverse_opinion = { who = ROOT value = 0 } 
+								at_location = ROOT
+								has_character_modifier = in_seclusion
+								is_married = no
+								is_consort = no
+								has_lover = no
+								can_marry = yes
+							}
+						}
+					}
+				}
+				character_event = { id = HF.21002 }
+			}
 			100 = { #Imprisoned, clear event target.
 				modifier = { 
 					factor = 0
@@ -1731,23 +1773,100 @@ character_event = {
 	}
 }
 
-#Appeased: no longer within diplomatic range, hidden event to ping to appeaser and clear event target.
+#Appeaser: you or your target has gone into Seclusion, Swaying is canceled
 character_event = {
 	id = HF.21002
-	hide_window = yes
-
+	picture = GFX_evt_woman_at_window_hf
+	portrait = persistent_event_target:sway_target
+	
 	is_triggered_only = yes
 
-	immediate = { 
-		FROM = { character_event = { id = HF.21002 } }
-	#	if = {  - Older check, no longer needed
-	#		limit = { NOT = { is_within_diplo_range = FROM } }
-	#		
-	#	}
-	#	if = { 
-	#		limit = { is_within_diplo_range = FROM }
-	#		FROM = { character_event = { id = HF.21000 days = 30 } } #Fire the big one again, pick another result.
-	#	}
+	trigger = {
+		OR = {
+			AND = { #They're in Seclusion, but you are not...
+				in_seclusion = no
+				persistent_event_target:sway_target = { in_seclusion = yes }
+			}
+			AND = { #You're in Seclusion, but they are not (and they are not at your location)...
+				in_seclusion = yes
+				persistent_event_target:sway_target = {
+					in_seclusion = no
+					NOT = { at_location = ROOT } # (Just in case you somehow kicked them out of your own Seclusion)
+				}
+			}
+			AND = { #You're in Seclusion at the same time, separately...
+				in_seclusion = yes
+				persistent_event_target:sway_target = {
+					in_seclusion = yes
+					NOT = { at_location = ROOT }
+				}
+			}
+		}
+	}
+
+	fail_trigger_effect = {
+		if = { #Special circumstance: you're in Seclusion at the same location...
+			limit =  {
+				has_dlc = "Reapers" # For safety, even though Seclusion should not be possible without
+				in_seclusion = yes
+				NOT = { trait = celibate }
+				is_adult = yes
+				NOT = { has_character_flag = seclusion_lazy_seduction } #so you don't get the chain twice
+				persistent_event_target:sway_target = {
+					is_adult = yes
+					is_opposite_sex = ROOT
+					NOT = { is_lover = ROOT }
+					at_location = ROOT
+					has_character_modifier = in_seclusion
+					has_lover = no
+				}
+			}
+			set_character_flag = seclusion_lazy_seduction_V2@persistent_event_target:sway_target
+			character_event = { id = RIP.12007 } # Seclusion romance (old event, an updated text)
+		}
+		else = {
+			character_event = { id = HF.21000 days = 30 random = 30 } # Send main tombola again...
+		}
+	}
+
+	desc = {
+		text = EVTDESCHFP21002_A #They are in Seclusion
+		trigger = {
+			in_seclusion = no
+			persistent_event_target:sway_target = { in_seclusion = yes }
+		}
+	}
+	desc = {
+		text = EVTDESCHFP21002_B #I am in Seclusion (without them)
+		trigger = {
+			in_seclusion = yes
+			persistent_event_target:sway_target = {
+				in_seclusion = no
+				NOT = { at_location = ROOT } #Just in case you somehow kicked them out of your own Seclusion
+			}
+		}
+	}
+	desc = {
+		text = EVTDESCHFP21002_A_B #I am in Seclusion, and they are too (separately)
+		trigger = {
+			in_seclusion = yes
+			persistent_event_target:sway_target = {
+				in_seclusion = yes
+				NOT = { at_location = ROOT }
+			}
+		}
+	}
+
+	option = {
+		name = EVTOPTAHFP21002
+		custom_tooltip = { text = tooltip_stop_swaying }
+
+		hidden_effect = { 
+			persistent_event_target:sway_target = { clr_character_flag = flag_character_being_swayed }
+			remove_special_interest = persistent_event_target:sway_target
+			clear_persistent_event_target = sway_target
+			clr_character_flag = flag_tired_of_gifts
+		}
 	}
 }
 
@@ -6384,37 +6503,19 @@ character_event = {
 
 	option = { 
 		name = EVTOPTAHFP21068
-		if = {  
-			limit = { has_character_flag = flag_crit_swayed_wroth }
-			tooltip = {  
-				FROM = {  
-				show_scope_change = no
-					opinion = {  
-						who = ROOT
-						modifier = opinion_swayed_2
-						years = 10
-					}
-				}
-			}
-		}
-		if = {  
-			limit = { 
-				NOT = { has_character_flag = flag_crit_swayed_wroth } 
-			}
-			tooltip = {  
-				FROM = {  
-				show_scope_change = no
-					opinion = {  
-						who = ROOT
-						modifier = opinion_swayed_1
-						years = 5
-					}
+		tooltip = {  
+			FROM = {  
+			show_scope_change = no
+				opinion = {  
+					who = ROOT
+					modifier = opinion_swayed_1
+					years = 5
 				}
 			}
 		}
 		clr_character_flag = flag_appease_wroth_approach
 		clr_character_flag = flag_appease_wroth_demand
-		clr_character_flag = flag_crit_swayed_wroth
+		clr_character_flag = flag_repulsed_wroth
 		ai_chance = { factor = 100 }
 	}
 }
