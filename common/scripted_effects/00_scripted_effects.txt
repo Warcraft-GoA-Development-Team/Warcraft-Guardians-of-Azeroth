@@ -4239,6 +4239,16 @@ add_crusade_trait_effect = {
 	}
 	if = {
 		limit = {
+			OR = {
+				religion = bon
+				religion = bon_reformed
+			}
+		}
+		add_trait = kailash_guardian
+		break = yes
+	}
+	if = {
+		limit = {
 			religion_group = muslim
 		}
 		add_trait = mujahid
@@ -20489,7 +20499,6 @@ random_coronation_events_effect = {
 			modifier = { 
 				factor = 0
 				NOT = { has_landed_title = e_hre }
-				NOT = { has_landed_title = e_france }
 			}
 			modifier = { 
 				factor = 1.5 
@@ -25992,12 +26001,19 @@ rename_character_effect = {
 }
 
 move_childrens_crusade_region_effect = {
-	if = { #If at any point during the preparation Jerusalem is no longer a valid target, stop everything.
+	if = { #If at any point during the preparation Jerusalem is no longer a valid target, or a real Crusade starts, stop everything.
 		limit = {
 			OR = {
 				k_jerusalem = { has_holder = yes holder_scope = { religion_group = christian } }
 				c_jerusalem = { holder_scope = { religion_group = christian } }
 				c_jerusalem = { holder_scope = { is_crusade_target = yes } }
+				religion_head = { is_preparing_crusade = yes }
+				religion_head = { 
+					OR = { 
+						any_war = { using_cb = crusade }  
+						any_war = { using_cb = new_crusade } 
+					} 
+				} 
 			}
 		}
 		any_player = { 
@@ -26017,68 +26033,23 @@ move_childrens_crusade_region_effect = {
 		add_trait = lunatic
 		piety = -150
 		remove_trait = disinherited 
+		set_variable = { which = children_crusade_forces value = 0 }
+		set_variable = { which = children_crusade_morale value = 0 }
+		set_variable = { which = children_crusade_heavy_troops value = 0 }
 		any_courtier = { 
 			remove_trait = disinherited
 			clr_character_flag = no_court_invites
 		}
 		break = yes
 	}
-	if = { #Check starting position to determine traveling path.
-		limit = {
-			NOR = {
-				has_character_flag = flag_children_at_genoa
-				has_character_flag = flag_children_at_achaia
-				has_character_flag = flag_children_at_nikaea
-				has_character_flag = flag_children_at_antioch
-			}
-		}
-		if = {
-			limit = {
-				location = { region = world_europe_south_italy }
-			}
-			clr_character_flag = flag_children_at_genoa
-			clr_character_flag = flag_children_at_nikaea
-			clr_character_flag = flag_children_at_antioch
-			set_character_flag = flag_children_at_achaia
-		}
-		if = {
-			limit = {
-				location = { region = world_europe_south_east }
-			}
-			clr_character_flag = flag_children_at_genoa
-			clr_character_flag = flag_children_at_achaia
-			clr_character_flag = flag_children_at_antioch
-			set_character_flag = flag_children_at_nikaea
-		}
-		if = {
-			limit = {
-				location = { region = world_asia_minor }
-			}
-			clr_character_flag = flag_children_at_genoa
-			clr_character_flag = flag_children_at_achaia
-			clr_character_flag = flag_children_at_nikaea
-			set_character_flag = flag_children_at_antioch
-		}
-	}
 	if = { #Move to Genoa first.
 		limit = {
-			OR = {
-				NOR = {
-					location = { region = world_europe_south_italy }
-					location = { region = world_europe_south_east }
-					location = { region = world_asia_minor }
-					has_character_flag = flag_children_at_achaia
-					has_character_flag = flag_children_at_nikaea
-					has_character_flag = flag_children_at_antioch
-				}
-			}
+			has_character_flag = flag_children_at_beginning
 		}
 		primary_title = { set_preferred_capital = c_genoa } #Historically traveled here.
 		change_variable = { which = children_crusade_forces value = 1 }
 		change_variable = { which = children_crusade_morale value = -1 }
-		clr_character_flag = flag_children_at_achaia
-		clr_character_flag = flag_children_at_nikaea
-		clr_character_flag = flag_children_at_antioch
+		clr_character_flag = flag_children_at_beginning
 		set_character_flag = flag_children_at_genoa
 		if = { 
 			limit = {  
@@ -26100,11 +26071,6 @@ move_childrens_crusade_region_effect = {
 	else_if = { #Then shipwreck to Achaia.
 		limit = {
 			has_character_flag = flag_children_at_genoa
-			NOR = { #Safety check, do not get too lost now...
-				has_character_flag = flag_children_at_achaia
-				has_character_flag = flag_children_at_nikaea
-				has_character_flag = flag_children_at_antioch
-			}
 		}
 		primary_title = { set_preferred_capital = c_achaia } 
 		change_variable = { which = children_crusade_morale value = -1 }
@@ -26133,10 +26099,6 @@ move_childrens_crusade_region_effect = {
 	else_if = { #Then crawl to Nikaea.
 		limit = {
 			has_character_flag = flag_children_at_achaia
-			NOR = { #Safety check, do not get too lost now...
-				has_character_flag = flag_children_at_nikaea
-				has_character_flag = flag_children_at_antioch
-			}
 		}
 		primary_title = { set_preferred_capital = c_nikaea } 
 		clr_character_flag = flag_children_at_achaia
@@ -26156,9 +26118,6 @@ move_childrens_crusade_region_effect = {
 	else_if = { #We actually got there. Start the war.
 		limit = {
 			has_character_flag = flag_children_at_nikaea
-			NOT = { #Safety check, do not get too lost now...
-				has_character_flag = flag_children_at_antioch
-			}
 		}
 		primary_title = { set_preferred_capital = c_antiocheia } #Where the troops will spawn.
 		clr_character_flag = flag_children_at_nikaea
@@ -26215,10 +26174,11 @@ spawn_childrens_crusade_light_troops_effect = {
 				can_toggle_looting = no
 				cannot_inherit = yes
 				merge = yes
+				disband_on_peace = yes
 				earmark = childrens_crusade_infantry_earmark
 				troops = {
-					light_infantry = { 4000 4000 }
-					archers = { 250 250 }
+					light_infantry = { 3000 3000 }
+					archers = { 100 100 }
 				}
 			}
 		}
@@ -26230,7 +26190,6 @@ spawn_childrens_crusade_light_troops_effect = {
 		character_event = { id = HF.25821 }
 	}
 }
-
 
 spawn_childrens_crusade_heavy_troops_effect = {
 	change_variable = { which = children_crusade_heavy_troops value = -1 }
@@ -26248,7 +26207,7 @@ spawn_childrens_crusade_heavy_troops_effect = {
 				merge = yes
 				troops = {
 					heavy_infantry = { 500 500 }
-					light_cavalry = { 250 250 }
+					light_cavalry = { 150 150 }
 				}
 			}
 		}
@@ -26260,6 +26219,7 @@ spawn_childrens_crusade_heavy_troops_effect = {
 		character_event = { id = HF.25822 }
 	}
 }
+
 warrior_lodge_pay_dice_debt_effect = {
 	if = { 
 		limit = { has_character_flag = flag_betting_money_1000 } 
@@ -29675,6 +29635,7 @@ reformation_god_names_changes_effect = { #Reforming religion with certain Doctri
 					add_evil_god_name = GOD_KRONOS
 					add_evil_god_name = GOD_DIONYSUS
 					add_evil_god_name = GOD_HERMES
+					add_evil_god_name = GOD_TYPHON
 				}
 				if = { #Religion is Patriarchal.
 					limit = {
@@ -29707,6 +29668,7 @@ reformation_god_names_changes_effect = { #Reforming religion with certain Doctri
 					add_evil_god_name = GOD_HERA
 					add_evil_god_name = GOD_ATHENA
 					add_evil_god_name = GOD_ARTEMIS
+					add_evil_god_name = GOD_DELFINE
 				}
 				if = { #Religion is Matriarchal.
 					limit = {
@@ -29729,6 +29691,7 @@ reformation_god_names_changes_effect = { #Reforming religion with certain Doctri
 					add_evil_god_name = GOD_GREEK_JUPITER #Otherwise shows Conclave...
 					add_evil_god_name = GOD_POSEIDON
 					add_evil_god_name = GOD_ARES
+					add_evil_god_name = GOD_TYPHON
 				}
 			}
 			if = { #A ruler reforms Hellenism while NOT being Greek-cultured.
@@ -29781,6 +29744,7 @@ reformation_god_names_changes_effect = { #Reforming religion with certain Doctri
 					add_evil_god_name = GOD_PLUTO
 					add_evil_god_name = GOD_BACCHUS
 					add_evil_god_name = GOD_MERCURY
+					add_evil_god_name = GOD_TYPHON
 				}
 				if = { #Religion is Patriarchal.
 					limit = {
@@ -29813,6 +29777,7 @@ reformation_god_names_changes_effect = { #Reforming religion with certain Doctri
 					add_evil_god_name = GOD_JUNO
 					add_evil_god_name = GOD_MINERVA
 					add_evil_god_name = GOD_DIANA
+					add_evil_god_name = GOD_DELFINE
 				}
 				if = { #Religion is Matriarchal.
 					limit = {
@@ -29835,6 +29800,7 @@ reformation_god_names_changes_effect = { #Reforming religion with certain Doctri
 					add_evil_god_name = GOD_JUPITER
 					add_evil_god_name = GOD_NEPTUNE
 					add_evil_god_name = GOD_MARS
+					add_evil_god_name = GOD_TYPHON
 				}
 			}
 		}
@@ -30067,5 +30033,158 @@ murder_bloodline_check_effect = {
 		}
 		set_character_flag = flag_about_to_murder_bloodline
 		narrative_event = { id = HF.24048 days = 25 random = 25 }
+	}
+}
+
+princely_elective_german_elector_setup_effect = {
+	e_hre = { 
+		#County of Koln
+		#County of Mainz
+		#County of Trier
+		#Duchy of Bohemia
+		#Duchy of Franconia
+		#Duchy of Saxony
+		#Duchy of Brandenburg
+		save_persistent_event_target = { name = hre_title_1_per scope = c_koln }
+		save_persistent_event_target = { name = hre_title_2_per scope = c_mainz }
+		save_persistent_event_target = { name = hre_title_3_per scope = c_trier }
+		save_persistent_event_target = { name = hre_title_4_per scope = d_bohemia }
+		save_persistent_event_target = { name = hre_title_5_per scope = d_franconia }
+		save_persistent_event_target = { name = hre_title_6_per scope = d_saxony }
+		save_persistent_event_target = { name = hre_title_7_per scope = d_brandenburg }
+	}
+}
+
+princely_elective_french_elector_setup_effect = {
+	e_hre = { 
+		#County of Amiens
+		#County of Reims
+		#County of Anjou
+		#Duchy of Aquitaine
+		#Duchy of Burgundy
+		#Duchy of Normandy
+		#Duchy of Champagne
+		save_persistent_event_target = { name = hre_title_1_per scope = c_amiens }
+		save_persistent_event_target = { name = hre_title_2_per scope = c_reims }
+		save_persistent_event_target = { name = hre_title_3_per scope = c_anjou }
+		save_persistent_event_target = { name = hre_title_4_per scope = d_aquitaine }
+		save_persistent_event_target = { name = hre_title_5_per scope = d_burgundy }
+		save_persistent_event_target = { name = hre_title_6_per scope = d_normandy }
+		save_persistent_event_target = { name = hre_title_7_per scope = d_champagne }
+	}
+}
+
+princely_elective_italian_elector_setup_effect = {
+	e_hre = { 
+		#County of Rome
+		#County of Ravenna
+		#County of Genoa
+		#Duchy of Latium
+		#Duchy of Milan
+		#Duchy of Tuscany
+		#Duchy of Pisa
+		save_persistent_event_target = { name = hre_title_1_per scope = c_roma }
+		save_persistent_event_target = { name = hre_title_2_per scope = c_ravenna }
+		save_persistent_event_target = { name = hre_title_3_per scope = c_genoa }
+		save_persistent_event_target = { name = hre_title_4_per scope = d_latium }
+		save_persistent_event_target = { name = hre_title_5_per scope = d_lombardia }
+		save_persistent_event_target = { name = hre_title_6_per scope = d_toscana }
+		save_persistent_event_target = { name = hre_title_7_per scope = d_pisa }
+	}
+}
+
+princely_elective_spain_elector_setup_effect = {
+	e_hre = { 
+		#County of Santiago
+		#County of Cordoba
+		#County of Leon
+		#Duchy of Barcelona
+		#Duchy of Castille
+		#Duchy of Portucale
+		#Duchy of Seville
+		save_persistent_event_target = { name = hre_title_1_per scope = c_santiago }
+		save_persistent_event_target = { name = hre_title_2_per scope = c_leon }
+		save_persistent_event_target = { name = hre_title_3_per scope = c_cordoba }
+		save_persistent_event_target = { name = hre_title_4_per scope = d_barcelona }
+		save_persistent_event_target = { name = hre_title_5_per scope = d_castilla }
+		save_persistent_event_target = { name = hre_title_6_per scope = d_porto }
+		save_persistent_event_target = { name = hre_title_7_per scope = d_sevilla }
+	}
+}
+
+princely_elective_britannia_elector_setup_effect = {
+	e_hre = { 
+		#County of Kent
+		#County of Worcester
+		#County of Durham
+		#Duchy of Mercia
+		#Duchy of Meath
+		#Duchy of Albany
+		#Duchy of Gwynedd
+		save_persistent_event_target = { name = hre_title_1_per scope = c_kent }
+		save_persistent_event_target = { name = hre_title_2_per scope = c_worcester }
+		save_persistent_event_target = { name = hre_title_3_per scope = c_durham }
+		save_persistent_event_target = { name = hre_title_4_per scope = d_mercia }
+		save_persistent_event_target = { name = hre_title_5_per scope = d_meath }
+		save_persistent_event_target = { name = hre_title_6_per scope = d_albany }
+		save_persistent_event_target = { name = hre_title_7_per scope = d_gwynedd }
+	}
+}
+
+princely_elective_apply_elector_setup_effect = { 
+	if = {
+		limit = {
+			capital_scope = {
+				region = world_europe_south_italy
+			}
+		}
+		hidden_tooltip = {
+			princely_elective_italian_elector_setup_effect = yes
+		}
+	}
+	else_if = {
+		limit = {
+			capital_scope = {
+				region = world_europe_west_francia
+			}
+		}
+		hidden_tooltip = {
+			princely_elective_french_elector_setup_effect = yes
+		}
+	}
+	else_if = {
+		limit = {
+			capital_scope = {
+				region = world_europe_west_germania
+			}
+		}
+		hidden_tooltip = {
+			princely_elective_german_elector_setup_effect = yes
+		}
+	}
+	else_if = {
+		limit = {
+			capital_scope = {
+				region = world_europe_west_iberia
+			}
+		}
+		hidden_tooltip = {
+			princely_elective_spain_elector_setup_effect = yes
+		}
+	}
+	else_if = {
+		limit = {
+			capital_scope = {
+				region = world_europe_west_brittania
+			}
+		}
+		hidden_tooltip = {
+			princely_elective_britannia_elector_setup_effect = yes
+		}
+	}
+	else = { #If outside usual borders, default to Germania.
+		hidden_tooltip = {
+			princely_elective_german_elector_setup_effect = yes
+		}
 	}
 }

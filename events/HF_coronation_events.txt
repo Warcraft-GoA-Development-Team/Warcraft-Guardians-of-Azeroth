@@ -1432,6 +1432,14 @@ letter_event = {
 					factor = 0.25
 					FROM = { NOT = { realm_size = 40 } }
 				}
+				modifier = {
+					factor = 0.5
+					FROM = { NOT = { realm_size = 80 } }
+				}
+				modifier = {
+					factor = 0.75
+					FROM = { NOT = { realm_size = 150 } }
+				}
 				FROM = { letter_event = { id = HF.20214 } } #I want you to depose excommunicated ruler.
 			}
 			30 = {  
@@ -1473,6 +1481,14 @@ letter_event = {
 				modifier = {
 					factor = 0.25
 					FROM = { NOT = { realm_size = 40 } }
+				}
+				modifier = {
+					factor = 0.5
+					FROM = { NOT = { realm_size = 80 } }
+				}
+				modifier = {
+					factor = 0.75
+					FROM = { NOT = { realm_size = 150 } }
 				}
 				FROM = { letter_event = { id = HF.20215 } } #I want you to depose an antipope.
 			}
@@ -3138,9 +3154,33 @@ letter_event = {
 					}
 				}
 			}
-			preferred_limit = { NOT = { distance_from_realm = { who = ROOT value = 50 } } }
-			preferred_limit = { NOT = { distance_from_realm = { who = ROOT value = 100 } } }
-			preferred_limit = { NOT = { distance_from_realm = { who = ROOT value = 150 } } }
+			preferred_limit = { 
+				NOT = { distance_from_realm = { who = ROOT value = 50 } } 
+				NOT = { relative_power = { who = ROOT power = 2 } }
+			}
+			preferred_limit = { 
+				NOT = { distance_from_realm = { who = ROOT value = 100 } } 
+				NOT = { relative_power = { who = ROOT power = 2 } }
+			}
+			preferred_limit = { 
+				NOT = { distance_from_realm = { who = ROOT value = 150 } } 
+				NOT = { relative_power = { who = ROOT power = 2 } }
+			}
+			preferred_limit = { 
+				NOT = { distance_from_realm = { who = ROOT value = 50 } } 
+				NOT = { relative_power = { who = ROOT power = 3 } }
+			}
+			preferred_limit = { 
+				NOT = { distance_from_realm = { who = ROOT value = 100 } } 
+				NOT = { relative_power = { who = ROOT power = 3 } }
+			}
+			preferred_limit = { 
+				NOT = { distance_from_realm = { who = ROOT value = 150 } } 
+				NOT = { relative_power = { who = ROOT power = 3 } }
+			}
+			preferred_limit = { 
+				NOT = { relative_power = { who = ROOT power = 4 } }
+			}
 		save_event_target_as = excommunication_war_target 
 		}
 	}
@@ -3603,9 +3643,33 @@ letter_event = {
 					}
 				}
 			}
-			preferred_limit = { NOT = { distance_from_realm = { who = ROOT value = 50 } } }
-			preferred_limit = { NOT = { distance_from_realm = { who = ROOT value = 100 } } }
-			preferred_limit = { NOT = { distance_from_realm = { who = ROOT value = 150 } } }
+			preferred_limit = { 
+				NOT = { distance_from_realm = { who = ROOT value = 50 } } 
+				NOT = { relative_power = { who = ROOT power = 2 } }
+			}
+			preferred_limit = { 
+				NOT = { distance_from_realm = { who = ROOT value = 100 } } 
+				NOT = { relative_power = { who = ROOT power = 2 } }
+			}
+			preferred_limit = { 
+				NOT = { distance_from_realm = { who = ROOT value = 150 } } 
+				NOT = { relative_power = { who = ROOT power = 2 } }
+			}
+			preferred_limit = { 
+				NOT = { distance_from_realm = { who = ROOT value = 50 } } 
+				NOT = { relative_power = { who = ROOT power = 3 } }
+			}
+			preferred_limit = { 
+				NOT = { distance_from_realm = { who = ROOT value = 100 } } 
+				NOT = { relative_power = { who = ROOT power = 3 } }
+			}
+			preferred_limit = { 
+				NOT = { distance_from_realm = { who = ROOT value = 150 } } 
+				NOT = { relative_power = { who = ROOT power = 3 } }
+			}
+			preferred_limit = { 
+				NOT = { relative_power = { who = ROOT power = 4 } }
+			}
 		save_event_target_as = antipapal_war_target 
 		}
 	}
@@ -4338,7 +4402,18 @@ letter_event = {
 #Emperor: Pope wants you to give a Duchy to a Holy Order.
 letter_event = {
 	id = HF.20217
-	desc = EVTDESCHFA20217
+	desc = {
+		text = EVTDESCHFA20217
+		trigger = { 
+			has_landed_title = event_target:scoped_duchy
+		}
+	}
+	desc = { #If target duchy has been invalidated in the meantime for whatever reason, default to money donation.
+		text = EVTDESCHFA20212
+		trigger = { 
+			NOT = { has_landed_title = event_target:scoped_duchy }
+		}
+	}
 	border = GFX_event_letter_frame_religion
 
 	trigger = {
@@ -4348,24 +4423,8 @@ letter_event = {
 		}
 	}
 	is_triggered_only = yes
-	
-	option = {
-		name = EVTOPTAHF20217
-		set_character_flag = flag_crowned_by_pope
-		FROM = { save_event_target_as = coronation_priest 
-				show_scope_change = no	
-			opinion = {
-				modifier = opinion_supposed_to_crown
-				months = 1
-				who = ROOT
-			}
-			reverse_opinion = {
-				modifier = opinion_supposed_to_crown
-				months = 1
-				who = ROOT
-			}
-		}
-		hidden_tooltip = { character_event = { id = HF.20300 } } #Go to budget event
+
+	immediate = {
 		#Check if there is an available bordering province, in order to limit bordergore.
 		if  = { 
 			limit = {
@@ -4387,55 +4446,104 @@ letter_event = {
 					}
 				}
 			}
-			random_playable_ruler = { 
-				limit = { 
-					religion = ROOT
-					OR = { 
-						has_landed_title = d_knights_templar
-						has_landed_title = d_teutonic_order
-						has_landed_title = d_knights_hospitaler
-						has_landed_title = d_knights_santiago
-						has_landed_title = d_knights_calatrava 
-					} 
-				}
-				ROOT = {
-					random_demesne_title = {
-						limit = { 
-							can_be_given_away = yes
-							tier = duke
-							any_direct_de_jure_vassal_title = {
-								location = {
-									any_neighbor_province = {
-										has_owner = yes
-										owner = {
-											NOR = {
-												character = ROOT
-												is_liege_or_above = ROOT
-											}
-										}
+			random_demesne_title = {
+				limit = {
+					can_be_given_away = yes
+					tier = duke
+					any_direct_de_jure_vassal_title = {
+						location = {
+							any_neighbor_province = {
+								has_owner = yes
+								owner = {
+									NOR = {
+										character = ROOT
+										is_liege_or_above = ROOT
 									}
 								}
 							}
 						}
-						grant_title = PREVPREV 		#Grant the Duchy
-						any_de_jure_vassal = {		#Transfer vassals under the Duchy
-							limit = { 
-								vassal_of = ROOT 
-								lower_tier_than = PREVPREVPREV
-								NOT = { owner =  { character = ROOT } } 
-							}
-							set_defacto_liege = PREVPREVPREV
-						} 
-						any_de_jure_vassal_title = { 	#Take over dejure titles under the Duchy
-							limit = { owner =  { character = ROOT }  }
-							grant_title = PREVPREVPREV
-						}
 					}
+				}
+				preferred_limit = { #Try to give them counties as well.
+					any_de_jure_vassal_title = {
+						owner =  { character = ROOT } 
+					}
+				}
+				save_event_target_as = scoped_duchy
+			}
+		}
+		#Otherwise pick random demesne Duchy.
+		else = {
+			random_demesne_title = {
+				limit = { 
+					can_be_given_away = yes
+					tier = duke
+				}
+				preferred_limit = { #Try to give them counties as well.
+					any_de_jure_vassal_title = {
+						owner =  { character = ROOT } 
+					}
+				}
+			}
+			save_event_target_as = scoped_duchy
+		}
+		random_playable_ruler = { 
+			limit = { 
+				religion = ROOT
+				OR = { 
+					has_landed_title = d_knights_templar
+					has_landed_title = d_teutonic_order
+					has_landed_title = d_knights_hospitaler
+					has_landed_title = d_knights_santiago
+					has_landed_title = d_knights_calatrava 
+				} 
+			}
+			save_event_target_as = scoped_grandmaster
+		}
+	}
+	
+	option = {
+		name = EVTOPTAHF20217
+		trigger = { has_landed_title = event_target:scoped_duchy }
+		set_character_flag = flag_crowned_by_pope
+		FROM = { save_event_target_as = coronation_priest 
+				show_scope_change = no	
+			opinion = {
+				modifier = opinion_supposed_to_crown
+				months = 1
+				who = ROOT
+			}
+			reverse_opinion = {
+				modifier = opinion_supposed_to_crown
+				months = 1
+				who = ROOT
+			}
+		}
+		hidden_tooltip = { character_event = { id = HF.20300 } } #Go to budget event
+		#Make sure both targets exist, otherwise randomize.
+		if = { 
+			limit = { 
+				has_landed_title = event_target:scoped_duchy
+				event_target:scoped_grandmaster = { is_alive = yes }
+			}
+			event_target:scoped_duchy = {
+				grant_title = event_target:scoped_grandmaster 		#Grant the Duchy
+				any_de_jure_vassal = {		#Transfer vassals under the Duchy
+					limit = { 
+						vassal_of = ROOT 
+						lower_tier_than = event_target:scoped_grandmaster
+						NOT = { owner =  { character = ROOT } } 
+					}
+					set_defacto_liege = event_target:scoped_grandmaster
+				} 
+				any_de_jure_vassal_title = { 	#Take over dejure titles under the Duchy
+					limit = { owner =  { character = ROOT }  }
+					grant_title = event_target:scoped_grandmaster
 				}
 			}
 		}
 		else = { 
-		#Otherwise pick random demesne Duchy.
+		#If the player is being sneaky or the Grandmaster dies in the meantime, pick another duchy.
 			random_playable_ruler = { 
 				limit = { 
 					religion = ROOT
@@ -4474,6 +4582,7 @@ letter_event = {
 	}
 	option = {	#End of the line
 		name = EVTOPTBHF20217
+		trigger = { has_landed_title = event_target:scoped_duchy }
 		custom_tooltip = { text = coronation_canceled }
 		#clr_character_flag = flag_preparing_coronation #Replaced by timed modifier
 		# The Pope remembers what he wants, cheaty spammy player.
@@ -4485,6 +4594,390 @@ letter_event = {
 				who = ROOT
 			}
 		}
+		ai_chance = { factor = 0 }
+	}
+	option = {
+		name = EVTOPTAHF20212
+		trigger = { NOT = { has_landed_title = event_target:scoped_duchy } } #In the event of target being invalidated.
+		hidden_tooltip = {
+			FROM = {
+				opinion = {
+					modifier = opinion_coronation_money_refund
+					who = ROOT
+					years = 100
+				}
+			}
+		}
+		set_character_flag = flag_crowned_by_pope
+		FROM = { save_event_target_as = coronation_priest 
+				show_scope_change = no	
+			opinion = {
+				modifier = opinion_supposed_to_crown
+				months = 1
+				who = ROOT
+			}
+			reverse_opinion = {
+				modifier = opinion_supposed_to_crown
+				months = 1
+				who = ROOT
+			}
+		}
+		#Transfer scaled wealth based on Pope's opinion of you and your piety. - King tier
+		if = { 
+			limit = { real_tier = KING }
+			if = { 
+				limit = {  
+					NOT = { 
+						piety = 350
+					} 
+					FROM = { 
+						NOT = { 
+							opinion = { 
+								who = ROOT 
+								value = -75
+							} 
+						}
+					} 
+				} 
+				transfer_scaled_wealth = { to = FROM value = 2.5 min = 750 max = 1500 } 
+			}
+			if = { 
+				limit = {
+					piety = 350
+					FROM = { 
+						NOT = { 
+							opinion = { 
+								who = ROOT 
+								value = -75
+							} 
+						}
+					} 
+				} 
+				transfer_scaled_wealth = { to = FROM value = 2 min = 600 max = 1200 } 
+			}
+			if = { 
+				limit = {  
+					NOT = { 
+						piety = 350
+					} 
+					FROM = { 
+						opinion = { 
+							who = ROOT 
+							value = -75
+						} 
+						NOT = { 
+							opinion = { 
+								who = ROOT 
+								value = -25
+							} 
+						} 
+					} 
+				} 
+				transfer_scaled_wealth = { to = FROM value = 1.35 min = 500 max = 900 } 
+			}
+			if = { 
+				limit = {  
+					piety = 350
+					FROM = { 
+						opinion = { 
+							who = ROOT 
+							value = -75
+						} 
+						NOT = { 
+							opinion = { 
+								who = ROOT 
+								value = -25
+							} 
+						} 
+					} 
+				} 
+				transfer_scaled_wealth = { to = FROM value = 1.25 min = 400 max = 750 } 
+			}
+			if = { 
+				limit = {  
+					NOT = { 
+						piety = 350
+					} 
+					FROM = { 
+						opinion = { 
+							who = ROOT 
+							value = -25
+						} 
+						NOT = { 
+							opinion = { 
+								who = ROOT 
+								value = 0
+							} 
+						} 
+					} 
+				} 
+				transfer_scaled_wealth = { to = FROM value = 1.0 min = 350 max = 600 } 
+			}
+			if = { 
+				limit = { 
+					piety = 350
+					FROM = { 
+						opinion = { 
+							who = ROOT 
+							value = -25
+						} 
+						NOT = { 
+							opinion = { 
+								who = ROOT 
+								value = 0
+							} 
+						} 
+					} 
+				} 
+				transfer_scaled_wealth = { to = FROM value = 0.95 min = 300 max = 500 } 
+			}
+			if = { 
+				limit = { 
+					NOT = { 
+						piety = 350
+					}  
+					FROM = { 
+						opinion = { 
+							who = ROOT 
+							value = 0
+						} 
+						NOT = { 
+							opinion = { 
+								who = ROOT 
+								value = 50
+							} 
+						} 
+					} 
+				} 
+				transfer_scaled_wealth = { to = FROM value = 0.85 min = 250 max = 400 } 
+			}
+			if = { 
+				limit = { 
+					piety = 350
+					FROM = { 
+						opinion = { 
+							who = ROOT 
+							value = 0
+						} 
+						NOT = { 
+							opinion = { 
+								who = ROOT 
+								value = 50
+							} 
+						} 
+					} 
+				} 
+				transfer_scaled_wealth = { to = FROM value = 0.75 min = 200 max = 350 } 
+			}
+			if = { 
+				limit = { 
+					NOT = { 
+						piety = 350
+					}   
+					FROM = { 
+						opinion = { 
+							who = ROOT 
+							value = 50
+						} 
+					} 
+				} 
+				transfer_scaled_wealth = { to = FROM value = 0.65 min = 175 max = 300 } 
+			}
+			if = { 
+				limit = { 
+					piety = 350
+					FROM = { 
+						opinion = { 
+							who = ROOT 
+							value = 50
+						} 
+					} 
+				} 
+				transfer_scaled_wealth = { to = FROM value = 0.5 min = 150 max = 250 } 
+			}
+		}
+		#Transfer scaled wealth based on Pope's opinion of you and your piety. - Emperor tier
+		if = { 
+			limit = { real_tier = EMPEROR }
+			if = { 
+				limit = {  
+					NOT = { 
+						piety = 350
+					} 
+					FROM = { 
+						NOT = { 
+							opinion = { 
+								who = ROOT 
+								value = -75
+							} 
+						}
+					} 
+				} 
+				transfer_scaled_wealth = { to = FROM value = 3 min = 950 max = 1750 } 
+			}
+			if = { 
+				limit = {
+					piety = 350
+					FROM = { 
+						NOT = { 
+							opinion = { 
+								who = ROOT 
+								value = -75
+							} 
+						}
+					} 
+				} 
+				transfer_scaled_wealth = { to = FROM value = 2.5 min = 750 max = 1500 } 
+			}
+			if = { 
+				limit = {  
+					NOT = { 
+						piety = 350
+					} 
+					FROM = { 
+						opinion = { 
+							who = ROOT 
+							value = -75
+						} 
+						NOT = { 
+							opinion = { 
+								who = ROOT 
+								value = -25
+							} 
+						} 
+					} 
+				} 
+				transfer_scaled_wealth = { to = FROM value = 2.0 min = 600 max = 1000 } 
+			}
+			if = { 
+				limit = {  
+					piety = 350
+					FROM = { 
+						opinion = { 
+							who = ROOT 
+							value = -75
+						} 
+						NOT = { 
+							opinion = { 
+								who = ROOT 
+								value = -25
+							} 
+						} 
+					} 
+				} 
+				transfer_scaled_wealth = { to = FROM value = 1.75 min = 500 max = 850 } 
+			}
+			if = { 
+				limit = {  
+					NOT = { 
+						piety = 350
+					} 
+					FROM = { 
+						opinion = { 
+							who = ROOT 
+							value = -25
+						} 
+						NOT = { 
+							opinion = { 
+								who = ROOT 
+								value = 0
+							} 
+						} 
+					} 
+				} 
+				transfer_scaled_wealth = { to = FROM value = 1.5 min = 450 max = 700 } 
+			}
+			if = { 
+				limit = { 
+					piety = 350
+					FROM = { 
+						opinion = { 
+							who = ROOT 
+							value = -25
+						} 
+						NOT = { 
+							opinion = { 
+								who = ROOT 
+								value = 0
+							} 
+						} 
+					} 
+				} 
+				transfer_scaled_wealth = { to = FROM value = 1.35 min = 400 max = 600 } 
+			}
+			if = { 
+				limit = { 
+					NOT = { 
+						piety = 350
+					}  
+					FROM = { 
+						opinion = { 
+							who = ROOT 
+							value = 0
+						} 
+						NOT = { 
+							opinion = { 
+								who = ROOT 
+								value = 50
+							} 
+						} 
+					} 
+				} 
+				transfer_scaled_wealth = { to = FROM value = 1.25 min = 350 max = 500 } 
+			}
+			if = { 
+				limit = { 
+					piety = 350
+					FROM = { 
+						opinion = { 
+							who = ROOT 
+							value = 0
+						} 
+						NOT = { 
+							opinion = { 
+								who = ROOT 
+								value = 50
+							} 
+						} 
+					} 
+				} 
+				transfer_scaled_wealth = { to = FROM value = 0.95 min = 300 max = 450 } 
+			}
+			if = { 
+				limit = { 
+					NOT = { 
+						piety = 350
+					}   
+					FROM = { 
+						opinion = { 
+							who = ROOT 
+							value = 50
+						} 
+					} 
+				} 
+				transfer_scaled_wealth = { to = FROM value = 0.85 min = 275 max = 400 } 
+			}
+			if = { 
+				limit = { 
+					piety = 350
+					FROM = { 
+						opinion = { 
+							who = ROOT 
+							value = 50
+						} 
+					} 
+				} 
+				transfer_scaled_wealth = { to = FROM value = 0.75 min = 250 max = 350 } 
+			}
+		}
+		hidden_tooltip = { character_event = { id = HF.20300 } } #Go to budget event
+		ai_chance = { factor = 100 }
+	}
+	option = {	#End of the line
+		name = EVTOPTBHF20212
+		trigger = { NOT = { has_landed_title = event_target:scoped_duchy } } #In the event of target being invalidated.
+		custom_tooltip = { text = coronation_canceled }
+		#clr_character_flag = flag_preparing_coronation #Replaced by timed modifier
 		ai_chance = { factor = 0 }
 	}
 }
@@ -5681,7 +6174,10 @@ character_event = {
 	id = HF.20224
 	desc = {
 		trigger = {
-			NOT  = { has_character_flag = flag_pepin_for_coronation }
+			NAND  = { 
+				has_character_flag = flag_pepin_for_coronation
+				higher_real_tier_than = DUKE 
+			}
 			NOT = { has_character_flag = flag_pope_gifts_artifact }
 		}
 		text = EVTDESCHFA20224
@@ -5689,13 +6185,17 @@ character_event = {
 	desc = {
 		trigger = { #Special description if you waged the war for coronation.
 			has_character_flag = flag_pepin_for_coronation
+			higher_real_tier_than = DUKE
 			NOT = { has_character_flag = flag_pope_gifts_artifact }
 		}
 		text = EVTDESCHFB20224
 	}
 	desc = {
 		trigger = {
-			NOT  = { has_character_flag = flag_pepin_for_coronation }
+			NAND  = { 
+				has_character_flag = flag_pepin_for_coronation 
+				higher_real_tier_than = DUKE
+			}
 			has_character_flag = flag_pope_gifts_artifact
 		}
 		text = EVTDESCHFC20224
@@ -5704,6 +6204,7 @@ character_event = {
 		trigger = { #Special description if you waged the war for coronation.
 			has_character_flag = flag_pepin_for_coronation
 			has_character_flag = flag_pope_gifts_artifact
+			higher_real_tier_than = DUKE
 		}
 		text = EVTDESCHFD20224
 	}
@@ -5712,8 +6213,6 @@ character_event = {
 	border = GFX_event_normal_frame_religion
 
 	is_triggered_only = yes
-
-	trigger = { higher_real_tier_than = DUKE } #In case the first ruler loses his Coronation-worthy tier before the war is won.
 
 	option = {
 		name = EVTOPTAHF20224
@@ -5740,6 +6239,7 @@ character_event = {
 		if = { 
 			limit = { 
 				has_character_flag = flag_pepin_for_coronation
+				higher_real_tier_than = DUKE #In case the first ruler loses his Coronation-worthy tier before the war is won.
 			}
 			clr_character_flag = flag_pepin_for_coronation
 			set_character_flag = flag_preparing_coronation
@@ -5845,8 +6345,17 @@ character_event = {
 
 	has_character_flag = flag_antipope_for_coronation 
 
+	trigger = {
+		any_war = {
+			using_cb = depose_antipope
+		}
+	}
+
 	immediate = {
-		current_heir = { set_character_flag = flag_antipope_for_coronation }
+		current_heir = { 
+			set_character_flag = flag_antipope_for_coronation 
+			character_event = { id = HF.20418 days = 2 } #Further safety check.
+		}
 	}
 }
 
@@ -5858,8 +6367,17 @@ character_event = {
 
 	has_character_flag = flag_excommunicated_for_coronation  
 
+	trigger = {
+		any_war = {
+			using_cb = excommunicated_ruler
+		}
+	}
+
 	immediate = {
-		current_heir = { set_character_flag = flag_excommunicated_for_coronation }
+		current_heir = { 
+			set_character_flag = flag_excommunicated_for_coronation 
+			character_event = { id = HF.20419 days = 2 } #Further safety check.
+		}
 	}
 }
 
@@ -5871,8 +6389,16 @@ character_event = {
 
 	has_character_flag = flag_pepin_for_coronation   
 
+	trigger = {
+		any_war = {
+			using_cb = pepin_religious
+		}
+	}
+
 	immediate = {
-		current_heir = { set_character_flag = flag_pepin_for_coronation }
+		current_heir = { set_character_flag = flag_pepin_for_coronation
+			character_event = { id = HF.20420 days = 2 } #Further safety check.
+		}
 	}
 }
 
@@ -9633,20 +10159,18 @@ character_event = {
 			random_list = { 
 				30 = {  } 
 				40 = { #Court Love
+					trigger = { 
+						is_female = yes
+						is_adult = yes
+						NOT = { num_of_lovers = 3 }
+					}
+
 					# Warcraft
 					modifier = { 
 						factor = 0
 						event_target:coronation_knight = { can_has_sexual_relation_with_prev = yes }
 					}
-
-					modifier = { 
-						factor = 0
-						NOT = { is_female = yes }
-					} 
-					modifier = { 
-						factor = 0
-						num_of_lovers = 3
-					} 
+					
 					modifier = { 
 						factor = 1.5
 						has_fair_trait_trigger = yes
@@ -13117,6 +13641,7 @@ character_event = {
 				trait = crowned_by_pope
 				trait = crowned_by_myself
 			}
+			in_command = no
 		}
 	 } 
 
@@ -13826,6 +14351,7 @@ character_event = {
 		has_dlc = "Holy Fury"
 		is_feudal = yes
 		is_adult = yes
+		is_vice_royalty = no
 		NOT = { government = order_government }
 		higher_real_tier_than = DUKE
 		OR = { 
@@ -14468,14 +14994,14 @@ character_event = {
 		text = EVTDESCHFD20410
 		trigger = { 
 			has_character_flag = flag_homage_attractive
-			is_female = no
+			FROMFROM = { is_female = no }
 		}
 	}
 	desc = {
 		text = EVTDESCHFDD20410
 		trigger = { 
 			has_character_flag = flag_homage_attractive
-			is_female = yes
+			FROMFROM = { is_female = yes }
 		}
 	}
 	desc = {
@@ -15585,5 +16111,72 @@ character_event = {
 			remove_character_modifiers = { modifier = uncrowned_modifier amount = 30 } 
 			set_variable = { which = uncrowned_count value = 0 }
 		} 	
+	}
+}
+
+#Check edge cases of a ruler's heir inheriting a _for_coronation flag when the war itself is about to be invalidated for whatever reason.
+character_event = {
+	id = HF.20418
+	hide_window = yes
+	is_triggered_only = yes
+
+	has_character_flag = flag_antipope_for_coronation 
+
+	trigger = {
+		NOT = {
+			any_war = {
+				using_cb = depose_antipope
+			}
+		}
+	}
+
+	immediate = {
+		clr_character_flag = flag_antipope_for_coronation 
+	}
+}
+
+character_event = {
+	id = HF.20419
+	hide_window = yes
+	is_triggered_only = yes
+
+	has_character_flag = flag_excommunicated_for_coronation  
+
+	trigger = {
+		OR = {
+			lower_real_tier_than = KING
+			NOT = {
+				any_war = {
+					using_cb = excommunicated_ruler
+				}
+			}
+		}
+	}
+
+	immediate = {
+		clr_character_flag = flag_excommunicated_for_coronation 
+	}
+}
+
+character_event = {
+	id = HF.20420
+	hide_window = yes
+	is_triggered_only = yes
+
+	has_character_flag = flag_pepin_for_coronation   
+
+	trigger = {
+		OR = {
+			lower_real_tier_than = KING
+			NOT = {
+				any_war = {
+					using_cb = pepin_religious
+				}
+			}
+		}
+	}
+
+	immediate = {
+		clr_character_flag = flag_pepin_for_coronation
 	}
 }
