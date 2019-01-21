@@ -1073,9 +1073,7 @@ character_event = {
 			}	
 			break = yes
 		}
-
 	}
-
 }
 
 narrative_event = {
@@ -4937,6 +4935,7 @@ narrative_event = {
 				}		
 			}
 		}
+		set_bloodline_founder_religion_flag_effect = yes
 		ai_chance = { 
 			factor = 100
 		}
@@ -5595,6 +5594,7 @@ narrative_event = {
 				}		
 			}
 		}
+		set_bloodline_founder_religion_flag_effect = yes
 		ai_chance = { 
 			factor = 100
 		}
@@ -7281,7 +7281,7 @@ character_event = {
 	min_age = 16
 
 	trigger = {
-		piety = 0
+		piety = 50
 		any_owned_bloodline = {
 			has_bloodline_flag = bloodline_knights
 			founder = {
@@ -7301,7 +7301,7 @@ character_event = {
 			60 = { #Bard
 				character_event = { id = HF.24131 }
 			}
-			60 = {
+			80 = {
 				modifier = {
 					factor = 3
 					ai = yes
@@ -7706,7 +7706,7 @@ character_event = {
 	
 	only_women = yes
 	min_age = 16
-	max_age = 35
+	max_age = 30
 	only_capable = yes
 	prisoner = no
 	
@@ -7731,7 +7731,8 @@ character_event = {
 		liege = {  
 			OR = { 
 				NOT = { religion = ROOT }
-				NOT = { reverse_opinion = { who = ROOT value = 0 } }
+				NOT = { reverse_opinion = { who = ROOT value = -40 } }
+				is_rival = ROOT
 			}
 			any_neighbor_independent_ruler = {  
 				age = 16
@@ -7747,7 +7748,7 @@ character_event = {
 
 	immediate = {
 		random = {
-			chance = 30 
+			chance = 5 
 			random_neighbor_independent_ruler = {  
 				limit = {  
 					any_owned_bloodline = { 
@@ -14919,6 +14920,306 @@ narrative_event = {
 				type = chinese_imperial_bloodline_01
 				inheritance = matrilineal
 			}		
+		}
+		ai_chance = { 
+			factor = 100
+		}
+	}
+}
+
+#Matilde's (or similar) bloodline. Fired on_war_ended_victory of an Antipapal/Excommunication war against the HREmperor.
+# From = Attacker, Root = Defender
+character_event = {
+	id = HF.24250
+	hide_window = yes
+	
+	is_triggered_only = yes
+
+	trigger = { 
+		has_dlc = "Holy Fury" 
+		NOT = { has_global_flag = flag_matilde_bloodline } #Just once.
+		FROM = {  #Must be attacker.
+			is_feudal = yes
+			is_adult = yes
+			is_alternate_start = no
+			lower_tier_than = EMPEROR
+			religion = catholic
+			is_heretic = no
+			piety = 500
+			NOT = { realm_size = 120 } 
+			religion_head = { 
+				has_landed_title = k_papal_state #Under the real Pope, no imitations.
+				NOT = { is_rival = PREV }
+				opinion = { who = PREV value = 25 } #At the very least in somewhat good terms...
+			} 
+			NOR = { #Not if already Forger of a Bloodline, or owner of a Forged Bloodline.
+				any_owned_bloodline = { 
+					has_bloodline_flag = created_bloodline
+				}
+				any_owned_bloodline = { 
+					founder = {
+						character = PREVPREV
+					}
+				}
+			}
+			NOR = { #No glaring spots on reputation
+				trait = incapable
+				trait = excommunicated
+				trait = lustful
+				trait = gluttonous
+				trait = greedy
+				trait = proud
+				trait = slothful
+				trait = envious
+				trait = wroth
+				trait = heresiarch
+				trait = crowned_by_myself
+				has_character_modifier = adulteress
+				has_character_modifier = incestuous_adulteress
+				has_character_modifier = modifier_witch
+				has_character_modifier = consorts_with_infidels
+				has_character_modifier = consorts_with_mystics
+				any_child = { trait = bastard }
+				any_child = { trait = legit_bastard }
+			}
+			calc_true_if = { #And at least a couple of virtues
+				amount = 2 
+				trait = zealous
+				trait = chaste
+				trait = diligent
+				trait = humble
+				trait = charitable
+				trait = temperate
+				trait = kind
+				trait = patient
+				trait = celibate
+				trait = theologian
+				trait = nun
+				piety = 1000
+			}
+			OR = {
+				is_married = yes
+				NOT = { num_of_children = 1 }
+			}
+			OR = { #Either below King-tier, or must be either a Crowned Queen or a Vicereine.
+				lower_tier_than = KING
+				is_vice_royalty = yes
+				trait = crowned_by_priest
+				trait = crowned_by_bishop
+				trait = crowned_by_pope
+				has_character_flag = flag_excommunicated_for_coronation
+			}
+		}
+		ROOT = { 
+			has_landed_title = e_hre
+			any_war = { 
+				OR = { 
+					using_cb = excommunicated_ruler 
+					using_cb = depose_antipope
+				}
+				any_attacker = { character = FROM }
+			}
+		}
+	}
+	immediate = { 
+		set_global_flag = flag_matilde_bloodline
+		ROOT = {
+			save_event_target_as = defeated_emperor
+		}	
+		FROM = {
+			religion_head = {
+				save_event_target_as = scoped_pope
+			}
+			narrative_event = { id = HF.24251 days = 20 }
+		}
+	}
+}
+
+narrative_event = {
+	id = HF.24251
+	title = EVTTITLEHF24251
+	desc = {
+		trigger = {
+			character = 7757 #Special loc for Matilde.
+		}
+		text = EVTDESCAHF24251
+	}
+	desc = {
+		trigger = {
+			NOT = { character = 7757 } #Generic if just similar ruler.
+		}
+		text = EVTDESCBHF24251
+	}
+	picture = GFX_evt_virgin_mary_icon
+	border = GFX_event_narrative_frame_war
+	sound = bloodline_added
+	
+	is_triggered_only = yes
+
+	trigger = { 
+		has_dlc = "Holy Fury" 
+	}
+	
+	option = {
+		name = EVTOPTAHF24251
+		catholic = {
+			show_scope_change = no
+			religion_authority = {
+				modifier = restored_primacy
+				years = 50
+			}
+		}
+		if = { 
+			limit = { 
+				this_has_cool_nickname_trigger = no 
+				this_has_super_cool_nickname_trigger = no 
+			}
+			give_nickname = nick_the_sword_of_god
+		}
+		if = { 
+			limit = { character = 7757 }
+			create_bloodline = {
+				type = true_matilde_bloodline
+			}	
+		}
+		else_if = {
+			limit = { is_female = yes } 
+			create_bloodline = {
+				type = matilde_bloodline
+			}	
+		}
+		else_if = {
+			limit = { is_female = no } 
+			create_bloodline = {
+				type = matilde_male_bloodline
+			}	
+		}
+		hidden_tooltip = { 
+			any_player = { 
+				limit = { 
+					is_within_diplo_range = ROOT 
+					NOT = { character = event_target:defeated_emperor }
+					NOT = { character = ROOT }
+					religion = ROOT
+				}	
+				narrative_event = { id = HF.24252 days = 1 }	
+			}
+			event_target:defeated_emperor = { 
+				narrative_event = { id = HF.24253 days = 1 }	
+			}
+		}
+		ai_chance = { 
+			factor = 100
+		}
+	}
+	option = {
+		name = EVTOPTBHF24251
+		tiered_piety_reward_effect = yes
+		catholic = {
+			show_scope_change = no
+			religion_authority = {
+				modifier = restored_primacy
+				years = 50
+			}
+		}
+		ai_chance = { 
+			factor = 0
+		}
+	}
+}
+
+narrative_event = {
+	id = HF.24252
+	title = EVTTITLEHF24252
+	desc = EVTDESCAHF24252
+	desc = {
+		trigger = {
+			FROM = { character = 7757 } 
+		}
+		text = EVTDESCAHF24252
+	}
+	desc = {
+		trigger = {
+			FROM = { NOT = { character = 7757 } } 
+		}
+		text = EVTDESCBHF24252
+	}
+	picture = GFX_evt_virgin_mary_icon
+	border = GFX_event_narrative_frame_war
+	sound = bloodline_added
+	
+	is_triggered_only = yes
+
+	trigger = { 
+		has_dlc = "Holy Fury" 
+	}
+
+	option = {
+		name = EVTOPTAHF24252
+		ai_chance = { 
+			factor = 100
+		}
+	}
+}
+
+narrative_event = {
+	id = HF.24253
+	title = EVTTITLEHF24252
+	desc = {
+		trigger = {
+			FROM = { character = 7757 } 
+		}
+		text = EVTDESCAHF24253
+	}
+	desc = {
+		trigger = {
+			FROM = { NOT = { character = 7757 } } 
+		}
+		text = EVTDESCBHF24253
+	}
+	picture = GFX_evt_virgin_mary_icon
+	border = GFX_event_narrative_frame_war
+	sound = bloodline_added
+	
+	is_triggered_only = yes
+
+	trigger = { 
+		has_dlc = "Holy Fury" 
+	}
+
+	option = {
+		name = EVTOPTAHF24253
+		tiered_piety_negative_effect = yes
+		if = { 
+			limit = { 
+				NOT = { is_rival = FROM }
+			}
+			add_rival = FROM
+		}
+		if = { 
+			limit = { 
+				FROM = { 
+					character = 7757
+				}
+			}
+			e_hre = { 
+				show_scope_change = no
+				holder_scope = { 
+					show_scope_change = no
+					any_vassal = { 
+						limit = {
+							lower_real_tier_than = KING
+							culture = italian
+							is_landed = yes
+							capital_scope = {
+								region = world_europe_south_italy
+							}
+						}
+						show_scope_change = no
+						set_defacto_liege = THIS
+					}
+				}
+			}
 		}
 		ai_chance = { 
 			factor = 100

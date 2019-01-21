@@ -5,670 +5,6 @@ namespace = HFP
 
 
 ## Crusader State Event
-# A Wild Crusader State Appears
-character_event = {
-    id = HFP.42000
-    desc = EVTDESC_HFP_42000
-    picture = GFX_evt_mountaintop_castle_hf
-    border = GFX_event_normal_frame_religion
-    is_triggered_only = yes
-    trigger = {
-    	NOR = {
-    		has_character_modifier = settled_crusader_state
-    		has_character_flag = settled_crusader
-    		has_game_rule = {
-    			name = dynamic_crusader_states
-    			value = off
-    		}
-    	}
-		OR = {
-			AND = {
-				OR = {
-					OR = {
-						AND = {
-							random = 80
-							NOT = {
-								any_owned_bloodline = {
-									has_bloodline_flag = crusade_lord_bloodline
-								}
-							}
-						}
-						AND = {
-							random = 60
-							any_owned_bloodline = {
-								has_bloodline_flag = crusade_lord_bloodline
-							}
-						}
-					}
-					has_global_flag = qa_crusader_states_event
-				}
-
-				# The event can only trigger after the siege of a County tier holding, and not for every single Barony
-				FROM = {
-					is_capital = yes
-				}
-
-				# There is a dynasty member who can take the role of independent ruler
-				OR = {
-					crusade_beneficiary = {
-						always = yes
-					}
-					any_dynasty_member = {
-						is_lowborn = no
-						NOT = {
-							any_heir_title = { 
-								always = yes
-							}
-						}	
-						NAND = {
-							is_female = yes
-							age = 40
-						}
-						mercenary = no
-						is_landed = no
-						mercenary = no
-						OR = {
-							age = 16
-							AND = {
-								age = 12
-								is_female = no
-							}
-						}
-						NOR = {
-							is_incapable = yes
-							trait = monk
-							trait = nun
-						}
-						NAND = {
-							is_married = yes
-							spouse = {
-								OR = {
-									is_landed = yes
-									any_heir_title = { 
-										always = yes
-									}
-								}
-							}
-						}
-						NAND = {
-							is_betrothed = yes
-							betrothed = {
-								OR = {
-									is_landed = yes
-									any_heir_title = { 
-										always = yes
-									}
-								}
-							}
-						}
-						NAND = {
-							player_heir = {
-								OR = {
-									is_landed = yes
-									any_heir_title = { 
-										always = yes
-									}
-								}
-							}
-						}
-						NAND = {
-							is_female = yes
-							any_child = {
-								is_landed = yes
-							}
-						}
-					}
-				}
-
-				# ROOT is a Crusader
-				OR = {
-					any_war = {
-						using_cb = new_crusade
-						any_attacker = {
-							character = ROOT
-						}
-					}
-					any_liege = {
-						any_war = {
-							using_cb = new_crusade
-							any_attacker = {
-								character = PREVPREV
-							}
-						}
-					}
-				}
-
-				FROM = {
-					location = {
-						duchy = {
-							OR = {
-								# The Duchy is not in the Kingdom targeted by the Crusade
-								NOT = {
-									kingdom = {
-										ROOT = {
-											crusade_target_title = {
-												title = PREVPREV
-											}
-										}
-									}
-								}
-								# The Duchy is in the Kingdom targeted by the Crusade, but not under the control of the targeted character
-								#NOT = {
-									#any_direct_de_jure_vassal_title = {
-										#OR = {
-											#owner = {
-												#crusade_target_char = {
-													#character = PREV
-												#}
-											#}
-											#owner = {
-												#any_liege = {
-													#crusade_target_char = {
-														#character = PREV
-													#}
-												#}
-											#}
-										#}	
-									#}
-								#}
-							}
-							# Every county of the Duchy is under the control of Root (the sieger)
-							NOT = {
-								any_direct_de_jure_vassal_title = {
-									NOT = {
-										FROM = {
-											county = {
-												title = PREVPREV
-											}
-										}
-									}
-									location = {
-										NOT = {
-											controlled_by = ROOT
-										}
-									}
-								}
-							}
-							# No provinces are owned by a player
-							NOT = {
-								any_direct_de_jure_vassal_title = {
-									owner = {
-										ai = no
-									}
-								}
-							}
-							# Either the owner or the liege is fighting against the Crusade
-							NOT = {
-								any_direct_de_jure_vassal_title = {
-									NOR = {
-										owner = {
-											any_war = {
-												using_cb = new_crusade
-												any_defender = {
-													character = PREVPREV
-												}
-											}
-										}
-										owner = {
-											any_liege = {
-												any_war = {
-													using_cb = new_crusade
-													any_defender = {
-														character = PREVPREV
-													}
-												}
-											}
-										}
-									}
-								}
-							}
-							# The Duchy either has a port, or is adjacent to another Christian province (that isn't a Heresy of Root's Religion nor the parent religion of Root's religion)
-							any_direct_de_jure_vassal_title = {
-								OR = {
-									is_coastal = yes
-									location = {
-										any_neighbor_province = {
-											OR = {
-												AND = {
-													religion_group = ROOT
-													NOR = { 
-														is_heresy_of = ROOT
-														is_parent_religion = ROOT
-													}
-												}
-												owner = {
-													religion_group = ROOT
-													NOR = {
-														is_heresy_of = ROOT
-														is_parent_religion = ROOT
-													}
-												}
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-			AND = {
-				ai = no
-				has_character_flag = ai_crusader_state_flag
-			}
-		}
-    }
-
-    immediate = {
-    	# Saves the Duchy as an event target
-    	FROM = {
-    		location = {
-    			duchy = {
-    				save_event_target_as = duchy_region
-    			}
-    		}
-    	}
-
-    	# Saves the capital of the new Crusader state as an event target
-    	event_target:duchy_region = {
-			capital_scope = {
-				county = {
-					save_event_target_as = crusade_state_capital
-				}
-			}
-		}
-
-    	# Check if you have a Beneficiary
-    	if = {
-    		limit = {
-    			crusade_beneficiary = {
-    				always = yes
-    			}
-    		}
-	    	crusade_beneficiary = {
-    			save_event_target_as = current_crusade_beneficiary
-    		}	
-    	}
-    	# Set up a backup Beneficiary like character if you don't have one
-    	else = {
-    		random_dynasty_member = {
-    			limit = {
-    				is_lowborn = no
-                    NOT = {
-                        any_heir_title = { 
-                            always = yes
-                        }
-                    }	
-					NAND = {
-						is_female = yes
-						age = 40
-					}
-    				mercenary = no
-    				is_landed = no
-    				mercenary = no
-					OR = {
-						age = 16
-						AND = {
-							age = 12
-							is_female = no
-						}
-					}
-                    NOR = {
-                        is_incapable = yes
-                        trait = monk
-                        trait = nun
-                    }
-					NAND = {
-						is_married = yes
-						spouse = {
-							OR = {
-								is_landed = yes
-								any_heir_title = { 
-									always = yes
-								}
-							}
-						}
-					}
-					NAND = {
-						is_betrothed = yes
-						betrothed = {
-							OR = {
-								is_landed = yes
-								any_heir_title = { 
-									always = yes
-								}
-							}
-						}
-					}
-					NAND = {
-						player_heir = {
-							OR = {
-								is_landed = yes
-								any_heir_title = { 
-									always = yes
-								}
-							}
-						}
-					}
-					NAND = {
-						is_female = yes
-						any_child = {
-							is_landed = yes
-						}
-					}
-    			}
-    			save_event_target_as = current_crusade_beneficiary
-    		}
-    	}
-    }
-
-    # I will find an appropriate ruler
-    option = {
-    	name = EVTOPTB_HFP_42000
-
-    	add_character_modifier = {
-    		name = settled_crusader_state
-    		years = 15
-    	}
-
-    	piety = 100
-    	if = {
-    		limit = {
-    			NOT = {
-    				trait = crusader_king
-    				trait = crusader_queen
-    			}
-    		}
-    		add_trait = crusader
-    	}
-
-    	custom_tooltip = {
-    		text = EVTOPTB_HFP_42000_TT
-
-    		set_crusade_beneficiary = none
-
-	    	event_target:duchy_region = {
-				# Grant all the provinces to the new Crusader Lord/Lady
-				any_direct_de_jure_vassal_title = {
-					owner = {
-						save_event_target_as = previous_owner
-					}
-					event_target:current_crusade_beneficiary = {
-						grant_title_no_opinion = PREV
-						set_defacto_liege = THIS
-					}
-					event_target:previous_owner = {
-						add_claim = PREV
-					}
-					if = {
-						limit = {
-							event_target:previous_owner = {
-								top_liege = {
-									ai = no
-								}
-							}
-						}
-						add_claim = PREV
-					}
-				}
-				# Check if the Duchy has an owner, receive the Duchy if nobody owns it
-				if = {
-					limit = {
-						NOT = {
-							owner = {
-								always = yes
-							}
-						}
-					}
-  					event_target:current_crusade_beneficiary = {
-						grant_title_no_opinion = PREV
-						
-					}
-				}
-				# Make a titular Duchy if there already is a Duke/Duchess for the title, and get a claim on the real Duchy title
-				else = {
-					create_title = {
-						tier = DUKE
-						name = "crusade_state_duchy_name"
-						landless = no
-						culture = event_target:current_crusade_beneficiary
-						holder = event_target:current_crusade_beneficiary
-						custom_created = yes
-						base_title = event_target:crusade_state_capital
-					}
-
-					new_title = {
-						set_title_flag = temporary_crusade_title_flag
-						adjective = "crusade_state_duchy_adjective"
-					}
-
-					add_claim = THIS
-				}
-			}
-
-			event_target:current_crusade_beneficiary = {
-				# Grab all remaining vassal titles held by characters of the wrong Religion
-				any_vassal = {
-					limit = {
-						NOT = {
-							religion = PREV
-						}
-					}
-					any_demesne_title = {
-						event_target:current_crusade_beneficiary = {
-							grant_title = PREV
-						}
-					}
-				}
-
-				# Make Stewards for the cities, and grant them a city each
-				any_demesne_title = {
-					limit = {
-						TIER = BARON
-						holding_type = CITY
-					}
-					event_target:current_crusade_beneficiary = {
-						create_random_steward = {
-							random_traits = yes
-						}
-						new_character = {
-							grant_title_no_opinion = PREVPREV
-						}
-					}
-				}
-
-				# Make Bishops for the temples, and grant them a temple each
-				any_demesne_title = {
-					limit = {
-						TIER = BARON
-						holding_type = TEMPLE
-					}
-					event_target:current_crusade_beneficiary = {
-						create_random_priest = {
-							random_traits = yes
-						}
-						new_character = {
-							grant_title_no_opinion = PREVPREV
-						}
-					}
-				}
-
-				# Refill your holding
-				character_event = { id = HFP.41090 days = 1 }
-
-				# Set the Crusader State to have Primogeniture and be highly centralized
-				primary_title = {
-					add_law = {
-						law = succ_primogeniture
-						cooldown = no
-						opinion_effect = no
-					}
-					add_law = {
-						law = centralization_3
-						cooldown = no
-						opinion_effect = no
-					}
-				}
-
-				# Set up the realm to be Late Feudal, if using Conclave
-				if = {
-					limit = {
-						has_dlc = "Zeus"
-					}
-					primary_title = {
-						add_law = {
-							law = ze_administration_laws_1
-							cooldown = no
-							opinion_effect = no
-						}
-					}
-				}
-
-				# Change the capital to be of the same religion as the Crusader Lord/Lady
-				capital_scope = {
-					religion = PREV
-				}
-
-				# Apply nickname, if they don't have one
-				if = {
-					limit = {
-						can_apply_average_nickname_trigger = yes
-					}
-					give_nickname = nick_the_crusader
-				}
-
-				# Apply the Crusader trait
-				add_trait = crusader
-
-				# Have the Crusader Lord/Lady join the Crusade
-				pledge_crusade_participation = yes
-
-				# Make sure the Crusader Lord/Lady have some cash
-				if = {
-					limit = {
-						NOT = {
-							wealth = 150
-						}
-					}
-					clear_wealth = yes
-					wealth = 150
-				}
-
-				# Set character flag
-				set_character_flag = settled_crusader
-			}
-
-			any_playable_ruler = {
-				narrative_event = { id = HFP.42001 }
-			}
-			ROOT = {
-				narrative_event = { id = HFP.42001 }
-			}
-
-			event_target:current_crusade_beneficiary = {
-				opinion = {
-					modifier = in_non_aggression_pact
-					years = 20
-					who = ROOT
-				}
-			}
-		}
-
-		ROOT = {
-			show_scope_change = no
-			make_tributary = {
-				who = event_target:current_crusade_beneficiary
-			}
-		}
-
-		ai_chance = {
-			factor = 1
-		}
-    }
-
-    # I will take the land for myself
-    option = {
-    	name = EVTOPTA_HFP_42000
-
-		add_character_modifier = {
-    		name = settled_crusader_state
-    		years = 15
-    	}
-
-    	custom_tooltip = {
-    		text = EVTOPTA_HFP_42000_TT_1
-
-	    	event_target:duchy_region = {
-	    		any_direct_de_jure_vassal_title = {
-					owner = {
-						save_event_target_as = previous_owner
-					}
-	    			ROOT = {
-	    				grant_title_no_opinion = PREV
-	    			}
-					event_target:previous_owner = {
-						add_claim = PREV
-					}
-					if = {
-						limit = {
-							event_target:previous_owner = {
-								top_liege = {
-									ai = no
-								}
-							}
-						}
-						event_target:previous_owner = {
-							top_liege = {
-								add_claim = PREVPREV
-							}
-						}
-					}
-	    		}
-	    		if = {
-	    			limit = {
-	    				NOT = {
-	    					owner = {
-	    						always = yes
-	    					}
-	    				}
-	    			}
-	    			ROOT = {
-	    				grant_title_no_opinion = PREV
-	    			}
-	    		}
-	    	}
-    	}
-
-    	custom_tooltip = {
-    		text = EVTOPTA_HFP_42000_TT_2
-
-    		any_crusade_participant = {
-    			opinion = {
-    				who = ROOT
-    				modifier = opinion_selfish_crusader
-    				years = 10
-    			}
-    		}
-    	}
-
-    	any_playable_ruler = {
-    		narrative_event = { id = HFP.42003 }
-    	}
-    	ROOT = {
-    		narrative_event = { id = HFP.42003 }
-    	}
-
-    	piety = -100
-
-    	ai_chance = {
-    		factor = 0
-    	}
-    }
-
-    option = {
-    	name = EVTOPTC_HFP_42000
-    }
-}
 
 # Narrative Event for new Crusader State
 narrative_event = {
@@ -928,413 +264,37 @@ narrative_event = {
     }
 }
 
-# Helping the AI create Crusader States - AI only
+## New Crusader State Event
+# Intro Event
 character_event = {
-    id = HFP.42004
-    hide_window = yes
-    ai = yes
+    id = HFP.42100
+    desc = EVTDESC_HFP_42000
+    picture = GFX_evt_mountaintop_castle_hf
+    border = GFX_event_normal_frame_religion
+    portrait = event_target:current_crusade_beneficiary
     is_triggered_only = yes
     trigger = {
-    	NOR = {
-    		has_character_modifier = settled_crusader_state
-    		has_character_flag = settled_crusader
-    	}
-    	has_game_rule = {
-    		name = dynamic_crusader_states
-    		value = default
-    	}
-    	333 = {
-    		NOT = {
-    			has_province_modifier = crusader_state_ai_cd
-    		}
-    	}
-    	ROOT = {
-    		OR = {
-    			higher_tier_than = COUNT
-    			any_liege = {
-    				higher_tier_than = COUNT
-    			}
-    		}
-    	}
-    	OR = {
-    		AND = {
-    			random = 99
-    			NOT = {
-    				any_owned_bloodline = {
-    					has_bloodline_flag = crusade_lord_bloodline
-    				}
-    			}
-    		}
-    		AND = {
-    			random = 97
-    			any_owned_bloodline = {
-    				has_bloodline_flag = crusade_lord_bloodline
-    			}
-    		}
-    		AND = {
-    			location = {
-    				OR = {
-    					de_jure_liege = d_antioch
-    					de_jure_liege = d_cyprus
-    					de_jure_liege = d_achaia
-    					de_jure_liege = d_edessa
-    				}
-    			}
-    			OR = {
-    				AND = {
-    					random = 90
-    					NOT = {
-    						any_owned_bloodline = {
-    							has_bloodline_flag = crusade_lord_bloodline
-    						}
-    					}
-    				}
-    				AND = {
-    					random = 85
-    					any_owned_bloodline = {
-    						has_bloodline_flag = crusade_lord_bloodline
-    					}
-    				}
-    			}
-    		}
-    	}
-    	OR = {
-    		religion = catholic
-    		religion = fraticelli
-    	}
-    	location = {
-    		duchy = {
-    			NOT = {
-    				any_direct_de_jure_vassal_title = {
-    					owner = {
-    						OR = {
-	    						NOT = {
-	    							any_war = {
-		    							using_cb = new_crusade
-		    							any_defender = {
-		    								character = PREVPREV
-		    							}
-		    						}
-		    					}
-	    						NOT = {
-	    							any_liege = {
-	    								any_war = {
-	    									using_cb = new_crusade
-	    									any_defender = {
-	    										character = PREVPREV
-	    									}
-	    								}
-	    							}
-	    						}
-	    					}
-	    					religion = ROOT
-    					}
-    				}
-    			}
-    		}
-			duchy = {
-				NOT = {
-					any_direct_de_jure_vassal_title = {
-						owner = {
-							ai = no
-						}
-					}
-				}
-				any_direct_de_jure_vassal_title = {
-					OR = {
-						is_coastal = yes
-						any_neighbor_province = {
-							OR = {
-								owner = {
-									religion = ROOT
-								}
-								religion = ROOT
-							}
-						}
-					}
-				}
-			}
-    	}
-    	OR = {
-    		any_war = {
-    			using_cb = new_crusade
-    			any_attacker = {
-    				character = ROOT
-    			}
-    		}
-    		any_liege = {
-    			any_war = {
-    				using_cb = new_crusade
-    				any_attacker = {
-    					character = PREVPREV
-    				}
-    			}
-    		}
-    	}
-    	location = {
-    		duchy = {
-    			OR = {
-    				NOT = {
-    					kingdom = {
-    						ROOT = {
-    							crusade_target_title = {
-    								title = PREVPREV
-    							}
-    						}
-    					}
-    				}
-    				#NOT = {
-    					#any_direct_de_jure_vassal_title = {
-    						#owner = {
-	    						#OR = {
-	    							#ROOT = {
-	    								#crusade_target_char = {
-	    									#character = PREVPREV
-	    								#}
-	    							#}
-	    							#any_liege = {
-	    								#ROOT = {
-	    									#crusade_target_char = {
-	    										#character = PREVPREV
-	    									#}
-	    								#}
-	    							#}
-	    						#}
-    						#}
-    					#}
-    				#}
-    			}
-    		}
-    	}
-  		holy_order = no
-  		mercenary = no
-  		NOR = {
-  			has_landed_title = d_fraticelli
-  			has_landed_title = k_papal_state
-  			any_liege = {
-  				OR = {
-  					has_landed_title = d_fraticelli
-  					has_landed_title = k_papal_state
-  				}
-  			}
-  		}
+    
     }
 
     immediate = {
-    	
-    	location = {
-    		duchy = {
-		    	save_event_target_as = duchy_region
-    		}
-    	}
-
-   		event_target:duchy_region = {
+    	# Saves the capital of the new Crusader state as an event target
+    	event_target:duchy_region = {
 			capital_scope = {
 				county = {
 					save_event_target_as = crusade_state_capital
 				}
 			}
 		}
-
-		location = {
-			owner = {
-				save_event_target_as = province_holder
-			}
+		# Saves heir
+		player_heir = {
+			save_event_target_as = crusader_heir
 		}
-
-		if = {
-			limit = {
-				any_war = {
-					using_cb = new_crusade
-				}
-				higher_tier_than = COUNT
-			}
-			character_event = { id = HFP.42005 }
-		}
-		else_if = {
-			limit = {
-				top_liege = {
-					any_war = {
-						using_cb = new_crusade
-					}
-					higher_tier_than = COUNT
-				}
-			}
-			top_liege = {
-				character_event = { id = HFP.42005 }
-			}
-		}
-		else_if = {
-			limit = {
-				liege = {
-					any_war = {
-						using_cb = new_crusade
-					}
-					higher_tier_than = COUNT
-				}
-			}
-			liege = {
-				character_event = { id = HFP.42005 }
-			}
-		}
-    }
-}
-
-# Helping the AI create Crusader States Part 2 - AI only
-character_event = {
-    id = HFP.42005
-    hide_window = yes
-    is_triggered_only = yes
-    ai = yes
-    trigger = {
-    	OR = {
-    		crusade_beneficiary = {
-    			always = yes
-    		}
-    		any_dynasty_member = {
-    			is_lowborn = no
-                NOT = {
-                    any_heir_title = { 
-                        always = yes
-                    }
-                }	
-				NAND = {
-					is_female = yes
-					age = 40
-				}
-    			mercenary = no
-    			is_landed = no
-    			mercenary = no
-				OR = {
-					age = 16
-					AND = {
-						age = 12
-						is_female = no
-					}
-				}
-                NOR = {
-                    is_incapable = yes
-                    trait = monk
-                    trait = nun
-                }
-				NAND = {
-					is_married = yes
-					spouse = {
-						OR = {
-							is_landed = yes
-							any_heir_title = { 
-								always = yes
-							}
-						}
-					}
-				}
-				NAND = {
-					is_betrothed = yes
-					betrothed = {
-						OR = {
-							is_landed = yes
-							any_heir_title = { 
-								always = yes
-							}
-						}
-					}
-				}
-				NAND = {
-					player_heir = {
-						OR = {
-							is_landed = yes
-							any_heir_title = { 
-								always = yes
-							}
-						}
-					}
-				}
-				NAND = {
-					is_female = yes
-					any_child = {
-						is_landed = yes
-					}
-				}
-    			religion = ROOT
-    		}
-    	}
-    	crusade_target_char = {
-    		event_target:province_holder = {
-    			religion = PREV
-    		}
-    	}
-    }
-
-    immediate = {
-   		# Check if you have a Beneficiary
+    	# Check if you have a Beneficiary
     	if = {
     		limit = {
     			crusade_beneficiary = {
-    				is_alive = yes
-    				religion = ROOT
-    				is_lowborn = no
-                    NOT = {
-                        any_heir_title = { 
-                            always = yes
-                        }
-                    }	
-					NAND = {
-						is_female = yes
-						age = 40
-					}
-    				mercenary = no
-    				is_landed = no
-    				mercenary = no
-					OR = {
-						age = 16
-						AND = {
-							age = 12
-							is_female = no
-						}
-					}
-                    NOR = {
-                        is_incapable = yes
-                        trait = monk
-                        trait = nun
-                    }
-					NAND = {
-						is_married = yes
-						spouse = {
-							OR = {
-								is_landed = yes
-								any_heir_title = { 
-									always = yes
-								}
-							}
-						}
-					}
-					NAND = {
-						is_betrothed = yes
-						betrothed = {
-							OR = {
-								is_landed = yes
-								any_heir_title = { 
-									always = yes
-								}
-							}
-						}
-					}
-					NAND = {
-						player_heir = {
-							OR = {
-								is_landed = yes
-								any_heir_title = { 
-									always = yes
-								}
-							}
-						}
-					}
-					NAND = {
-						is_female = yes
-						any_child = {
-							is_landed = yes
-						}
-					}
+    				always = yes
     			}
     		}
 	    	crusade_beneficiary = {
@@ -1366,7 +326,7 @@ character_event = {
 						}
 					}
                     NOR = {
-                        is_incapable = yes
+                        trait = incapable
                         trait = monk
                         trait = nun
                     }
@@ -1408,19 +368,382 @@ character_event = {
 							is_landed = yes
 						}
 					}
-    				religion = ROOT
     			}
     			save_event_target_as = current_crusade_beneficiary
     		}
     	}
+    }
 
-    	event_target:duchy_region = {
-			# Grant all the provinces to the new Crusader Lord/Lady
-			any_direct_de_jure_vassal_title = {
-				owner = {
+    option = { # I will find an appropriate ruler
+        name = EVTOPTB_HFP_42000
+
+        add_character_modifier = {
+    		name = settled_crusader_state
+    		years = 15
+    	}
+
+    	piety = 100
+    	if = {
+    		limit = {
+    			NOR = {
+    				trait = crusader_king
+    				trait = crusader_queen
+    				trait = crusader
+    			}
+    		}
+    		add_trait = crusader
+    	}
+
+    	custom_tooltip = {
+    		text = EVTOPTB_HFP_42000_TT
+
+    		set_crusade_beneficiary = none
+
+	    	event_target:duchy_region = {
+				# Grant all the provinces to the new Crusader Lord/Lady
+				any_direct_de_jure_vassal_title = {
+					owner = {
+						save_event_target_as = previous_owner
+					}
+					event_target:current_crusade_beneficiary = {
+						grant_title_no_opinion = PREV
+						set_defacto_liege = THIS
+					}
+					event_target:previous_owner = {
+						add_claim = PREV
+					}
+					if = {
+						limit = {
+							event_target:previous_owner = {
+								top_liege = {
+									ai = no
+								}
+							}
+						}
+						add_claim = PREV
+					}
+				}
+				# Check if the Duchy has an owner, receive the Duchy if nobody owns it
+				if = {
+					limit = {
+						NOT = {
+							owner = {
+								always = yes
+							}
+						}
+					}
+  					event_target:current_crusade_beneficiary = {
+						grant_title_no_opinion = PREV
+						
+					}
+				}
+				# Make a titular Duchy if there already is a Duke/Duchess for the title, and get a claim on the real Duchy title
+				else = {
+					create_title = {
+						tier = DUKE
+						name = "crusade_state_duchy_name"
+						landless = no
+						culture = event_target:current_crusade_beneficiary
+						holder = event_target:current_crusade_beneficiary
+						custom_created = yes
+						base_title = event_target:crusade_state_capital
+					}
+
+					new_title = {
+						set_title_flag = temporary_crusade_title_flag
+						adjective = "crusade_state_duchy_adjective"
+					}
+
+					add_claim = THIS
+				}
+			}
+
+			event_target:current_crusade_beneficiary = {
+				# Grab all remaining vassal titles held by characters of the wrong Religion
+				any_vassal = {
+					limit = {
+						NOT = {
+							religion = PREV
+						}
+					}
+					any_demesne_title = {
+						event_target:current_crusade_beneficiary = {
+							grant_title = PREV
+						}
+					}
+				}
+
+				# Make Stewards for the cities, and grant them a city each
+				any_demesne_title = {
+					limit = {
+						TIER = BARON
+						holding_type = CITY
+					}
+					event_target:current_crusade_beneficiary = {
+						create_random_steward = {
+							random_traits = yes
+						}
+						new_character = {
+							grant_title_no_opinion = PREVPREV
+						}
+					}
+				}
+
+				# Make Bishops for the temples, and grant them a temple each
+				any_demesne_title = {
+					limit = {
+						TIER = BARON
+						holding_type = TEMPLE
+					}
+					event_target:current_crusade_beneficiary = {
+						create_random_priest = {
+							random_traits = yes
+						}
+						new_character = {
+							grant_title_no_opinion = PREVPREV
+						}
+					}
+				}
+
+				# Refill your holding
+				character_event = { id = HFP.41090 days = 1 }
+
+				# Set the Crusader State to have Primogeniture and be highly centralized
+				primary_title = {
+					add_law = {
+						law = succ_primogeniture
+						cooldown = no
+						opinion_effect = no
+					}
+					add_law = {
+						law = centralization_3
+						cooldown = no
+						opinion_effect = no
+					}
+				}
+
+				# Set up the realm to be Late Feudal, if using Conclave
+				if = {
+					limit = {
+						has_dlc = "Zeus"
+					}
+					primary_title = {
+						add_law = {
+							law = ze_administration_laws_1
+							cooldown = no
+							opinion_effect = no
+						}
+						add_law = {
+							law = law_voting_power_0
+							cooldown = no
+							opinion_effect = no
+						}
+						add_law = {
+							law = war_voting_power_0
+							cooldown = no
+							opinion_effect = no
+						}
+						add_law = {
+							law = revoke_title_voting_power_0
+							cooldown = no
+							opinion_effect = no
+						}
+						add_law = {
+							law = imprison_voting_power_0
+							cooldown = no
+							opinion_effect = no
+						}
+						add_law = {
+							law = grant_title_voting_power_0
+							cooldown = no
+							opinion_effect = no
+						}
+						add_law = {
+							law = banish_voting_power_0
+							cooldown = no
+							opinion_effect = no
+						}
+						add_law = {
+							law = execution_voting_power_0
+							cooldown = no
+							opinion_effect = no
+						}
+						add_law = {
+							law = succession_voting_power_0
+							cooldown = no
+							opinion_effect = no
+						}
+					}
+				}
+
+				# Change the capital to be of the same religion as the Crusader Lord/Lady
+				capital_scope = {
+					religion = PREV
+				}
+
+				# Apply nickname, if they don't have one
+				if = {
+					limit = {
+						can_apply_average_nickname_trigger = yes
+					}
+					give_nickname = nick_the_crusader
+				}
+
+				# Apply the Crusader trait
+				add_trait = crusader
+
+				# Have the Crusader Lord/Lady join the Crusade
+				pledge_crusade_participation = yes
+
+				# Make sure the Crusader Lord/Lady have some cash
+				if = {
+					limit = {
+						NOT = {
+							wealth = 150
+						}
+					}
+					clear_wealth = yes
+					wealth = 150
+				}
+
+				# Set character flag
+				set_character_flag = settled_crusader
+			}
+
+			any_playable_ruler = {
+				narrative_event = { id = HFP.42001 }
+			}
+			ROOT = {
+				narrative_event = { id = HFP.42001 }
+			}
+
+			event_target:current_crusade_beneficiary = {
+				opinion = {
+					modifier = in_non_aggression_pact
+					years = 20
+					who = ROOT
+				}
+			}
+		}
+
+		ROOT = {
+			show_scope_change = no
+			make_tributary = {
+				who = event_target:current_crusade_beneficiary
+			}
+		}
+
+		ai_chance = {
+			factor = 1
+		}
+    }
+    option = { # I will take the land for myself
+        name = EVTOPTA_HFP_42000
+       	add_character_modifier = {
+    		name = settled_crusader_state
+    		years = 15
+    	}
+
+    	custom_tooltip = {
+    		text = EVTOPTA_HFP_42000_TT_1
+
+	    	event_target:duchy_region = {
+	    		any_direct_de_jure_vassal_title = {
+					owner = {
+						save_event_target_as = previous_owner
+					}
+	    			ROOT = {
+	    				grant_title_no_opinion = PREV
+	    			}
+					event_target:previous_owner = {
+						add_claim = PREV
+					}
+					if = {
+						limit = {
+							event_target:previous_owner = {
+								top_liege = {
+									ai = no
+								}
+							}
+						}
+						event_target:previous_owner = {
+							top_liege = {
+								add_claim = PREVPREV
+							}
+						}
+					}
+	    		}
+	    		if = {
+	    			limit = {
+	    				NOT = {
+	    					owner = {
+	    						always = yes
+	    					}
+	    				}
+	    			}
+	    			ROOT = {
+	    				grant_title_no_opinion = PREV
+	    			}
+	    		}
+	    	}
+    	}
+
+    	custom_tooltip = {
+    		text = EVTOPTA_HFP_42000_TT_2
+
+    		any_crusade_participant = {
+    			opinion = {
+    				who = ROOT
+    				modifier = opinion_selfish_crusader
+    				years = 10
+    			}
+    		}
+    	}
+
+    	any_playable_ruler = {
+    		narrative_event = { id = HFP.42003 }
+    	}
+    	ROOT = {
+    		narrative_event = { id = HFP.42003 }
+    	}
+
+    	piety = -100
+
+    	ai_chance = {
+    		factor = 0
+    	}
+    }
+    option = { # Abdicate in favor of new land
+    	name = EVTOPTC_HFP_42100
+
+    	event_target:crusader_heir = {
+    		show_scope_change = no
+    		add_character_modifier = {
+	    		name = settled_crusader_state
+	    		years = 15
+	    	}
+    	}
+    	abdicate = yes
+    	custom_tooltip = {
+    		text = hfp_abdicate_crusader_state_tooltip
+
+    		abdicate = yes
+	    	if = {
+	    		limit = {
+	    			NOR = {
+	    				trait = crusader_king
+	    				trait = crusader_queen
+	    				trait = crusader
+	    			}
+	    		}
+	    		add_trait = crusader
+	    	}
+    		event_target:duchy_region = {
+    			# Grant all the provinces to the new Crusader Lord/Lady
+    			owner = {
 					save_event_target_as = previous_owner
 				}
-				event_target:current_crusade_beneficiary = {
+				event_target:crusader_lord = {
 					grant_title_no_opinion = PREV
 					set_defacto_liege = THIS
 				}
@@ -1437,179 +760,272 @@ character_event = {
 					}
 					add_claim = PREV
 				}
-			}
-			# Check if the Duchy has an owner, receive the Duchy if nobody owns it
-			if = {
-				limit = {
-					NOT = {
-						owner = {
-							always = yes
+				any_direct_de_jure_vassal_title = {
+					grant_title_no_opinion = event_target:crusader_lord
+				}
+    		}
+
+    		event_target:crusader_lord = {
+    			set_name = ""
+				# Grab all remaining vassal titles held by characters of the wrong Religion
+				any_vassal = {
+					limit = {
+						NOT = {
+							religion = PREV
+						}
+					}
+					any_demesne_title = {
+						event_target:crusader_lord = {
+							grant_title = PREV
 						}
 					}
 				}
-					event_target:current_crusade_beneficiary = {
-					grant_title_no_opinion = PREV
-					
-				}
-			}
-			# Make a titular Duchy if there already is a Duke/Duchess for the title, and get a claim on the real Duchy title
-			else = {
-				create_title = {
-					tier = DUKE
-					name = "crusade_state_duchy_name"
-					landless = no
-					culture = event_target:current_crusade_beneficiary
-					holder = event_target:current_crusade_beneficiary
-					custom_created = yes
-					base_title = event_target:crusade_state_capital
-				}
 
-				new_title = {
-					set_title_flag = temporary_crusade_title_flag
-					adjective = "crusade_state_duchy_adjective"
-				}
-
-				add_claim = THIS
-			}
-		}
-
-		event_target:current_crusade_beneficiary = {
-			# Grab all remaining vassal titles held by characters of the wrong Religion
-			any_vassal = {
-				limit = {
-					NOT = {
-						religion = PREV
-					}
-				}
+				# Make Stewards for the cities, and grant them a city each
 				any_demesne_title = {
-					event_target:current_crusade_beneficiary = {
-						grant_title = PREV
+					limit = {
+						TIER = BARON
+						holding_type = CITY
+					}
+					event_target:crusader_lord = {
+						create_random_steward = {
+							random_traits = yes
+						}
+						new_character = {
+							grant_title_no_opinion = PREVPREV
+						}
 					}
 				}
-			}
 
-			# Make Stewards for the cities, and grant them a city each
-			any_demesne_title = {
-				limit = {
-					TIER = BARON
-					holding_type = CITY
-				}
-				event_target:current_crusade_beneficiary = {
-					create_random_steward = {
-						random_traits = yes
+				# Make Bishops for the temples, and grant them a temple each
+				any_demesne_title = {
+					limit = {
+						TIER = BARON
+						holding_type = TEMPLE
 					}
-					new_character = {
-						grant_title_no_opinion = PREVPREV
-					}
-				}
-			}
-
-			# Make Bishops for the temples, and grant them a temple each
-			any_demesne_title = {
-				limit = {
-					TIER = BARON
-					holding_type = TEMPLE
-				}
-				event_target:current_crusade_beneficiary = {
-					create_random_priest = {
-						random_traits = yes
-					}
-					new_character = {
-						grant_title_no_opinion = PREVPREV
+					event_target:crusader_lord = {
+						create_random_priest = {
+							random_traits = yes
+						}
+						new_character = {
+							grant_title_no_opinion = PREVPREV
+						}
 					}
 				}
-			}
 
-			# Refill your holding
-			character_event = { id = HFP.41090 days = 1 }
+				# Refill your holding
+				character_event = { id = HFP.41090 days = 1 }
 
-			# Set the Crusader State to have Primogeniture and be highly centralized
-			primary_title = {
-				add_law = {
-					law = succ_primogeniture
-					cooldown = no
-					opinion_effect = no
-				}
-				add_law = {
-					law = centralization_3
-					cooldown = no
-					opinion_effect = no
-				}
-			}
-
-			# Set up the realm to be Late Feudal, if using Conclave
-			if = {
-				limit = {
-					has_dlc = "Zeus"
-				}
+				# Set the Crusader State to have Primogeniture and be highly centralized
 				primary_title = {
 					add_law = {
-						law = ze_administration_laws_1
+						law = succ_primogeniture
+						cooldown = no
+						opinion_effect = no
+					}
+					add_law = {
+						law = centralization_3
 						cooldown = no
 						opinion_effect = no
 					}
 				}
-			}
 
-			# Change the capital to be of the same religion and culture as the Crusader Lord/Lady
-			capital_scope = {
-				religion = PREV
-			}
-
-			# Apply nickname, if they don't have one
-			if = {
-				limit = {
-					can_apply_average_nickname_trigger = yes
-				}
-				give_nickname = nick_the_crusader
-			}
-
-			# Apply the Crusader trait
-			add_trait = crusader
-
-			# Make sure the Crusader Lord/Lady have some cash
-			if = {
-				limit = {
-					NOT = {
-						wealth = 150
+				# Set up the realm to be Late Feudal, if using Conclave
+				if = {
+					limit = {
+						has_dlc = "Zeus"
+					}
+					primary_title = {
+						add_law = {
+							law = ze_administration_laws_1
+							cooldown = no
+							opinion_effect = no
+						}
+						add_law = {
+							law = law_voting_power_0
+							cooldown = no
+							opinion_effect = no
+						}
+						add_law = {
+							law = war_voting_power_0
+							cooldown = no
+							opinion_effect = no
+						}
+						add_law = {
+							law = revoke_title_voting_power_0
+							cooldown = no
+							opinion_effect = no
+						}
+						add_law = {
+							law = imprison_voting_power_0
+							cooldown = no
+							opinion_effect = no
+						}
+						add_law = {
+							law = grant_title_voting_power_0
+							cooldown = no
+							opinion_effect = no
+						}
+						add_law = {
+							law = banish_voting_power_0
+							cooldown = no
+							opinion_effect = no
+						}
+						add_law = {
+							law = execution_voting_power_0
+							cooldown = no
+							opinion_effect = no
+						}
+						add_law = {
+							law = succession_voting_power_0
+							cooldown = no
+							opinion_effect = no
+						}
 					}
 				}
-				clear_wealth = yes
-				wealth = 150
+
+				# Change the capital to be of the same religion as the Crusader Lord/Lady
+				capital_scope = {
+					religion = PREV
+				}
+
+				# Apply nickname, if they don't have one
+				if = {
+					limit = {
+						can_apply_average_nickname_trigger = yes
+					}
+					give_nickname = nick_the_crusader
+				}
+
+				# Apply the Crusader trait
+				add_trait = crusader
+
+				# Have the Crusader Lord/Lady join the Crusade
+				pledge_crusade_participation = yes
+
+				# Make sure the Crusader Lord/Lady have some cash
+				if = {
+					limit = {
+						NOT = {
+							wealth = 150
+						}
+					}
+					clear_wealth = yes
+					wealth = 150
+				}
+
+				# Set character flag
+				set_character_flag = settled_crusader
 			}
-		}
+    	}
 
-		ROOT = {
-			make_tributary = {
-				who = event_target:current_crusade_beneficiary
-			}
-		}
+    	any_playable_ruler = {
+    		narrative_event = { id = HFP.42101 }
+    	}
+    	ROOT = {
+    		narrative_event = { id = HFP.42101 }
+    	}
+    	event_target:crusader_heir = {
+    		narrative_event = { id = HFP.42101 }
+    	}
 
-    	character_event = { id = HFP.41007 }
-
-		any_playable_ruler = {
-			narrative_event = { id = HFP.42001 }
-		}
-
-		if = {
+    	ai_chance = {
+    		factor = 0
+    	}
+    }
+    option = { # No interest in these lands after all
+    	name = EVTOPTC_HFP_42000
+    	if = {
 			limit = {
-				event_target:current_crusade_beneficiary = {
-					is_alive = yes
+				any_owned_bloodline = {
+					has_bloodline_flag = crusade_lord_bloodline
+					bloodline_is_active_for = PREV
 				}
 			}
-			# Have the Crusader Lord/Lady join the Crusade
-			event_target:current_crusade_beneficiary = {
-				pledge_crusade_participation = yes
-			}
+			prestige = 300
+			wealth = 100
+		}
+		else = {
+			prestige = 500
+			wealth = 300
 		}
 
-		333 = {
-			add_province_modifier = {
-				name = crusader_state_ai_cd
-				hidden = yes
-				duration = 548
-			}
-		}
+    	ai_chance = {
+    		factor = 0
+    	}
+    }
+}
+
+# Narrative event if Crusader Lord/Lady abdicates titles to settle down in Crusader State
+narrative_event = {
+	id = HFP.42101
+	title = EVTTITLE_HFP_42101
+	desc = EVTDESC_HFP_42101
+	picture = GFX_evt_mounted_knights_hf
+    portrait = event_target:crusade_lord
+    border = GFX_event_narrative_frame_religion
+    is_triggered_only = yes
+
+    immediate = {
+    	FROM = {
+    		crusade_target_title = {
+    			save_event_target_as = crusade_title
+    		}
+    		crusade_target_char = {
+    			save_event_target_as = crusade_target_ruler
+    		}
+    	}
+    }
+
+    option = {      
+        name = EVTOPTA_HFP_42001
+        trigger = {
+        	religion = FROM
+        }
+    }
+    option = {      
+        name = EVTOPTX_HFP_42001
+        trigger = {
+        	NOT = {
+        		religion = FROM
+        	}
+        	religion_group = FROM
+        }
+    }
+    option = {      
+        name = EVTOPTB_HFP_42001
+        trigger = {
+        	NOT = {
+        		religion_group = FROM
+        	}
+        }
+    }
+    option = {
+    	name = EVTOPTC_HFP_42101
+    	trigger = {
+    		character = event_target:crusader_heir
+    		FROM = {
+    			dynasty = ROOT
+    		}
+    	}
+
+    	tooltip_info = yes
+
+    	custom_tooltip = {
+    		text = player_character_dynamic_crusader_state_2_TT
+    		if = {
+    			limit = {
+    				FROM = {
+    					is_alive = yes
+    					ai = yes
+    					any_demesne_title = {
+    						tier = COUNT
+    					}
+    				}
+    			}
+    			set_player_character = FROM
+    		}
+  	  	}
     }
 }
 
@@ -1659,6 +1075,7 @@ character_event = {
     					}
     				}
     			}
+    			age = 16
     			in_command = yes
     			prisoner = no
     		}
@@ -1679,6 +1096,7 @@ character_event = {
     trigger = {
     	any_crusade_participant = {
     		ai = yes
+    		age = 16
     		NOT = {
     			is_foe = ROOT
     		}
@@ -1692,6 +1110,7 @@ character_event = {
     	random_crusade_participant = {
     		limit = {
     			ai = yes
+    			age = 16
     			NOT = {
     				is_foe = ROOT
     			}
@@ -3476,7 +2895,7 @@ character_event = {
     portrait = none
     is_triggered_only = yes
     trigger = {
-    
+    	
     }
 
     immediate = {
@@ -3542,6 +2961,16 @@ character_event = {
 	    				}
 	    			}
 	    		}
+	    		10 = {
+	    			trigger = {
+	    				is_title_active = d_livonian_order
+	    			}
+	    			d_livonian_order = {
+	    				owner = {
+	    					save_event_target_as = decided_holy_order
+	    				}
+	    			}
+	    		}
 	    	}
 	    }
     }
@@ -3597,6 +3026,48 @@ character_event = {
     		trait = zealous
     		is_heretic = no
     		piety = 500
+    		OR = {
+				AND = {
+					is_title_active = d_teutonic_order
+					d_teutonic_order = {
+						owner = {
+							religion = ROOT
+						}
+					}
+				}
+				AND = {
+					is_title_active = k_teutonic_state
+					k_teutonic_state = {
+						owner = {
+							religion = ROOT
+						}
+					}
+				}
+				AND = {
+					is_title_active = d_knights_templar
+					d_knights_templar = {
+						owner = {
+							religion = ROOT
+						}
+					}
+				}
+				AND = {
+					is_title_active = d_livonian_order
+					d_livonian_order = {
+						owner = {
+							religion = ROOT
+						}
+					}
+				}
+				AND = {
+					is_title_active = d_knights_hospitaler
+					d_knights_hospitaler = {
+						owner = {
+							religion = ROOT
+						}
+					}
+				}
+			}
     	}
     	tooltip_info = yes
     	piety = 150
@@ -3635,6 +3106,7 @@ character_event = {
     		limit = {
     			any_crusade_participant = {
 	    			holy_order = yes
+	    			age = 16
 	    			religion = ROOT
 	    			NOT = {
 		    			has_opinion_modifier = {
@@ -3650,6 +3122,7 @@ character_event = {
     		random_crusade_participant = {
     			limit = {
     				holy_order = yes
+    				age = 16
     				religion = ROOT
     				NOT = {
 		    			has_opinion_modifier = {
@@ -3899,18 +3372,12 @@ character_event = {
         }
     }
     option = {
-		trigger = {
-			# Warcraft
-			event_target:brothel_employee = { can_has_sexual_relation_with_prev = yes }
-		}
     	name = EVTOPTC_HFP_42214
     	prestige = -25
     	piety = -25
     	ROOT = {
     		show_scope_change = no
-			
-			# Warcraft
-    		event_target:brothel_employee = { add_lover_prev_effect = yes }
+    		add_lover = event_target:brothel_employee
     	}
     	hidden_tooltip = {
     		event_target:brothel_employee = {
@@ -4056,769 +3523,6 @@ character_event = {
     		remove_character_modifier = crusade_very_organized_army
     	}
     }
-}
-
-## Specific Events
-# Crusader in Rome
-character_event = {
-    id = HFP.42220
-    desc = EVTDESC_HFP_42220
-    picture = GFX_evt_market_hf
-    portrait = none
-    is_triggered_only = yes
-    trigger = {
-    
-    }
-
-    immediate = {
-    	set_character_flag = crusader_in_rome
-    	location = {
-    		save_event_target_as = current_location
-    	}
-    }
-
-    option = {      
-        name = EVTOPTA_HFP_42220
-        trigger = {
-        	NAND = {
-				332 = {
-	    			owner = {
-	    				ai = yes
-	    				religion_group = event_target:new_crusade_target
-	    				NOT = {
-	    					religion = ROOT
-	    				}
-	    			}
-	    		}
-	    		333 = {
-	    			owner = {
-	    				ai = yes
-	    				religion_group = event_target:new_crusade_target
-	    				NOT = {
-	    					religion = ROOT
-	    				}
-	    			}
-	    			kingdom = {
-	    				NOT = {
-	    					title = event_target:new_crusade_title 
-	    				}
-	    			}
-	    		}
-	    		243 = {
-	    			owner = {
-	    				ai = yes
-	    				religion_group = event_target:new_crusade_target
-	    				NOT = {
-	    					religion = ROOT
-	    				}
-	    			}
-	    		}
-        	}
-        }
-        piety = 50
-
-        ai_chance = {
-        	factor = 1
-        }
-    }
-    option = {
-    	name = EVTOPTB_HFP_42220
-    	trigger = {
-    		332 = {
-    			owner = {
-    				ai = yes
-    				religion_group = event_target:new_crusade_target
-    				NOT = {
-    					religion = ROOT
-    				}
-    			}
-    		}
-    		333 = {
-    			owner = {
-    				ai = yes
-    				religion_group = event_target:new_crusade_target
-    				NOT = {
-    					religion = ROOT
-    				}
-    			}
-    			kingdom = {
-    				NOT = {
-    					title = event_target:new_crusade_title 
-    				}
-    			}
-    		}
-    		243 = {
-    			owner = {
-    				ai = yes
-    				religion_group = event_target:new_crusade_target
-    				NOT = {
-    					religion = ROOT
-    				}
-    			}
-    		}
-    	}
-    	piety = 100 
-    	333 = {
-    		province_event = { id = HFP.42224 }
-    	}
-
-    	ai_chance = {
-    		factor = 1
-    	}
-    }
-    option = {
-    	name = EVTOPTC_HFP_42220
-    	trigger = {
-    		NOT = {
-    			event_target:current_location = {
-    				religion = ROOT
-    			}
-    		}
-    	}
-
-    	custom_tooltip = {
-    		text = EVTOPTC_HFP_42210_TT
-
-    		set_secret_religion = {
-	    		target_type = public
-	    		target = event_target:current_location
-	    	}
-    	}
-
-    	ai_chance = {
-    		factor = 0
-    	}
-    }
-    option = {
-    	name = EVTOPTD_HFP_42220
-    	trigger = {
-    		NOT = {
-    			event_target:current_location = {
-    				religion = ROOT
-    			}
-    		}
-    		OR = {
-    			AND = {
-    				event_target:current_location = {
-    					religion_group = muslim
-    				}
-    				NOT = {
-    					trait = sympathy_islam
-    				}
-    			}
-    			AND = {
-    				event_target:current_location = {
-    					religion_group = zoroastrian_group
-    				}
-    				NOT = {
-    					trait = sympathy_zoroastrianism
-    				}
-    			}
-    			AND = {
-    				event_target:current_location = {
-    					religion_group = pagan_group
-    				}
-    				NOT = {
-    					trait = sympathy_pagans
-    				}
-    			}
-    			AND = {
-    				event_target:current_location = {
-    					religion_group = jewish_group
-    				}
-    				NOT = {
-    					trait = sympathy_judaism
-    				}
-    			}
-    			AND = {
-    				event_target:current_location = {
-    					religion_group = indian_group
-    				}
-    				NOT = {
-    					trait = sympathy_indian
-    				}
-    			}
-    		}
-    	}
-    	event_target:current_location = {
-    		add_sympathy_for_religion_effect = yes
-    	}
-
-    	ai_chance = {
-    		factor = 0
-    	}
-    }
-}
-
-# Crusader in Antioch
-character_event = {
-    id = HFP.42221
-    desc = EVTDESC_HFP_42221
-    picture = GFX_evt_market_hf
-    portrait = none
-    is_triggered_only = yes
-    trigger = {
-    
-    }
-
-    immediate = {
-    	set_character_flag = crusader_in_antioch
-    	location = {
-    		save_event_target_as = current_location
-    	}
-    }
-
-    option = {      
-        name = EVTOPTA_HFP_42221
-        trigger = {
-        	NAND = {
-        		763 = {
-	    			owner = {
-	    				ai = yes
-	    				religion_group = event_target:new_crusade_target
-	    				NOT = {
-	    					religion = ROOT
-	    				}
-	    			}
-	    		}
-	    		764 = {
-	    			owner = {
-	    				ai = yes
-	    				religion_group = event_target:new_crusade_target
-	    				NOT = {
-	    					religion = ROOT
-	    				}
-	    			}
-	    			kingdom = {
-	    				NOT = {
-	    					title = event_target:new_crusade_title 
-	    				}
-	    			}
-	    		}
-	    		765 = {
-	    			owner = {
-	    				ai = yes
-	    				religion_group = event_target:new_crusade_target
-	    				NOT = {
-	    					religion = ROOT
-	    				}
-	    			}
-	    		}
-        	}
-        }
-        piety = 50
-
-        ai_chance = {
-        	factor = 1
-        }
-    }
-    option = {
-    	name = EVTOPTB_HFP_42221
-    	trigger = {
-    		763 = {
-    			owner = {
-    				ai = yes
-    				religion_group = event_target:new_crusade_target
-    				NOT = {
-    					religion = ROOT
-    				}
-    			}
-    		}
-    		764 = {
-    			owner = {
-    				ai = yes
-    				religion_group = event_target:new_crusade_target
-    				NOT = {
-    					religion = ROOT
-    				}
-    			}
-    			kingdom = {
-    				NOT = {
-    					title = event_target:new_crusade_title 
-    				}
-    			}
-    		}
-    		765 = {
-    			owner = {
-    				ai = yes
-    				religion_group = event_target:new_crusade_target
-    				NOT = {
-    					religion = ROOT
-    				}
-    			}
-    		}
-    	}
-    	piety = 100 
-    	764 = {
-    		province_event = { id = HFP.42224 }
-    	}
-
-    	ai_chance = {
-    		factor = 1
-    	}
-    }
-    option = {
-    	name = EVTOPTC_HFP_42220
-    	trigger = {
-    		NOT = {
-    			event_target:current_location = {
-    				religion = ROOT
-    			}
-    		}
-    	}
-
-    	custom_tooltip = {
-    		text = EVTOPTC_HFP_42210_TT
-
-    		set_secret_religion = {
-	    		target_type = public
-	    		target = event_target:current_location
-	    	}
-    	}
-
-    	ai_chance = {
-    		factor = 0
-    	}
-    }
-    option = {
-    	name = EVTOPTD_HFP_42220
-    	trigger = {
-    		NOT = {
-    			event_target:current_location = {
-    				religion = ROOT
-    			}
-    		}
-    		OR = {
-    			AND = {
-    				event_target:current_location = {
-    					religion_group = muslim
-    				}
-    				NOT = {
-    					trait = sympathy_islam
-    				}
-    			}
-    			AND = {
-    				event_target:current_location = {
-    					religion_group = zoroastrian_group
-    				}
-    				NOT = {
-    					trait = sympathy_zoroastrianism
-    				}
-    			}
-    			AND = {
-    				event_target:current_location = {
-    					religion_group = pagan_group
-    				}
-    				NOT = {
-    					trait = sympathy_pagans
-    				}
-    			}
-    			AND = {
-    				event_target:current_location = {
-    					religion_group = jewish_group
-    				}
-    				NOT = {
-    					trait = sympathy_judaism
-    				}
-    			}
-    			AND = {
-    				event_target:current_location = {
-    					religion_group = indian_group
-    				}
-    				NOT = {
-    					trait = sympathy_indian
-    				}
-    			}
-    		}
-    	}
-    	event_target:current_location = {
-    		add_sympathy_for_religion_effect = yes
-    	}
-
-    	ai_chance = {
-    		factor = 0
-    	}
-    }
-}
-
-# Crusader in Cyprus
-character_event = {
-    id = HFP.42222
-    desc = EVTDESC_HFP_42222
-    picture = GFX_evt_market_hf
-    portrait = none
-    is_triggered_only = yes
-    trigger = {
-    
-    }
-
-    immediate = {
-    	set_character_flag = crusader_in_cyprus
-    	location = {
-    		save_event_target_as = current_location
-    	}
-    }
-
-    option = {      
-        name = EVTOPTA_HFP_42222
-        trigger = {
-        	NAND = {
-        		756 = {
-	    			owner = {
-	    				ai = yes
-	    				religion_group = event_target:new_crusade_target
-	    				NOT = {
-	    					religion = ROOT
-	    				}
-	    			}
-	    		}
-	    		757 = {
-	    			owner = {
-	    				ai = yes
-	    				religion_group = event_target:new_crusade_target
-	    				NOT = {
-	    					religion = ROOT
-	    				}
-	    			}
-		   			kingdom = {
-	    				NOT = {
-	    					title = event_target:new_crusade_title 
-	    				}
-	    			}
-	    		}
-        	}
-        }
-        piety = 50
-
-        ai_chance = {
-        	factor = 1
-        }
-    }
-    option = {
-    	name = EVTOPTB_HFP_42222
-    	trigger = {
-    		756 = {
-    			owner = {
-    				ai = yes
-    				religion_group = event_target:new_crusade_target
-    				NOT = {
-    					religion = ROOT
-    				}
-    			}
-    		}
-    		757 = {
-    			owner = {
-    				ai = yes
-    				religion_group = event_target:new_crusade_target
-    				NOT = {
-    					religion = ROOT
-    				}
-    			}
-	   			kingdom = {
-    				NOT = {
-    					title = event_target:new_crusade_title 
-    				}
-    			}
-    		}
-    	}
-    	piety = 100 
-    	757 = {
-    		province_event = { id = HFP.42224 }
-    	}
-
-    	ai_chance = {
-    		factor = 1
-    	}
-    }
-    option = {
-    	name = EVTOPTC_HFP_42220
-    	trigger = {
-    		NOT = {
-    			event_target:current_location = {
-    				religion = ROOT
-    			}
-    		}
-    	}
-
-    	custom_tooltip = {
-    		text = EVTOPTC_HFP_42210_TT
-
-    		set_secret_religion = {
-	    		target_type = public
-	    		target = event_target:current_location
-	    	}
-    	}
-
-    	ai_chance = {
-    		factor = 0
-    	}
-    }
-    option = {
-    	name = EVTOPTD_HFP_42220
-    	trigger = {
-    		NOT = {
-    			event_target:current_location = {
-    				religion = ROOT
-    			}
-    		}
-    		OR = {
-    			AND = {
-    				event_target:current_location = {
-    					religion_group = muslim
-    				}
-    				NOT = {
-    					trait = sympathy_islam
-    				}
-    			}
-    			AND = {
-    				event_target:current_location = {
-    					religion_group = zoroastrian_group
-    				}
-    				NOT = {
-    					trait = sympathy_zoroastrianism
-    				}
-    			}
-    			AND = {
-    				event_target:current_location = {
-    					religion_group = pagan_group
-    				}
-    				NOT = {
-    					trait = sympathy_pagans
-    				}
-    			}
-    			AND = {
-    				event_target:current_location = {
-    					religion_group = jewish_group
-    				}
-    				NOT = {
-    					trait = sympathy_judaism
-    				}
-    			}
-    			AND = {
-    				event_target:current_location = {
-    					religion_group = indian_group
-    				}
-    				NOT = {
-    					trait = sympathy_indian
-    				}
-    			}
-    		}
-    	}
-    	event_target:current_location = {
-    		add_sympathy_for_religion_effect = yes
-    	}
-
-    	ai_chance = {
-    		factor = 0
-    	}
-    }
-}
-
-# Crusader in Jerusalem
-character_event = {
-    id = HFP.42223
-    desc = EVTDESC_HFP_42223
-    picture = GFX_evt_market_hf
-    portrait = none
-    is_triggered_only = yes
-    trigger = {
-    
-    }
-
-    immediate = {
-    	set_character_flag = crusader_in_jerusalem
-    	location = {
-    		save_event_target_as = current_location
-    	}
-    }
-
-    option = {      
-        name = EVTOPTA_HFP_42223
-        trigger = {
-        	NAND = {
-	        	772 = {
-	        		owner = {
-	    				ai = yes
-	    				religion_group = event_target:new_crusade_target
-	    				NOT = {
-	    					religion = ROOT
-	    				}
-	    			}
-	        	}
-	        	774 = {
-	        		owner = {
-	    				ai = yes
-	    				religion_group = event_target:new_crusade_target
-	    				NOT = {
-	    					religion = ROOT
-	    				}
-	    			}
-	    			kingdom = {
-	    				NOT = {
-	    					title = event_target:new_crusade_title 
-	    				}
-	    			}
-	        	}
-	        	776 = {
-	        		owner = {
-	    				ai = yes
-	    				religion_group = event_target:new_crusade_target
-	    				NOT = {
-	    					religion = ROOT
-	    				}
-	    			}
-	    		}
-        	}
-        }
-        piety = 50
-
-        ai_chance = {
-        	factor = 1
-        }
-    }
-    option = {      
-        name = EVTOPTB_HFP_42223
-        custom_tooltip = { text = EVTOPTB_HFP_42223_TT }
-        trigger = {
-        	772 = {
-        		owner = {
-    				ai = yes
-    				religion_group = event_target:new_crusade_target
-    				NOT = {
-    					religion = ROOT
-    				}
-    			}
-        	}
-        	774 = {
-        		owner = {
-    				ai = yes
-    				religion_group = event_target:new_crusade_target
-    				NOT = {
-    					religion = ROOT
-    				}
-    			}
-    			kingdom = {
-    				NOT = {
-    					title = event_target:new_crusade_title 
-    				}
-    			}
-        	}
-        	776 = {
-        		owner = {
-    				ai = yes
-    				religion_group = event_target:new_crusade_target
-    				NOT = {
-    					religion = ROOT
-    				}
-    			}
-        	}
-        }
-        piety = 100
-    	774 = {
-    		province_event = { id = HFP.42224 }
-    	}
-
-    	ai_chance = {
-    		factor = 1
-    	}
-    }
-    option = {
-    	name = EVTOPTC_HFP_42220
-    	trigger = {
-    		NOT = {
-    			event_target:current_location = {
-    				religion = ROOT
-    			}
-    		}
-    	}
-
-    	custom_tooltip = {
-    		text = EVTOPTC_HFP_42210_TT
-
-    		set_secret_religion = {
-	    		target_type = public
-	    		target = event_target:current_location
-	    	}
-    	}
-
-    	ai_chance = {
-    		factor = 0
-    	}
-    }
-    option = {
-    	name = EVTOPTD_HFP_42220
-    	trigger = {
-    		NOT = {
-    			event_target:current_location = {
-    				religion = ROOT
-    			}
-    		}
-    		OR = {
-    			AND = {
-    				event_target:current_location = {
-    					religion_group = muslim
-    				}
-    				NOT = {
-    					trait = sympathy_islam
-    				}
-    			}
-    			AND = {
-    				event_target:current_location = {
-    					religion_group = zoroastrian_group
-    				}
-    				NOT = {
-    					trait = sympathy_zoroastrianism
-    				}
-    			}
-    			AND = {
-    				event_target:current_location = {
-    					religion_group = pagan_group
-    				}
-    				NOT = {
-    					trait = sympathy_pagans
-    				}
-    			}
-    			AND = {
-    				event_target:current_location = {
-    					religion_group = jewish_group
-    				}
-    				NOT = {
-    					trait = sympathy_judaism
-    				}
-    			}
-    			AND = {
-    				event_target:current_location = {
-    					religion_group = indian_group
-    				}
-    				NOT = {
-    					trait = sympathy_indian
-    				}
-    			}
-    		}
-    	}
-    	event_target:current_location = {
-    		add_sympathy_for_religion_effect = yes
-    	}
-
-    	ai_chance = {
-    		factor = 0
-    	}
-    }
-}
-
-# Province event to trigger Crusader state
-province_event = {
-	id = HFP.42224 
-	hide_window = yes
-	is_triggered_only = yes
-
-	immediate = {
-		FROM = {
-			set_character_flag = ai_crusader_state_flag
-			character_event = { id = HFP.42000 }
-			clr_character_flag = ai_crusader_state_flag
-		}
-	}
 }
 
 ## Shepherds' Crusade
