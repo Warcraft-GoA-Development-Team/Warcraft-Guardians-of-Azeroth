@@ -8,7 +8,8 @@ map generation will clear all of your changes. For more information, visit this 
         https://forum.paradoxplaza.com/forum/index.php?threads/tutorial-tool-how-to-fill-a-custom-map.697082/
 4. **DO NOT** make character attributes higher than 25 (35 maximum). Having a higher value than this breaks certain vanilla
 events.
-5. Always add a list of changes (Changelog:) of your branch in the pull request.
+5. **ALWAYS** add a list of changes (Changelog:) of your branch in the pull request.
+6. Describe commits clearly, so that the commit can be used to compile larger logs and patch notes.
         
 ### Rules for Submitting Bugs or Suggestions (Issues):
 
