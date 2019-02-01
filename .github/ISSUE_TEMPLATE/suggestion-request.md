@@ -4,6 +4,7 @@ about: Suggest an idea for this mod
 title: "[SUGGESTION] | SUGGESTION TITLE"
 labels: ":question: suggestion :question:"
 assignees: zumbak04
+projects: Suggestion Board
 
 ---
 
