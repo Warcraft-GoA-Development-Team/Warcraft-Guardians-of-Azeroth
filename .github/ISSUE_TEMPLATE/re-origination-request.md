@@ -4,6 +4,7 @@ about: Bug Report
 title: "[BUG] | PROBLEM TITLE"
 labels: ":beetle: bug :beetle:"
 assignees: zumbak04
+projects: Re-Origination Crusade
 
 ---
 
