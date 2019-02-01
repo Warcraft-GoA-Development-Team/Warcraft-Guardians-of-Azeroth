@@ -258,3 +258,87 @@ character_event = {
 		}
 	}
 }
+
+# Creates new dragon character if new holder isn't right dragon
+# Fires by on_new_holder, on_new_holder_inheritance, on_new_holder_usurpation
+character_event = {
+	id = WCDRA.200
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	trigger = {
+		OR = {
+			AND = {
+				is_red_dragon_trigger = no
+				FROM = { title = e_red_dragonflight }
+			}
+			AND = {
+				is_blue_dragon_trigger = no
+				FROM = { title = e_blue_dragonflight }
+			}
+			AND = {
+				is_green_dragon_trigger = no
+				FROM = { title = e_green_dragonflight }
+			}
+			AND = {
+				is_black_dragon_trigger = no
+				FROM = { title = e_black_dragonflight }
+			}
+			AND = {
+				is_bronze_dragon_trigger = no
+				FROM = { title = e_bronze_dragonflight }
+			}
+		}
+	}
+	
+	immediate = {
+		save_event_target_as = target_old_holder
+		
+		create_character = {
+			female = yes
+			dynasty = none
+			culture = red_dragon religion = sect_of_the_dragons
+			attributes = {
+				martial=5 diplomacy=5 stewardship=5 intrigue=5 learning=5
+			}
+			trait = mastermind_theologian
+			random_traits = yes
+			age = 300
+		}
+		new_character = {
+			save_event_target_as = target_new_holder
+			
+			if = {
+				limit = { FROM = { title = e_red_dragonflight } }
+				culture = red_dragon
+				set_graphical_culture = red_dragon
+				add_trait = creature_red_wyrm
+			}
+			else_if = {
+				limit = { FROM = { title = e_blue_dragonflight } }
+				culture = blue_dragon
+				set_graphical_culture = blue_dragon
+				add_trait = creature_blue_wyrm
+			}
+			else_if = {
+				limit = { FROM = { title = e_green_dragonflight } }
+				culture = green_dragon
+				set_graphical_culture = green_dragon
+				add_trait = creature_green_wyrm
+			}
+			else_if = {
+				limit = { FROM = { title = e_black_dragonflight } }
+				culture = black_dragon
+				set_graphical_culture = black_dragon
+				add_trait = creature_black_wyrm
+			}
+			else = {
+				culture = bronze_dragon
+				set_graphical_culture = bronze_dragon
+				add_trait = creature_bronze_wyrm
+			}
+			character_event = { id = WCRLM.555 days = 1 }	# target_old_holder abdicates to target_new_holder
+		}
+	}
+}
