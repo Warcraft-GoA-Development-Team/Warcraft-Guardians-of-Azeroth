@@ -1,16 +1,25 @@
 ---
 name: Re-Origination Request
-about: 'Create a report to help us improve Warcraft: Guardians of Azeroth'
-title: Re-Origination Request
-labels: ''
-assignees: ''
+about: Bug Report
+title: "[BUG] | PROBLEM TITLE"
+labels: ":beetle: bug :beetle:"
+assignees: zumbak04
+projects: Re-Origination Crusade
 
 ---
 
-Which version of the mod does this apply to?
+**DO NOT REMOVE PRE-EXISTING LINES**
+------------------------------------------------------------------------------------------------------------
+### **One line summary of your issue:**
 
-How important is this bug/suggestion (Low/Medium/High/Critical)?
+**Mod Version**
 
-Explain the bug or suggestion below:
+**What expansions do you have installed?**
 
-Feel free to attach a **.zip** or a **screenshot** of the bug to better help us understand the issue.
+**Please explain your issue in as much detail as possible:**
+
+
+**Steps to reproduce the issue:**
+
+
+**Upload an attachment below: .zip of your save, or screenshots:**
