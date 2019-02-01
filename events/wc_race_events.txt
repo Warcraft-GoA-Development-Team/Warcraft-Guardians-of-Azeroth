@@ -521,6 +521,25 @@ character_event = {
 			limit = { potential_race_sethrak_trigger = yes }
 			add_trait = creature_sethrak
 		}
+		else_if = {
+			limit = { potential_race_protector_trigger = yes }
+			add_trait = creature_protector 
+		}
+		else_if = {
+			limit = { potential_race_ancient_war_trigger = yes }
+			add_trait = creature_ancient_war
+			culture = protector
+		}
+		else_if = {
+			limit = { potential_race_ancient_lore_trigger = yes }
+			add_trait = creature_ancient_lore
+			culture = protector
+		}
+		else_if = {
+			limit = { potential_race_ancient_wind_trigger = yes }
+			add_trait = creature_ancient_wind
+			culture = protector
+		}
 		else = {
 			death = { death_reason = death_missing }
 		}
@@ -825,5 +844,123 @@ character_event = {
 		remove_class_trait_effect = yes
 		character_event = { id = WCRAC.10 }
 		add_class_trait_effect = yes
+	}
+}
+#Adds Ancients seed
+character_event = {
+	id = WCRAC.300
+	desc = EVTDESC_WCRAC.300
+	
+	is_triggered_only = yes
+	
+	only_playable = yes
+	weight_multiplier = {
+		days = 1
+		modifier = {
+			factor = 3
+			NOT = { has_artifact = ancient_kernel }
+		}
+	}
+	
+	is_adult = yes
+	
+	trigger = {
+		plant_race = yes
+	}
+	
+	immediate = {	
+		
+	}
+	
+	option = {
+		name = EVTOPTA_WCRAC.300
+		add_artifact = ancient_kernel
+	}
+}
+# New ancient born
+character_event = {
+	id = WCRAC.310
+	desc = EVTDESC_WCRAC.310
+	is_triggered_only = yes
+	
+	only_playable = yes
+	is_adult = yes
+	
+	trigger = {
+		plant_race = yes
+		has_artifact = ancient_kernel
+	}
+	
+	immediate = {
+		destroy_artifact = ancient_kernel
+		create_character = {
+			dynasty = ROOT
+			religion = ROOT
+			culture = ROOT
+			female = 50
+			age = 0
+		}
+		new_character = {
+			if = {
+				limit = {
+					ROOT = {
+						is_female = yes
+					}
+				}
+				set_mother = ROOT
+			}
+			if = {
+				limit = {
+					ROOT = {
+						is_female = no
+					}
+				}
+				set_father = ROOT
+			}
+			if = {
+				limit = {
+					ROOT = {
+						graphical_culture = ancientwargfx
+					}
+				}
+				set_graphical_culture = ancient_war
+			}
+			if = {
+				limit = {
+					ROOT = {
+						graphical_culture = ancientloregfx
+					}
+				}
+				set_graphical_culture = ancient_lore
+			}
+			if = {
+				limit = {
+					ROOT = {
+						graphical_culture = ancientwindgfx
+					}
+				}
+				set_graphical_culture = ancient_wind
+			}
+		}
+	}
+	
+	option = {
+		name = EVTOPTA_WCRAC.310
+	}
+}
+# Destory Ancients seed after death
+character_event = {
+	id = WCRAC.320
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	trigger = {
+		has_artifact = ancient_kernel
+		plant_race = yes
+	}
+
+	immediate = {
+		destroy_artifact = ancient_kernel
 	}
 }
