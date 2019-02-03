@@ -52,15 +52,17 @@ become_leader_of_alliance_faction_effect = {
 	# Something went wrong, cleanup
 	else = {
 		leave_alliance_faction_effect = yes
-		narrative_event = { id = WCPLF.205 }	# Destroys Horde faction
+		narrative_event = { id = WCPLF.205 }	# Destroys faction
 	}
 }
 join_horde_faction_effect = {
 	if = {
 		limit = { can_be_in_horde_faction_trigger = yes }
-		if = {
-			limit = { is_tributary = yes }
-			suzerain = { remove_tributary = PREV }
+		hidden_effect = {
+			if = {
+				limit = { is_tributary = yes }
+				suzerain = { remove_tributary = PREV }
+			}
 		}
 		if = {
 			limit = {
@@ -84,9 +86,11 @@ join_horde_faction_effect = {
 join_alliance_faction_effect = {
 	if = {
 		limit = { can_be_in_alliance_faction_trigger = yes }
-		if = {
-			limit = { is_tributary = yes }
-			suzerain = { remove_tributary = PREV }
+		hidden_effect = {
+			if = {
+				limit = { is_tributary = yes }
+				suzerain = { remove_tributary = PREV }
+			}
 		}
 		if = {
 			limit = {
@@ -145,19 +149,23 @@ leave_alliance_faction_effect = {
 			if = {
 				limit = {
 					NOT = { has_global_flag = centralized_alliance_flag }
-					any_tributary = {
+					any_independent_ruler = {
+						NOT = { character = PREV }
+						
 						can_lead_faction_trigger = yes
-						is_tributary = { type = political_faction suzerain = suzerain }
-						NOT = { character = ROOT }
+						is_tributary = { type = political_faction suzerain = PREV }
 					}
 				}
-				random_tributary = {
+				random_independent_ruler = {
 					limit = {
+						NOT = { character = PREV }
+						
 						can_lead_faction_trigger = yes
-						is_tributary = { type = political_faction suzerain = suzerain }
+						is_tributary = { type = political_faction suzerain = PREV }
 						NOT = {
 							any_independent_ruler = {
 								NOT = { character = PREV }
+								NOT = { character = PREVPREV }
 
 								can_lead_faction_trigger = yes
 								is_tributary = { type = political_faction suzerain = PREVPREV }
@@ -168,7 +176,8 @@ leave_alliance_faction_effect = {
 					add_trait = leader_of_alliance_trait
 					narrative_event = { id = WCPLF.60 }
 				}
-				any_tributary = {
+				any_independent_ruler = {
+					limit = { is_tributary = { type = political_faction suzerain = PREV } }
 					join_alliance_faction_effect = yes
 				}
 			}

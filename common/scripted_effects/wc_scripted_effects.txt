@@ -13,7 +13,6 @@ set_cannot_marry_flag_effect = {
 		set_government_type = theocracy_government
 	}
 }
-
 remove_racial_traits_effect = {
 	# Add new races always at the end
 	# Humans
@@ -597,7 +596,7 @@ add_5_fel_corruption_effect = {
 	}
 	if = {
 		limit = {
-			NOT = { trait = demon }
+			NOT = { trait = being_demon }
 			is_susceptible_to_fel_corruption_trigger = yes
 		}
 		change_variable = { which = fel_corruption value = 5 }
@@ -615,7 +614,7 @@ add_15_fel_corruption_effect = {
 	}
 	if = {
 		limit = {
-			NOT = { trait = demon }
+			NOT = { trait = being_demon }
 			is_susceptible_to_fel_corruption_trigger = yes
 		}
 		change_variable = { which = fel_corruption value = 15 }
@@ -633,7 +632,7 @@ add_35_fel_corruption_effect = {
 	}
 	if = {
 		limit = {
-			NOT = { trait = demon }
+			NOT = { trait = being_demon }
 			is_susceptible_to_fel_corruption_trigger = yes
 		}
 		change_variable = { which = fel_corruption value = 35 }
@@ -647,7 +646,7 @@ add_35_fel_corruption_effect = {
 remove_5_fel_corruption_effect = {
 	if = {
 		limit = {
-			NOT = { trait = demon }
+			NOT = { trait = being_demon }
 			is_susceptible_to_fel_corruption_trigger = yes
 		}
 		change_variable = { which = fel_corruption value = -5 }
@@ -661,7 +660,7 @@ remove_5_fel_corruption_effect = {
 remove_15_fel_corruption_effect = {
 	if = {
 		limit = {
-			NOT = { trait = demon }
+			NOT = { trait = being_demon }
 			is_susceptible_to_fel_corruption_trigger = yes
 		}
 		change_variable = { which = fel_corruption value = -15 }
@@ -687,7 +686,7 @@ add_fel_corruption_modifier_effect = {
 	if = {
 		limit = { check_variable = { which = fel_corruption value = 100 } }
 		if = {
-			limit = { NOT = { trait = demon } }
+			limit = { NOT = { trait = being_demon } }
 			add_trait_demon_effect = yes
 		}
 		major_soul_corruption_effect = yes
@@ -709,8 +708,8 @@ add_fel_corruption_modifier_effect = {
 }
 add_trait_demon_effect = {
 	if = {
-		limit = { NOT = { trait = demon } }
-		add_trait = demon
+		limit = { NOT = { trait = being_demon } }
+		add_trait = being_demon
 	}
 	# If you has secret religion, you reveal yourself
 	if = {
@@ -780,7 +779,7 @@ add_5_void_corruption_effect = {
 	}
 	if = {
 		limit = {
-			NOT = { has_character_flag = void_creature }
+			NOT = { trait = being_void }
 			is_susceptible_to_void_corruption_trigger = yes
 		}
 		change_variable = { which = void_corruption value = 5 }
@@ -798,7 +797,7 @@ add_15_void_corruption_effect = {
 	}
 	if = {
 		limit = {
-			NOT = { has_character_flag = void_creature }
+			NOT = { trait = being_void }
 			is_susceptible_to_void_corruption_trigger = yes
 		}
 		change_variable = { which = void_corruption value = 15 }
@@ -816,7 +815,7 @@ add_35_void_corruption_effect = {
 	}
 	if = {
 		limit = {
-			NOT = { has_character_flag = void_creature }
+			NOT = { trait = being_void }
 			is_susceptible_to_void_corruption_trigger = yes
 		}
 		change_variable = { which = void_corruption value = 35 }
@@ -830,7 +829,7 @@ add_35_void_corruption_effect = {
 remove_5_void_corruption_effect = {
 	if = {
 		limit = {
-			NOT = { has_character_flag = void_creature }
+			NOT = { trait = being_void }
 			is_susceptible_to_void_corruption_trigger = yes
 		}
 		change_variable = { which = void_corruption value = -5 }
@@ -844,7 +843,7 @@ remove_5_void_corruption_effect = {
 remove_15_void_corruption_effect = {
 	if = {
 		limit = {
-			NOT = { has_character_flag = void_creature }
+			NOT = { trait = being_void }
 			is_susceptible_to_void_corruption_trigger = yes
 		}
 		change_variable = { which = void_corruption value = -15 }
@@ -882,8 +881,8 @@ add_void_corruption_modifier_effect = {
 }
 add_trait_void_creature_effect = {
 	if = {
-		limit = { NOT = { has_character_flag = void_creature } }
-		set_character_flag = void_creature
+		limit = { NOT = { trait = being_void } }
+		add_trait = being_void
 	}
 	# If you has secret religion, you reveal yourself
 	if = {
@@ -1152,7 +1151,7 @@ prev_burn_evil_being_this_effect = {
 drink_demon_blood_effect = {
 	if = {
 		limit = {
-			NOT = { trait = demon }
+			NOT = { trait = being_demon }
 			is_susceptible_to_fel_corruption_trigger = yes
 		}
 		add_character_modifier = { name = drank_demon_blood duration = 7300 }
@@ -1192,7 +1191,7 @@ drink_demon_blood_effect = {
 
 							NOT = { has_character_modifier = drank_demon_blood }
 
-							NOT = { trait = demon }
+							NOT = { trait = being_demon }
 							is_susceptible_to_fel_corruption_trigger = yes
 						}
 						character_event = { id = WCFEL.9961 days = 2 }
@@ -1652,32 +1651,39 @@ set_undead_gfx_effect = {
 }
 
 add_trait_undead_effect = {
+	# Undead children shall not pass
 	if = {
-		limit = { NOT = { trait = undead } }
-		add_trait = undead
+		limit = { is_adult = no }
+		death = { death_reason = death_missing }
 	}
-	# If you has secret religion, you reveal yourself
-	if = {
-		limit = { has_secret_religion = yes }
-		convert_to_secret_religion = yes
+	else = {
+		if = {
+			limit = { NOT = { trait = being_undead } }
+			add_trait = being_undead
+		}
+		# If you has secret religion, you reveal yourself
+		if = {
+			limit = { has_secret_religion = yes }
+			convert_to_secret_religion = yes
+		}
+		if = {
+			limit = { trait = is_fat }
+			remove_trait = is_fat
+		}
+		if = {
+			limit = { trait = is_malnourished }
+			remove_trait = is_malnourished
+		}
+		remove_weight_modifier_effect = yes
+		clear_fat_flags_effect = yes
+		clear_malnourished_flags_effect = yes
 	}
-	if = {
-		limit = { trait = is_fat }
-		remove_trait = is_fat
-	}
-	if = {
-		limit = { trait = is_malnourished }
-		remove_trait = is_malnourished
-	}
-	remove_weight_modifier_effect = yes
-	clear_fat_flags_effect = yes
-	clear_malnourished_flags_effect = yes
 }
 
 free_from_lich_king_effect = {
 	if = {
 		limit = {
-			trait = undead
+			trait = being_undead
 			NOT = { trait = champion_of_the_lich_king }
 			NOT = { has_landed_title = e_scourge }
 			e_scourge = {
