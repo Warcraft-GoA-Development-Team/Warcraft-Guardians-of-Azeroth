@@ -1,7 +1,7 @@
 ---
 name: Re-Origination Request
 about: Bug Report
-title: "[BUG] | <!--- Add here one line summary of your issue -->"
+title: "[BUG] | Issue Title"
 labels: ":beetle: bug :beetle:"
 
 ---
