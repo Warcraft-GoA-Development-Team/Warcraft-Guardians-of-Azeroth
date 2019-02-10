@@ -807,116 +807,6 @@ long_character_event = {
 # 	the Twilight Hour		#
 #############################
 
-# The appointment of the Twilight Viceroy (creation of the Black Empire)
-character_event = {
-	id = WCVOD.600
-
-	is_triggered_only = yes
-	hide_window = yes
-
-	min_age = 16
-	only_capable = yes
-	prisoner = no
-	is_playable = yes
-	only_independent = yes
-	religion = old_gods_worship
-
-	trigger = {
-		is_adult = yes
-		is_incapable = no
-		prisoner = no
-		is_playable = yes
-		independent = yes
-		religion = old_gods_worship
-		
-		is_alive = yes
-		is_dying = no
-		
-		OR = {
-			NOT = { has_global_flag = black_empire_was_created_flag }
-			had_global_flag = { flag = black_empire_was_created_flag years = 50 }
-		}
-
-		has_secret_religion = no
-		NOT = { e_black_empire = { has_holder = yes } }
-		religion_authority = 0.75
-		num_of_holy_sites = 4
-	}
-
-	immediate = {
-		log = "WCVOD.600 fired for [Root.GetBestName]"
-
-		clr_global_flag = black_empire_was_created_flag
-		set_global_flag = black_empire_was_created_flag
-
-		73 = { province_event = { id = WCTHW.50 } } # When shit happens, Medivh tries to fix it
-
-		# The Old Gods chooses the strongest creature
-		# Checks if ROOT is the strongest creature
-		if = {
-			limit = {
-				NOT = {
-					any_independent_ruler = {
-						is_adult = yes
-						is_incapable = no
-						prisoner = no
-
-						NOT = { character = ROOT }
-
-						has_secret_religion = no
-						religion = old_gods_worship
-						combat_rating_diff = { character = ROOT value = 1 }
-					}
-				}
-			}
-			narrative_event = { id = WCVOD.605 }
-		}
-		else = {
-			# Checks the independent rulers
-			if = {
-				limit = {
-					any_independent_ruler = {
-						is_adult = yes
-						is_incapable = no
-						prisoner = no
-
-						NOT = { character = ROOT }
-
-						has_secret_religion = no
-						religion = old_gods_worship
-					}
-				}
-				random_independent_ruler = {
-					limit = {
-						is_adult = yes
-						is_incapable = no
-						prisoner = no
-
-						has_secret_religion = no
-						religion = old_gods_worship
-						NOT = {
-							any_independent_ruler = {
-								is_adult = yes
-								is_incapable = no
-								prisoner = no
-
-								NOT = { character = PREV }
-
-								has_secret_religion = no
-								religion = old_gods_worship
-								combat_rating_diff = { character = PREV value = 1 }
-							}
-						}
-					}
-					narrative_event = { id = WCVOD.605 }
-				}
-			}
-			else = {
-				narrative_event = { id = WCVOD.605 }
-			}
-		}
-	}
-}
 narrative_event = {
 	id = WCVOD.605
 	title = EVTTITLE_WCVOD_605
@@ -934,20 +824,20 @@ narrative_event = {
 
 		activate_title = { title = e_black_empire status = yes }
 		e_black_empire = { gain_title = ROOT }
-		any_independent_ruler = {
+		if = {
 			limit = {
-				prisoner = no
-				is_untouchable_trigger = no
-
-				religion = old_gods_worship
-				war = no
+				any_demesne_title = {
+					tier = EMPEROR
+					NOT = { title = e_black_empire }
+				}
 			}
 			any_demesne_title = {
-				limit = { tier = EMPEROR }
-				ROOT = { grant_title_no_opinion = { target = PREV type = claim } }
+				limit = {
+					tier = EMPEROR
+					NOT = { title = e_black_empire }
+				}
 				destroy_landed_title = THIS
 			}
-			set_defacto_liege = ROOT
 		}
 		set_black_pact_government_effect = yes
 	}
