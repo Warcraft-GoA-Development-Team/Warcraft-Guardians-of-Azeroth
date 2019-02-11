@@ -1,6 +1,6 @@
 namespace = WCPLF
 
-# Cleanup: Adds alliances between members of the same faction
+# Adds alliances between members of same faction
 # Necessary if someone joins, changes the faction
 character_event = {
 	id = WCPLF.1
@@ -29,7 +29,7 @@ character_event = {
 		add_alliances_with_faction_effect = yes
 	}
 }
-# Cleanup: Breaks alliances between members of the other factions
+# Breaks alliances between members of other factions
 # Necessary if someone joins, changes the faction
 character_event = {
 	id = WCPLF.2
@@ -72,9 +72,64 @@ character_event = {
 	}
 }
 
+# ROOT inherits leader_of_<faction>_trait
+character_event = {
+	id = WCPLF.40
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	trigger = {
+		primary_title = { title = FROM }
+		FROMFROM = { is_in_political_faction_trigger = yes }
+	}
+	
+	immediate = {
+		log = "WCPLF.40 fired for [Root.GetBestName]"
+		if = {
+			limit = {
+				FROMFROM = {
+					AND = {
+						is_tributary = { type = political_faction suzerain = suzerain }
+						suzerain = { trait = leader_of_horde_trait }
+					}
+				}
+			}
+			join_horde_faction_effect = yes
+			FROMFROM = { leave_horde_faction_effect = yes }
+		}
+		else_if = {
+			limit = {
+				FROMFROM = {
+					AND = {
+						is_tributary = { type = political_faction suzerain = suzerain }
+						suzerain = { trait = leader_of_alliance_trait }
+					}
+				}
+			}
+			join_alliance_faction_effect = yes
+			FROMFROM = { leave_alliance_faction_effect = yes }
+		}
+		FROMFROM = {
+			trigger_switch = {
+				on_trigger = trait
+				leader_of_horde_trait = {
+					ROOT = { become_leader_of_horde_faction_effect = yes }
+					break_alliances_with_horde_faction_effect = yes
+					remove_trait = leader_of_horde_trait
+				}
+				leader_of_alliance_trait = {
+					ROOT = { become_leader_of_alliance_faction_effect = yes }
+					break_alliances_with_alliance_faction_effect
+					remove_trait = leader_of_alliance_trait
+				}
+			}
+		}
+	}
+}
+
 ### Cleanup ###
 # on_new_holder, on_new_holder_inheritance, on_new_holder_usurpation
-# ROOT inherits faction trait/modifier OR clears them if something is wrong
 character_event = {
 	id = WCPLF.45
 
@@ -87,58 +142,7 @@ character_event = {
 
 	immediate = {
 		log = "WCPLF.45 fired for [Root.GetBestName]"
-		# ROOT inherits faction trait/modifier
-		if = {
-			limit = {	# Condition is far from ideal... for example, it will give trait if you grant title of your tier
-				is_in_political_faction_trigger = no
-				FROMFROM = { is_in_political_faction_trigger = yes }
-				NOT = { lower_tier_than = FROMFROM }
-				primary_title = { title = FROM }
-			}
-			FROMFROM = {
-				if = {
-					limit = {
-						AND = {
-							is_tributary = { type = political_faction suzerain = suzerain }
-							suzerain = { trait = leader_of_horde_trait }
-						}
-					}
-					ROOT = { join_horde_faction_effect = yes }
-					leave_horde_faction_effect = yes
-				}
-				else_if = {
-					limit = {
-						AND = {
-							is_tributary = { type = political_faction suzerain = suzerain }
-							suzerain = { trait = leader_of_alliance_trait }
-						}
-					}
-					ROOT = { join_alliance_faction_effect = yes }
-					leave_alliance_faction_effect = yes
-				}
-				trigger_switch = {
-					on_trigger = trait
-					leader_of_horde_trait = {
-						ROOT = { become_leader_of_horde_faction_effect = yes }
-						remove_trait = leader_of_horde_trait
-						break_alliances_with_horde_faction_effect = yes
-					}
-					leader_of_alliance_trait = {
-						ROOT = { become_leader_of_alliance_faction_effect = yes }
-						remove_trait = leader_of_alliance_trait
-						break_alliances_with_alliance_faction_effect = yes
-					}
-				}
-			}
-		}
-		else = {
-			FROMFROM = {
-				if = {
-					limit = { is_in_political_faction_trigger = yes }
-					character_event = { id = WCPLF.52 }
-				}
-			}
-		}
+		FROMFROM = { character_event = { id = WCPLF.52 } }
 	}
 }
 
@@ -288,34 +292,91 @@ narrative_event = {
 	}
 }
 
-# Destruction of the Horde
+# Fall of the Horde
 narrative_event = {
 	id = WCPLF.105
 	title = EVTTITLE_WCPLF_100
-	desc = EVTDESC_WCPLF_105
+	desc = EVTDESC_WCPLF_105_fall
 	picture = GFX_evt_warcraft_3_orc_shield
 	border = GFX_event_narrative_frame_war
 
 	is_triggered_only = yes
 	major = yes
 
-	immediate = {
-		remove_trait = leader_of_horde_trait
-		any_tributary = {
-			limit = {
-				NOT = { character = ROOT }
-				is_tributary = { type = political_faction suzerain = suzerain }
-			}
-			leave_horde_faction_effect = yes
-		}
-		activate_title = { title = e_horde status = no }
-		e_horde = { destroy_landed_title = THIS }
-	}
-
 	option = {
-		name = OK
+		trigger = { evil_true_religion_trigger = yes }
+		name = FOOLS
+	}
+	option = {
+		trigger = {
+			evil_true_religion_trigger = no
+			OR = {
+				is_member_of_alliance_faction_trigger = yes
+				AND = {
+					has_alliance_religion_trigger = yes
+					has_alliance_culture_trigger = yes
+				}
+			}
+		}
+		name = EXCELLENT
+	}
+	option = {
+		trigger = {
+			evil_true_religion_trigger = no
+			is_member_of_alliance_faction_trigger = no
+			has_horde_religion_trigger = yes
+			has_horde_culture_trigger = yes
+		}
+		name = ALAS
+	}
+	option = {
+		trigger = { evil_true_religion_trigger = no }
+		name = INTERESTING
 	}
 }
+# "Revolution" of the Horde
+narrative_event = {
+	id = WCPLF.106
+	title = EVTTITLE_WCPLF_100
+	desc = EVTDESC_WCPLF_106
+	picture = GFX_evt_warcraft_3_orc_shield
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+	major = yes
+
+	option = {
+		trigger = { evil_true_religion_trigger = yes }
+		name = FOOLS
+	}
+	option = {
+		trigger = {
+			evil_true_religion_trigger = no
+			OR = {
+				is_member_of_alliance_faction_trigger = yes
+				AND = {
+					has_alliance_religion_trigger = yes
+					has_alliance_culture_trigger = yes
+				}
+			}
+		}
+		name = EXCELLENT
+	}
+	option = {
+		trigger = {
+			evil_true_religion_trigger = no
+			is_member_of_alliance_faction_trigger = no
+			has_horde_religion_trigger = yes
+			has_horde_culture_trigger = yes
+		}
+		name = ALAS
+	}
+	option = {
+		trigger = { evil_true_religion_trigger = no }
+		name = INTERESTING
+	}
+}
+
 
 # FROM asks you to accept FROM into your faction
 letter_event = {
@@ -574,21 +635,35 @@ narrative_event = {
 	is_triggered_only = yes
 	major = yes
 
-	immediate = {
-		remove_trait = leader_of_alliance_trait
-		any_tributary = {
-			limit = {
-				NOT = { character = ROOT }
-				is_tributary = { type = political_faction suzerain = suzerain }
-			}
-			leave_alliance_faction_effect = yes
-		}
-		activate_title = { title = e_alliance status = no }
-		e_alliance = { destroy_landed_title = THIS }
-	}
-
 	option = {
-		name = OK
+		trigger = { evil_true_religion_trigger = yes }
+		name = FOOLS
+	}
+	option = {
+		trigger = {
+			evil_true_religion_trigger = no
+			OR = {
+				is_member_of_horde_faction_trigger = yes
+				AND = {
+					has_horde_religion_trigger = yes
+					has_horde_culture_trigger = yes
+				}
+			}
+		}
+		name = EXCELLENT
+	}
+	option = {
+		trigger = {
+			evil_true_religion_trigger = no
+			is_member_of_horde_faction_trigger = no
+			has_alliance_religion_trigger = yes
+			has_alliance_culture_trigger = yes
+		}
+		name = ALAS
+	}
+	option = {
+		trigger = { evil_true_religion_trigger = no
+		name = INTERESTING
 	}
 }
 
