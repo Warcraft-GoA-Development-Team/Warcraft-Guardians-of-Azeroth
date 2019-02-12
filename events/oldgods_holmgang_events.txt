@@ -615,6 +615,7 @@ character_event = {
 			}
 		}
 		FROM = {
+			show_scope_change = no
 			character_event = { id = TOG.5002 days = 2 tooltip = EVTTOOLTIP_TOG_5002 }
 		}
 	}
@@ -640,6 +641,7 @@ character_event = {
 			}
 		}
 		FROM = {
+			show_scope_change = no
 			character_event = { id = TOG.5003 days = 2 tooltip = EVTTOOLTIP_TOG_5003 }
 		}
 		prestige = -100
@@ -681,239 +683,356 @@ character_event = {
 	option = {
 		name = EVTOPTA_TOG_5002
 		custom_tooltip = { text = holmgang_prepare }
-		hidden_tooltip = {
-			character_event = { id = TOG.5018 days = 7}
-			FROM = { character_event = { id = TOG.5004 days = 7} }
-			if = {
-				limit = {
-					combat_rating_diff = { who = FROM value = 50 }
-				}
+		hidden_effect = {
+			character_event = { id = TOG.5018 days = 7 } #The fight begins...
+			FROM = { character_event = { id = TOG.5004 days = 7} } #The fight begins...
+
+			# For overview...
+			# Defender wins .................................... TOG.5007
+				# 50%: Opponent: Wounded ....................... TOG.5027
+				# 50%: Opponent: Maimed ........................ TOG.5028
+
+			# Defender wins .................................... TOG.5008
+				# Opponent dies ................................ TOG.5029
+
+			# Defender wins (Scarred) .......................... TOG.5006
+				# Opponent dies ................................ TOG.5029
+
+			# Defender wins (Scarred) .......................... TOG.5005
+				# 50%: Opponent: Wounded ....................... TOG.5027
+				# 50%: Opponent: Maimed ........................ TOG.5028
+
+			# Draw (Both wounded) .............................. TOG.5010
+				# Opponent wounded ............................. TOG.5025
+
+			# Defender loses (Wounded) ......................... TOG.5012
+				# 50%: Opponent wins: Scarred .................. TOG.5020
+				# 50%: Opponent wins ........................... TOG.5022
+
+			# Defender loses (Maimed) .......................... TOG.5013
+				# 50%: Opponent wins: Scarred .................. TOG.5020
+				# 50%: Opponent wins ........................... TOG.5022
+
+			# Defender dies .................................... TOG.5014
+				# 50%: Opponent wins: Scarred .................. TOG.5021
+				# 50%: Opponent wins ........................... TOG.5023
+
+			# Defender flees  .................................. TOG.5011
+				# Opponent wins ................................ TOG.5024
+
+			# Defender wins  .................................. TOG.5009
+				# Opponent flees .............................. TOG.5026
+
+
+			if = { # Win...
+				#limit = { combat_rating_diff = { who = FROMFROM value = 50 } }
+				limit = { FROM = { duelist_skill_compared_to_prev_low_group_trigger = yes } }
 				random_list = {
-					60 = { character_event = { id = TOG.5007 days = 10} }
-					60 = { character_event = { id = TOG.5008 days = 10} }
-					50 = { character_event = { id = TOG.5006 days = 10} }
-					50 = { character_event = { id = TOG.5005 days = 10} }
-					30 = { character_event = { id = TOG.5010 days = 10} }
-					20 = { character_event = { id = TOG.5012 days = 10} }
-					20 = { character_event = { id = TOG.5013 days = 10} }
-					15 = { character_event = { id = TOG.5014 days = 10} }
-					20 = {
-						modifier = {
-							factor = 0
-							NOT = { trait = craven }
-						}
-						character_event = { id = TOG.5011 days = 10 }
+					10 = { # No scratch (opponent dead)
+						trigger = { FROM = { is_the_worst_dueler_compared_to_prev_trigger = yes } }
+						character_event = { id = TOG.5008 days = 10 }
 					}
-					50 = {
-						modifier = {
-							factor = 0
-							NOT = { FROM = { trait = craven } }
-						}
+					10 = { # Scarred (opponent dead)
+						trigger = { FROM = { is_terrible_dueler_compared_to_prev_trigger = yes } }
+						character_event = { id = TOG.5006 days = 10 }
+					}
+					10 = { # No scratch (opponent hurt somehow)
+						trigger = { FROM = { is_bad_dueler_compared_to_prev_trigger = yes } }
+						character_event = { id = TOG.5007 days = 10 }
+					}
+					10 = { # Scarred (opponent hurt somehow)
+						trigger = { FROM = { is_ok_dueler_compared_to_prev_trigger = yes } }
+						character_event = { id = TOG.5005 days = 10 }
+					}
+					2 = { # No scratch (opponent flees)
+						trigger = { FROM = { trait = craven } }
 						character_event = { id = TOG.5009 days = 10 }
+					}
+					1 = { # UNLUCKY FLUKE: Wounded (opponent might get Scarred)
+						character_event = { id = TOG.5012 days = 10 }
 					}
 				}
 			}
-			if = {
-				limit = {
-					combat_rating_diff = { who = FROM value = 30 }
-					NOT = {
-						combat_rating_diff = { who = FROM value = 50 }
-					}
-				}
+			else_if = { # Draw...
+				limit = { FROM = { duelist_skill_compared_to_prev_medium_group_trigger = yes } }
 				random_list = {
-					50 = { character_event = { id = TOG.5007 days = 10} }
-					50 = { character_event = { id = TOG.5008 days = 10} }
-					40 = { character_event = { id = TOG.5006 days = 10} }
-					40 = { character_event = { id = TOG.5005 days = 10} }
-					30 = { character_event = { id = TOG.5010 days = 10} }
-					25 = { character_event = { id = TOG.5012 days = 10} }
-					25 = { character_event = { id = TOG.5013 days = 10} }
-					20 = { character_event = { id = TOG.5014 days = 10} }
-					25 = {
-						modifier = {
-							factor = 0
-							NOT = { trait = craven }
-						}
-						character_event = { id = TOG.5011 days = 10 }
+					10 = {
+						character_event = { id = TOG.5010 days = 10 } #Both wounded
 					}
-					40 = {
-						modifier = {
-							factor = 0
-							NOT = { FROM = { trait = craven } }
-						}
-						character_event = { id = TOG.5009 days = 10 }
+					1 = { # Scarred (opponent hurt somehow)
+						character_event = { id = TOG.5005 days = 10 }
+					}
+					1 = { # Wounded (opponent might get Scarred)
+						character_event = { id = TOG.5012 days = 10 }
 					}
 				}
 			}
-			if = {
-				limit = {
-					combat_rating_diff = { who = FROM value = 10 }
-					NOT = {
-						combat_rating_diff = { who = FROM value = 30 }
-					}
-				}
+			else_if = { # Lose...
+				limit = { FROM = { duelist_skill_compared_to_prev_high_group_trigger = yes } }
 				random_list = {
-					40 = { character_event = { id = TOG.5007 days = 10} }
-					40 = { character_event = { id = TOG.5008 days = 10} }
-					35 = { character_event = { id = TOG.5006 days = 10} }
-					35 = { character_event = { id = TOG.5005 days = 10} }
-					30 = { character_event = { id = TOG.5010 days = 10} }
-					30 = { character_event = { id = TOG.5012 days = 10} }
-					30 = { character_event = { id = TOG.5013 days = 10} }
-					25 = { character_event = { id = TOG.5014 days = 10} }
-					30 = {
-						modifier = {
-							factor = 0
-							NOT = { trait = craven }
+					10 = { # Wounded (opponent might get Scarred)
+						trigger = {
+							OR = {
+								FROM = { is_good_dueler_compared_to_prev_trigger = yes }
+								FROM = { is_great_dueler_compared_to_prev_trigger = yes }
+							}
+						}
+						character_event = { id = TOG.5012 days = 10 }
+					}
+					10 = { # Maimed (opponent might get Scarred)
+						trigger = {
+							OR = {
+								FROM = { is_great_dueler_compared_to_prev_trigger = yes }
+								FROM = { is_fantastic_dueler_compared_to_prev_trigger = yes }
+							}
+						}
+						character_event = { id = TOG.5013 days = 10 }
+					}
+					10 = { # Death (opponent hurt somehow)
+						trigger = {
+							OR = {
+								FROM = { is_the_best_dueler_compared_to_prev_trigger = yes }
+								FROM = { is_fantastic_dueler_compared_to_prev_trigger = yes }
+							}
+						}
+						character_event = { id = TOG.5014 days = 10 }
+					}
+					5 = { # Flee (opponent wins)
+						trigger = {
+							trait = craven
 						}
 						character_event = { id = TOG.5011 days = 10 }
 					}
-					35 = {
-						modifier = {
-							factor = 0
-							NOT = { FROM = { trait = craven } }
-						}
-						character_event = { id = TOG.5009 days = 10 }
+					1 = { # DODGED IT: Scarred (opponent hurt somehow)
+						character_event = { id = TOG.5005 days = 10 }
 					}
 				}
 			}
-			if = {
-				limit = {
-					NOT = {
-						combat_rating_diff = { who = FROM value = 10 }
-						FROM = {
-							combat_rating_diff = { who = ROOT value = 10 }
-						}
-					}
-				}
-				random_list = {
-					40 = { character_event = { id = TOG.5007 days = 10} }
-					40 = { character_event = { id = TOG.5008 days = 10} }
-					40 = { character_event = { id = TOG.5006 days = 10} }
-					40 = { character_event = { id = TOG.5005 days = 10} }
-					60 = { character_event = { id = TOG.5010 days = 10} }
-					40 = { character_event = { id = TOG.5012 days = 10} }
-					40 = { character_event = { id = TOG.5013 days = 10} }
-					40 = { character_event = { id = TOG.5014 days = 10} }
-					40 = {
-						modifier = {
-							factor = 0
-							NOT = { trait = craven }
-						}
-						character_event = { id = TOG.5011 days = 10 }
-					}
-					40 = {
-						modifier = {
-							factor = 0
-							NOT = { FROM = { trait = craven } }
-						}
-						character_event = { id = TOG.5009 days = 10 }
-					}
-				}
-			}
-			if = {
-				limit = {
-					FROM = {
-						combat_rating_diff = { who = ROOT value = 10 }
-					}
-					NOT = {
-						FROM = {
-							combat_rating_diff = { who = ROOT value = 30 }
-						}
-					}
-				}
-				random_list = {
-					25 = { character_event = { id = TOG.5007 days = 10} }
-					25 = { character_event = { id = TOG.5008 days = 10} }
-					30 = { character_event = { id = TOG.5006 days = 10} }
-					30 = { character_event = { id = TOG.5005 days = 10} }
-					30 = { character_event = { id = TOG.5010 days = 10} }
-					35 = { character_event = { id = TOG.5012 days = 10} }
-					35 = { character_event = { id = TOG.5013 days = 10} }
-					40 = { character_event = { id = TOG.5014 days = 10} }
-					35 = {
-						modifier = {
-							factor = 0
-							NOT = { trait = craven }
-						}
-						character_event = { id = TOG.5011 days = 10 }
-					}
-					30 = {
-						modifier = {
-							factor = 0
-							NOT = { FROM = { trait = craven } }
-						}
-						character_event = { id = TOG.5009 days = 10 }
-					}
-				}
-			}
-			if = {
-				limit = {
-					FROM = {
-						combat_rating_diff = { who = ROOT value = 30 }
-					}
-					NOT = {
-						FROM = {
-							combat_rating_diff = { who = ROOT value = 50 }
-						}
-					}
-				}
-				random_list = {
-					20 = { character_event = { id = TOG.5007 days = 10} }
-					20 = { character_event = { id = TOG.5008 days = 10} }
-					25 = { character_event = { id = TOG.5006 days = 10} }
-					25 = { character_event = { id = TOG.5005 days = 10} }
-					30 = { character_event = { id = TOG.5010 days = 10} }
-					40 = { character_event = { id = TOG.5012 days = 10} }
-					40 = { character_event = { id = TOG.5013 days = 10} }
-					50 = { character_event = { id = TOG.5014 days = 10} }
-					40 = {
-						modifier = {
-							factor = 0
-							NOT = { trait = craven }
-						}
-						character_event = { id = TOG.5011 days = 10 }
-					}
-					25 = {
-						modifier = {
-							factor = 0
-							NOT = { FROM = { trait = craven } }
-						}
-						character_event = { id = TOG.5009 days = 10 }
-					}
-				}
-			}
-			if = {
-				limit = {
-					FROM = {
-						combat_rating_diff = { who = ROOT value = 50 }
-					}
-				}
-				random_list = {
-					15 = { character_event = { id = TOG.5007 days = 10} }
-					15 = { character_event = { id = TOG.5008 days = 10} }
-					20 = { character_event = { id = TOG.5006 days = 10} }
-					20 = { character_event = { id = TOG.5005 days = 10} }
-					30 = { character_event = { id = TOG.5010 days = 10} }
-					50 = { character_event = { id = TOG.5012 days = 10} }
-					50 = { character_event = { id = TOG.5013 days = 10} }
-					60 = { character_event = { id = TOG.5014 days = 10} }
-					50 = {
-						modifier = {
-							factor = 0
-							NOT = { trait = craven }
-						}
-						character_event = { id = TOG.5011 days = 10 }
-					}
-					20 = {
-						modifier = {
-							factor = 0
-							NOT = { FROM = { trait = craven } }
-						}
-						character_event = { id = TOG.5009 days = 10 }
-					}
-				}
-			}
+
+#			if = {
+#				limit = {
+#					combat_rating_diff = { who = FROM value = 50 }
+#				}
+#				random_list = {
+#					60 = { character_event = { id = TOG.5007 days = 10} }
+#					60 = { character_event = { id = TOG.5008 days = 10} }
+#					50 = { character_event = { id = TOG.5006 days = 10} }
+#					50 = { character_event = { id = TOG.5005 days = 10} }
+#					30 = { character_event = { id = TOG.5010 days = 10} }
+#					20 = { character_event = { id = TOG.5012 days = 10} }
+#					20 = { character_event = { id = TOG.5013 days = 10} }
+#					15 = { character_event = { id = TOG.5014 days = 10} }
+#					20 = {
+#						trigger = { trait = craven }
+#						character_event = { id = TOG.5011 days = 10 }
+#					}
+#					50 = {
+#						trigger = { FROM = { trait = craven } }
+#						character_event = { id = TOG.5009 days = 10 }
+#					}
+#				}
+#			}
+#			if = {
+#				limit = {
+#					combat_rating_diff = { who = FROM value = 30 }
+#					NOT = {
+#						combat_rating_diff = { who = FROM value = 50 }
+#					}
+#				}
+#				random_list = {
+#					50 = { character_event = { id = TOG.5007 days = 10} }
+#					50 = { character_event = { id = TOG.5008 days = 10} }
+#					40 = { character_event = { id = TOG.5006 days = 10} }
+#					40 = { character_event = { id = TOG.5005 days = 10} }
+#					30 = { character_event = { id = TOG.5010 days = 10} }
+#					25 = { character_event = { id = TOG.5012 days = 10} }
+#					25 = { character_event = { id = TOG.5013 days = 10} }
+#					20 = { character_event = { id = TOG.5014 days = 10} }
+#					25 = {
+#						modifier = {
+#							factor = 0
+#							NOT = { trait = craven }
+#						}
+#						character_event = { id = TOG.5011 days = 10 }
+#					}
+#					40 = {
+#						modifier = {
+#							factor = 0
+#							NOT = { FROM = { trait = craven } }
+#						}
+#						character_event = { id = TOG.5009 days = 10 }
+#					}
+#				}
+#			}
+#			if = {
+#				limit = {
+#					combat_rating_diff = { who = FROM value = 10 }
+#					NOT = {
+#						combat_rating_diff = { who = FROM value = 30 }
+#					}
+#				}
+#				random_list = {
+#					40 = { character_event = { id = TOG.5007 days = 10} }
+#					40 = { character_event = { id = TOG.5008 days = 10} }
+#					35 = { character_event = { id = TOG.5006 days = 10} }
+#					35 = { character_event = { id = TOG.5005 days = 10} }
+#					30 = { character_event = { id = TOG.5010 days = 10} }
+#					30 = { character_event = { id = TOG.5012 days = 10} }
+#					30 = { character_event = { id = TOG.5013 days = 10} }
+#					25 = { character_event = { id = TOG.5014 days = 10} }
+#					30 = {
+#						modifier = {
+#							factor = 0
+#							NOT = { trait = craven }
+#						}
+#						character_event = { id = TOG.5011 days = 10 }
+#					}
+#					35 = {
+#						modifier = {
+#							factor = 0
+#							NOT = { FROM = { trait = craven } }
+#						}
+#						character_event = { id = TOG.5009 days = 10 }
+#					}
+#				}
+#			}
+#			if = {
+#				limit = {
+#					NOT = {
+#						combat_rating_diff = { who = FROM value = 10 }
+#						FROM = {
+#							combat_rating_diff = { who = ROOT value = 10 }
+#						}
+#					}
+#				}
+#				random_list = {
+#					40 = { character_event = { id = TOG.5007 days = 10} }
+#					40 = { character_event = { id = TOG.5008 days = 10} }
+#					40 = { character_event = { id = TOG.5006 days = 10} }
+#					40 = { character_event = { id = TOG.5005 days = 10} }
+#					60 = { character_event = { id = TOG.5010 days = 10} }
+#					40 = { character_event = { id = TOG.5012 days = 10} }
+#					40 = { character_event = { id = TOG.5013 days = 10} }
+#					40 = { character_event = { id = TOG.5014 days = 10} }
+#					40 = {
+#						modifier = {
+#							factor = 0
+#							NOT = { trait = craven }
+#						}
+#						character_event = { id = TOG.5011 days = 10 }
+#					}
+#					40 = {
+#						modifier = {
+#							factor = 0
+#							NOT = { FROM = { trait = craven } }
+#						}
+#						character_event = { id = TOG.5009 days = 10 }
+#					}
+#				}
+#			}
+#			if = {
+#				limit = {
+#					FROM = {
+#						combat_rating_diff = { who = ROOT value = 10 }
+#					}
+#					NOT = {
+#						FROM = {
+#							combat_rating_diff = { who = ROOT value = 30 }
+#						}
+#					}
+#				}
+#				random_list = {
+#					25 = { character_event = { id = TOG.5007 days = 10} }
+#					25 = { character_event = { id = TOG.5008 days = 10} }
+#					30 = { character_event = { id = TOG.5006 days = 10} }
+#					30 = { character_event = { id = TOG.5005 days = 10} }
+#					30 = { character_event = { id = TOG.5010 days = 10} }
+#					35 = { character_event = { id = TOG.5012 days = 10} }
+#					35 = { character_event = { id = TOG.5013 days = 10} }
+#					40 = { character_event = { id = TOG.5014 days = 10} }
+#					35 = {
+#						modifier = {
+#							factor = 0
+#							NOT = { trait = craven }
+#						}
+#						character_event = { id = TOG.5011 days = 10 }
+#					}
+#					30 = {
+#						modifier = {
+#							factor = 0
+#							NOT = { FROM = { trait = craven } }
+#						}
+#						character_event = { id = TOG.5009 days = 10 }
+#					}
+#				}
+#			}
+#			if = {
+#				limit = {
+#					FROM = {
+#						combat_rating_diff = { who = ROOT value = 30 }
+#					}
+#					NOT = {
+#						FROM = {
+#							combat_rating_diff = { who = ROOT value = 50 }
+#						}
+#					}
+#				}
+#				random_list = {
+#					20 = { character_event = { id = TOG.5007 days = 10} }
+#					20 = { character_event = { id = TOG.5008 days = 10} }
+#					25 = { character_event = { id = TOG.5006 days = 10} }
+#					25 = { character_event = { id = TOG.5005 days = 10} }
+#					30 = { character_event = { id = TOG.5010 days = 10} }
+#					40 = { character_event = { id = TOG.5012 days = 10} }
+#					40 = { character_event = { id = TOG.5013 days = 10} }
+#					50 = { character_event = { id = TOG.5014 days = 10} }
+#					40 = {
+#						modifier = {
+#							factor = 0
+#							NOT = { trait = craven }
+#						}
+#						character_event = { id = TOG.5011 days = 10 }
+#					}
+#					25 = {
+#						modifier = {
+#							factor = 0
+#							NOT = { FROM = { trait = craven } }
+#						}
+#						character_event = { id = TOG.5009 days = 10 }
+#					}
+#				}
+#			}
+#			if = {
+#				limit = {
+#					FROM = {
+#						combat_rating_diff = { who = ROOT value = 50 }
+#					}
+#				}
+#				random_list = {
+#					15 = { character_event = { id = TOG.5007 days = 10} }
+#					15 = { character_event = { id = TOG.5008 days = 10} }
+#					20 = { character_event = { id = TOG.5006 days = 10} }
+#					20 = { character_event = { id = TOG.5005 days = 10} }
+#					30 = { character_event = { id = TOG.5010 days = 10} }
+#					50 = { character_event = { id = TOG.5012 days = 10} }
+#					50 = { character_event = { id = TOG.5013 days = 10} }
+#					60 = { character_event = { id = TOG.5014 days = 10} }
+#					50 = {
+#						modifier = {
+#							factor = 0
+#							NOT = { trait = craven }
+#						}
+#						character_event = { id = TOG.5011 days = 10 }
+#					}
+#					20 = {
+#						modifier = {
+#							factor = 0
+#							NOT = { FROM = { trait = craven } }
+#						}
+#						character_event = { id = TOG.5009 days = 10 }
+#					}
+#				}
+#			}
 		}
 	}       
 }
@@ -1590,6 +1709,7 @@ character_event = {
 			modifier = opinion_mutual_respect
 			who = FROM
 		}
+		add_trait = wounded
 	}
 }
 

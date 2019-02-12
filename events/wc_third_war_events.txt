@@ -246,6 +246,8 @@ narrative_event = {
 				count = 5
 				random_independent_ruler = {
 					limit = {
+						is_untouchable_trigger = no
+						
 						lower_real_tier_than = EMPEROR
 
 						NOT = { has_character_flag = invitation_to_sail_is_sent_flag }
@@ -253,6 +255,8 @@ narrative_event = {
 						trait = creature_orc
 						religion_group = shamanism_group
 						culture_group = orc_group
+
+						is_in_political_faction_trigger = no
 					}
 					set_character_flag = invitation_to_sail_is_sent_flag
 
@@ -574,12 +578,59 @@ narrative_event = {
 	major = yes
 
 	immediate = {
+		# Gives new titles
 		3043 = {
 			capital_holding = { convert_tribal_to_castle_effect = yes }
 			county = { grant_title_no_opinion = ROOT }
 			culture = ROOT
 			religion = ROOT
 			any_province_holding = { grant_title_no_opinion = ROOT }
+		}
+		# If you're not independent ruler, gives your old titles to liege
+		if = {
+			limit = {
+				is_ruler = yes
+				independent = no
+			}
+			liege = {
+				ROOT = {
+					any_vassal = {
+						limit = {
+							capital_holding = {
+								NOR = {
+									de_jure_liege_or_above = d_orgrimmar
+									de_jure_liege_or_above = d_drygulch
+									de_jure_liege_or_above = d_sarkoth
+								}
+							}
+						}
+						set_defacto_liege = PREVPREV
+					}
+					any_demesne_title = {
+						limit = {
+							lower_tier_than = DUKE
+							NOR = {
+								de_jure_liege_or_above = d_orgrimmar
+								de_jure_liege_or_above = d_drygulch
+								de_jure_liege_or_above = d_sarkoth
+							}
+						}
+						grant_title_no_opinion = PREVPREV
+						if = {
+							limit = { tier = COUNT }
+							location = {
+								culture = PREVPREVPREV
+								religion = PREVPREVPREV
+							}
+						}
+					}
+				}
+			}
+		}
+		set_defacto_liege = THIS
+		if = {
+			limit = { is_government_potential = tribal_monarchy_government }
+			set_government_type = tribal_monarchy_government
 		}
 		d_orgrimmar = {
 			any_direct_de_jure_vassal_title = {
@@ -601,7 +652,7 @@ narrative_event = {
 					religion = ROOT
 				}
 			}
-			grant_title_no_opinion = ROOT
+			# grant_title_no_opinion = ROOT
 		}
 		d_sarkoth = {
 			any_direct_de_jure_vassal_title = {
@@ -612,8 +663,9 @@ narrative_event = {
 					religion = ROOT
 				}
 			}
-			grant_title_no_opinion = ROOT
+			# grant_title_no_opinion = ROOT
 		}
+		# Spawns army for start
 		capital_scope = {
 			ROOT = {
 				spawn_unit = {
@@ -634,12 +686,9 @@ narrative_event = {
 				}
 			}
 		}
-		set_defacto_liege = THIS
-		if = {
-			limit = { is_government_potential = tribal_monarchy_government }
-			set_government_type = tribal_monarchy_government
-		}
 		narrative_event = { id = WCPLF.100 }			# Foundation of the Horde (faction)
+		
+		# Trolls
 		event_target:target_troll_primary_title = {
 			if = {
 				limit = { has_title_flag = trolls_sailed_to_kalimdor_flag }
@@ -672,7 +721,7 @@ narrative_event = {
 						trait = proud trait = cruel
 						random_traits = yes
 						age = 300
-						flag = void_creature
+						trait = being_void
 					}
 					new_character = {
 						remove_education_effect = yes
@@ -698,7 +747,7 @@ narrative_event = {
 					}
 					any_demesne_title = {
 						limit = {
-							tier = COUNT
+							lower_tier_than = DUKE
 
 							region = world_south_seas
 						}
@@ -707,6 +756,7 @@ narrative_event = {
 							culture = event_target:target_naga
 							religion = event_target:target_naga
 						}
+						any_direct_de_jure_vassal_title = { grant_title_no_opinion = { target = event_target:target_naga type = invasion } }
 					}
 					event_target:target_naga = {
 						if = {
@@ -2642,7 +2692,7 @@ narrative_event = {
 						trait = intricate_webweaver
 						trait = creature_nathrezim
 						trait = class_warlock_6
-						trait = demon
+						trait = being_demon
 						trait = patient trait = deceitful trait = humble trait = arbitrary trait = cruel trait = cynical trait = gregarious trait = erudite
 					}
 					new_character = {

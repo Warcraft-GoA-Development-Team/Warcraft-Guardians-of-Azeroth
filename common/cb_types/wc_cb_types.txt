@@ -18,6 +18,7 @@ total_invasion = {
 	max_attacker_occupation_score = 60
 	capturing_attacker_is_complete_victory = no
 	capturing_defender_is_complete_victory = no
+	defender_unoccupied_warscore = yes
 	
 	sort_priority = 2500
 
@@ -38,7 +39,14 @@ total_invasion = {
 				}
 			}
 			OR = {
-				NOT = { any_war = { using_cb = total_invasion } }
+				NOT = {
+					any_war = {
+						OR = {
+							using_cb = total_invasion
+							using_cb = stop_invader
+						}
+					}
+				}
 
 				# Exception
 				custom_tooltip = {
@@ -318,6 +326,7 @@ stop_invader = {
 	max_attacker_occupation_score = 60
 	capturing_attacker_is_complete_victory = no
 	capturing_defender_is_complete_victory = no
+	defender_unoccupied_warscore = yes
 	
 	sort_priority = 2500
 
@@ -348,7 +357,14 @@ stop_invader = {
 				has_landed_title = e_scourge
 				can_use_total_invasion_cb_trigger = yes
 			}
-			NOT = { any_war = { using_cb = total_invasion } }
+			NOT = {
+				any_war = {
+					OR = {
+						using_cb = total_invasion
+						using_cb = stop_invader
+					}
+				}
+			}
 		}
 
 		# Shares the border
@@ -494,7 +510,7 @@ scourge_subjugation = {
 		}
 		FROM = {
 			is_landed = yes
-			independent = yes
+			# independent = yes
 			
 			# can_be_undead_trigger = yes		# Can declare war only against those who can be turned into undead
 		}
@@ -529,7 +545,7 @@ scourge_subjugation = {
 
 		FROM = {
 			is_landed = yes
-			independent = yes
+			# independent = yes
 		}
 	}
 	
@@ -579,6 +595,7 @@ scourge_subjugation = {
 		}
 
 		FROM = {
+			show_scope_change = no
 			custom_tooltip = {
 				text = scourge_subjugation_suc_tooltip
 				hidden_tooltip = {
@@ -659,7 +676,7 @@ scourge_subjugation = {
 					}
 					if = {
 						limit = {
-							# NOT = { trait = undead }
+							# NOT = { trait = being_undead }
 							can_be_undead_trigger = yes
 						}
 						e_scourge = { holder_scope = { save_event_target_as = target_necromancer } }
@@ -670,6 +687,7 @@ scourge_subjugation = {
 						any_demesne_title = {
 							limit = {
 								can_be_conquered_trigger = yes
+								lower_tier_than = DUKE
 							}
 							grant_title_no_opinion = { target = ROOT type = invasion }
 						}

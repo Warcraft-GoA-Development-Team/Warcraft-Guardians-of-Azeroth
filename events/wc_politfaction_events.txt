@@ -89,10 +89,10 @@ character_event = {
 		log = "WCPLF.45 fired for [Root.GetBestName]"
 		# ROOT inherits faction trait/modifier
 		if = {
-			limit = {
+			limit = {	# Condition is far from ideal... for example, it will give trait if you grant title of your tier
 				is_in_political_faction_trigger = no
 				FROMFROM = { is_in_political_faction_trigger = yes }
-				higher_tier_than = FROMFROM
+				NOT = { lower_tier_than = FROMFROM }
 				primary_title = { title = FROM }
 			}
 			FROMFROM = {
@@ -261,11 +261,11 @@ narrative_event = {
 	id = WCPLF.100
 	title = EVTTITLE_WCPLF_100
 	desc = {
-		trigger = { NOT = { had_character_flag = { flag = horde_faction_was_created_flag days = 1 } } }
+		trigger = { NOT = { had_global_flag = { flag = horde_faction_was_created_flag days = 1 } } }
 		text = EVTDESC_WCPLF_100_foundation
 	}
 	desc = {
-		trigger = { had_character_flag = { flag = horde_faction_was_created_flag days = 1 } }
+		trigger = { had_global_flag = { flag = horde_faction_was_created_flag days = 1 } }
 		text = EVTDESC_WCPLF_100_revival
 	}
 	picture = GFX_evt_warcraft_3_orc_shield
@@ -306,7 +306,7 @@ narrative_event = {
 				NOT = { character = ROOT }
 				is_tributary = { type = political_faction suzerain = suzerain }
 			}
-			character_event = { id = WCPLF.52 }
+			leave_horde_faction_effect = yes
 		}
 		activate_title = { title = e_horde status = no }
 		e_horde = { destroy_landed_title = THIS }
@@ -434,8 +434,15 @@ letter_event = {
 	}
 	option = {
 		name = EVTOPTB_WCPLF_120
-
+		
 		FROMFROM = { opinion = { modifier = opinion_disappointed who = ROOT years = 5 } }
+		hidden_effect = {
+			FROM = {
+				clr_character_flag = being_joined_horde_flag
+				clr_character_flag = being_joined_alliance_flag
+			}
+		}
+		
 		hidden_effect = { FROMFROM = { letter_event = { id = WCPLF.122 } } }
 
 		ai_chance = {
@@ -479,11 +486,21 @@ letter_event = {
 letter_event = {
 	id = WCPLF.122
 	desc = {
-		trigger = { FROM = { has_character_flag = being_joined_horde_flag } }
+		trigger = {
+			OR = {
+				is_member_of_horde_faction_trigger = yes
+				FROM = { has_character_flag = being_joined_horde_flag }
+			}
+		}
 		text = EVTDESC_WCPLF_122
 	}
 	desc = {
-		trigger = { FROM = { has_character_flag = being_joined_alliance_flag } }
+		trigger = {
+			OR = {
+				is_member_of_alliance_faction_trigger = yes
+				FROM = { has_character_flag = being_joined_alliance_flag }
+			}
+		}
 		text = EVTDESC_WCPLF_222
 	}
 
@@ -491,13 +508,6 @@ letter_event = {
 
 	option = {
 		name = ALAS
-		
-		hidden_effect = {
-			FROM = {
-				clr_character_flag = being_joined_horde_flag
-				clr_character_flag = being_joined_alliance_flag
-			}
-		}
 	}
 }
 
@@ -529,11 +539,11 @@ narrative_event = {
 	id = WCPLF.200
 	title = EVTTITLE_WCPLF_200
 	desc = {
-		trigger = { NOT = { had_character_flag = { flag = alliance_faction_was_created_flag days = 1 } } }
+		trigger = { NOT = { had_global_flag = { flag = alliance_faction_was_created_flag days = 1 } } }
 		text = EVTDESC_WCPLF_200_foundation
 	}
 	desc = {
-		trigger = { had_character_flag = { flag = alliance_faction_was_created_flag days = 1 } }
+		trigger = { had_global_flag = { flag = alliance_faction_was_created_flag days = 1 } }
 		text = EVTDESC_WCPLF_200_revival
 	}
 	picture = GFX_evt_warcraft_3_human_shield
@@ -571,7 +581,7 @@ narrative_event = {
 				NOT = { character = ROOT }
 				is_tributary = { type = political_faction suzerain = suzerain }
 			}
-			character_event = { id = WCPLF.52 }
+			leave_alliance_faction_effect = yes
 		}
 		activate_title = { title = e_alliance status = no }
 		e_alliance = { destroy_landed_title = THIS }

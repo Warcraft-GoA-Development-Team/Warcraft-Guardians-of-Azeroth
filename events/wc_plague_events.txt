@@ -250,7 +250,7 @@ character_event = {
 					e_scourge = { holder_scope = { save_event_target_as = target_necromancer } }
 					character_event = { id = WCPOD.5013 }
 				}
-				else = { death = { death_reason = death_trait } }
+				else = { death = { death_reason = death_poor_health } }
 			}
 		}
 	}
@@ -311,19 +311,24 @@ character_event = {
 
 	trigger = {
 		OR = {
-			NOT = { trait = undead }
-			has_character_flag = transition_into_death_knight_flag
-			has_character_flag = transition_into_wraith_flag
-			has_character_flag = transition_into_abomination_flag
-			has_character_flag = transition_into_lich_flag
-			has_character_flag = transition_into_vampire_flag
-		}
+			NOT = { trait = being_undead }	# Mustn't be undead
+			
+			# Exceptions
+			has_character_flag = transition_into_death_knight_flag	# Event changes your class...
+			has_character_flag = transition_into_wraith_flag		# Event changes your race...
+			has_character_flag = transition_into_abomination_flag	# Event changes your race...
+			has_character_flag = transition_into_lich_flag			# Event changes your race...
+			has_character_flag = transition_into_vampire_flag		# Event gives you vampire trait...
+		}															# ...so being_undead isn't important
 		OR = {
-			has_character_flag = transition_into_wraith_flag
-			has_character_flag = transition_into_abomination_flag
-			has_character_flag = transition_into_lich_flag
-			can_be_undead_trigger = yes
-		}
+			can_be_undead_trigger = yes		# Only if can be undead
+			
+			# Exceptions
+			has_character_flag = transition_into_wraith_flag		# Event changes your race...
+			has_character_flag = transition_into_abomination_flag	# Event changes your race...
+			has_character_flag = transition_into_lich_flag			# Event changes your race...	
+			has_undead_gfx_trigger = yes							# You already have undead portrait...
+		}															# ...so can_be_undead_trigger isn't important
 	}
 
 	immediate = {
@@ -443,17 +448,8 @@ character_event = {
 			# Portrait changes
 			set_undead_gfx_effect = yes
 
-			if = {
-				limit = {
-					is_pregnant = yes
-					can_has_children_trigger = no
-				}
-				death = { death_reason = death_natural }
-			}
-			else = {
-				# Notifies your family/spouse/friends/lovers
-				show_close_people_what_this_become_effect = yes
-			}
+			# Notifies your family/spouse/friends/lovers
+			show_close_people_what_this_become_effect = yes
 		}
 
 		if = {
@@ -493,7 +489,7 @@ character_event = {
 		# Lich King if you're necromancer worships e_scourge religion
 		if = {
 			limit = {
-				trait = undead
+				trait = being_undead
 				NOT = { has_character_flag = freed_from_lich_king_flag }
 				NOT = { has_landed_title = e_scourge }
 				e_scourge = {
@@ -550,7 +546,7 @@ province_event = {
 						e_scourge = {
 							holder_scope = {
 								NOT = { character = PREVPREV }
-								NOT = { war_with = PREVPREV }
+								NOT = { any_current_enemy = { character = PREVPREVPREV } }
 							}
 						}
 					}

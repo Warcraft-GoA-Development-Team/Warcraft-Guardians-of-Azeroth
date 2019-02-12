@@ -30,14 +30,14 @@ character_event = {
 				NOR = {
 					has_character_modifier = void_corruption_1
 					has_character_modifier = void_corruption_2
-					has_character_flag = void_creature
+					trait = being_void
 				}
 				check_variable = { which = void_corruption value = 33 }
 			}
 			AND = {
 				NOR = {
 					has_character_modifier = void_corruption_2
-					has_character_flag = void_creature
+					trait = being_void
 				}
 				check_variable = { which = void_corruption value = 66 }
 			}
@@ -83,16 +83,6 @@ character_event = {
 		if = {
 			limit = { NOT = { true_religion_group = void_group } }
 			character_event = { id = WCVOD.170 days = 3 }
-		}
-
-		hidden_effect = {
-			if = {
-				limit = {
-					is_pregnant = yes
-					can_has_children_trigger = no
-				}
-				death = { death_reason = death_natural }
-			}
 		}
 	}
 }
@@ -151,7 +141,7 @@ character_event = {
 		is_alive = yes
 		is_dying = no
 		
-		NOT = { has_character_flag = void_creature }
+		NOT = { trait = being_void }
 		OR = {
 			AND = {
 				AND = {
@@ -369,7 +359,7 @@ character_event = {
 		if = {
 			limit = {
 				OR = {
-					has_character_flag = void_creature
+					trait = being_void
 					has_character_modifier = void_corruption_2
 					has_character_modifier = void_corruption_1
 					liege = { religion = forsaken_cult }
@@ -404,7 +394,7 @@ character_event = {
 		if = {
 			limit = {
 				OR = {
-					has_character_flag = void_creature
+					trait = being_void
 					has_character_modifier = void_corruption_2
 					has_character_modifier = void_corruption_1
 					liege = { religion = voidfarer }
@@ -446,7 +436,7 @@ character_event = {
 		if = {
 			limit = {
 				OR = {
-					has_character_flag = void_creature
+					trait = being_void
 					has_character_modifier = void_corruption_2
 					liege = { religion = old_gods_worship }
 				}
@@ -494,7 +484,7 @@ character_event = {
 		is_alive = yes
 		is_dying = no
 		
-		NOT = { has_character_flag = void_creature }
+		NOT = { trait = being_void }
 		
 		true_religion = old_gods_worship
 		
@@ -817,116 +807,6 @@ long_character_event = {
 # 	the Twilight Hour		#
 #############################
 
-# The appointment of the Twilight Viceroy (creation of the Black Empire)
-character_event = {
-	id = WCVOD.600
-
-	is_triggered_only = yes
-	hide_window = yes
-
-	min_age = 16
-	only_capable = yes
-	prisoner = no
-	is_playable = yes
-	only_independent = yes
-	religion = old_gods_worship
-
-	trigger = {
-		is_adult = yes
-		is_incapable = no
-		prisoner = no
-		is_playable = yes
-		independent = yes
-		religion = old_gods_worship
-		
-		is_alive = yes
-		is_dying = no
-		
-		OR = {
-			NOT = { has_global_flag = black_empire_was_created_flag }
-			had_global_flag = { flag = black_empire_was_created_flag years = 50 }
-		}
-
-		has_secret_religion = no
-		NOT = { e_black_empire = { has_holder = yes } }
-		religion_authority = 0.75
-		num_of_holy_sites = 4
-	}
-
-	immediate = {
-		log = "WCVOD.600 fired for [Root.GetBestName]"
-
-		clr_global_flag = black_empire_was_created_flag
-		set_global_flag = black_empire_was_created_flag
-
-		73 = { province_event = { id = WCTHW.50 } } # When shit happens, Medivh tries to fix it
-
-		# The Old Gods chooses the strongest creature
-		# Checks if ROOT is the strongest creature
-		if = {
-			limit = {
-				NOT = {
-					any_independent_ruler = {
-						is_adult = yes
-						is_incapable = no
-						prisoner = no
-
-						NOT = { character = ROOT }
-
-						has_secret_religion = no
-						religion = old_gods_worship
-						combat_rating_diff = { character = ROOT value = 1 }
-					}
-				}
-			}
-			narrative_event = { id = WCVOD.605 }
-		}
-		else = {
-			# Checks the independent rulers
-			if = {
-				limit = {
-					any_independent_ruler = {
-						is_adult = yes
-						is_incapable = no
-						prisoner = no
-
-						NOT = { character = ROOT }
-
-						has_secret_religion = no
-						religion = old_gods_worship
-					}
-				}
-				random_independent_ruler = {
-					limit = {
-						is_adult = yes
-						is_incapable = no
-						prisoner = no
-
-						has_secret_religion = no
-						religion = old_gods_worship
-						NOT = {
-							any_independent_ruler = {
-								is_adult = yes
-								is_incapable = no
-								prisoner = no
-
-								NOT = { character = PREV }
-
-								has_secret_religion = no
-								religion = old_gods_worship
-								combat_rating_diff = { character = PREV value = 1 }
-							}
-						}
-					}
-					narrative_event = { id = WCVOD.605 }
-				}
-			}
-			else = {
-				narrative_event = { id = WCVOD.605 }
-			}
-		}
-	}
-}
 narrative_event = {
 	id = WCVOD.605
 	title = EVTTITLE_WCVOD_605
@@ -944,20 +824,20 @@ narrative_event = {
 
 		activate_title = { title = e_black_empire status = yes }
 		e_black_empire = { gain_title = ROOT }
-		any_independent_ruler = {
+		if = {
 			limit = {
-				prisoner = no
-				is_untouchable_trigger = no
-
-				religion = old_gods_worship
-				war = no
+				any_demesne_title = {
+					tier = EMPEROR
+					NOT = { title = e_black_empire }
+				}
 			}
 			any_demesne_title = {
-				limit = { tier = EMPEROR }
-				ROOT = { grant_title_no_opinion = { target = PREV type = claim } }
+				limit = {
+					tier = EMPEROR
+					NOT = { title = e_black_empire }
+				}
 				destroy_landed_title = THIS
 			}
-			set_defacto_liege = ROOT
 		}
 		set_black_pact_government_effect = yes
 	}
@@ -1044,7 +924,7 @@ province_event = {
 					trait = proud trait = cruel
 					random_traits = yes
 					age = 300
-					flag = void_creature
+					trait = being_void
 				}
 				new_character = {
 					remove_education_effect = yes
@@ -1078,7 +958,7 @@ province_event = {
 					trait = proud trait = cruel
 					random_traits = yes
 					age = 300
-					flag = void_creature
+					trait = being_void
 				}
 				new_character = {
 					remove_education_effect = yes
@@ -1164,7 +1044,7 @@ character_event = {
 			trait = proud trait = cruel
 			random_traits = yes
 			age = 300
-			flag = void_creature
+			trait = being_void
 		}
 		create_random_soldier = {
 			female = no
@@ -1174,7 +1054,7 @@ character_event = {
 			trait = proud trait = cruel
 			random_traits = yes
 			age = 300
-			flag = void_creature
+			trait = being_void
 		}
 		create_random_soldier = {
 			female = no
@@ -1184,7 +1064,7 @@ character_event = {
 			trait = proud trait = cruel
 			random_traits = yes
 			age = 300
-			flag = void_creature
+			trait = being_void
 		}
 		create_random_soldier = {
 			female = no
@@ -1194,7 +1074,7 @@ character_event = {
 			trait = proud trait = cruel
 			random_traits = yes
 			age = 300
-			flag = void_creature
+			trait = being_void
 		}
 
 		# Create a fleet, just to be sure
@@ -1248,6 +1128,10 @@ province_event = {
 
 	is_triggered_only = yes
 	hide_window = yes
+	
+	trigger = {
+		NOT = { has_global_flag = reawakening_of_cthun_flag }
+	}
 
 	immediate = {
 		if = {
@@ -1275,7 +1159,7 @@ province_event = {
 				trait = scholar trait = quick trait = cruel trait = deceitful
 				random_traits = yes
 				age = 300
-				flag = void_creature
+				trait = being_void
 			}
 			new_character = {
 				k_ahnqiraj = {
@@ -1406,8 +1290,10 @@ province_event = {
 				is_untouchable_trigger = no
 				
 				is_adult = yes
-				is_incapable = yes
+				is_incapable = no
 				prisoner = no
+				
+				NOT = { has_character_flag = xalatath_happened_flag }
 
 				OR = {
 					is_feudal = yes
@@ -1421,9 +1307,12 @@ province_event = {
 				NOT = { trait = craven }
 				NOT = { trait = content }
 			}
+			log = "Xal'atath chose [This.GetBestName] as a new host"
+			set_character_flag = xalatath_happened_flag
 			narrative_event = { id = WCVOD.2005 }
 			break = yes
 		}
+		log = "Xal'atath couldn't find a host"
 		province_event = { id = WCVOD.2000 days = 365 }
 	}
 }
@@ -1436,10 +1325,6 @@ narrative_event = {
 	border = GFX_event_narrative_frame_intrigue
 
 	is_triggered_only = yes
-	
-	immediate = {
-		log = "Xal'atath chose [Root.GetBestName] as new host"
-	}
 
 	# Accept the gift
 	option = {
@@ -1992,7 +1877,7 @@ character_event = {
 
 		is_susceptible_to_void_corruption_trigger = yes
 		OR = {
-			NOT = { has_character_flag = void_creature }
+			NOT = { trait = being_void }
 			NOT = { has_character_modifier = inflow_of_the_void }
 		}
 	}
@@ -2024,7 +1909,7 @@ character_event = {
 		}
 		modifier = {
 			factor = 1.4
-			has_character_flag = void_creature
+			trait = being_void
 		}
 		modifier = {
 			factor = 1.4
@@ -2054,7 +1939,7 @@ character_event = {
 				narrative_event = { id = WCVOD.9950 }	# The Nightmares
 				modifier = {
 					factor = 0
-					has_character_flag = void_creature
+					trait = being_void
 				}
 			}
 			10 = {
@@ -2085,7 +1970,7 @@ narrative_event = {
 		NOT = { has_character_flag = ongoing_nightmares_chain_flag }
 
 		is_susceptible_to_void_corruption_trigger = yes
-		NOT = { has_character_flag = void_creature }
+		NOT = { trait = being_void }
 	}
 
 	immediate = {
@@ -2166,7 +2051,7 @@ narrative_event = {
 		has_character_flag = ongoing_nightmares_chain_flag
 
 		is_susceptible_to_void_corruption_trigger = yes
-		NOT = { has_character_flag = void_creature }
+		NOT = { trait = being_void }
 	}
 	
 	fail_trigger_effect = {
@@ -2311,7 +2196,7 @@ narrative_event = {
 		has_character_flag = ongoing_nightmares_chain_flag
 
 		is_susceptible_to_void_corruption_trigger = yes
-		NOT = { has_character_flag = void_creature }
+		NOT = { trait = being_void }
 	}
 	
 	fail_trigger_effect = {
@@ -2412,7 +2297,7 @@ narrative_event = {
 		has_character_flag = ongoing_nightmares_chain_flag
 
 		is_susceptible_to_void_corruption_trigger = yes
-		NOT = { has_character_flag = void_creature }
+		NOT = { trait = being_void }
 	}
 	
 	fail_trigger_effect = {
@@ -2543,7 +2428,7 @@ narrative_event = {
 		has_character_flag = ongoing_nightmares_chain_flag
 
 		is_susceptible_to_void_corruption_trigger = yes
-		NOT = { has_character_flag = void_creature }
+		NOT = { trait = being_void }
 	}
 	
 	fail_trigger_effect = {
@@ -2729,7 +2614,7 @@ narrative_event = {
 
 	trigger = {
 		is_susceptible_to_void_corruption_trigger = yes
-		NOT = { has_character_flag = void_creature }
+		NOT = { trait = being_void }
 	}
 
 	option = {
@@ -2748,7 +2633,7 @@ narrative_event = {
 
 	trigger = {
 		is_susceptible_to_void_corruption_trigger = yes
-		NOT = { has_character_flag = void_creature }
+		NOT = { trait = being_void }
 	}
 
 	option = {
@@ -2819,11 +2704,11 @@ character_event = {
 	# Use its power
 	option = {
 		name = {
-			trigger = { NOT = { has_character_flag = void_creature } }
+			trigger = { NOT = { trait = being_void } }
 			text = EVTOPTA_WCFEL_9950
 		}
 		name = {
-			trigger = { has_character_flag = void_creature }
+			trigger = { trait = being_void }
 			text = EXCELLENT
 		}
 		add_15_void_corruption_effect = yes
@@ -2853,7 +2738,7 @@ character_event = {
 
 	# Destroy it!
 	option = {
-		trigger = { NOT = { has_character_flag = void_creature } }
+		trigger = { NOT = { trait = being_void } }
 		name = EVTOPTB_WCFEL_9950
 
 		random_list = {
@@ -2981,7 +2866,7 @@ narrative_event = {
 			trait = brilliant_strategist
 			trait = cruel
 			trait = patient
-			flag = void_creature
+			trait = being_void
 		}
 		new_character = {
 			save_event_target_as = target_cthraxxi
