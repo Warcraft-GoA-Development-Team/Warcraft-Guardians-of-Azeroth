@@ -14,7 +14,7 @@ events.
       - If you are using Atom editor in conjunction with Git/GitHub Desktop, install the language pack (https://atom.io/package/language-crusader-kings--i-i)
         
 ### Rules for Adding Flags and Coat of Arms:
-1. Make sure that your flag/CoA emblem DOES NOT go beyond these borders:
+1. Make sure that your flag/CoA emblem **DOES NOT** go beyond these borders:
 ```Guardians of Azeroth\artist_resources\flags\Borders.png```
         
 ### General Repository Information:
