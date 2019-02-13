@@ -13,17 +13,9 @@ events.
 8. CK2 KofA.xml is a language file that can be used in the Notepad++ to help you with the language syntax
       - If you are using Atom editor in conjunction with Git/GitHub Desktop, install the language pack (https://atom.io/package/language-crusader-kings--i-i)
         
-### Rules for Submitting Bugs or Suggestions (Issues):
-
-https://github.com/Warcraft-GoA-Development-Team/Warcraft-Guardians-of-Azeroth/wiki/How-to-Use-GitHub-Issues
-
-1. Please detail your issue with two labels: 
-- Priority (Low, Medium, High, Critical)
-- Bug Type (Lore, Localization, Desync, etc)
-2. Please give the steps to recreate the issue that you are experiencing so we may better address it.
-3. Please tell us what version of the mod this bug occurred in (1.2.0, 1.0.0, etc.).
-4. Give us an explanation of the bug.
-5. You may submit screenshots and .zip files (save games) through GitHub issues; don't hesitate to do so!
+### Rules for Adding Flags and Coat of Arms:
+1. Make sure that your flag/CoA emblem DOES NOT go beyond these borders:
+```Guardians of Azeroth\artist_resources\flags\Borders.png```
         
 ### General Repository Information:
 
