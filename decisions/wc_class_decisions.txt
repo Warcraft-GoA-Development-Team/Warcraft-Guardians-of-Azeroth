@@ -2556,6 +2556,7 @@ targetted_decisions = {
 
 			is_adult = yes
 			is_incapable = no
+			prisoner = no
 
 			OR = {
 				is_warlock_class_trigger = yes
@@ -2585,88 +2586,32 @@ targetted_decisions = {
 		}
 
 		effect = {
+			death = {
+				death_reason = death_missing
+			}
 			hidden_effect = { character_event = { id = MNM.7506 } }
-			death = { death_reason = death_missing }
 			FROM = {
 				show_scope_change = no
 				increase_visibility_minor_effect = yes
 				minor_soul_corruption_effect = yes
+				hidden_effect = { murder_bloodline_check_effect = yes }
 				add_artifact = soul_shard
-				hidden_effect = { character_event = { id = WCCLS.605 } }
 			}
-			# Ruler
-			if = {
-				limit = { is_landed = yes }
-				FROM = {
-					show_scope_change = no
-					if = {
-						limit = { has_quest = quest_drain_soul_ruler }
-						clr_quest = quest_drain_soul_ruler
-						add_society_currency_medium_effect = yes
-						break = yes
-					}
-					if = {
-						limit = { society_member_of = shadow_council }
-						add_society_currency_minor_effect = yes
-					}
-				}
-				break = yes
-			}
-			# Holy Man
-			if = {
-				limit = {
-					NOT = { religion_group = fel_group }
-					NOT = { religion_group = secular_group }
-					NOT = { religion_group = arcane_group }
-					OR = {
-						is_priest = yes
-						is_ascetic_trigger = yes
-					}
-				}
-				FROM = {
-					show_scope_change = no
-					if = {
-						limit = { has_quest = quest_drain_soul_holy_person }
-						clr_quest = quest_drain_soul_holy_person
-						add_society_currency_medium_effect = yes
-						break = yes
-					}
-					if = {
-						limit = { society_member_of = shadow_council }
-						add_society_currency_minor_effect = yes
-					}
-				}
-				break = yes
-			}
-			# Virgin
-			if = {
-				limit = { is_virgin_trigger = yes }
-				FROM = {
-					show_scope_change = no
-					if = {
-						limit = { has_quest = quest_drain_soul_holy_person }
-						clr_quest = quest_drain_soul_holy_person
-						add_society_currency_minor_effect = yes
-						break = yes
-					}
-					if = {
-						limit = { society_member_of = shadow_council }
-						add_society_currency_trivial_effect = yes
-					}
-				}
-				break = yes
-			}
-			FROM = {
-				show_scope_change = no
-				if = {
-					limit = { society_member_of = shadow_council }
-					add_society_currency_trivial_effect = yes
-				}
-			}
+			from_society_sacrifice_root_effect = yes
 		}
 
 		ai_will_do = {
-			factor = 0.25
+			factor = 1
+			modifier = {
+				factor = 0.01
+				NOR = {
+					trait = dwarf
+					is_priest = yes 
+					is_ascetic_trigger = yes
+					is_virgin_trigger = yes
+					is_landed = yes
+				}
+			}
 		}
 	}
 	# Uses soul_shard to restore mana
@@ -3309,6 +3254,7 @@ targetted_decisions = {
 
 			is_adult = yes
 			is_incapable = no
+			prisoner = no
 
 			OR = {
 				society_member_of = cult_of_the_damned
@@ -3347,6 +3293,7 @@ targetted_decisions = {
 				add_prev_useful_flesh = yes
 				hidden_effect = { character_event = { id = WCCLS.1105 } }
 			}
+			death = { death_reason = death_missing }
 			# Small Humanoid
 			if = {
 				limit = { is_small_humanoid_trigger = yes }
