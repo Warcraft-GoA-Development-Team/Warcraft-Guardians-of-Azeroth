@@ -459,3 +459,32 @@ give_to_claimant_effect = {
 		}
 	}
 }
+prev_subjugate_this_destroy_titles_effect = {
+	# If has titles of same tier or higher, takes it
+	if = {
+		limit = { NOT = { lower_tier_than = PREV } }
+		# If these titles can't be conquered, just destroys it and takes all direct vassals
+		if = {
+			limit = {
+				any_demesne_title = {
+					NOT = { lower_tier_than = PREVPREV }
+					can_be_conquered_trigger = no
+				}
+			}
+			hidden_effect = { any_vassal = { set_defacto_liege = PREVPREV } }
+			any_demesne_title = {
+				limit = { NOT = { lower_tier_than = PREVPREV } }
+				destroy_landed_title = THIS
+			}
+		}
+		# If these titles can be conqured, takes it to transfer vassals propertly and destroys it
+		else = {
+			any_demesne_title = {
+				limit = { NOT = { lower_tier_than = PREVPREV } }
+				hidden_effect = { grant_title_no_opinion = { target = PREVPREV type = claim } }
+				destroy_landed_title = THIS
+			}
+		}
+	}
+	set_defacto_liege = PREV
+}
