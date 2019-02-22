@@ -993,3 +993,76 @@ title_decisions = {
 		}
 	}
 }
+settlement_decisions = {
+	corrupt_world_tree = {
+		is_high_prio = yes
+
+		ai_check_interval = 240
+
+		filter = sub_realm_owned
+		ai_target_filter = vassal_owned
+
+		only_playable = yes
+
+		from_potential = {
+			is_untouchable_trigger = no
+
+			is_playable = yes
+			is_adult = yes
+			is_incapable = no
+			prisoner = no
+
+			religion = old_gods_worship
+		}
+
+		potential = {
+			location = { NOT = { has_province_flag = corrupt_world_tree_ongoing_flag } }
+			
+			has_title_flag = world_tree_title_flag
+			holding_type = temple
+			has_siege = no
+			is_occupied = no
+		}
+
+		allow = {
+			holder_scope = { religion = FROM }
+			location = { religion = FROM }
+
+			FROM = {
+				true_religion = old_gods_worship
+
+				wealth = 1000
+				piety = 5000
+			}
+		}
+
+		effect = {
+			save_event_target_as = target_title
+			
+			FROM = {
+				save_event_target_as = target_corruptor
+				
+				wealth = -1000
+				piety = -5000
+			}
+			
+			custom_tooltip = {
+				text = corrupt_world_tree_tooltip
+				hidden_tooltip = {
+					location = {
+						save_event_target_as = target_province
+						
+						set_province_flag = corrupt_world_tree_ongoing_flag		# Stops from firing decision twice
+					}
+					FROM = { narrative_event = { id = WCVOD.410 } }
+				}
+			}
+		}
+		revoke_allowed = {
+			always = no
+		}
+		ai_will_do = {
+			factor = 1
+		}
+	}
+}
