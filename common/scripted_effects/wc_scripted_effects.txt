@@ -1264,7 +1264,7 @@ drink_demon_blood_effect = {
 change_evil_laws_effect = {
 	if = {
 		limit = {
-			is_law_allowed = succ_evil_elective
+			# is_law_allowed = succ_evil_elective
 			is_law_potential = succ_evil_elective
 			NOT = { has_law = succ_evil_elective }
 		}
@@ -1587,58 +1587,43 @@ spawn_small_scourge_troops_effect = {
 set_scourge_government_effect = {
 	set_government_type = scourge_government
 	any_demesne_title = {
-		limit = {
-			OR = {
-				higher_tier_than = COUNT
-				AND = {
-					tier = COUNT
-					PREV = { tier = COUNT }
-				}
-				AND = {
-					tier = BARON
-					PREV = { tier = BARON }
-				}
-			}
-		}
+		limit = { prevs_title_can_has_laws_trigger = yes }
 		change_evil_laws_effect = yes
 	}
+	recalc_succession = yes
 }
 set_legion_government_effect = {
 	set_government_type = legion_government
 	any_demesne_title = {
-		limit = {
-			OR = {
-				higher_tier_than = COUNT
-				AND = {
-					tier = COUNT
-					PREV = { tier = COUNT }
-				}
-				AND = {
-					tier = BARON
-					PREV = { tier = BARON }
-				}
-			}
-		}
+		limit = { prevs_title_can_has_laws_trigger = yes }
 		change_evil_laws_effect = yes
 	}
+	recalc_succession = yes
 }
 set_black_pact_government_effect = {
 	set_government_type = black_pact_government
 	any_demesne_title = {
-		limit = {
-			OR = {
-				higher_tier_than = COUNT
-				AND = {
-					tier = COUNT
-					PREV = { tier = COUNT }
-				}
-				AND = {
-					tier = BARON
-					PREV = { tier = BARON }
-				}
-			}
-		}
+		limit = { prevs_title_can_has_laws_trigger = yes }
 		change_evil_laws_effect = yes
+	}
+	recalc_succession = yes
+}
+clear_evil_laws_effect = {
+	if = {
+		limit = {
+			# is_law_allowed = succ_gavelkind
+			is_law_potential = succ_gavelkind
+			has_law = succ_evil_elective
+		}
+		add_law = { law = succ_gavelkind cooldown = no opinion_effect = no }
+	}
+	if = {
+		limit = {
+			# is_law_allowed = status_of_magic_1
+			is_law_potential = status_of_magic_1
+			has_law = status_of_magic_3
+		}
+		add_law = { law = status_of_magic_1 cooldown = no opinion_effect = no }
 	}
 }
 
@@ -1774,6 +1759,36 @@ free_from_lich_king_effect = {
 		custom_tooltip = {
 			text = free_from_lich_king_effect_tooltip
 			character_event = { id = WCUND.1109 }
+		}
+	}
+}
+become_blood_elf_effect = {
+	if = {
+		limit = { trait = creature_high_elf }
+		remove_trait = creature_high_elf
+		add_trait = creature_blood_elf
+		if = {
+			limit = { NOT = { culture = blood_elf } }
+			culture = blood_elf
+		}
+	}
+	hidden_effect = {
+		if = {
+			limit = { is_ruler = yes }
+			any_demesne_province = {
+				limit = { culture = high_elf }
+				culture = blood_elf
+			}
+			any_courtier_or_vassal = {
+				limit = {
+					trait = creature_high_elf
+					OR = {
+						is_ruler = no
+						tier = BARON
+					}
+				}
+				become_blood_elf_effect = yes
+			}
 		}
 	}
 }
