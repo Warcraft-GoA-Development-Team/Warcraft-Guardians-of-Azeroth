@@ -61,3 +61,5 @@ NDefines.NEndGame.DYN14_SCORE = 87000
 NDefines.NEndGame.DYN14_ID = 0
 NDefines.NEndGame.DYN15_SCORE = 86000
 NDefines.NEndGame.DYN15_ID = 0
+
+NDefines.NRulerDesigner.MAX_AGE = 30
