@@ -30,19 +30,22 @@ can_rule_peacefully_trigger = {
 		hidden_tooltip = {
 			trigger_if = {
 				limit = { is_ruler = yes }
-				NOR = {
-					government = legion_government
-					government = scourge_government
-					government = black_pact_government
-					AND = {
-						evil_public_religion_trigger = yes
-						is_theocracy = yes
-					}
-				}
+				evil_government_trigger = no
 			}
 			trigger_else = {
 				evil_public_religion_trigger = no
 			}
+		}
+	}
+}
+evil_government_trigger = {
+	OR = {
+		government = legion_government
+		government = scourge_government
+		government = black_pact_government
+		AND = {
+			evil_public_religion_trigger = yes
+			is_theocracy = yes
 		}
 	}
 }
@@ -187,8 +190,20 @@ can_be_converted_to_religion_character_trigger = {
 }
 # TITLE CAN'T BE CONQUERED IF IT'S NOT TRUE
 can_be_conquered_trigger = {
+	controls_religion = no
+	mercenary = no
+	holy_order = no
 	is_landless_type_title = no
+	clan = no
 	NOT = { holding_type = family_palace }
+	NOR = {
+		title = e_scourge
+		title = e_green_dragonflight
+		title = e_black_dragonflight
+		title = e_red_dragonflight
+		title = e_blue_dragonflight
+		title = e_bronze_dragonflight
+	}
 }
 # CAN'T GET SICK IF IT'S NOT TRUE
 # Associated with text_effect_can_not_get_diseases
@@ -527,7 +542,7 @@ is_dark_being_trigger = {
 		trait = being_void
 	}
 }
-# Trigger of cruel decisions
+# They're more aggresive and have free CBs
 is_aggressive_trigger = {
 	custom_tooltip = {
 		text = is_aggressive_trigger_tooltip
@@ -547,6 +562,7 @@ is_aggressive_trigger = {
 					}
 					has_global_flag = orcish_invasion_flag
 				}
+				culture = pirate
 			}
 		}
 	}
@@ -690,7 +706,7 @@ is_medium_humanoid_trigger = {
 		trait = creature_draenei
 		trait = creature_arakkoa_corrupted
 		trait = creature_ghoul
-		trait = creature_skeleton
+		# trait = creature_skeleton
 		trait = creature_fel_orc
 		trait = creature_felblood_elf
 		trait = creature_satyr
@@ -709,7 +725,6 @@ is_medium_humanoid_trigger = {
 		trait = creature_frostnymph
 		trait = creature_highborne
 		trait = creature_sethrak
-		trait = creature_nerubian
 	}
 }
 is_large_humanoid_trigger = {
@@ -805,7 +820,7 @@ prev_fel_modifier_is_visible_to_this_trigger = {
 		has_character_flag = debug_mode_flag		# Debug mode
 		character = PREV
 		true_religion_group = fel_group
-		society_member_of = class_society_warlock
+		# society_member_of = class_society_warlock
 		society_member_of = shadow_council
 		AND = {
 			is_close_relative = PREV
@@ -826,7 +841,7 @@ prev_necromantic_modifier_is_visible_to_this_trigger = {
 		has_character_flag = debug_mode_flag		# Debug mode
 		character = PREV
 		true_religion_group = necromancy_group
-		society_member_of = class_society_necromancer
+		# society_member_of = class_society_necromancer
 		society_member_of = cult_of_the_damned
 		AND = {
 			is_close_relative = PREV
@@ -860,7 +875,7 @@ prev_void_modifier_is_visible_to_this_trigger = {
 			true_religion_group = void_group
 			true_religion = forsaken_cult
 		}
-		society_member_of = class_society_shadow_priest
+		# society_member_of = class_society_shadow_priest
 		society_member_of = twilights_hammer_cult
 		AND = {
 			is_close_relative = PREV
@@ -876,10 +891,7 @@ void_modifier_is_visible_to_all_trigger = {
 ### potential_race triggers ###
 # Add new races always at the end
 potential_race_human_trigger = {
-	OR = {
-		graphical_culture = westerngfx
-		has_human_gfx_trigger = yes
-	}
+	has_human_gfx_trigger = yes
 	NOT = { trait = creature_human }
 }
 potential_race_orc_trigger = {
@@ -2082,6 +2094,7 @@ has_demon_gfx_trigger = {
 }
 has_human_gfx_trigger = {
 	OR = {
+		graphical_culture = westerngfx
 		graphical_culture = humanwhitegfx
 		graphical_culture = gilneasgfx
 		graphical_culture = dalarangfx
@@ -2092,6 +2105,7 @@ has_human_gfx_trigger = {
 		graphical_culture = humantangfx
 		graphical_culture = humanblackgfx
 		graphical_culture = humanundeadgfx
+		graphical_culture = ghoulgfx
 	}
 }
 has_orc_gfx_trigger = {
@@ -2368,41 +2382,55 @@ is_secular_ruler_trigger = {
 	}
 }
 
+# Note: better stop using this triggers, they're CPU heavy
+# If you want to make gender-equal culture, the best way is adding Status of Woman law to every title of the culture
 is_matriarchal_trigger = {
-	OR = {
-		has_religion_feature = religion_matriarchal
-		AND = {
-			NOR = {
-				has_religion_feature = religion_patriarchal
-				has_religion_feature = religion_equal
-			}
+	custom_tooltip = {
+		text = is_matriarchal_trigger_tooltip
+		hidden_tooltip = {
 			OR = {
-				culture_group = harpy_group
-				culture = blood_troll
-				culture = hyldnir
-				culture = frostnymph
+				has_religion_feature = religion_matriarchal
+				AND = {
+					NOR = {
+						has_religion_feature = religion_patriarchal
+						has_religion_feature = religion_equal
+					}
+					OR = {
+						# Better not add cultures here
+						culture_group = harpy_group
+						culture = blood_troll
+						culture = hyldnir
+						culture = frostnymph
+					}
+				}
 			}
 		}
 	}
 }
 is_gender_equal_trigger = {
-	OR = {
-		has_religion_feature = religion_equal
-		AND = {
-			NOR = {
-				has_religion_feature = religion_patriarchal
-				is_matriarchal_trigger = yes
-			}
+	custom_tooltip = {
+		text = is_gender_equal_trigger_tooltip
+		hidden_tooltip = {
 			OR = {
-				religion_group = dragon_religion_group
-				religion = kaldorei_religion
-				religion_group = fel_group
-				religion_group = arcane_group
-				religion_group = necromancy_group
-				religion_group = void_group
-				culture = dryad
-				culture = vulpera
-				culture = nerubian
+				has_religion_feature = religion_equal
+				AND = {
+					NOR = {
+						has_religion_feature = religion_patriarchal
+						is_matriarchal_trigger = yes
+					}
+					OR = {
+						# Better not add cultures here
+						religion_group = arcane_group
+						religion_group = dragon_religion_group
+						religion = kaldorei_religion
+						religion_group = fel_group
+						religion_group = loa_group
+						religion_group = necromancy_group
+						religion_group = nerubian_religion_group
+						religion_group = secular_group
+						religion_group = void_group
+					}
+				}
 			}
 		}
 	}
@@ -2604,5 +2632,36 @@ can_be_appointed_trigger = {
 	}
 	trigger_else = {
 		evil_public_religion_trigger = no
+	}
+}
+
+# Analogs of the Hermetics in the Warcraft universe
+is_member_of_hermetics_trigger = {
+	OR = {
+		# To be added
+		always = no
+		# society_member_of = hermetics
+	}
+}
+# Analogs of the Benedictines in the Warcraft universe
+is_member_of_benedictine_trigger = {
+	OR = {
+		# To be added
+		always = no
+		# society_member_of = monastic_order_benedictine
+	}
+}
+# Analogs of the Dominicans in the Warcraft universe
+is_member_of_dominican_trigger = {
+	OR = {
+		# To be added
+		always = no
+		# society_member_of = monastic_order_dominican
+	}
+}
+prevs_title_can_has_laws_trigger = {
+	OR = {
+		higher_tier_than = DUKE
+		is_primary_holder_title_tier = yes
 	}
 }

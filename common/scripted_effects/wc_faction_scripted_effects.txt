@@ -121,7 +121,20 @@ leave_horde_faction_effect = {
 		if = {
 			limit = { trait = leader_of_horde_trait }
 			remove_trait = leader_of_horde_trait
-			narrative_event = { id = WCPLF.105 }	# Destroys Horde faction
+			# Destroys faction
+			any_tributary = {
+				limit = { is_tributary = { type = political_faction suzerain = suzerain } }
+				leave_horde_faction_effect = yes
+			}
+			if = {
+				limit = { e_horde = { has_holder = no } }
+				activate_title = { title = e_horde status = no }
+				e_horde = { destroy_landed_title = THIS }
+				narrative_event = { id = WCPLF.105 }
+			}
+			else = {
+				narrative_event = { id = WCPLF.106 }
+			}
 		}
 		if = {
 			limit = { is_tributary = yes }
@@ -176,13 +189,19 @@ leave_alliance_faction_effect = {
 					add_trait = leader_of_alliance_trait
 					narrative_event = { id = WCPLF.60 }
 				}
-				any_independent_ruler = {
-					limit = { is_tributary = { type = political_faction suzerain = PREV } }
+				any_tributary = {
+					limit = { is_tributary = { type = political_faction suzerain = suzerain } }
 					join_alliance_faction_effect = yes
 				}
 			}
 			else = {
 				# Destroys faction
+				any_tributary = {
+					limit = { is_tributary = { type = political_faction suzerain = suzerain } }
+					leave_alliance_faction_effect = yes
+				}
+				activate_title = { title = e_alliance status = no }
+				e_alliance = { destroy_landed_title = THIS }
 				narrative_event = { id = WCPLF.205 }
 			}
 		}
@@ -230,9 +249,22 @@ break_alliances_with_horde_faction_effect = {
 				is_member_of_horde_faction_trigger = yes
 				is_allied_with = PREV
 			}
-			break_alliance = PREV
-			remove_opinion = { who = PREV modifier = in_non_aggression_pact }
-			reverse_remove_opinion = { who = PREV modifier = in_non_aggression_pact }
+			custom_tooltip = {
+				text = break_alliances_with_faction_effect_tooltip
+				break_alliance = PREV
+				hidden_effect = {
+					remove_opinion = { who = PREV modifier = in_non_aggression_pact }
+					reverse_remove_opinion = { who = PREV modifier = in_non_aggression_pact }
+					opinion = {
+						modifier = broken_non_aggression_pact
+						who = PREV
+					}
+					opinion = {
+						modifier = dissolved_alliance
+						who = PREV
+					}
+				}
+			}
 		}
 	}
 }
@@ -248,9 +280,22 @@ break_alliances_with_alliance_faction_effect = {
 				is_member_of_alliance_faction_trigger = yes
 				is_allied_with = PREV
 			}
-			break_alliance = PREV
-			remove_opinion = { who = PREV modifier = in_non_aggression_pact }
-			reverse_remove_opinion = { who = PREV modifier = in_non_aggression_pact }
+			custom_tooltip = {
+				text = break_alliances_with_faction_effect_tooltip
+				break_alliance = PREV
+				hidden_effect = {
+					remove_opinion = { who = PREV modifier = in_non_aggression_pact }
+					reverse_remove_opinion = { who = PREV modifier = in_non_aggression_pact }
+					opinion = {
+						modifier = broken_non_aggression_pact
+						who = PREV
+					}
+					opinion = {
+						modifier = dissolved_alliance
+						who = PREV
+					}
+				}
+			}
 		}
 	}
 }
