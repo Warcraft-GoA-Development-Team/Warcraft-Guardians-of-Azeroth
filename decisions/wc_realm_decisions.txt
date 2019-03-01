@@ -56,11 +56,7 @@ decisions = {
 					}
 				}
 			}
-			hidden_tooltip = { character_event = { id = WCRLM.100 } }
-		}
-
-		revoke_allowed = {
-			always = no
+			hidden_tooltip = { narrative_event = { id = WCRLM.100 } }
 		}
 
 		ai_will_do = {
@@ -99,10 +95,6 @@ decisions = {
 
 		effect = {
 			narrative_event = { id = WCTHW.1000 }
-		}
-
-		revoke_allowed = {
-			always = no
 		}
 
 		ai_will_do = {
@@ -168,10 +160,6 @@ decisions = {
 			scaled_prestige = { value = -5.0 min = -500 }
 
 			narrative_event = { id = WCTHW.1100 }
-		}
-
-		revoke_allowed = {
-			always = no
 		}
 
 		ai_will_do = {
@@ -243,10 +231,6 @@ decisions = {
 			}
 		}
 
-		revoke_allowed = {
-			always = no
-		}
-
 		ai_will_do = {
 			factor = 1
 		}
@@ -303,10 +287,6 @@ decisions = {
 					convert_tribal_to_castle_effect = yes
 				}
 			}
-		}
-
-		revoke_allowed = {
-			always = no
 		}
 
 		ai_will_do = {
@@ -428,10 +408,6 @@ decisions = {
 			}
 		}
 
-		revoke_allowed = {
-			always = no
-		}
-
 		ai_will_do = {
 			factor = 1
 		}
@@ -463,11 +439,7 @@ decisions = {
 			scaled_wealth = { value = -25 min = -1000 }
 			piety = -250
 			
-			character_event = { id = WCVOD.1000 }
-		}
-
-		revoke_allowed = {
-			always = no
+			narrative_event = { id = WCVOD.1000 }
 		}
 
 		ai_will_do = {
@@ -512,11 +484,7 @@ decisions = {
 		effect = {
 			prestige = -1000
 			
-			character_event = { id = WCFTW.4 }
-		}
-
-		revoke_allowed = {
-			always = no
+			narrative_event = { id = WCFTW.4 }
 		}
 
 		ai_will_do = {
@@ -733,10 +701,6 @@ title_decisions = {
 			location = { province_event = { id = WCRLM.200 years = 1 } }
 		}
 
-		revoke_allowed = {
-			always = no
-		}
-
 		ai_will_do = {
 			factor = 0.1
 		}
@@ -863,10 +827,6 @@ title_decisions = {
 			location = { province_event = { id = WCRLM.200 years = 1 } }
 		}
 
-		revoke_allowed = {
-			always = no
-		}
-
 		ai_will_do = {
 			factor = 1
 		}
@@ -991,12 +951,82 @@ title_decisions = {
 			location = { province_event = { id = WCRLM.200 years = 1 } }
 		}
 
-		revoke_allowed = {
-			always = no
-		}
-
 		ai_will_do = {
 			factor = 0.1
+		}
+	}
+	
+	# Copy of monastic_order_convert_county
+	# Converts elf province if you holds the right sunwell
+	sunwell_ruler_convert_county = {
+		is_high_prio = yes
+		
+		ai_check_interval = 60
+		
+		only_playable = yes
+		
+		from_potential = {
+			# Warcraft
+			is_untouchable_trigger = no
+			
+			b_sunwell = {
+				holder_scope = {
+					OR = {
+						character = PREVPREV
+						vassal_of = PREVPREV
+					}
+					public_religion_associated_with_sunwell_trigger = yes
+				}
+			}
+			public_religion_associated_with_sunwell_trigger = yes
+		}
+		
+		potential = {
+			tier = COUNT
+			
+			location = {
+				NOT = { religion = FROM }
+				culture_group = high_elf_group
+			}
+			holder_scope = {
+				OR = {
+					is_liege_or_above = FROM
+					character = FROM
+				}
+			}
+		}
+		
+		allow = {
+			FROM = { piety = 250 }
+			location = {
+				owner = { NOT = { religion = PREV } } # Cannot convert counties of owners who has that religion
+			}
+		}
+		
+		effect = {
+			location = {
+				religion = FROM
+				add_province_modifier = {
+					name = religious_tension
+					years = 2
+				}
+			}
+			FROM = {
+				piety = -250
+				hidden_tooltip = { character_event = { id = MNM.4990 } }
+			}
+			hidden_tooltip = {
+				if = { # Notify county owner
+					limit = {
+						holder_scope = { NOT = { character = FROM } }
+					}
+					holder_scope = { character_event = { id = MNM.4991 } }
+				}
+			}
+		}
+		
+		ai_will_do = {
+			factor = 1
 		}
 	}
 }
