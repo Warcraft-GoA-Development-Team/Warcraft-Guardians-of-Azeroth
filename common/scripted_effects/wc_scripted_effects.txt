@@ -1,19 +1,18 @@
 set_cannot_marry_flag_effect = {
+	if = {
+		limit = { can_marry_trigger = no }
+		log = "[This.GetBestName] can't marry"
+	}
 	add_trait = cannot_marry_trait
 	if = {
 		limit = {
 			is_ruler = yes
-			OR = {
-				is_feudal = yes
-				is_tribal = yes
-				is_nomadic = yes
-			}
+			is_theocracy = no
 			tier = BARON
 		}
 		set_government_type = theocracy_government
 	}
 }
-
 remove_racial_traits_effect = {
 	# Add new races always at the end
 	# Humans
@@ -597,7 +596,7 @@ add_5_fel_corruption_effect = {
 	}
 	if = {
 		limit = {
-			NOT = { trait = demon }
+			NOT = { trait = being_demon }
 			is_susceptible_to_fel_corruption_trigger = yes
 		}
 		change_variable = { which = fel_corruption value = 5 }
@@ -615,7 +614,7 @@ add_15_fel_corruption_effect = {
 	}
 	if = {
 		limit = {
-			NOT = { trait = demon }
+			NOT = { trait = being_demon }
 			is_susceptible_to_fel_corruption_trigger = yes
 		}
 		change_variable = { which = fel_corruption value = 15 }
@@ -633,7 +632,7 @@ add_35_fel_corruption_effect = {
 	}
 	if = {
 		limit = {
-			NOT = { trait = demon }
+			NOT = { trait = being_demon }
 			is_susceptible_to_fel_corruption_trigger = yes
 		}
 		change_variable = { which = fel_corruption value = 35 }
@@ -647,7 +646,7 @@ add_35_fel_corruption_effect = {
 remove_5_fel_corruption_effect = {
 	if = {
 		limit = {
-			NOT = { trait = demon }
+			NOT = { trait = being_demon }
 			is_susceptible_to_fel_corruption_trigger = yes
 		}
 		change_variable = { which = fel_corruption value = -5 }
@@ -661,7 +660,7 @@ remove_5_fel_corruption_effect = {
 remove_15_fel_corruption_effect = {
 	if = {
 		limit = {
-			NOT = { trait = demon }
+			NOT = { trait = being_demon }
 			is_susceptible_to_fel_corruption_trigger = yes
 		}
 		change_variable = { which = fel_corruption value = -15 }
@@ -687,7 +686,7 @@ add_fel_corruption_modifier_effect = {
 	if = {
 		limit = { check_variable = { which = fel_corruption value = 100 } }
 		if = {
-			limit = { NOT = { trait = demon } }
+			limit = { NOT = { trait = being_demon } }
 			add_trait_demon_effect = yes
 		}
 		major_soul_corruption_effect = yes
@@ -706,17 +705,37 @@ add_fel_corruption_modifier_effect = {
 			}
 		}
 	}
+	hidden_effect = {
+		if = {
+			limit = {
+				is_pregnant = yes
+				can_has_children_trigger = no
+			}
+			death = { death_reason = death_childbirth }
+		}
+	}
 }
 add_trait_demon_effect = {
 	if = {
-		limit = { NOT = { trait = demon } }
-		add_trait = demon
+		limit = { NOT = { trait = being_demon } }
+		add_trait = being_demon
 	}
 	# If you has secret religion, you reveal yourself
 	if = {
 		limit = { has_secret_religion = yes }
 		convert_to_secret_religion = yes
 	}
+	
+	# Remove drunkard
+	if = { limit = { trait = drunkard } remove_trait = drunkard }
+	
+	# Remove diseases
+	remove_disease_trait_effect = yes
+	
+	# Removed negative genetic
+	remove_all_negative_congenital_traits_effect = yes
+	
+	# Remove weight
 	if = {
 		limit = { trait = is_fat }
 		remove_trait = is_fat
@@ -728,6 +747,15 @@ add_trait_demon_effect = {
 	remove_weight_modifier_effect = yes
 	clear_fat_flags_effect = yes
 	clear_malnourished_flags_effect = yes
+	hidden_effect = {
+		if = {
+			limit = {
+				is_pregnant = yes
+				can_has_children_trigger = no
+			}
+			death = { death_reason = death_childbirth }
+		}
+	}
 }
 
 remove_fel_presence_modifiers_effect = {
@@ -780,7 +808,7 @@ add_5_void_corruption_effect = {
 	}
 	if = {
 		limit = {
-			NOT = { has_character_flag = void_creature }
+			NOT = { trait = being_void }
 			is_susceptible_to_void_corruption_trigger = yes
 		}
 		change_variable = { which = void_corruption value = 5 }
@@ -798,7 +826,7 @@ add_15_void_corruption_effect = {
 	}
 	if = {
 		limit = {
-			NOT = { has_character_flag = void_creature }
+			NOT = { trait = being_void }
 			is_susceptible_to_void_corruption_trigger = yes
 		}
 		change_variable = { which = void_corruption value = 15 }
@@ -816,7 +844,7 @@ add_35_void_corruption_effect = {
 	}
 	if = {
 		limit = {
-			NOT = { has_character_flag = void_creature }
+			NOT = { trait = being_void }
 			is_susceptible_to_void_corruption_trigger = yes
 		}
 		change_variable = { which = void_corruption value = 35 }
@@ -830,7 +858,7 @@ add_35_void_corruption_effect = {
 remove_5_void_corruption_effect = {
 	if = {
 		limit = {
-			NOT = { has_character_flag = void_creature }
+			NOT = { trait = being_void }
 			is_susceptible_to_void_corruption_trigger = yes
 		}
 		change_variable = { which = void_corruption value = -5 }
@@ -844,7 +872,7 @@ remove_5_void_corruption_effect = {
 remove_15_void_corruption_effect = {
 	if = {
 		limit = {
-			NOT = { has_character_flag = void_creature }
+			NOT = { trait = being_void }
 			is_susceptible_to_void_corruption_trigger = yes
 		}
 		change_variable = { which = void_corruption value = -15 }
@@ -879,17 +907,37 @@ add_void_corruption_modifier_effect = {
 			minor_soul_corruption_effect = yes
 		}
 	}
+	hidden_effect = {
+		if = {
+			limit = {
+				is_pregnant = yes
+				can_has_children_trigger = no
+			}
+			death = { death_reason = death_childbirth }
+		}
+	}
 }
 add_trait_void_creature_effect = {
 	if = {
-		limit = { NOT = { has_character_flag = void_creature } }
-		set_character_flag = void_creature
+		limit = { NOT = { trait = being_void } }
+		add_trait = being_void
 	}
 	# If you has secret religion, you reveal yourself
 	if = {
 		limit = { has_secret_religion = yes }
 		convert_to_secret_religion = yes
 	}
+	
+	# Remove drunkard
+	if = { limit = { trait = drunkard } remove_trait = drunkard }
+	
+	# Remove diseases
+	remove_disease_trait_effect = yes
+	
+	# Removed negative genetic
+	remove_all_negative_congenital_traits_effect = yes
+	
+	# Remove weight
 	if = {
 		limit = { trait = is_fat }
 		remove_trait = is_fat
@@ -901,6 +949,15 @@ add_trait_void_creature_effect = {
 	remove_weight_modifier_effect = yes
 	clear_fat_flags_effect = yes
 	clear_malnourished_flags_effect = yes
+	hidden_effect = {
+		if = {
+			limit = {
+				is_pregnant = yes
+				can_has_children_trigger = no
+			}
+			death = { death_reason = death_childbirth }
+		}
+	}
 }
 
 increase_vampiric_hunger_effect = {
@@ -1009,6 +1066,7 @@ suggest_void_source_effect = {
 	}
 }
 prev_sacrifice_this_effect = {
+	# Head of Religion
 	if = {
 		limit = { controls_religion = yes }
 		PREV = {
@@ -1019,19 +1077,39 @@ prev_sacrifice_this_effect = {
 		}
 		religion_authority = { modifier = sacrificed_head_bad years = 20 }
 	}
-	else = {
-		if = {
-			limit = { is_priest = yes }
-			PREV = {
-				prestige = 75
-				piety = 150
+	# Ruler
+	else_if = {
+		limit = { is_ruler = yes }
+		PREV = {
+			prestige = 75
+			piety = 100
+		}
+	}
+	# Holy Man
+	else_if = {
+		limit = {
+			OR = {
+				is_priest = yes
+				is_ascetic_trigger = yes
 			}
 		}
-		else = {
-			PREV = {
-				prestige = 25
-				piety = 50
-			}
+		PREV = {
+			prestige = 50
+			piety = 75
+		}
+	}
+	# Child
+	else_if = {
+		limit = { is_adult = no }
+		PREV = {
+			prestige = 25
+			piety = 50
+		}
+	}
+	# Regular
+	else = {
+		PREV = {
+			piety = 25
 		}
 	}
 	death = { death_reason = death_sacrificed killer = PREV }
@@ -1131,7 +1209,7 @@ prev_burn_evil_being_this_effect = {
 drink_demon_blood_effect = {
 	if = {
 		limit = {
-			NOT = { trait = demon }
+			NOT = { trait = being_demon }
 			is_susceptible_to_fel_corruption_trigger = yes
 		}
 		add_character_modifier = { name = drank_demon_blood duration = 7300 }
@@ -1171,7 +1249,7 @@ drink_demon_blood_effect = {
 
 							NOT = { has_character_modifier = drank_demon_blood }
 
-							NOT = { trait = demon }
+							NOT = { trait = being_demon }
 							is_susceptible_to_fel_corruption_trigger = yes
 						}
 						character_event = { id = WCFEL.9961 days = 2 }
@@ -1186,7 +1264,7 @@ drink_demon_blood_effect = {
 change_evil_laws_effect = {
 	if = {
 		limit = {
-			is_law_allowed = succ_evil_elective
+			# is_law_allowed = succ_evil_elective
 			is_law_potential = succ_evil_elective
 			NOT = { has_law = succ_evil_elective }
 		}
@@ -1315,16 +1393,50 @@ make_uncolonized_ruler_effect = {
 	set_government_type = uncolonized_government
 }
 spawn_horde_troops_effect = {
+	spawn_small_horde_troops_effect = yes
+	if = {
+		limit = {
+			has_game_rule = {
+				name = invaders_strength
+				value = default
+			}
+		}
+		spawn_small_horde_troops_effect = yes
+	}
+	if = {
+		limit = {
+			has_game_rule = {
+				name = invaders_strength
+				value = x1_5
+			}
+		}
+		spawn_small_horde_troops_effect = yes
+		spawn_small_horde_troops_effect = yes
+	}
+	if = {
+		limit = {
+			has_game_rule = {
+				name = invaders_strength
+				value = x2
+			}
+		}
+		spawn_small_horde_troops_effect = yes
+		spawn_small_horde_troops_effect = yes
+		spawn_small_horde_troops_effect = yes
+	}
+}
+# DON'T USE it outside of spawn_horde_troops_effect
+spawn_small_horde_troops_effect = {
 	spawn_unit = {
 		owner = ROOT
 		province = 73
 		home = 73
 		troops = {
-			archers = { 2000 2000 }
-			light_infantry = { 3000 3000 }
-			heavy_infantry = { 4000 4000 }
-			light_cavalry = { 750 750 }
-			knights = { 250 250 }
+			archers = { 1000 1000 }
+			light_infantry = { 1500 1500 }
+			heavy_infantry = { 2000 2000 }
+			light_cavalry = { 375 375 }
+			knights = { 125 125 }
 		}
 		attrition = 0
 		maintenance = no
@@ -1335,18 +1447,51 @@ spawn_horde_troops_effect = {
 		owner = ROOT
 		earmark = horde_forces
 		troops = {
-			galleys = { 150 150 }
+			galleys = { 75 75 }
 		}
 	}
 }
 spawn_legion_troops_effect = {
+	spawn_small_legion_troops_effect = yes
+	if = {
+		limit = {
+			has_game_rule = {
+				name = invaders_strength
+				value = default
+			}
+		}
+		spawn_small_legion_troops_effect = yes
+	}
+	if = {
+		limit = {
+			has_game_rule = {
+				name = invaders_strength
+				value = x1_5
+			}
+		}
+		spawn_small_legion_troops_effect = yes
+		spawn_small_legion_troops_effect = yes
+	}
+	if = {
+		limit = {
+			has_game_rule = {
+				name = invaders_strength
+				value = x2
+			}
+		}
+		spawn_small_legion_troops_effect = yes
+		spawn_small_legion_troops_effect = yes
+		spawn_small_legion_troops_effect = yes
+	}
+}
+spawn_small_legion_troops_effect = {
 	spawn_unit = {
 		owner = THIS
 		province = event_target:target_summoning_location
 		home = event_target:target_summoning_location
 		troops = {
-			light_infantry = { 4000 4000 }
-			demonicshock = { 4500 4500 }
+			light_infantry = { 2000 2000 }
+			demonicshock = { 2250 2250 }
 		}
 		attrition = 0
 		maintenance = no
@@ -1357,7 +1502,7 @@ spawn_legion_troops_effect = {
 		province = event_target:target_summoning_location
 		home = event_target:target_summoning_location
 		troops = {
-			golems = { 500 500 }
+			golems = { 250 250 }
 		}
 		attrition = 0
 		maintenance = no
@@ -1368,7 +1513,7 @@ spawn_legion_troops_effect = {
 		province = event_target:target_summoning_location
 		home = event_target:target_summoning_location
 		troops = {
-			artillery = { 1000 1000 }
+			artillery = { 500 500 }
 		}
 		attrition = 0
 		maintenance = no
@@ -1379,19 +1524,52 @@ spawn_legion_troops_effect = {
 		owner = THIS
 		earmark = legion_forces
 		troops = {
-			galleys = { 150 150 }
+			galleys = { 75 75 }
 		}
 	}
 }
 spawn_scourge_troops_effect = {
+	spawn_small_scourge_troops_effect = yes
+	if = {
+		limit = {
+			has_game_rule = {
+				name = invaders_strength
+				value = default
+			}
+		}
+		spawn_small_scourge_troops_effect = yes
+	}
+	if = {
+		limit = {
+			has_game_rule = {
+				name = invaders_strength
+				value = x1_5
+			}
+		}
+		spawn_small_scourge_troops_effect = yes
+		spawn_small_scourge_troops_effect = yes
+	}
+	if = {
+		limit = {
+			has_game_rule = {
+				name = invaders_strength
+				value = x2
+			}
+		}
+		spawn_small_scourge_troops_effect = yes
+		spawn_small_scourge_troops_effect = yes
+		spawn_small_scourge_troops_effect = yes
+	}
+}
+spawn_small_scourge_troops_effect = {
 	spawn_unit = {
 		province = 695
 		home = 695
 		owner = THIS
 		troops = {
-			archers = { 3750 3750 }
-			light_infantry = { 5250 5250 }
-			golems = { 1000 1000 }
+			archers = { 1875 1875 }
+			light_infantry = { 2625 2625 }
+			golems = { 500 500 }
 		}
 		attrition = 0
 		reinforces = yes
@@ -1401,7 +1579,7 @@ spawn_scourge_troops_effect = {
 		province = closest
 		owner = THIS
 		troops = {
-			galleys = { 150 150 }
+			galleys = { 75 75 }
 		}
 	}
 }
@@ -1409,58 +1587,43 @@ spawn_scourge_troops_effect = {
 set_scourge_government_effect = {
 	set_government_type = scourge_government
 	any_demesne_title = {
-		limit = {
-			OR = {
-				higher_tier_than = COUNT
-				AND = {
-					tier = COUNT
-					PREV = { tier = COUNT }
-				}
-				AND = {
-					tier = BARON
-					PREV = { tier = BARON }
-				}
-			}
-		}
+		limit = { prevs_title_can_has_laws_trigger = yes }
 		change_evil_laws_effect = yes
 	}
+	recalc_succession = yes
 }
 set_legion_government_effect = {
 	set_government_type = legion_government
 	any_demesne_title = {
-		limit = {
-			OR = {
-				higher_tier_than = COUNT
-				AND = {
-					tier = COUNT
-					PREV = { tier = COUNT }
-				}
-				AND = {
-					tier = BARON
-					PREV = { tier = BARON }
-				}
-			}
-		}
+		limit = { prevs_title_can_has_laws_trigger = yes }
 		change_evil_laws_effect = yes
 	}
+	recalc_succession = yes
 }
 set_black_pact_government_effect = {
 	set_government_type = black_pact_government
 	any_demesne_title = {
-		limit = {
-			OR = {
-				higher_tier_than = COUNT
-				AND = {
-					tier = COUNT
-					PREV = { tier = COUNT }
-				}
-				AND = {
-					tier = BARON
-					PREV = { tier = BARON }
-				}
-			}
-		}
+		limit = { prevs_title_can_has_laws_trigger = yes }
 		change_evil_laws_effect = yes
+	}
+	recalc_succession = yes
+}
+clear_evil_laws_effect = {
+	if = {
+		limit = {
+			# is_law_allowed = succ_gavelkind
+			is_law_potential = succ_gavelkind
+			has_law = succ_evil_elective
+		}
+		add_law = { law = succ_gavelkind cooldown = no opinion_effect = no }
+	}
+	if = {
+		limit = {
+			# is_law_allowed = status_of_magic_1
+			is_law_potential = status_of_magic_1
+			has_law = status_of_magic_3
+		}
+		add_law = { law = status_of_magic_1 cooldown = no opinion_effect = no }
 	}
 }
 
@@ -1531,32 +1694,59 @@ set_undead_gfx_effect = {
 }
 
 add_trait_undead_effect = {
+	# Undead children shall not pass
 	if = {
-		limit = { NOT = { trait = undead } }
-		add_trait = undead
+		limit = { is_adult = no }
+		death = { death_reason = death_poor_health }
 	}
-	# If you has secret religion, you reveal yourself
-	if = {
-		limit = { has_secret_religion = yes }
-		convert_to_secret_religion = yes
+	else = {
+		if = {
+			limit = { NOT = { trait = being_undead } }
+			add_trait = being_undead
+		}
+		# If you has secret religion, you reveal yourself
+		if = {
+			limit = { has_secret_religion = yes }
+			convert_to_secret_religion = yes
+		}
+		
+		# Remove drunkard
+		if = { limit = { trait = drunkard } remove_trait = drunkard }
+		
+		# Remove diseases
+		remove_disease_trait_effect = yes
+		
+		# Removed negative genetic
+		remove_all_negative_congenital_traits_effect = yes
+		
+		# Remove weight
+		if = {
+			limit = { trait = is_fat }
+			remove_trait = is_fat
+		}
+		if = {
+			limit = { trait = is_malnourished }
+			remove_trait = is_malnourished
+		}
+		remove_weight_modifier_effect = yes
+		clear_fat_flags_effect = yes
+		clear_malnourished_flags_effect = yes
 	}
-	if = {
-		limit = { trait = is_fat }
-		remove_trait = is_fat
+	hidden_effect = {
+		if = {
+			limit = {
+				is_pregnant = yes
+				can_has_children_trigger = no
+			}
+			death = { death_reason = death_childbirth }
+		}
 	}
-	if = {
-		limit = { trait = is_malnourished }
-		remove_trait = is_malnourished
-	}
-	remove_weight_modifier_effect = yes
-	clear_fat_flags_effect = yes
-	clear_malnourished_flags_effect = yes
 }
 
 free_from_lich_king_effect = {
 	if = {
 		limit = {
-			trait = undead
+			trait = being_undead
 			NOT = { trait = champion_of_the_lich_king }
 			NOT = { has_landed_title = e_scourge }
 			e_scourge = {
@@ -1569,6 +1759,36 @@ free_from_lich_king_effect = {
 		custom_tooltip = {
 			text = free_from_lich_king_effect_tooltip
 			character_event = { id = WCUND.1109 }
+		}
+	}
+}
+become_blood_elf_effect = {
+	if = {
+		limit = { trait = creature_high_elf }
+		remove_trait = creature_high_elf
+		add_trait = creature_blood_elf
+		if = {
+			limit = { NOT = { culture = blood_elf } }
+			culture = blood_elf
+		}
+	}
+	hidden_effect = {
+		if = {
+			limit = { is_ruler = yes }
+			any_demesne_province = {
+				limit = { culture = high_elf }
+				culture = blood_elf
+			}
+			any_courtier_or_vassal = {
+				limit = {
+					trait = creature_high_elf
+					OR = {
+						is_ruler = no
+						tier = BARON
+					}
+				}
+				become_blood_elf_effect = yes
+			}
 		}
 	}
 }

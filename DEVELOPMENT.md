@@ -12,7 +12,7 @@
 2. `ai`, `is_playable`, `is_adult`, `is_incapable`, `prisoner`, `is_inaccessible_trigger`
 3. `is_ruler`, `is_landed`, `independent`, `same_realm`, `mercenary`, `holy_order`, `is_tributary`, `government`, `tier`, `war`
 4. `character`, `is_within_diplo_range`, cooldowns, limit of attempts or flags/traits/modifiers that are set if an event/decision is ongoing or happened.
-5. Class of creature (_demon, undead, worgen trait/flags_), race (_`creature_` trait_), class (_`class_` trait_), religion, culture, +other traits
+5. Being type (_`being_` trait_) , race (_`creature_` trait_), class (_`class_` trait_), religion, culture, +other traits
 6. Required wealth, piety, prestige and user variables
 7. All other conditions
 
