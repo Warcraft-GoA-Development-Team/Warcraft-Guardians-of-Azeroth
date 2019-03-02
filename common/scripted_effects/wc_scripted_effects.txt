@@ -586,6 +586,23 @@ show_close_people_what_this_become_effect = {
 			}
 			character_event = { id = WCDAC.150 days = 5 }
 		}
+		if = {		# ...liege is almost your family
+			limit = {
+				OR = {
+					is_ruler = yes
+					has_job_title = yes
+					has_minor_title = yes
+				}
+				
+				liege = {
+					NOT = { is_married = PREV }
+					NOT = { is_friend = PREV }
+					NOT = { is_lover = PREV }
+					NOT = { is_close_relative = PREV }
+				}
+			}
+			liege = { character_event = { id = WCDAC.150 days = 5 } }
+		}
 	}
 }
 
@@ -725,16 +742,16 @@ add_trait_demon_effect = {
 		limit = { has_secret_religion = yes }
 		convert_to_secret_religion = yes
 	}
-	
+
 	# Remove drunkard
 	if = { limit = { trait = drunkard } remove_trait = drunkard }
-	
+
 	# Remove diseases
 	remove_disease_trait_effect = yes
-	
+
 	# Removed negative genetic
 	remove_all_negative_congenital_traits_effect = yes
-	
+
 	# Remove weight
 	if = {
 		limit = { trait = is_fat }
@@ -927,16 +944,16 @@ add_trait_void_creature_effect = {
 		limit = { has_secret_religion = yes }
 		convert_to_secret_religion = yes
 	}
-	
+
 	# Remove drunkard
 	if = { limit = { trait = drunkard } remove_trait = drunkard }
-	
+
 	# Remove diseases
 	remove_disease_trait_effect = yes
-	
+
 	# Removed negative genetic
 	remove_all_negative_congenital_traits_effect = yes
-	
+
 	# Remove weight
 	if = {
 		limit = { trait = is_fat }
@@ -1037,7 +1054,13 @@ suggest_fel_source_effect = {
 		hidden_effect = {
 			any_courtier_or_vassal = {
 				limit = {
+					OR = {
+						ai = no
+						NOT = { has_character_flag = ai_refused_dark_magic_flag }
+					}
+					
 					is_susceptible_to_fel_corruption_trigger = yes
+					is_high_elf_trigger = yes
 					NOR = {
 						true_religion_group = fel_group
 						has_character_flag = consuming_fel_magic_flag
@@ -1054,7 +1077,13 @@ suggest_void_source_effect = {
 		hidden_effect = {
 			any_courtier_or_vassal = {
 				limit = {
+					OR = {
+						ai = no
+						NOT = { has_character_flag = ai_refused_dark_magic_flag }
+					}
+					
 					is_susceptible_to_void_corruption_trigger = yes
+					is_high_elf_trigger = yes
 					NOR = {
 						true_religion_group = void_group
 						has_character_flag = consuming_void_magic_flag
@@ -1264,7 +1293,7 @@ drink_demon_blood_effect = {
 change_evil_laws_effect = {
 	if = {
 		limit = {
-			is_law_allowed = succ_evil_elective
+			# is_law_allowed = succ_evil_elective
 			is_law_potential = succ_evil_elective
 			NOT = { has_law = succ_evil_elective }
 		}
@@ -1587,58 +1616,43 @@ spawn_small_scourge_troops_effect = {
 set_scourge_government_effect = {
 	set_government_type = scourge_government
 	any_demesne_title = {
-		limit = {
-			OR = {
-				higher_tier_than = COUNT
-				AND = {
-					tier = COUNT
-					PREV = { tier = COUNT }
-				}
-				AND = {
-					tier = BARON
-					PREV = { tier = BARON }
-				}
-			}
-		}
+		limit = { prevs_title_can_has_laws_trigger = yes }
 		change_evil_laws_effect = yes
 	}
+	recalc_succession = yes
 }
 set_legion_government_effect = {
 	set_government_type = legion_government
 	any_demesne_title = {
-		limit = {
-			OR = {
-				higher_tier_than = COUNT
-				AND = {
-					tier = COUNT
-					PREV = { tier = COUNT }
-				}
-				AND = {
-					tier = BARON
-					PREV = { tier = BARON }
-				}
-			}
-		}
+		limit = { prevs_title_can_has_laws_trigger = yes }
 		change_evil_laws_effect = yes
 	}
+	recalc_succession = yes
 }
 set_black_pact_government_effect = {
 	set_government_type = black_pact_government
 	any_demesne_title = {
-		limit = {
-			OR = {
-				higher_tier_than = COUNT
-				AND = {
-					tier = COUNT
-					PREV = { tier = COUNT }
-				}
-				AND = {
-					tier = BARON
-					PREV = { tier = BARON }
-				}
-			}
-		}
+		limit = { prevs_title_can_has_laws_trigger = yes }
 		change_evil_laws_effect = yes
+	}
+	recalc_succession = yes
+}
+clear_evil_laws_effect = {
+	if = {
+		limit = {
+			# is_law_allowed = succ_gavelkind
+			is_law_potential = succ_gavelkind
+			has_law = succ_evil_elective
+		}
+		add_law = { law = succ_gavelkind cooldown = no opinion_effect = no }
+	}
+	if = {
+		limit = {
+			# is_law_allowed = status_of_magic_1
+			is_law_potential = status_of_magic_1
+			has_law = status_of_magic_3
+		}
+		add_law = { law = status_of_magic_1 cooldown = no opinion_effect = no }
 	}
 }
 
@@ -1724,16 +1738,16 @@ add_trait_undead_effect = {
 			limit = { has_secret_religion = yes }
 			convert_to_secret_religion = yes
 		}
-		
+
 		# Remove drunkard
 		if = { limit = { trait = drunkard } remove_trait = drunkard }
-		
+
 		# Remove diseases
 		remove_disease_trait_effect = yes
-		
+
 		# Removed negative genetic
 		remove_all_negative_congenital_traits_effect = yes
-		
+
 		# Remove weight
 		if = {
 			limit = { trait = is_fat }
@@ -1776,4 +1790,71 @@ free_from_lich_king_effect = {
 			character_event = { id = WCUND.1109 }
 		}
 	}
+}
+become_blood_elf_effect = {
+	if = {
+		limit = { trait = creature_high_elf }
+		remove_trait = creature_high_elf
+		add_trait = creature_blood_elf
+		if = {
+			limit = { NOT = { culture = blood_elf } }
+			culture = blood_elf
+		}
+	}
+	hidden_effect = {
+		if = {
+			limit = { is_ruler = yes }
+			any_demesne_province = {
+				limit = { culture = high_elf }
+				culture = blood_elf
+			}
+			any_courtier_or_vassal = {
+				limit = {
+					trait = creature_high_elf
+					OR = {
+						is_ruler = no
+						tier = BARON
+					}
+				}
+				become_blood_elf_effect = yes
+			}
+		}
+	}
+}
+remove_sunwells_effect = {
+	b_sunwell = {
+		remove_building = tp_sunwell
+		remove_building = tp_sunwell_light
+		remove_building = tp_sunwellcorrupted
+		remove_building = tp_felwell
+		remove_building = tp_voidwell
+	}
+}
+add_sunwell_effect = {
+	clr_global_flag = sunwell_is_being_restored_flag
+	remove_sunwells_effect = yes
+	b_sunwell = { add_building = tp_sunwell }
+}
+add_lightwell_effect = {
+	clr_global_flag = sunwell_is_being_restored_flag
+	clr_global_flag = sunwell_naaru_spark_flag
+	remove_sunwells_effect = yes
+	b_sunwell = { add_building = tp_sunwell_light }
+}
+add_deathwell_effect = {
+	clr_global_flag = sunwell_is_being_restored_flag
+	remove_sunwells_effect = yes
+	b_sunwell = { add_building = tp_sunwellcorrupted }
+}
+add_felwell_effect = {
+	clr_global_flag = felwell_restoring_flag
+	clr_global_flag = sunwell_is_being_restored_flag
+	remove_sunwells_effect = yes
+	b_sunwell = { add_building = tp_felwell }
+}
+add_voidwell_effect = {
+	clr_global_flag = voidwell_restoring_flag
+	clr_global_flag = sunwell_is_being_restored_flag
+	remove_sunwells_effect = yes
+	b_sunwell = { add_building = tp_voidwell }
 }

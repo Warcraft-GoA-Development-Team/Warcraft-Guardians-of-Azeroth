@@ -30,19 +30,22 @@ can_rule_peacefully_trigger = {
 		hidden_tooltip = {
 			trigger_if = {
 				limit = { is_ruler = yes }
-				NOR = {
-					government = legion_government
-					government = scourge_government
-					government = black_pact_government
-					AND = {
-						evil_public_religion_trigger = yes
-						is_theocracy = yes
-					}
-				}
+				evil_government_trigger = no
 			}
 			trigger_else = {
 				evil_public_religion_trigger = no
 			}
+		}
+	}
+}
+evil_government_trigger = {
+	OR = {
+		government = legion_government
+		government = scourge_government
+		government = black_pact_government
+		AND = {
+			evil_public_religion_trigger = yes
+			is_theocracy = yes
 		}
 	}
 }
@@ -256,10 +259,10 @@ can_marry_trigger = {
 				trait = creature_annihilan
 				trait = creature_nathrezim
 				trait = creature_eredruin
-				trait = creature_fel_orc
-				trait = creature_felblood_elf
+				# trait = creature_fel_orc
+				# trait = creature_felblood_elf
 				trait = creature_satyr
-				trait = creature_eredar
+				# trait = creature_eredar
 				trait = creature_sayaadi
 				trait = creature_shivarra
 				trait = creature_moarg
@@ -270,13 +273,13 @@ can_marry_trigger = {
 				trait = creature_fire_elemental
 				trait = creature_flamewaker
 				trait = creature_water_elemental
-				is_uncursed_titanforged_trigger = yes
-				trait = creature_watcher
-				trait = creature_kvaldir
+				# is_uncursed_titanforged_trigger = yes
+				# trait = creature_watcher
+				# trait = creature_kvaldir
 				trait = creature_harpy
 				trait = creature_nraqi
 				trait = creature_cthraxxi
-				trait = creature_qiraji
+				# trait = creature_qiraji
 			}
 		}
 	}
@@ -888,10 +891,7 @@ void_modifier_is_visible_to_all_trigger = {
 ### potential_race triggers ###
 # Add new races always at the end
 potential_race_human_trigger = {
-	OR = {
-		graphical_culture = westerngfx
-		has_human_gfx_trigger = yes
-	}
+	has_human_gfx_trigger = yes
 	NOT = { trait = creature_human }
 }
 potential_race_orc_trigger = {
@@ -2094,6 +2094,7 @@ has_demon_gfx_trigger = {
 }
 has_human_gfx_trigger = {
 	OR = {
+		graphical_culture = westerngfx
 		graphical_culture = humanwhitegfx
 		graphical_culture = gilneasgfx
 		graphical_culture = dalarangfx
@@ -2104,6 +2105,7 @@ has_human_gfx_trigger = {
 		graphical_culture = humantangfx
 		graphical_culture = humanblackgfx
 		graphical_culture = humanundeadgfx
+		graphical_culture = ghoulgfx
 	}
 }
 has_orc_gfx_trigger = {
@@ -2135,6 +2137,7 @@ has_dragon_gfx_trigger = {
 # Determines whether PREV treats THIS as a unholy creature
 is_unholy_creature_to_prev_trigger = {
 	OR = {
+		# Because of traits
 		AND = {
 			PREV = {
 				religion = scarlet_light
@@ -2148,6 +2151,7 @@ is_unholy_creature_to_prev_trigger = {
 				trait = worgen
 			}
 		}
+		# Because of religion
 		AND = {
 			NOR = {
 				religion = PREV
@@ -2357,7 +2361,7 @@ ai_from_prefer_to_hurt_this_trigger = {
 				is_lover = FROM
 			}
 			OR = {
-				is_foe = FROM
+				FROM = { is_foe = PREV }
 				war_with = FROM
 				holds_favor_on = FROM
 				any_spouse = { #Unfaithful spouse
@@ -2371,6 +2375,16 @@ ai_from_prefer_to_hurt_this_trigger = {
 		}
 	}
 }
+from_in_range_to_hurt_this_trigger = {
+	is_within_diplo_range = FROM
+	OR = {
+		same_realm = FROM
+		FROM = { is_foe = PREV }
+		same_society_as = FROM
+		war_with = FROM
+		host = { character = FROM }
+	}
+}
 is_secular_ruler_trigger = {
 	OR = {
 		controls_religion = no
@@ -2380,6 +2394,8 @@ is_secular_ruler_trigger = {
 	}
 }
 
+# Note: better stop using this triggers, they're CPU heavy
+# If you want to make gender-equal culture, the best way is adding Status of Woman law to every title of the culture
 is_matriarchal_trigger = {
 	custom_tooltip = {
 		text = is_matriarchal_trigger_tooltip
@@ -2653,5 +2669,67 @@ is_member_of_dominican_trigger = {
 		# To be added
 		always = no
 		# society_member_of = monastic_order_dominican
+	}
+}
+prevs_title_can_has_laws_trigger = {
+	OR = {
+		higher_tier_than = DUKE
+		is_primary_holder_title_tier = yes
+	}
+}
+public_religion_associated_with_sunwell_trigger = {
+	OR = {
+		AND = {
+			OR = {
+				religion_group = arcane_group
+				religion_group = light_group
+			}
+			b_sunwell = {
+				OR = {
+					has_building = tp_sunwell
+					has_building = tp_sunwell_light
+				}
+			}
+		}
+		AND = {
+			religion_group = necromancy_group
+			b_sunwell = { has_building = tp_sunwellcorrupted }
+		}
+		AND = {
+			religion_group = fel_group
+			b_sunwell = { has_building = tp_felwell }
+		}
+		AND = {
+			religion_group = void_group
+			b_sunwell = { has_building = tp_voidwell }
+		}
+	}
+}
+true_religion_associated_with_sunwell_trigger = {
+	OR = {
+		AND = {
+			OR = {
+				true_religion_group = arcane_group
+				true_religion_group = light_group
+			}
+			b_sunwell = {
+				OR = {
+					has_building = tp_sunwell
+					has_building = tp_sunwell_light
+				}
+			}
+		}
+		AND = {
+			true_religion_group = necromancy_group
+			b_sunwell = { has_building = tp_sunwellcorrupted }
+		}
+		AND = {
+			true_religion_group = fel_group
+			b_sunwell = { has_building = tp_felwell }
+		}
+		AND = {
+			true_religion_group = void_group
+			b_sunwell = { has_building = tp_voidwell }
+		}
 	}
 }
