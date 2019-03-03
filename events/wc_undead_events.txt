@@ -233,33 +233,15 @@ character_event = {
 			NOT = { has_character_flag = first_lich_king_warning_flag }
 			AND = {
 				NOT = { has_character_flag = second_lich_king_warning_flag }
-				OR = {
-					AND = {
-						start_date = 603.1.1
-						year = 603
-					}
-					had_global_flag = { flag = the_scourge_is_under_the_legion_control_flag days = 4380 }
-				}
+				ruled_years = 12
 			}
 			AND = {
 				NOT = { has_character_flag = third_lich_king_warning_flag }
-				OR = {
-					AND = {
-						start_date = 603.1.1
-						year = 609
-					}
-					had_global_flag = { flag = the_scourge_is_under_the_legion_control_flag days = 6570 }
-				}
+				ruled_years = 18
 			}
 			AND = {
 				NOT = { has_character_flag = dead_lich_king_flag }
-				OR = {
-					AND = {
-						start_date = 603.1.1
-						year = 611
-					}
-					had_global_flag = { flag = the_scourge_is_under_the_legion_control_flag days = 7300 }
-				}
+				ruled_years = 20
 			}
 		}
 	}
@@ -1695,21 +1677,6 @@ character_event = {
 		narrative_event = { id = WCUND.551 }
 	}
 }
-# FROM abdicates to ROOT (immediately after inheritance, abdicates not all titles, but only some of them)
-character_event = {
-	id = WCUND.555
-
-	is_triggered_only = yes
-	hide_window = yes
-
-	immediate = {
-		wealth = FROM
-		FROM = {
-			clear_wealth = yes
-			abdicate_to = ROOT
-		}
-	}
-}
 
 # Becomes the champion of the lich king
 narrative_event = {
@@ -2287,13 +2254,20 @@ character_event = {
 				ROOT = {
 					show_scope_change = no
 					if = {
-						limit = { independent = no }
+						limit = {
+							is_ruler = yes
+							independent = no
+							
+							higher_tier_than = BARON
+						}
 						set_defacto_liege = THIS
 					}
 					remove_opinion = { modifier = opinion_loyal_servant who = PREV }
 					opinion = { modifier = opinion_evil_tyrant who = PREV }
 					if = {
-						limit = { religion = PREV }
+						limit = {
+							religion = PREV
+						}
 						if = {
 							limit = { has_secret_religion = yes }
 							convert_to_secret_religion = yes
@@ -2442,5 +2416,19 @@ character_event = {
 
 	immediate = {
 		remove_5_mind_control_power_effect = yes
+	}
+}
+
+# Kills Ner'zhul if he isn't a Lick King anymore
+character_event = {
+	id = WCUND.1200
+
+	is_triggered_only = yes
+	hide_window = yes
+	
+	has_character_flag = is_nerzhul
+
+	immediate = {
+		death = { death_reason = death_missing }
 	}
 }

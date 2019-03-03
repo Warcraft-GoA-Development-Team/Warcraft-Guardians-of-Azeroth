@@ -11,12 +11,17 @@ decisions = {
 		potential = {
 			is_untouchable_trigger = no
 
+			is_landed = yes
 			independent = yes
+			mercenary = no
+			holy_order = no
+			is_nomadic = no
 
 			religion = death_god
 
+			in_revolt = no
+			NOT = { is_offmap_governor = yes }
 			NOT = { has_landed_title = e_scourge }
-
 			e_scourge = { has_holder = yes }
 		}
 
@@ -37,12 +42,7 @@ decisions = {
 					letter_event = { id = WCDAC.3940 }
 					ROOT = {
 						show_scope_change = no
-						any_demesne_title = {
-							limit = { tier = EMPEROR }
-							grant_title_no_opinion = { target = PREVPREV type = claim }
-							destroy_landed_title = THIS
-						}
-						set_defacto_liege = PREV
+						prev_subjugate_this_destroy_titles_effect = yes
 					}
 				}
 			}
@@ -74,6 +74,19 @@ decisions = {
 		}
 		allow = {
 			war = no
+			
+			OR = {
+				trait = being_undead
+				trigger_if = {
+					limit = { independent = no }
+					top_liege = {
+						government = scourge_government
+					}
+				}
+				capital_scope = { religion = death_god }
+				is_landed = no
+				has_landed_title = e_scourge
+			}
 		}
 		
 		effect = {
@@ -122,12 +135,17 @@ decisions = {
 		potential = {
 			is_untouchable_trigger = no
 
+			is_landed = yes
 			independent = yes
+			mercenary = no
+			holy_order = no
+			is_nomadic = no
 
 			religion = burning_legion_religion
 
+			in_revolt = no
+			NOT = { is_offmap_governor = yes }
 			NOT = { has_landed_title = e_burning_legion }
-
 			e_burning_legion = { has_holder = yes }
 		}
 
@@ -148,12 +166,7 @@ decisions = {
 					letter_event = { id = WCDAC.3940 }
 					ROOT = {
 						show_scope_change = no
-						any_demesne_title = {
-							limit = { tier = EMPEROR }
-							grant_title_no_opinion = { target = PREVPREV type = claim }
-							destroy_landed_title = THIS
-						}
-						set_defacto_liege = PREV
+						prev_subjugate_this_destroy_titles_effect = yes
 					}
 				}
 			}
@@ -186,6 +199,19 @@ decisions = {
 
 		allow = {
 			war = no
+			
+			OR = {
+				trait = being_demon
+				trigger_if = {
+					limit = { independent = no }
+					top_liege = {
+						government = legion_government
+					}
+				}
+				capital_scope = { religion = burning_legion_religion }
+				is_landed = no
+				has_landed_title = e_burning_legion
+			}
 		}
 		
 		effect = {
@@ -232,12 +258,17 @@ decisions = {
 		potential = {
 			is_untouchable_trigger = no
 
+			is_landed = yes
 			independent = yes
+			mercenary = no
+			holy_order = no
+			is_nomadic = no
 
 			religion = old_gods_worship
 
+			in_revolt = no
+			NOT = { is_offmap_governor = yes }
 			NOT = { has_landed_title = e_black_empire }
-
 			e_black_empire = { has_holder = yes }
 		}
 
@@ -258,12 +289,7 @@ decisions = {
 					letter_event = { id = WCDAC.3940 }
 					ROOT = {
 						show_scope_change = no
-						any_demesne_title = {
-							limit = { tier = EMPEROR }
-							grant_title_no_opinion = { target = PREVPREV type = claim }
-							destroy_landed_title = THIS
-						}
-						set_defacto_liege = PREV
+						prev_subjugate_this_destroy_titles_effect = yes
 					}
 				}
 			}
@@ -295,6 +321,19 @@ decisions = {
 		}
 		allow = {
 			war = no
+			
+			OR = {
+				trait = being_void
+				trigger_if = {
+					limit = { independent = no }
+					top_liege = {
+						government = black_pact_government
+					}
+				}
+				capital_scope = { religion = old_gods_worship }
+				is_landed = no
+				has_landed_title = e_black_empire
+			}
 		}
 		
 		effect = {
@@ -352,16 +391,6 @@ decisions = {
 
 			NOT = { e_burning_legion = { has_holder = yes } }
 			OR = {
-				trait = class_warlock_9
-				trait = class_warlock_10
-				trait = class_necromancer_9
-				trait = class_necromancer_10
-				AND = {
-					has_global_flag = the_scourge_is_under_the_legion_control_flag
-					has_landed_title = e_scourge
-				}
-			}
-			OR = {
 				true_religion = orcish_fel
 				true_religion = burning_legion_religion
 				# Subjects of the Scourge can summon the Legion as Kel'thusad did in the lore
@@ -373,6 +402,13 @@ decisions = {
 		}
 
 		allow = {
+			OR = {
+				is_9_10_magic_class_trigger = yes
+				trigger_if = {
+					limit = { has_global_flag = the_scourge_is_under_the_legion_control_flag }
+					has_landed_title = e_scourge
+				}
+			}
 			OR = {
 				has_access_to_powerful_source_of_magic_trigger = yes
 				has_3_powerful_magical_artifact_trigger = yes
@@ -522,6 +558,8 @@ decisions = {
 		is_high_prio = yes
 
 		ai_check_interval = 36
+		
+		is_in_society = no
 
 		potential = {
 			has_dlc = "Mystics"
@@ -574,14 +612,106 @@ decisions = {
 			factor = 1
 		}
 	}
+	reborn_black_empire = {
+		is_high_prio = yes
+		
+		ai_check_interval = 12
+		
+		only_playable = yes
+		only_independent = yes
+
+		potential = {
+			is_untouchable_trigger = no
+
+			# is_adult = yes
+			# is_incapable = no
+			
+			OR = {
+				NOT = { has_global_flag = black_empire_was_created_flag }
+				had_global_flag = { flag = black_empire_was_created_flag years = 50 }
+			}
+
+			religion = old_gods_worship
+			has_secret_religion = no
+			NOT = { e_black_empire = { has_holder = yes } }
+		}
+
+		allow = {
+			prisoner = no
+			is_inaccessible_trigger = no
+			independent = yes
+			
+			religion_authority = 0.75
+			num_of_holy_sites = 4
+		}
+
+		effect = {
+			clr_global_flag = black_empire_was_created_flag
+			set_global_flag = black_empire_was_created_flag
+
+			73 = { province_event = { id = WCTHW.50 } } # When shit happens, Medivh tries to fix it
+			
+			narrative_event = { id = WCVOD.605 }
+		}
+
+		revoke_allowed = {
+			always = no
+		}
+
+		ai_will_do = {
+			factor = 1
+		}
+	}
+	transformation_into_cthraxxi = {
+		is_high_prio = yes
+		
+		ai_check_interval = 12
+		
+		only_playable = yes
+		
+		potential = {
+			is_untouchable_trigger = no
+			
+			is_incapable = no
+			
+			trait = creature_nraqi
+			religion = old_gods_worship
+			true_religion = old_gods_worship
+		}
+		
+		allow = {
+			prisoner = no
+			is_inaccessible_trigger = no
+			
+			prestige = 5000
+			piety = 2500
+		}
+		
+		effect = {
+			prestige = -5000
+			piety = -2500
+			
+			long_character_event = { id = WCVOD.400 }
+		}
+		
+		revoke_allowed = {
+			always = no
+		}
+
+		ai_will_do = {
+			factor = 1
+		}
+	}
 }
 
 targetted_decisions = {
 	shadow_favor = {
 		ai_target_filter = realm
+		
 		ai_check_interval = 36
 
 		only_playable = yes
+		is_in_society = yes
 
 		from_potential = {
 			is_untouchable_trigger = no
@@ -658,9 +788,11 @@ targetted_decisions = {
 		}
 	}
 	fel_corrupt_character = {
-		filter = realm
-		ai_target_filter = realm
+		ai_target_filter = court
+		
 		ai_check_interval = 36
+		
+		is_in_society = yes
 
 		from_potential = {
 			is_untouchable_trigger = no
@@ -679,16 +811,20 @@ targetted_decisions = {
 			is_adult = yes
 
 			NOT = { character = FROM }
-			OR = {
-				FROM = { ai = yes } # Only checks realm, so by definition in range
-				is_within_diplo_range = FROM
-			}
-
-			NOT = { same_society_as = FROM }
-			NOT = { true_religion_group = fel_group}
+			from_in_range_to_hurt_this_trigger = yes
+			
+			#Makes sure the AI does good choices
+			ai_from_prefer_to_hurt_this_trigger = yes
 		}
 
 		allow = {
+			is_inaccessible_trigger = no
+			
+			NOT = { religion_group = fel_group }
+			NOT = { true_religion_group = fel_group }
+			
+			NOT = { society_member_of = shadow_council }
+
 			FROM = {
 				is_inaccessible_trigger = no
 
@@ -703,9 +839,6 @@ targetted_decisions = {
 				}
 
 				has_society_currency_tiny_trigger = yes
-			}
-			ROOT = {
-				is_inaccessible_trigger = no
 			}
 		}
 
@@ -729,9 +862,11 @@ targetted_decisions = {
 	}
 
 	attract_old_gods_attention = {
-		filter = realm
 		ai_target_filter = court
+		
 		ai_check_interval = 36
+		
+		is_in_society = yes
 
 		from_potential = {
 			is_untouchable_trigger = no
@@ -749,25 +884,27 @@ targetted_decisions = {
 
 			is_adult = yes
 
-			is_within_diplo_range = FROM
 			NOT = { character = FROM }
-
-			NOT = { society_member_of = twilights_hammer_cult }
+			from_in_range_to_hurt_this_trigger = yes
 
 			#Makes sure the AI does good choices
 			ai_from_prefer_to_hurt_this_trigger = yes
 		}
 
 		allow = {
+			is_inaccessible_trigger = no
+
+			NOT = { has_character_modifier = dark_presence }
+			
+			NOT = { religion = old_gods_worship }
+			NOT = { true_religion = old_gods_worship }
+			
+			NOT = { society_member_of = twilights_hammer_cult }
+
 			FROM = {
 				is_inaccessible_trigger = no
 
 				has_society_currency_medium_trigger = yes
-			}
-			ROOT = {
-				is_inaccessible_trigger = no
-
-				NOT = { has_character_modifier = dark_presence }
 			}
 		}
 
@@ -803,9 +940,11 @@ targetted_decisions = {
 	develop_mutation = {
 		filter = realm_including_me
 		ai_target_filter = self
+		
 		ai_check_interval = 36
 
 		only_playable = yes
+		is_in_society = yes
 
 		from_potential = {
 			is_untouchable_trigger = no
@@ -825,21 +964,21 @@ targetted_decisions = {
 
 			NOT = { trait = being_void }
 			is_susceptible_to_void_corruption_trigger = yes
-			religion = old_gods_worship
-			true_religion = old_gods_worship
 		}
 
 		allow = {
+			conditional_tooltip = {
+				trigger = { NOT = { character  = FROM } }
+				is_inaccessible_trigger = no
+			}
+			
+			religion = old_gods_worship
+			true_religion = old_gods_worship
+			
 			FROM = {
 				is_inaccessible_trigger = no
 
 				has_society_currency_major_trigger = yes
-			}
-			ROOT = {
-				conditional_tooltip = {
-					trigger = { NOT = { character  = FROM } }
-					is_inaccessible_trigger = no
-				}
 			}
 		}
 
@@ -869,6 +1008,7 @@ society_decisions = {
 		ai_check_interval = 24
 
 		only_playable = yes
+		is_in_society = yes
 
 		potential = {
 			is_untouchable_trigger = no
@@ -889,6 +1029,8 @@ society_decisions = {
 			is_inaccessible_trigger = no
 
 			can_be_undead_trigger = yes
+			religion = death_god
+			true_religion = death_god
 
 			society_currency >= 5000
 		}
@@ -924,6 +1066,7 @@ title_decisions = {
 		ai_target_filter = realm_owned
 		
 		only_playable = yes
+		is_in_society = yes
 
 		from_potential = {
 			has_dlc = "Mystics"

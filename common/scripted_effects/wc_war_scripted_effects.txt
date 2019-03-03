@@ -15,6 +15,7 @@ total_invasion_cb_rev_effect = {
 		}
 	}
 	PREV = {
+		show_scope_change = no
 		prestige = 1500
 		piety = 750
 		hidden_tooltip = {
@@ -48,6 +49,10 @@ total_invasion_cb_rev_effect = {
 	custom_tooltip = {
 		text = total_invasion_cb_rev_tooltip
 		hidden_tooltip = {
+			any_realm_lord = {
+				limit = { ai = no }
+				set_defacto_liege = THIS	# Gives players a chance
+			}
 			any_realm_lord = {
 				limit = { higher_tier_than = BARON }
 				any_demesne_title = {
@@ -127,18 +132,12 @@ give_to_claimant_effect = {
 					OR = {
 						holder_scope = {
 							is_untouchable_trigger = no
-							evil_public_religion_trigger = no
-							NAND = {
-								draenor_culture_trigger = yes
-								has_global_flag = orcish_invasion_flag
-							}
 
 							NOR = {
 								character = event_target:target_attacker
 								same_realm = event_target:target_attacker
 							}
 
-							is_lowborn = no
 							NOT = { has_landed_title = event_target:target_title }
 						}
 						any_claimant = {
@@ -187,83 +186,28 @@ give_to_claimant_effect = {
 					NOT = { title = k_black_morass }	# Lands around the portal always go away to defender
 					holder_scope = {
 						is_untouchable_trigger = no
-						evil_public_religion_trigger = no
-						NAND = {
-								draenor_culture_trigger = yes
-								has_global_flag = orcish_invasion_flag
-							}
 
 						NOR = {
 							character = event_target:target_attacker
 							same_realm = event_target:target_attacker
 						}
 
-						is_lowborn = no
 						NOT = { has_landed_title = event_target:target_title }
 					}
 				}
 				holder_scope = {
-					limit = {
-						is_untouchable_trigger = no
-						evil_public_religion_trigger = no
-						NAND = {
-							draenor_culture_trigger = yes
-							has_global_flag = orcish_invasion_flag
-						}
-
-						NOR = {
-							character = event_target:target_attacker
-							same_realm = event_target:target_attacker
-						}
-
-						is_lowborn = no
-						NOT = { has_landed_title = event_target:target_title }
-					}
 					log = "(Great War) [This.GetBestName] was chosen as new king of [target_title.GetFullBaseName]"
 					save_event_target_as = target_new_ruler
 
-					if = {
-						limit = {
-							is_ruler = yes
-							is_feudal = no
-							is_tribal = no
-						}
-						abdicate = yes
-					}
-
+					grant_title_no_opinion = { target = event_target:target_title type = claim }
 					gain_settlements_under_title = {
 						title = event_target:target_title
 						enemy = event_target:target_attacker
 						is_crusade = yes # Even if the title holder is not participating in the war, gain holdings occupied by all Crusade participants
 						type = invasion
 					}
-					grant_title_no_opinion = { target = event_target:target_title type = claim }
 
-					if = {
-						limit = {
-							NOT = { government = feudal_government }
-							is_government_potential = feudal_government
-						}
-						set_government_type = feudal_government
-					}
-					
-					spawn_unit = {
-						owner = event_target:target_new_ruler
-						province = event_target:target_location
-						home = event_target:target_location
-						troops = {
-							archers = { 65 65 }
-							light_infantry = { 100 100 }
-							heavy_infantry = { 125 125 }
-							light_cavalry = { 15 15 }
-							knights = { 25 25 }
-						}
-						attrition = 1.0
-						reinforces = no
-						maintenance = no
-					}
-
-					set_defacto_liege = THIS
+					# set_defacto_liege = THIS
 				}
 			}
 			else_if = {
@@ -337,18 +281,21 @@ give_to_claimant_effect = {
 							abdicate = yes
 						}
 
+						grant_title_no_opinion = { target = event_target:target_title type = claim }
 						gain_settlements_under_title = {
 							title = event_target:target_title
 							enemy = event_target:target_attacker
 							is_crusade = yes # Even if the title holder is not participating in the war, gain holdings occupied by all Crusade participants
 							type = invasion
 						}
-						grant_title_no_opinion = { target = event_target:target_title type = claim }
 						
 						event_target:target_title = {
 							kingdom = {
 								if = {
-									limit = { has_holder = yes }
+									limit = {
+										has_holder = yes
+										holder_scope = { NOT = { character = event_target:target_new_ruler } }
+									}
 									destroy_landed_title = THIS
 								}
 								grant_title_no_opinion = { target = event_target:target_new_ruler type = claim }
@@ -410,18 +357,21 @@ give_to_claimant_effect = {
 							religion = forsaken_cult
 						}
 
+						grant_title_no_opinion = { target = event_target:target_title type = claim }
 						gain_settlements_under_title = {
 							title = event_target:target_title
 							enemy = event_target:target_attacker
 							is_crusade = yes # Even if the title holder is not participating in the war, gain holdings occupied by all Crusade participants
 							type = invasion
 						}
-						grant_title_no_opinion = { target = event_target:target_title type = claim }
 						
 						event_target:target_title = {
 							kingdom = {
 								if = {
-									limit = { has_holder = yes }
+									limit = {
+										has_holder = yes
+										holder_scope = { NOT = { character = event_target:target_new_ruler } }
+									}
 									destroy_landed_title = THIS
 								}
 								grant_title_no_opinion = { target = event_target:target_new_ruler type = claim }
@@ -458,4 +408,37 @@ give_to_claimant_effect = {
 			}
 		}
 	}
+}
+prev_subjugate_this_destroy_titles_effect = {
+	# If has titles of same tier or higher, takes it
+	if = {
+		limit = { NOT = { lower_tier_than = PREV } }
+		# If these titles can't be conquered, just destroys it and takes all direct vassals
+		if = {
+			limit = {
+				any_demesne_title = {
+					NOT = { lower_tier_than = PREVPREV }
+					can_be_conquered_trigger = no
+				}
+			}
+			hidden_effect = { any_vassal = { set_defacto_liege = PREVPREV } }
+			any_demesne_title = {
+				limit = { NOT = { lower_tier_than = PREVPREV } }
+				if = {
+					limit = { is_landless_type_title = yes }
+					activate_title = { title = THIS status = no }
+				}
+				destroy_landed_title = THIS
+			}
+		}
+		# If these titles can be conqured, takes it to transfer vassals propertly and destroys it
+		else = {
+			any_demesne_title = {
+				limit = { NOT = { lower_tier_than = PREVPREV } }
+				hidden_effect = { grant_title_no_opinion = { target = PREVPREV type = claim } }
+				destroy_landed_title = THIS
+			}
+		}
+	}
+	set_defacto_liege = PREV
 }

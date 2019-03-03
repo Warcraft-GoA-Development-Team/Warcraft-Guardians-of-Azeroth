@@ -84,16 +84,6 @@ character_event = {
 			limit = { NOT = { true_religion_group = void_group } }
 			character_event = { id = WCVOD.170 days = 3 }
 		}
-
-		hidden_effect = {
-			if = {
-				limit = {
-					is_pregnant = yes
-					can_has_children_trigger = no
-				}
-				death = { death_reason = death_natural }
-			}
-		}
 	}
 }
 # Moves on to the previous stage of void corruption
@@ -728,7 +718,7 @@ character_event = {
 	}
 }
 
-
+# Transformation into n'raqi
 long_character_event = {
 	id = WCVOD.310
 	desc = EVTDESC_WCVOD_310
@@ -751,54 +741,14 @@ long_character_event = {
 	}
 }
 
+# Transformation into c'thraxxi
 long_character_event = {
 	id = WCVOD.400
 	desc = EVTDESC_WCVOD_400
 	picture = GFX_evt_cthraxxi
 	border = GFX_event_long_frame_intrigue
 
-	min_age = 16
-	only_capable = yes
-	prisoner = no
-	religion = old_gods_worship
-
-	trigger = {
-		trait = creature_nraqi
-		true_religion = old_gods_worship
-	}
-
-	mean_time_to_happen = {
-		years = 300
-
-		modifier = {
-			factor = 0.8
-			prestige = 3000
-		}
-		modifier = {
-			factor = 0.8
-			prestige = 2000
-		}
-		modifier = {
-			factor = 0.8
-			prestige = 1000
-		}
-		modifier = {
-			factor = 0.8
-			piety = 3000
-		}
-		modifier = {
-			factor = 0.8
-			piety = 2000
-		}
-		modifier = {
-			factor = 0.8
-			piety = 1000
-		}
-		modifier = {
-			factor = 0.8
-			trait = cruel
-		}
-	}
+	is_triggered_only = yes
 
 	option = {
 		name = EVTOPTA_WCVOD_400
@@ -817,116 +767,6 @@ long_character_event = {
 # 	the Twilight Hour		#
 #############################
 
-# The appointment of the Twilight Viceroy (creation of the Black Empire)
-character_event = {
-	id = WCVOD.600
-
-	is_triggered_only = yes
-	hide_window = yes
-
-	min_age = 16
-	only_capable = yes
-	prisoner = no
-	is_playable = yes
-	only_independent = yes
-	religion = old_gods_worship
-
-	trigger = {
-		is_adult = yes
-		is_incapable = no
-		prisoner = no
-		is_playable = yes
-		independent = yes
-		religion = old_gods_worship
-		
-		is_alive = yes
-		is_dying = no
-		
-		OR = {
-			NOT = { has_global_flag = black_empire_was_created_flag }
-			had_global_flag = { flag = black_empire_was_created_flag years = 50 }
-		}
-
-		has_secret_religion = no
-		NOT = { e_black_empire = { has_holder = yes } }
-		religion_authority = 0.75
-		num_of_holy_sites = 4
-	}
-
-	immediate = {
-		log = "WCVOD.600 fired for [Root.GetBestName]"
-
-		clr_global_flag = black_empire_was_created_flag
-		set_global_flag = black_empire_was_created_flag
-
-		73 = { province_event = { id = WCTHW.50 } } # When shit happens, Medivh tries to fix it
-
-		# The Old Gods chooses the strongest creature
-		# Checks if ROOT is the strongest creature
-		if = {
-			limit = {
-				NOT = {
-					any_independent_ruler = {
-						is_adult = yes
-						is_incapable = no
-						prisoner = no
-
-						NOT = { character = ROOT }
-
-						has_secret_religion = no
-						religion = old_gods_worship
-						combat_rating_diff = { character = ROOT value = 1 }
-					}
-				}
-			}
-			narrative_event = { id = WCVOD.605 }
-		}
-		else = {
-			# Checks the independent rulers
-			if = {
-				limit = {
-					any_independent_ruler = {
-						is_adult = yes
-						is_incapable = no
-						prisoner = no
-
-						NOT = { character = ROOT }
-
-						has_secret_religion = no
-						religion = old_gods_worship
-					}
-				}
-				random_independent_ruler = {
-					limit = {
-						is_adult = yes
-						is_incapable = no
-						prisoner = no
-
-						has_secret_religion = no
-						religion = old_gods_worship
-						NOT = {
-							any_independent_ruler = {
-								is_adult = yes
-								is_incapable = no
-								prisoner = no
-
-								NOT = { character = PREV }
-
-								has_secret_religion = no
-								religion = old_gods_worship
-								combat_rating_diff = { character = PREV value = 1 }
-							}
-						}
-					}
-					narrative_event = { id = WCVOD.605 }
-				}
-			}
-			else = {
-				narrative_event = { id = WCVOD.605 }
-			}
-		}
-	}
-}
 narrative_event = {
 	id = WCVOD.605
 	title = EVTTITLE_WCVOD_605
@@ -944,20 +784,20 @@ narrative_event = {
 
 		activate_title = { title = e_black_empire status = yes }
 		e_black_empire = { gain_title = ROOT }
-		any_independent_ruler = {
+		if = {
 			limit = {
-				prisoner = no
-				is_untouchable_trigger = no
-
-				religion = old_gods_worship
-				war = no
+				any_demesne_title = {
+					tier = EMPEROR
+					NOT = { title = e_black_empire }
+				}
 			}
 			any_demesne_title = {
-				limit = { tier = EMPEROR }
-				ROOT = { grant_title_no_opinion = { target = PREV type = claim } }
+				limit = {
+					tier = EMPEROR
+					NOT = { title = e_black_empire }
+				}
 				destroy_landed_title = THIS
 			}
-			set_defacto_liege = ROOT
 		}
 		set_black_pact_government_effect = yes
 	}
@@ -2101,8 +1941,8 @@ narrative_event = {
 		name = EVTOPTA_WCVOD_9950
 
 		random_list = {
-			50 = {}
-			30 = {
+			70 = {}
+			20 = {
 				add_trait = stressed
 				hidden_tooltip = { character_event = { id = 38282 } }
 				modifier = {
@@ -2117,7 +1957,7 @@ narrative_event = {
 					}
 				}
 			}
-			20 = {
+			10 = {
 				add_trait_depressed_effect = yes
 				modifier = {
 					factor = 0
@@ -2133,8 +1973,8 @@ narrative_event = {
 			}
 		}
 		random_list = {
-			80 = {}
-			20 = {
+			90 = {}
+			10 = {
 				add_trait_paranoid_effect = yes
 				remove_trait_trusting_effect = yes
 				modifier = {
@@ -2182,8 +2022,8 @@ narrative_event = {
 		name = EVTOPTA_WCVOD_9950
 
 		random_list = {
-			30 = {}
-			30 = {
+			60 = {}
+			20 = {
 				add_trait = stressed
 				hidden_tooltip = { character_event = { id = 38282 } }
 				modifier = {
@@ -2198,7 +2038,7 @@ narrative_event = {
 					}
 				}
 			}
-			20 = {
+			10 = {
 				add_trait_depressed_effect = yes
 				modifier = {
 					factor = 0
@@ -2212,7 +2052,7 @@ narrative_event = {
 					}
 				}
 			}
-			20 = {
+			10 = {
 				add_trait = lunatic
 				hidden_tooltip = { character_event = { id = 38304 } }
 				modifier  = {
@@ -2222,8 +2062,8 @@ narrative_event = {
 			}
 		}
 		random_list = {
-			60 = {}
-			20 = {
+			80 = {}
+			10 = {
 				add_trait_paranoid_effect = yes
 				remove_trait_trusting_effect = yes
 				modifier = {
@@ -2231,7 +2071,7 @@ narrative_event = {
 					trait = paranoid
 				}
 			}
-			20 = {
+			10 = {
 				add_trait_craven_effect = yes
 				if = {
 					limit = { trait = brave }
@@ -2327,8 +2167,8 @@ narrative_event = {
 		name = EVTOPTA_WCVOD_9950
 
 		random_list = {
-			50 = {}
-			20 = {
+			80 = {}
+			10 = {
 				add_trait = stressed
 				hidden_tooltip = { character_event = { id = 38282 } }
 				modifier = {
@@ -2343,7 +2183,7 @@ narrative_event = {
 					}
 				}
 			}
-			15 = {
+			5 = {
 				add_trait_depressed_effect = yes
 				modifier = {
 					factor = 0
@@ -2357,7 +2197,7 @@ narrative_event = {
 					}
 				}
 			}
-			15 = {
+			5 = {
 				add_trait = lunatic
 				hidden_tooltip = { character_event = { id = 38304 } }
 				modifier  = {
@@ -2367,8 +2207,8 @@ narrative_event = {
 			}
 		}
 		random_list = {
-			60 = {}
-			30 = {
+			75 = {}
+			20 = {
 				add_trait_paranoid_effect = yes
 				remove_trait_trusting_effect = yes
 				modifier = {
@@ -2376,7 +2216,7 @@ narrative_event = {
 					trait = paranoid
 				}
 			}
-			10 = {
+			5 = {
 				add_trait_craven_effect = yes
 				if = {
 					limit = { trait = brave }
@@ -2396,8 +2236,8 @@ narrative_event = {
 			}
 		}
 		random_list = {
-			90 = {}
-			10 = {
+			95 = {}
+			5 = {
 				add_trait_wounded_effect = yes
 			}
 		}
@@ -2428,8 +2268,8 @@ narrative_event = {
 		name = EVTOPTA_WCVOD_9950
 
 		random_list = {
-			30 = {}
-			30 = {
+			60 = {}
+			20 = {
 				add_trait = stressed
 				hidden_tooltip = { character_event = { id = 38282 } }
 				modifier = {
@@ -2444,7 +2284,7 @@ narrative_event = {
 					}
 				}
 			}
-			20 = {
+			10 = {
 				add_trait_depressed_effect = yes
 				modifier = {
 					factor = 0
@@ -2458,7 +2298,7 @@ narrative_event = {
 					}
 				}
 			}
-			20 = {
+			10 = {
 				add_trait = lunatic
 				hidden_tooltip = { character_event = { id = 38304 } }
 				modifier  = {
@@ -2468,8 +2308,8 @@ narrative_event = {
 			}
 		}
 		random_list = {
-			60 = {}
-			10 = {
+			75 = {}
+			5 = {
 				add_trait_paranoid_effect = yes
 				remove_trait_trusting_effect = yes
 				modifier = {
@@ -2477,7 +2317,7 @@ narrative_event = {
 					trait = paranoid
 				}
 			}
-			30 = {
+			20 = {
 				add_trait_craven_effect = yes
 				if = {
 					limit = { trait = brave }
@@ -2559,8 +2399,8 @@ narrative_event = {
 		name = EVTOPTA_WCVOD_9950
 
 		random_list = {
-			50 = {}
-			20 = {
+			80 = {}
+			10 = {
 				add_trait = stressed
 				hidden_tooltip = { character_event = { id = 38282 } }
 				modifier = {
@@ -2575,7 +2415,7 @@ narrative_event = {
 					}
 				}
 			}
-			15 = {
+			5 = {
 				add_trait_depressed_effect = yes
 				modifier = {
 					factor = 0
@@ -2589,7 +2429,7 @@ narrative_event = {
 					}
 				}
 			}
-			15 = {
+			5 = {
 				add_trait = lunatic
 				hidden_tooltip = { character_event = { id = 38304 } }
 				modifier  = {
@@ -2599,8 +2439,8 @@ narrative_event = {
 			}
 		}
 		random_list = {
-			20 = {}
-			20 = {
+			60 = {}
+			10 = {
 				add_trait_paranoid_effect = yes
 				remove_trait_trusting_effect = yes
 				modifier = {
@@ -2608,7 +2448,7 @@ narrative_event = {
 					trait = paranoid
 				}
 			}
-			20 = {
+			10 = {
 				add_trait_craven_effect = yes
 				if = {
 					limit = { trait = brave }
@@ -2626,7 +2466,7 @@ narrative_event = {
 					}
 				}
 			}
-			20 = {
+			10 = {
 				add_trait_cruel_effect = yes
 				remove_trait_kind_effect = yes
 				modifier = {
@@ -2634,7 +2474,7 @@ narrative_event = {
 					trait = cruel
 				}
 			}
-			20 = {
+			10 = {
 				add_trait_wroth_effect = yes
 				remove_trait_patient_effect = yes
 				modifier = {
@@ -2761,7 +2601,7 @@ narrative_event = {
 		name = EVTOPTA_WCVOD_9995
 
 		random_list = {
-			20 = {}
+			50 = {}
 			40 = {
 				add_trait = lunatic
 				hidden_tooltip = { character_event = { id = 38304 } }
@@ -2770,7 +2610,7 @@ narrative_event = {
 					trait = lunatic
 				}
 			}
-			40 = { death = { death_reason = death_suicide_hanging } }
+			10 = { death = { death_reason = death_suicide_hanging } }
 		}
 
 		ai_chance = {

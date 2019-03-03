@@ -172,12 +172,10 @@ character_event = {
 			}
 			modifier = {
 				factor = 0
-				evil_public_religion_trigger = no
-				FROM = { evil_public_religion_trigger = yes }
+				NOT = { opinion = { who = FROM value = -25 } }
 			}
 		}
 	}
-	# IT... isn't my son/daughter/etc anymore!
 	option = {
 		trigger = {
 			OR = {
@@ -194,9 +192,30 @@ character_event = {
 				ROOT = { FROM = { is_unholy_creature_to_prev_trigger = yes } }
 			}
 		}
-		name = EVTOPTB_WCDAC_150
+		name = {
+			trigger = {
+				OR = {
+					is_married = FROM
+					is_friend = FROM
+					is_lover = FROM
+					is_close_relative = FROM
+				}
+			}
+			text = EVTOPTB_WCDAC_150_close	# IT... isn't my son/daughter/etc anymore!
+		}
+		name = {
+			trigger = {
+				NOR = {
+					is_married = FROM
+					is_friend = FROM
+					is_lover = FROM
+					is_close_relative = FROM
+				}
+			}
+			text = EVTOPTB_WCDAC_150_stranger	# IT... isn't my son/daughter/etc anymore!
+		}
 
-		reverse_opinion = { modifier = opinion_accused_apostate who = FROM years = 20 }
+		opinion = { modifier = opinion_accused_apostate who = FROM years = 20 }
 		if = {
 			limit = { is_married = FROM }
 			remove_spouse = FROM
@@ -351,12 +370,7 @@ character_event = {
 
 		higher_tier_than = KING
 		primary_title = { has_law = law_voting_power_1 }
-		shadow_council = {
-			any_society_member = {
-				is_society_grandmaster = yes
-				reverse_has_opinion_modifier = { who = ROOT modifier = opinion_loyal_servant }
-			}
-		}
+		society_member_of = shadow_council
 		OR = {
 			NOT = { has_assigned_minor_title = title_shadow_council_member_1 }
 			NOT = { has_assigned_minor_title = title_shadow_council_member_2 }
@@ -706,7 +720,10 @@ province_event = {
 		province_event = { id = WCDAC.5029 days = 1825 }
 		d_twilights_hammer = {
 			if = {
-				limit = { has_holder = yes }
+				limit = {
+					has_holder = yes
+					is_primary_holder_title = yes
+				}
 				holder_scope = { narrative_event = { id = WCDAC.5000 } }
 				break = yes
 			}
@@ -762,7 +779,10 @@ province_event = {
 		}
 		d_twilights_hammer = {
 			if = {
-				limit = { has_holder = yes }
+				limit = {
+					has_holder = yes
+					is_primary_holder_title = yes
+				}
 				holder_scope = { narrative_event = { id = WCDAC.5005 } }
 				break = yes
 			}
@@ -817,7 +837,10 @@ province_event = {
 		}
 		d_twilights_hammer = {
 			if = {
-				limit = { has_holder = yes }
+				limit = {
+					has_holder = yes
+					is_primary_holder_title = yes
+				}
 				holder_scope = { narrative_event = { id = WCDAC.5010 } }
 				break = yes
 			}
@@ -867,7 +890,10 @@ province_event = {
 		}
 		d_twilights_hammer = {
 			if = {
-				limit = { has_holder = yes }
+				limit = {
+					has_holder = yes
+					is_primary_holder_title = yes
+				}
 				holder_scope = { narrative_event = { id = WCDAC.5015 } }
 				break = yes
 			}
@@ -1131,39 +1157,47 @@ narrative_event = {
 				}
 			}
 		}
+		# If you're not independent ruler, gives your old titles to liege
 		if = {
 			limit = {
 				is_ruler = yes
 				independent = no
 			}
-			top_liege = {
+			liege = {
 				ROOT = {
 					any_vassal = {
 						limit = {
 							capital_holding = {
-								NOT = { de_jure_liege_or_above = k_silithus }
-								NOT = { de_jure_liege_or_above = k_ahnqiraj }
+								NOR = {
+									de_jure_liege_or_above = k_silithus
+									de_jure_liege_or_above = k_ahnqiraj
+								}
 							}
 						}
 						set_defacto_liege = PREVPREV
 					}
 					any_demesne_title = {
 						limit = {
-							tier = COUNT
-
-							NOT = { de_jure_liege_or_above = k_silithus }
-							NOT = { de_jure_liege_or_above = k_ahnqiraj }
+							lower_tier_than = DUKE
+							NOR = {
+								de_jure_liege_or_above = k_silithus
+								de_jure_liege_or_above = k_ahnqiraj
+							}
 						}
 						grant_title_no_opinion = PREVPREV
-						location = {
-							culture = PREVPREVPREV
-							religion = PREVPREVPREV
+						if = {
+							limit = { tier = COUNT }
+							location = {
+								culture = PREVPREVPREV
+								religion = PREVPREVPREV
+							}
 						}
 					}
 				}
 			}
 		}
 		set_defacto_liege = THIS
+		# Spawns army for start
 		capital_scope = {
 			ROOT = {
 				spawn_unit = {
