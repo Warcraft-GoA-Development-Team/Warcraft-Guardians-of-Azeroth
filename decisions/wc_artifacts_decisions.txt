@@ -1,0 +1,197 @@
+targetted_decisions = {
+	upgrade_artifacts = {
+		only_playable = yes
+
+		filter = self
+		third_party_filter = artifacts
+		show_third_party_potential = yes
+		ai_target_filter = self
+		ai_third_party_filter = artifacts
+		ai_check_interval = 120
+
+		from_potential = {
+			is_untouchable_trigger = no
+		}
+
+		potential = {
+			is_untouchable_trigger = no
+		}
+
+		allow = {
+			show_only_failed_conditions = yes
+			FROM = {
+				is_adult = yes
+				is_incapable = no
+				prisoner = no
+				is_inaccessible_trigger = no
+			}
+		}
+
+		third_party_potential = {
+			show_only_failed_conditions = yes
+			FROMFROM = {
+				show_scope_change = no
+				custom_tooltip = {
+					text = text_can_be_upgrated
+
+					has_artifact_flag = can_be_upgrated
+					NOT = {
+						has_artifact_flag = improved_artifact
+					}
+				}
+			}
+		}
+
+		third_party_allow = {
+			FROMFROM = {
+				custom_tooltip = {
+					text = text_can_be_upgrated
+
+					has_artifact_flag = can_be_upgrated
+				}
+				is_artifact_active = yes
+				is_artifact_equipped = no
+			}
+		}
+
+		third_party_score = {
+			factor = 0
+			additive_modifier = {
+				value = -250
+				FROMFROM = {
+					quality >= 1
+				}
+			}
+			additive_modifier = {
+				value = -250
+				FROMFROM = {
+					quality >= 2
+				}
+			}
+			additive_modifier = {
+				value = -500
+				FROMFROM = {
+					quality >= 3
+				}
+			}
+		}
+
+		effect = {
+			wealth = local_third_party_score
+			hidden_tooltip = {
+				FROMFROM = {
+					set_artifact_flag = improved_artifact
+					save_event_target_as = improved_artifact
+				}
+				character_event = { id = WCAE.2 }
+			}
+		}
+	
+		revoke_allowed = {
+			always = no
+		}
+	
+		ai_will_do = {
+			factor = 1
+			modifier = {
+				factor = 0
+				OR = {
+					NOT = { wealth = local_third_party_score }
+					trait = content
+					war = no
+				}
+			}
+			modifier = {
+				factor = 0.25
+				trait = greedy
+			}
+		}
+	}
+
+	summon_a_parrot = { # Pirate Admiral's Hat - Summon a parrot
+		only_playable = yes
+
+		filter = self
+		ai_target_filter = self
+		ai_check_interval = 60
+		
+		potential = {
+			is_adult = yes
+			is_incapable = no
+			prisoner = no
+			is_inaccessible_trigger = no
+
+			higher_real_tier_than = count
+
+			OR = {
+				culture = pirate_culture
+				culture = blackwater
+			}
+
+			any_artifact = {
+				has_artifact_flag = can_summon_parrots
+			}
+		}
+		
+		allow = {
+			wealth = 50
+			prestige = 1000
+			custom_tooltip = {
+				text = pirate_hat_summon_parrot_tooltip
+				any_artifact = {
+					has_artifact_flag = can_summon_parrots
+					is_artifact_equipped = yes
+				}
+			}
+			NOT = {
+				has_character_modifier = pet_parrot
+			}
+		}
+
+		effect = {
+			wealth = -50
+			hidden_tooltip = {
+				random_list = {
+					99 = {
+						modifier = {
+							factor = 0
+							any_artifact = {
+								artifact_type = pirate_admiral_hat_gold #impossible to obtain without cheats
+								is_artifact_equipped = yes
+							}
+						}
+						add_character_modifier = {
+							name = pet_parrot
+							duration = -1
+						}
+						character_event = { id = RIP.11507 }
+					}
+					1 = {
+						character_event = { id = WCAE.1 } #Rare Pepe
+					}
+				}
+			}
+		}
+		
+		revoke_allowed = {
+			always = no
+		}
+		
+		ai_will_do = {
+			factor = 1
+			modifier = {
+				factor = 1.5
+				wealth = 500
+			}
+			modifier = {
+				factor = 2
+				wealth = 1000
+			}
+			modifier = {
+				factor = 2
+				NOT = { trait = shy }
+				num_of_friends = 0
+			}
+		}
+	}
+}
