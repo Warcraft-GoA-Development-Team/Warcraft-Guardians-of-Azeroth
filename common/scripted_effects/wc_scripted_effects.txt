@@ -557,6 +557,17 @@ show_close_people_what_this_become_effect = {
 	if = {
 		limit = {
 			OR = {
+				is_married = yes
+				num_of_friends = 1
+				num_of_lovers = 1
+				has_children = yes
+				father = { always = yes }
+				mother = { always = yes }
+				is_ruler = yes
+				has_job_title = yes
+				has_minor_title = yes
+			}
+			OR = {
 				NOT = { has_character_flag = show_what_become_cooldown_flag }
 				had_character_flag = { flag = show_what_become_cooldown_flag days = 30 }
 			}
@@ -588,12 +599,13 @@ show_close_people_what_this_become_effect = {
 		}
 		if = {		# ...liege is almost your family
 			limit = {
+				independent = no
 				OR = {
 					is_ruler = yes
 					has_job_title = yes
 					has_minor_title = yes
 				}
-				
+
 				liege = {
 					NOT = { is_married = PREV }
 					NOT = { is_friend = PREV }
@@ -707,28 +719,42 @@ add_fel_corruption_modifier_effect = {
 			add_trait_demon_effect = yes
 		}
 		major_soul_corruption_effect = yes
+		hidden_effect = {
+			cancel_pregnancy_effect = yes
+		}
 	}
-	else = {
+	else_if = {
+		limit = { check_variable = { which = fel_corruption value = 66 } }
+		add_character_modifier = { name = fel_corruption_2 duration = -1 }
+		major_soul_corruption_effect = yes
+		hidden_effect = {
+			cancel_pregnancy_effect = yes
+		}
+	}
+	else_if = {
+		limit = { check_variable = { which = fel_corruption value = 33 } }
+		add_character_modifier = { name = fel_corruption_1 duration = -1 }
+		minor_soul_corruption_effect = yes
+	}
+}
+set_demon_gfx_effect = {
+	if = {
+		limit = { has_demon_gfx_trigger = no }
 		if = {
 			limit = { check_variable = { which = fel_corruption value = 66 } }
-			add_character_modifier = { name = fel_corruption_2 duration = -1 }
-			major_soul_corruption_effect = yes
-		}
-		else = {
 			if = {
-				limit = { check_variable = { which = fel_corruption value = 33 } }
-				add_character_modifier = { name = fel_corruption_1 duration = -1 }
-				minor_soul_corruption_effect = yes
+				limit = { has_orc_gfx_trigger = yes }
+				if = { limit = { trait = creature_orc } remove_trait = creature_orc }
+				if = { limit = { NOT = { trait = creature_fel_orc } } add_trait = creature_fel_orc }
+				set_graphical_culture = orcfel
 			}
 		}
-	}
-	hidden_effect = {
 		if = {
 			limit = {
-				is_pregnant = yes
-				can_has_children_trigger = no
+				check_variable = { which = fel_corruption value = 100 }
+				has_demon_gfx_trigger = no
 			}
-			death = { death_reason = death_childbirth }
+			set_graphical_culture = demon_form
 		}
 	}
 }
@@ -743,35 +769,17 @@ add_trait_demon_effect = {
 		convert_to_secret_religion = yes
 	}
 
-	# Remove drunkard
-	if = { limit = { trait = drunkard } remove_trait = drunkard }
+	# Removes drunkard, diseases, negative genetic and weight
+	clean_dark_beings_effect = yes
 
-	# Remove diseases
-	remove_disease_trait_effect = yes
+	set_demon_gfx_effect = yes
 
-	# Removed negative genetic
-	remove_all_negative_congenital_traits_effect = yes
-
-	# Remove weight
-	if = {
-		limit = { trait = is_fat }
-		remove_trait = is_fat
-	}
-	if = {
-		limit = { trait = is_malnourished }
-		remove_trait = is_malnourished
-	}
-	remove_weight_modifier_effect = yes
-	clear_fat_flags_effect = yes
-	clear_malnourished_flags_effect = yes
 	hidden_effect = {
-		if = {
-			limit = {
-				is_pregnant = yes
-				can_has_children_trigger = no
-			}
-			death = { death_reason = death_childbirth }
-		}
+		# Pregnant shall not pass
+		cancel_pregnancy_effect = yes
+
+		# Notifies your family/spouse/friends/lovers
+		show_close_people_what_this_become_effect = yes
 	}
 }
 
@@ -917,21 +925,13 @@ add_void_corruption_modifier_effect = {
 		add_character_modifier = { name = void_corruption_2 duration = -1 }
 		major_soul_corruption_effect = yes
 	}
-	else = {
-		if = {
-			limit = { check_variable = { which = void_corruption value = 33 } }
-			add_character_modifier = { name = void_corruption_1 duration = -1 }
-			minor_soul_corruption_effect = yes
-		}
+	else_if = {
+		limit = { check_variable = { which = void_corruption value = 33 } }
+		add_character_modifier = { name = void_corruption_1 duration = -1 }
+		minor_soul_corruption_effect = yes
 	}
 	hidden_effect = {
-		if = {
-			limit = {
-				is_pregnant = yes
-				can_has_children_trigger = no
-			}
-			death = { death_reason = death_childbirth }
-		}
+		cancel_pregnancy_effect = yes
 	}
 }
 add_trait_void_creature_effect = {
@@ -945,35 +945,15 @@ add_trait_void_creature_effect = {
 		convert_to_secret_religion = yes
 	}
 
-	# Remove drunkard
-	if = { limit = { trait = drunkard } remove_trait = drunkard }
+	# Removes drunkard, diseases, negative genetic and weight
+	clean_dark_beings_effect = yes
 
-	# Remove diseases
-	remove_disease_trait_effect = yes
-
-	# Removed negative genetic
-	remove_all_negative_congenital_traits_effect = yes
-
-	# Remove weight
-	if = {
-		limit = { trait = is_fat }
-		remove_trait = is_fat
-	}
-	if = {
-		limit = { trait = is_malnourished }
-		remove_trait = is_malnourished
-	}
-	remove_weight_modifier_effect = yes
-	clear_fat_flags_effect = yes
-	clear_malnourished_flags_effect = yes
 	hidden_effect = {
-		if = {
-			limit = {
-				is_pregnant = yes
-				can_has_children_trigger = no
-			}
-			death = { death_reason = death_childbirth }
-		}
+		# Pregnant shall not pass
+		cancel_pregnancy_effect = yes
+
+		# Notifies your family/spouse/friends/lovers
+		show_close_people_what_this_become_effect = yes
 	}
 }
 
@@ -1058,7 +1038,7 @@ suggest_fel_source_effect = {
 						ai = no
 						NOT = { has_character_flag = ai_refused_dark_magic_flag }
 					}
-					
+
 					is_susceptible_to_fel_corruption_trigger = yes
 					is_high_elf_trigger = yes
 					NOR = {
@@ -1081,7 +1061,7 @@ suggest_void_source_effect = {
 						ai = no
 						NOT = { has_character_flag = ai_refused_dark_magic_flag }
 					}
-					
+
 					is_susceptible_to_void_corruption_trigger = yes
 					is_high_elf_trigger = yes
 					NOR = {
@@ -1680,48 +1660,50 @@ remove_3_mind_control_power_effect = {
 	}
 	character_event = { id = WCUND.1107 days = 1 }		# Decreases power of mind control
 }
+
 set_undead_gfx_effect = {
 	if = {
-		limit = { has_human_gfx_trigger = yes }
-		set_graphical_culture = human_undead
-	}
-	if = {
-		limit = {
-			OR = {
-				graphical_culture = murlocgfx
-				graphical_culture = murlocundeadgfx
-			}
+		limit = { has_undead_gfx_trigger = no }	# If you add new undead gfx, don't forget to add your gfx in this trigger
+		if = {
+			limit = { has_human_gfx_trigger = yes }
+			set_graphical_culture = human_undead
 		}
-		set_graphical_culture = murloc_undead
-	}
-	if = {
-		limit = {
-			OR = {
-				graphical_culture = quilboargfx
-				graphical_culture = quilboarundeadgfx
+		else_if = {
+			limit = {
+				OR = {
+					graphical_culture = murlocgfx
+					graphical_culture = murlocundeadgfx
+				}
 			}
+			set_graphical_culture = murloc_undead
 		}
-		set_graphical_culture = quilboar_undead
-	}
-	if = {
-		limit = { graphical_culture = vrykulgfx }
-		set_graphical_culture = vrykul_undead
-	}
-	if = {
-		limit = {
-			OR = {
-				graphical_culture = gnollgfx
-				graphical_culture = gnollundeadgfx
+		else_if = {
+			limit = {
+				OR = {
+					graphical_culture = quilboargfx
+					graphical_culture = quilboarundeadgfx
+				}
 			}
+			set_graphical_culture = quilboar_undead
 		}
-		set_graphical_culture = gnoll_undead
-	}
-	if = {
-		limit = { has_undead_gfx_trigger = no }
-		set_graphical_culture = ghoul
+		else_if = {
+			limit = { graphical_culture = vrykulgfx }
+			set_graphical_culture = vrykul_undead
+		}
+		else_if = {
+			limit = {
+				OR = {
+					graphical_culture = gnollgfx
+					graphical_culture = gnollundeadgfx
+				}
+			}
+			set_graphical_culture = gnoll_undead
+		}
+		else = {
+			set_graphical_culture = ghoul
+		}
 	}
 }
-
 add_trait_undead_effect = {
 	# Undead children shall not pass
 	if = {
@@ -1739,35 +1721,22 @@ add_trait_undead_effect = {
 			convert_to_secret_religion = yes
 		}
 
-		# Remove drunkard
-		if = { limit = { trait = drunkard } remove_trait = drunkard }
+		# Removes drunkard, diseases, negative genetic and weight
+		clean_dark_beings_effect = yes
 
-		# Remove diseases
-		remove_disease_trait_effect = yes
+		set_undead_gfx_effect = yes
 
-		# Removed negative genetic
-		remove_all_negative_congenital_traits_effect = yes
-
-		# Remove weight
-		if = {
-			limit = { trait = is_fat }
-			remove_trait = is_fat
-		}
-		if = {
-			limit = { trait = is_malnourished }
-			remove_trait = is_malnourished
-		}
-		remove_weight_modifier_effect = yes
-		clear_fat_flags_effect = yes
-		clear_malnourished_flags_effect = yes
-	}
-	hidden_effect = {
-		if = {
-			limit = {
-				is_pregnant = yes
-				can_has_children_trigger = no
+		hidden_effect = {
+			if = {
+				limit = { has_character_flag = being_raised_flag }
+				clr_character_flag = being_raised_flag
 			}
-			death = { death_reason = death_childbirth }
+
+			# Pregnant shall not pass
+			cancel_pregnancy_effect = yes
+
+			# Notifies your family/spouse/friends/lovers
+			show_close_people_what_this_become_effect = yes
 		}
 	}
 }
@@ -1863,7 +1832,7 @@ add_max_depopulation_effect = {
 	if = {
 		limit = {
 			has_dlc = "Reapers"
-			
+
 			NOT = { has_province_modifier = depopulated_3 }
 			any_province_holding = {
 				OR = {
@@ -1887,4 +1856,41 @@ add_max_depopulation_effect = {
 			set_province_flag = recent_depopulation_3
 		}
 	}
+}
+
+cancel_pregnancy_effect = {
+	if = {
+		limit = {
+			is_pregnant = yes
+		}
+		if = { limit = { trait = hard_pregnancy } remove_trait = hard_pregnancy }
+		if = { limit = { trait = pregnant } remove_trait = pregnant }
+		cancel_pregnancy = yes
+	}
+}
+# Removes drunkard, diseases, negative genetic and weight
+clean_dark_beings_effect = {
+	# Remove drunkard
+	if = { limit = { trait = drunkard } remove_trait = drunkard }
+
+	# Remove diseases
+	remove_disease_trait_effect = yes
+	remove_symptoms_effect = yes
+	remove_disease_flags_effect = yes
+
+	# Removed negative genetic
+	remove_all_negative_congenital_traits_effect = yes
+
+	# Remove weight
+	if = {
+		limit = { trait = is_fat }
+		remove_trait = is_fat
+	}
+	if = {
+		limit = { trait = is_malnourished }
+		remove_trait = is_malnourished
+	}
+	remove_weight_modifier_effect = yes
+	clear_fat_flags_effect = yes
+	clear_malnourished_flags_effect = yes
 }
