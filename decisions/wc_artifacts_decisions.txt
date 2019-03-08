@@ -1,13 +1,147 @@
+decisions = {
+
+	open_market = {
+
+		ai = no
+		potential = {
+			NOT = { has_character_flag = market_open }
+		}
+
+		allow = {
+			prisoner = no
+			is_incapable = no
+			is_inaccessible_trigger = no
+		}
+
+		effect = {
+			set_character_flag = market_open
+		}
+
+	}
+
+	close_market = {
+
+		is_high_prio = yes
+		ai = no
+		potential = {
+			has_character_flag = market_open
+		}
+
+		allow = {
+			#
+		}
+
+		effect = {
+			clr_character_flag = market_open
+		}
+
+	}
+
+	market_buy_top_hat = {
+
+		ai_check_interval = 60
+		only_playable = yes
+		potential = {
+			can_rule_peacefully_trigger = yes
+			OR = {
+				has_character_flag = market_open
+				ai = yes
+			}
+			OR = {
+				culture = gilnean
+				culture = tirassian
+				culture_group = goblin_group
+				ai = no
+			}
+			OR = {
+				ai = no
+				any_artifact = {
+					has_artifact_flag = head
+				}
+			}
+		}
+
+		allow = {
+			prisoner = no
+			is_incapable = no
+			OR = {
+				AND = {
+					OR = {
+						culture = gilnean
+						culture = tirassian
+						culture_group = goblin_group
+					}
+					wealth = 50
+				}
+				wealth = 500
+			}
+		}
+
+		effect = {
+			if = {
+				limit = {
+					OR = {
+						culture = gilnean
+						culture = tirassian
+						culture_group = goblin_group
+					}
+				}
+				wealth = -50
+			}
+			else_if = {
+				wealth = -500
+			}
+			add_artifact = top_hat
+		}
+
+	}
+
+	market_buy_rogue_dagger = {
+
+		ai_check_interval = 60
+		only_playable = yes
+		potential = {
+			can_rule_peacefully_trigger = yes
+			OR = {
+				has_character_flag = market_open
+				ai = yes
+			}
+			OR = {
+				is_rogue_class_trigger = yes
+				ai = no
+			}
+			OR = {
+				ai = no
+				any_artifact = {
+					has_artifact_flag = dagger
+				}
+			}
+		}
+
+		allow = {
+			prisoner = no
+			is_incapable = no
+			wealth = 250
+		}
+
+		effect = {
+			wealth = -250
+			add_artifact = dagger_1
+		}
+
+	}
+	
+}
+
 targetted_decisions = {
 	upgrade_artifacts = {
-		only_playable = yes
-
 		filter = self
 		third_party_filter = artifacts
 		show_third_party_potential = yes
 		ai_target_filter = self
 		ai_third_party_filter = artifacts
 		ai_check_interval = 120
+		only_playable = yes
 
 		from_potential = {
 			is_untouchable_trigger = no
