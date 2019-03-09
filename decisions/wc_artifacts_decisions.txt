@@ -25,11 +25,10 @@ decisions = {
 		ai = no
 		potential = {
 			has_character_flag = market_open
-			has_character_flag = bought_thing_recently
 		}
 
 		allow = {
-			#
+			NOT = { has_character_flag = bought_thing_recently }
 		}
 
 		effect = {
@@ -92,7 +91,7 @@ decisions = {
 				}
 				wealth = -50
 			}
-			else_if = {
+			else = {
 				wealth = -500
 			}
 
@@ -101,14 +100,14 @@ decisions = {
 			set_character_flag = bought_thing_recently
 
 			random_list = {
-				80 = { #success
+				90 = { #success
 					custom_tooltip = {
 						text = artifact_up_success_tooltip
 						character_event = { id = WCAE.9 }
 					}
 					artifact_buy_success_score = yes
 				}
-				5 = { #failure
+				10 = { #failure
 					custom_tooltip = {
 						text = artifact_up_failure_tooltip
 						character_event = { id = WCAE.10 }
@@ -136,8 +135,11 @@ decisions = {
 			}
 			OR = {
 				ai = no
-				any_artifact = {
-					has_artifact_flag = dagger
+				NOT = {
+					any_artifact = {
+						has_artifact_flag = dagger
+						count = 2
+					}
 				}
 			}
 		}
@@ -156,6 +158,60 @@ decisions = {
 			set_character_flag = bought_thing_recently
 
 			random_list = {
+				90 = { #success
+					custom_tooltip = {
+						text = artifact_up_success_tooltip
+						character_event = { id = WCAE.9 }
+					}
+					artifact_buy_success_score = yes
+				}
+				10 = { #failure
+					custom_tooltip = {
+						text = artifact_up_failure_tooltip
+						character_event = { id = WCAE.10 }
+					}
+					artifact_buy_failure_score = yes
+				}
+			}
+		}
+
+	}
+	
+	market_buy_copper_ring = {
+
+		ai_check_interval = 60
+		only_playable = yes
+		potential = {
+			can_rule_peacefully_trigger = yes
+			OR = {
+				ai = yes
+				has_character_flag = market_open
+			}
+			OR = {
+				ai = no
+				NOT = {
+					any_artifact = {
+						has_artifact_flag = ring
+						count = 2
+					}
+				}
+			}
+		}
+
+		allow = {
+			prisoner = no
+			is_incapable = no
+			wealth = 500
+			NOT = {	has_character_flag = bought_thing_recently }
+		}
+
+		effect = {
+			wealth = -500
+			set_character_flag = bought_artifact_copper_ring
+			set_character_flag = bought_from_jeweler
+			set_character_flag = bought_thing_recently
+
+			random_list = {
 				80 = { #success
 					custom_tooltip = {
 						text = artifact_up_success_tooltip
@@ -163,7 +219,7 @@ decisions = {
 					}
 					artifact_buy_success_score = yes
 				}
-				5 = { #failure
+				20 = { #failure
 					custom_tooltip = {
 						text = artifact_up_failure_tooltip
 						character_event = { id = WCAE.10 }
@@ -208,6 +264,7 @@ targetted_decisions = {
 						has_flag = improved_artifact_1
 						has_flag = improved_artifact_2
 						has_flag = improved_artifact_3
+						has_flag = improved_artifact_4
 						has_flag = bought_thing_recently
 					}
 				}
@@ -237,25 +294,129 @@ targetted_decisions = {
 					has_artifact_flag = can_be_upgrated
 				}
 				trigger_if = {
-					limit = { quality == 1 }
+					limit = {
+						quality == 1
+						NOT = { has_artifact_flag = expensive }
+					}
 					artifact_owner = {
 						wealth = 250
 					}
 				}
 				trigger_if = {
-					limit = { quality == 2 }
+					limit = {
+						quality == 1
+						has_artifact_flag = expensive
+					}
 					artifact_owner = {
 						wealth = 500
 					}
 				}
 				trigger_if = {
-					limit = { quality == 3 }
+					limit = {
+						quality == 2
+						NOT = { has_artifact_flag = expensive }
+					}
+					artifact_owner = {
+						wealth = 500
+					}
+				}
+				trigger_if = {
+					limit = {
+						quality == 2
+						has_artifact_flag = expensive
+					}
 					artifact_owner = {
 						wealth = 1000
 					}
 				}
+				trigger_if = {
+					limit = {
+						quality == 3
+						NOT = { has_artifact_flag = expensive }
+					}
+					artifact_owner = {
+						wealth = 1000
+					}
+				}
+				trigger_if = {
+					limit = {
+						quality == 3
+						has_artifact_flag = expensive
+					}
+					artifact_owner = {
+						wealth = 1000
+					}
+				}
+				trigger_if = {
+					limit = {
+						quality == 4
+						NOT = { has_artifact_flag = expensive }
+					}
+					artifact_owner = {
+						wealth = 2500
+					}
+				}
+				trigger_if = {
+					limit = {
+						quality == 4
+						has_artifact_flag = expensive
+					}
+					artifact_owner = {
+						wealth = 5000
+					}
+				}
+				trigger_if = {
+					limit = {
+						artifact_type = ring_3
+					}
+					artifact_owner = {
+						learning = 10
+						OR = {
+							diplomacy = 15
+							stewardship = 15
+							martial = 15
+							intrigue = 15
+						}
+					}
+				}
+				trigger_if = {
+					limit = {
+						artifact_type = ring_of_martial
+					}
+					artifact_owner = {
+						learning = 15
+						martial = 25
+					}
+				}
+				trigger_if = {
+					limit = {
+						artifact_type = ring_of_diplomacy
+					}
+					artifact_owner = {
+						learning = 15
+						diplomacy = 25
+					}
+				}
+				trigger_if = {
+					limit = {
+						artifact_type = ring_of_stewardship
+					}
+					artifact_owner = {
+						learning = 15
+						stewardship = 25
+					}
+				}
+				trigger_if = {
+					limit = {
+						artifact_type = ring_of_intrigue
+					}
+					artifact_owner = {
+						learning = 15
+						intrigue = 25
+					}
+				}
 				is_artifact_active = yes
-				is_artifact_equipped = no
+				#is_artifact_equipped = no
 			}
 		}
 
@@ -277,6 +438,18 @@ targetted_decisions = {
 				value = -500
 				FROMFROM = {
 					quality >= 3
+				}
+			}
+			additive_modifier = {
+				value = -1500
+				FROMFROM = {
+					quality >= 4
+				}
+			}
+			modifier = {
+				factor = 2.0
+				FROMFROM = {
+					has_artifact_flag = expensive
 				}
 			}
 		}
@@ -315,35 +488,31 @@ targetted_decisions = {
 				if = {
 					limit = {
 						FROMFROM = {
-							has_artifact_flag = blacksmith
+							quality == 4
 						}
 					}
-					set_character_flag = bought_from_blacksmith
+					set_character_flag = improved_artifact_4
 				}
-				if = {
-					limit = {
-						FROMFROM = {
-							has_artifact_flag = tailor
-						}
+				
+				FROMFROM = {
+					trigger_switch = {
+						on_trigger = has_artifact_flag
+						blacksmith	= { artifact_owner = { set_character_flag = bought_from_blacksmith			}	}
+						tailor		= { artifact_owner = { set_character_flag = bought_from_tailor				}	}
+						enchanter	= { artifact_owner = { set_character_flag = bought_from_enchanter			}	}
+						alchemist	= { artifact_owner = { set_character_flag = bought_from_alchemist			}	}
+						jeweler		= { artifact_owner = { set_character_flag = bought_from_jeweler				}	}
 					}
-					set_character_flag = bought_from_tailor
 				}
-				if = {
-					limit = {
-						FROMFROM = {
-							has_artifact_flag = dagger
-						}
+				FROMFROM = {
+					trigger_switch = {
+						on_trigger = has_artifact_flag
+						dagger		= { artifact_owner = { set_character_flag = bought_artifact_rogue_dagger	}	}
+						hat			= { artifact_owner = { set_character_flag = bought_artifact_top_hat			}	}
+						ring		= { artifact_owner = { set_character_flag = bought_artifact_copper_ring		}	}
 					}
-					set_character_flag = bought_artifact_rogue_dagger
 				}
-				if = {
-					limit = {
-						FROMFROM = {
-							has_artifact_flag = hat
-						}
-					}
-					set_character_flag = bought_artifact_top_hat
-				}
+
 				character_event = { id = WCAE.2 }
 			}
 		}
