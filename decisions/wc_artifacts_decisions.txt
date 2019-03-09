@@ -25,6 +25,7 @@ decisions = {
 		ai = no
 		potential = {
 			has_character_flag = market_open
+			has_character_flag = bought_thing_recently
 		}
 
 		allow = {
@@ -36,22 +37,24 @@ decisions = {
 		}
 
 	}
-
+	
+	# Artifacts
 	market_buy_top_hat = {
 
 		ai_check_interval = 60
 		only_playable = yes
 		potential = {
 			can_rule_peacefully_trigger = yes
+			is_untouchable_trigger = no
 			OR = {
-				has_character_flag = market_open
 				ai = yes
+				has_character_flag = market_open
 			}
 			OR = {
+				ai = no
 				culture = gilnean
 				culture = tirassian
 				culture_group = goblin_group
-				ai = no
 			}
 			OR = {
 				ai = no
@@ -75,6 +78,7 @@ decisions = {
 				}
 				wealth = 500
 			}
+			NOT = {	has_character_flag = bought_thing_recently }
 		}
 
 		effect = {
@@ -91,7 +95,27 @@ decisions = {
 			else_if = {
 				wealth = -500
 			}
-			add_artifact = top_hat
+
+			set_character_flag = bought_artifact_top_hat
+			set_character_flag = bought_from_tailor
+			set_character_flag = bought_thing_recently
+
+			random_list = {
+				80 = { #success
+					custom_tooltip = {
+						text = artifact_up_success_tooltip
+						character_event = { id = WCAE.9 }
+					}
+					artifact_buy_success_score = yes
+				}
+				5 = { #failure
+					custom_tooltip = {
+						text = artifact_up_failure_tooltip
+						character_event = { id = WCAE.10 }
+					}
+					artifact_buy_failure_score = yes
+				}
+			}
 		}
 
 	}
@@ -103,12 +127,12 @@ decisions = {
 		potential = {
 			can_rule_peacefully_trigger = yes
 			OR = {
-				has_character_flag = market_open
 				ai = yes
+				has_character_flag = market_open
 			}
 			OR = {
-				is_rogue_class_trigger = yes
 				ai = no
+				is_rogue_class_trigger = yes
 			}
 			OR = {
 				ai = no
@@ -122,11 +146,31 @@ decisions = {
 			prisoner = no
 			is_incapable = no
 			wealth = 250
+			NOT = {	has_character_flag = bought_thing_recently }
 		}
 
 		effect = {
 			wealth = -250
-			add_artifact = dagger_1
+			set_character_flag = bought_artifact_rogue_dagger
+			set_character_flag = bought_from_blacksmith
+			set_character_flag = bought_thing_recently
+
+			random_list = {
+				80 = { #success
+					custom_tooltip = {
+						text = artifact_up_success_tooltip
+						character_event = { id = WCAE.9 }
+					}
+					artifact_buy_success_score = yes
+				}
+				5 = { #failure
+					custom_tooltip = {
+						text = artifact_up_failure_tooltip
+						character_event = { id = WCAE.10 }
+					}
+					artifact_buy_failure_score = yes
+				}
+			}
 		}
 
 	}
@@ -164,6 +208,7 @@ targetted_decisions = {
 						has_flag = improved_artifact_1
 						has_flag = improved_artifact_2
 						has_flag = improved_artifact_3
+						has_flag = bought_thing_recently
 					}
 				}
 			}
@@ -190,6 +235,24 @@ targetted_decisions = {
 					text = text_can_be_upgrated
 
 					has_artifact_flag = can_be_upgrated
+				}
+				trigger_if = {
+					limit = { quality == 1 }
+					artifact_owner = {
+						wealth = 250
+					}
+				}
+				trigger_if = {
+					limit = { quality == 2 }
+					artifact_owner = {
+						wealth = 500
+					}
+				}
+				trigger_if = {
+					limit = { quality == 3 }
+					artifact_owner = {
+						wealth = 1000
+					}
 				}
 				is_artifact_active = yes
 				is_artifact_equipped = no
@@ -224,7 +287,7 @@ targetted_decisions = {
 					set_artifact_flag = improved_artifact
 					save_event_target_as = improved_artifact
 				}
-				character_event = { id = WCAE.2 }
+				set_character_flag = bought_thing_recently
 				if = {
 					limit = {
 						FROMFROM = {
@@ -249,6 +312,39 @@ targetted_decisions = {
 					}
 					set_character_flag = improved_artifact_3
 				}
+				if = {
+					limit = {
+						FROMFROM = {
+							has_artifact_flag = blacksmith
+						}
+					}
+					set_character_flag = bought_from_blacksmith
+				}
+				if = {
+					limit = {
+						FROMFROM = {
+							has_artifact_flag = tailor
+						}
+					}
+					set_character_flag = bought_from_tailor
+				}
+				if = {
+					limit = {
+						FROMFROM = {
+							has_artifact_flag = dagger
+						}
+					}
+					set_character_flag = bought_artifact_rogue_dagger
+				}
+				if = {
+					limit = {
+						FROMFROM = {
+							has_artifact_flag = hat
+						}
+					}
+					set_character_flag = bought_artifact_top_hat
+				}
+				character_event = { id = WCAE.2 }
 			}
 		}
 	
@@ -261,7 +357,6 @@ targetted_decisions = {
 			modifier = {
 				factor = 0
 				OR = {
-					wealth = 1000 #TEMP
 					trait = content
 					war = yes
 				}
