@@ -66,7 +66,7 @@ character_event = {
 
 		remove_void_corruption_modifiers_effect = yes
 		add_void_corruption_modifier_effect = yes
-		
+
 		# Stage effects
 		if = {
 			limit = { check_variable = { which = fel_corruption value = 66 }  }
@@ -140,59 +140,28 @@ character_event = {
 	trigger = {
 		is_alive = yes
 		is_dying = no
-		
+
 		NOT = { trait = being_void }
+		is_susceptible_to_void_corruption_trigger = yes
 		OR = {
 			AND = {
-				is_susceptible_to_void_corruption_trigger = no
-				NOT = { check_variable = { which = void_corruption value = 0 } }
-			}
-			AND = {
-				is_susceptible_to_void_corruption_trigger = yes
-				NOT = { check_variable = { which = void_corruption value = 100 } }
 				OR = {
-					# If you turned into voidform, you'll receive a very very large "dose" of void
-					AND = {
-						has_character_modifier = void_corruption_2
-						NOT = { check_variable = { which = void_corruption value = 70 } }	# Void corruption "ceiling"
-					}
-					# If you're a high lvl shadow_priest, you'll receive a very large "dose" of void
-					AND = {
-						is_shadow_priest_class_trigger = yes
-						is_weak_shadow_priest_class_trigger = no
-						NOT = { check_variable = { which = void_corruption value = 50 } }	# Void corruption "ceiling"
-					}
-					# If you're a weak shadow priest, you'll receive an average "dose" of void
-					AND = {
-						is_shadow_priest_class_trigger = yes
-						is_weak_shadow_priest_class_trigger = yes
-						NOT = { check_variable = { which = void_corruption value = 45 } }	# Void corruption "ceiling"
-					}
-					# If you're a void worshiper, you'll receive an average "dose" of void
-					AND = {
-						OR = {
-							true_religion_group = void_group
-							has_character_flag = consuming_void_magic_flag
-						}
-						NOT = { check_variable = { which = void_corruption value = 35 } }	# Void corruption "ceiling"
-					}
-					# If you're only located amoung the void worshipers, you'll receive
-					# a small "dose" of void
-					AND = {
-						location = { religion_group = void_group }
-						NOT = { check_variable = { which = void_corruption value = 15 } }	# Void corruption "ceiling"
-					}
-				}
-			}
-			AND = {
-				is_susceptible_to_void_corruption_trigger = yes
-				check_variable = { which = void_corruption value = 1 }
-				NOR = {
-					has_character_modifier = void_corruption_2
-					is_shadow_priest_class_trigger = yes
 					true_religion_group = void_group
+					has_character_flag = consuming_void_magic_flag
 					location = { religion_group = void_group }
 				}
+				NOT = { check_variable = { which = void_corruption value = 35 } }	# Minimal Void Corruption if other conditions are met
+			}
+			AND = {
+				OR = {
+					NOR = {
+						true_religion_group = void_group
+						has_character_flag = consuming_void_magic_flag
+						location = { religion_group = void_group }
+					}
+					check_variable = { which = void_corruption value = 40 }
+				}
+				check_variable = { which = void_corruption value = 1 }
 			}
 		}
 	}
@@ -200,55 +169,17 @@ character_event = {
 	immediate = {
 		if = {
 			limit = {
-				is_susceptible_to_void_corruption_trigger = no
-				NOT = { check_variable = { which = void_corruption value = 0 } }
-			}
-			character_event = { id = WCVOD.115 }
-			break = yes
-		}
-		if = {
-			limit = {
 				is_susceptible_to_void_corruption_trigger = yes
-				NOT = { check_variable = { which = void_corruption value = 100 } }
 				OR = {
-					# If you turned into voidform, you'll receive a very very large "dose" of void
-					AND = {
-						has_character_modifier = void_corruption_2
-						NOT = { check_variable = { which = void_corruption value = 70 } }	# Void corruption "ceiling"
-					}
-					# If you're a high lvl shadow priest, you'll receive a very large "dose" of void
-					AND = {
-						is_shadow_priest_class_trigger = yes
-						is_weak_shadow_priest_class_trigger = no
-						NOT = { check_variable = { which = void_corruption value = 50 } }	# Void corruption "ceiling"
-					}
-					# If you're a weak shadow priest, you'll receive an average "dose" of void
-					AND = {
-						is_shadow_priest_class_trigger = yes
-						is_weak_shadow_priest_class_trigger = yes
-						NOT = { check_variable = { which = void_corruption value = 45 } }	# Void corruption "ceiling"
-					}
-					# If you're void worshiper, you'll receive an average "dose" of void
-					AND = {
-						OR = {
-							true_religion_group = void_group
-							has_character_flag = consuming_void_magic_flag
-						}
-						NOT = { check_variable = { which = void_corruption value = 35 } }	# Void corruption "ceiling"
-					}
-					# If you're only located among the void worshipers, you'll receive
-					# a small "dose" of void, but, anyway, this will be enough for the minor exposure
-					AND = {
-						location = { religion_group = void_group }
-						NOT = { check_variable = { which = void_corruption value = 15 } }	# Void corruption "ceiling"
-					}
+					true_religion_group = void_group
+					has_character_flag = consuming_void_magic_flag
+					location = { religion_group = void_group }
 				}
+				NOT = { check_variable = { which = void_corruption value = 35 } }	# Minimal Void Corruption if other conditions are met
 			}
 			character_event = { id = WCVOD.100 }
-			break = yes
 		}
-		if = {
-			limit = { check_variable = { which = void_corruption value = 1 } }
+		else = {
 			character_event = { id = WCVOD.110 }
 		}
 	}
@@ -262,10 +193,6 @@ character_event = {
 
 	is_triggered_only = yes
 
-	immediate = {
-		log = "Void corruption of [Root.GetBestName] is [Root.void_corruption.GetValue]"
-	}
-
 	option = {
 		name = {
 			trigger = { NOT = { true_religion_group = void_group } }
@@ -277,6 +204,8 @@ character_event = {
 		}
 
 		add_5_void_corruption_effect = yes
+
+		hidden_effect = { log = "Void corruption of [Root.GetBestName] is [Root.fel_corruption.GetValue]" }
 	}
 }
 # Decreases void corruption
@@ -288,33 +217,20 @@ character_event = {
 
 	is_triggered_only = yes
 
-	immediate = {
-		log = "Void corruption of [Root.GetBestName] is [Root.void_corruption.GetValue]"
+	option = {
+		name = EXCELLENT
+
+		remove_5_void_corruption_effect = yes
+
+		hidden_effect = { log = "Void corruption of [Root.GetBestName] is [Root.fel_corruption.GetValue]" }
 	}
 
 	option = {
-		name = {
-			trigger = { NOT = { true_religion_group = void_group } }
-			text = EXCELLENT
+		name = EVTOPTB_WCFEL_110
+
+		ai_chance = {
+			factor = 0
 		}
-		name = {
-			trigger = { true_religion_group = void_group }
-			text = ALAS
-		}
-		remove_5_void_corruption_effect = yes
-	}
-}
-# Removes void corruption
-character_event = {
-	id = WCVOD.115
-
-	is_triggered_only = yes
-	hide_window = yes
-
-	immediate = {
-		log = "Void corruption of [Root.GetBestName] is [Root.void_corruption.GetValue]"
-
-		set_variable = { which = void_corruption value = 0 }
 	}
 }
 
@@ -468,11 +384,11 @@ character_event = {
 	trigger = {
 		is_alive = yes
 		is_dying = no
-		
+
 		NOT = { trait = being_void }
-		
+
 		true_religion = old_gods_worship
-		
+
 		OR = {
 			has_character_flag = void_mutation_flag
 			has_character_modifier = void_corruption_2
@@ -844,7 +760,7 @@ province_event = {
 
 	is_triggered_only = yes
 	hide_window = yes
-	
+
 	has_global_flag = naga_resurfaced_flag
 
 	trigger = {
@@ -1073,7 +989,7 @@ province_event = {
 
 	is_triggered_only = yes
 	hide_window = yes
-	
+
 	trigger = {
 		NOT = { has_global_flag = reawakening_of_cthun_flag }
 	}
@@ -1222,7 +1138,7 @@ province_event = {
 
 	is_triggered_only = yes
 	hide_window = yes
-	
+
 	has_dlc = "Mystics"
 
 	trigger = {
@@ -1233,11 +1149,11 @@ province_event = {
 		random_playable_ruler = {
 			limit = {
 				is_untouchable_trigger = no
-				
+
 				is_adult = yes
 				is_incapable = no
 				prisoner = no
-				
+
 				NOT = { has_character_flag = xalatath_happened_flag }
 
 				OR = {
@@ -1546,7 +1462,7 @@ character_event = {
 	border = GFX_event_normal_frame_war
 
 	is_triggered_only = yes
-	
+
 	min_age = 16
 	only_capable = yes
 	prisoner = no
@@ -1554,7 +1470,7 @@ character_event = {
 	trigger = {
 		is_alive = yes
 		is_dying = no
-		
+
 		OR = {
 			war = yes
 			liege = { war = yes }
@@ -1572,7 +1488,7 @@ character_event = {
 		save_event_target_as = target_xalatath_holder
 		location = { save_event_target_as = target_province }
 	}
-	
+
 	weight_multiplier = {
 		days = 1
 	}
@@ -1816,7 +1732,7 @@ character_event = {
 
 	trigger = {
 		is_untouchable_trigger = no
-		
+
 		is_alive = yes
 		is_dying = no
 
@@ -1998,7 +1914,7 @@ narrative_event = {
 		is_susceptible_to_void_corruption_trigger = yes
 		NOT = { trait = being_void }
 	}
-	
+
 	fail_trigger_effect = {
 		clr_character_flag = ongoing_nightmares_chain_flag
 	}
@@ -2143,7 +2059,7 @@ narrative_event = {
 		is_susceptible_to_void_corruption_trigger = yes
 		NOT = { trait = being_void }
 	}
-	
+
 	fail_trigger_effect = {
 		clr_character_flag = ongoing_nightmares_chain_flag
 	}
@@ -2244,7 +2160,7 @@ narrative_event = {
 		is_susceptible_to_void_corruption_trigger = yes
 		NOT = { trait = being_void }
 	}
-	
+
 	fail_trigger_effect = {
 		clr_character_flag = ongoing_nightmares_chain_flag
 	}
@@ -2375,7 +2291,7 @@ narrative_event = {
 		is_susceptible_to_void_corruption_trigger = yes
 		NOT = { trait = being_void }
 	}
-	
+
 	fail_trigger_effect = {
 		clr_character_flag = ongoing_nightmares_chain_flag
 	}
@@ -2826,7 +2742,7 @@ narrative_event = {
 			remove_trait = honest
 			remove_trait = zealous
 			remove_trait = trusting
-			
+
 			give_nickname = nick_the_devourer
 		}
 	}
