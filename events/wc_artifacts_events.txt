@@ -102,8 +102,9 @@ character_event = {
 		trigger = {
 			event_target:improved_artifact = {
 				OR = {
-					artifact_type = top_hat # top_hat to top_hat_2 to top_hat_3
+					artifact_type = top_hat # top_hat to top_hat_2 to top_hat_3 to top_hat_4
 					artifact_type = top_hat_2
+					artifact_type = top_hat_3
 					artifact_type = dagger_1 # dagger_1 to dagger_2 to dagger_3 to dagger_4
 					artifact_type = dagger_2
 					artifact_type = dagger_3
@@ -132,6 +133,7 @@ character_event = {
 					OR = {
 						artifact_type = top_hat
 						artifact_type = top_hat_2
+						artifact_type = top_hat_3
 					}
 				}
 			}
@@ -196,15 +198,25 @@ character_event = {
 		}
 	}
 
-	option = { # top_hat to pirate_hat
+	option = { # special hat
 
 		trigger = {
-			event_target:improved_artifact = {
-				artifact_type = top_hat
-			}
 			OR = {
-				culture = pirate_culture
-				culture = blackwater
+				AND = {
+					event_target:improved_artifact = {
+						artifact_type = top_hat
+					}
+					OR = {
+						culture = pirate_culture
+						culture = blackwater
+					}
+				}
+				AND = {
+					event_target:improved_artifact = {
+						artifact_type = top_hat_2
+					}
+					trait = cannibal_trait
+				}
 			}
 		}
 
@@ -214,8 +226,14 @@ character_event = {
 
 		artifact_random_up_effect = yes
 
-		name = EVTOPTA_WCAE_3
-
+		name = {
+			text = EVTOPTA_WCAE_3
+			trigger = { event_target:improved_artifact = { artifact_type = top_hat } }
+		}
+		name = {
+			text = EVTOPTA_WCAE_7
+			trigger = { event_target:improved_artifact = { artifact_type = top_hat_2 } }
+		}
 	}
 
 	option = { # paint blue
@@ -603,10 +621,20 @@ character_event = { #success
 			limit = {
 				event_target:improved_artifact = {
 					has_flag = up_to_pirate_hat
-					artifact_type = top_hat
+					OR = {
+						artifact_type = top_hat
+						artifact_type = top_hat_2
+					}
 				}
 			}
-			add_artifact = pirate_admiral_hat
+
+			event_target:improved_artifact = { # Specials
+				trigger_switch = {
+					on_trigger = artifact_type
+					top_hat_2 			= { artifact_owner = { add_artifact = cannibal_hat 			} }
+					top_hat 			= { artifact_owner = { add_artifact = pirate_admiral_hat	} }
+				}
+			}
 		}
 		
 		if = {
@@ -627,6 +655,7 @@ character_event = { #success
 			event_target:improved_artifact = { # Generic upgrades
 				trigger_switch = {
 					on_trigger = artifact_type
+					top_hat_3 			= { artifact_owner = { add_artifact = top_hat_4 			} }
 					top_hat_2 			= { artifact_owner = { add_artifact = top_hat_3 			} }
 					top_hat 			= { artifact_owner = { add_artifact = top_hat_2				} }
 					dagger_3			= { artifact_owner = { add_artifact = dagger_4				} }
