@@ -12,14 +12,14 @@
 2. `ai`, `is_playable`, `is_adult`, `is_incapable`, `prisoner`, `is_inaccessible_trigger`
 3. `is_ruler`, `is_landed`, `independent`, `same_realm`, `mercenary`, `holy_order`, `is_tributary`, `government`, `tier`, `war`
 4. `character`, `is_within_diplo_range`, cooldowns, limit of attempts or flags/traits/modifiers that are set if an event/decision is ongoing or happened.
-5. Being type (_`being_` trait_) , race (_`creature_` trait_), class (_`class_` trait_), religion, culture, +other traits
-6. Required wealth, piety, prestige and user variables
-7. All other conditions
+5. Being type (_`being_` trait_) , race (_`creature_` trait_), class (_`class_` trait_), mana triggers (`has_5_mana_trigger`, `has_4_mana_trigger` etc) religion, culture, +other traits
+6. Wealth, piety, prestige, and user variables
+7. Other conditions
 
 ### [Commands](https://ck2.paradoxwikis.com/Commands)
 1. `show_scope_change`, `save_event_target_as`
 2. Cooldowns, limit of attempts or flags that are set if the event/decision is ongoing
-3. Class of creature (_demon, undead, worgen, etc._), race, class, religion, culture, +other traits
+3. Being type (_`being_` trait_) , race (_`creature_` trait_), class (_`class_` trait_), mana effects (`add_5_mana_effect`, `remove_5_mana_effect`, `clear_mana_modifier_effect` etc) religion, culture, +other traits
 4. Wealth, piety, prestige, and user variables
 5. Other effects
 6. Continuation of an event chain
