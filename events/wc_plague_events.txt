@@ -33,20 +33,33 @@ narrative_event = {
 			73 = { province_event = { id = WCTHW.50 } } # When shit happens, Medivh tries to fix it
 
 			# Starts "Arthas's" event chain
-			# Choses a possible future champion of the Lich King
-			set_global_flag = future_champion_event_chain_flag
-			# Arthas has a higher priority
-			if = {
+			# Selects a champion of the Lich King
+			random_independent_ruler = {
 				limit = {
-					c_60003 = {
+					OR = {
+						is_feudal = yes
+						is_tribal = yes
+					}
+					
+					can_be_undead_trigger = yes
+					religion_group = light_group
+					
+					capital_scope = { region = world_eastern_kingdoms_lordaeron }
+					current_heir = {
 						is_untouchable_trigger = no
-						
+
 						is_alive = yes
 						is_adult = yes
 						is_incapable = no
 						prisoner = no
 						is_inaccessible_trigger = no
 						is_consort = no
+
+						OR = {
+							is_ruler = no
+							is_feudal = yes
+							is_tribal = yes
+						}
 
 						can_be_undead_trigger = yes
 						religion_group = light_group
@@ -56,145 +69,16 @@ narrative_event = {
 							has_unpleasant_trait_trigger = yes
 							has_impious_trait_trigger = yes
 						}
-						top_liege = {
-							can_be_undead_trigger = yes
-							religion_group = light_group
-						}
 					}
 				}
-				c_60003 = { narrative_event = { id = WCTHW.2000 days = 15 } }
-				break = yes
-			}
-			# Heir of light_group king or emperor
-			if = {
-				limit = {
-					any_independent_ruler = {
-						OR = {
-							is_feudal = yes
-							is_tribal = yes
-						}
-						higher_tier_than = DUKE
-						
-						can_be_undead_trigger = yes
-						religion_group = light_group
-						
-						capital_scope = { region = world_eastern_kingdoms_lordaeron }
-						current_heir = {
-							is_alive = yes
-							is_adult = yes
-							is_incapable = no
-							prisoner = no
-							is_inaccessible_trigger = no
-							is_consort = no
-
-							can_be_undead_trigger = yes
-							religion_group = light_group
-							true_religion_group = light_group
-							OR  = {
-								has_evil_trait_trigger = yes
-								has_unpleasant_trait_trigger = yes
-								has_impious_trait_trigger = yes
-							}
-						}
-					}
+				preferred_limit = {
+					current_heir = { has_character_flag = is_arthas }
 				}
-				random_independent_ruler = {
-					limit = {
-						OR = {
-							is_feudal = yes
-							is_tribal = yes
-						}
-						higher_tier_than = DUKE
-						
-						can_be_undead_trigger = yes
-						religion_group = light_group
-						
-						capital_scope = { region = world_eastern_kingdoms_lordaeron }
-						current_heir = {
-							is_alive = yes
-							is_adult = yes
-							is_incapable = no
-							prisoner = no
-							is_inaccessible_trigger = no
-							is_consort = no
-
-							can_be_undead_trigger = yes
-							religion_group = light_group
-							true_religion_group = light_group
-							OR  = {
-								has_evil_trait_trigger = yes
-								has_unpleasant_trait_trigger = yes
-								has_impious_trait_trigger = yes
-							}
-						}
-					}
-					current_heir = { narrative_event = { id = WCTHW.2000 days = 15 } }
+				preferred_limit = {
+					higher_tier_than = DUKE
 				}
-				break = yes
-			}
-			# Heir of light_group monarch
-			if = {
-				limit = {
-					any_independent_ruler = {
-						OR = {
-							is_feudal = yes
-							government = tribal_monarchy_government
-						}
-						
-						can_be_undead_trigger = yes
-						religion_group = light_group
-						
-						capital_scope = { region = world_eastern_kingdoms_lordaeron }
-						current_heir = {
-							is_alive = yes
-							is_adult = yes
-							is_incapable = no
-							prisoner = no
-							is_inaccessible_trigger = no
-							is_consort = no
-
-							can_be_undead_trigger = yes
-							religion_group = light_group
-							true_religion_group = light_group
-							OR  = {
-								has_evil_trait_trigger = yes
-								has_unpleasant_trait_trigger = yes
-								has_impious_trait_trigger = yes
-							}
-						}
-					}
-				}
-				random_independent_ruler = {
-					limit = {
-						OR = {
-							is_feudal = yes
-							government = tribal_monarchy_government
-						}
-						
-						can_be_undead_trigger = yes
-						religion_group = light_group
-						
-						capital_scope = { region = world_eastern_kingdoms_lordaeron }
-						current_heir = {
-							is_alive = yes
-							is_adult = yes
-							is_incapable = no
-							prisoner = no
-							is_inaccessible_trigger = no
-							is_consort = no
-
-							can_be_undead_trigger = yes
-							religion_group = light_group
-							true_religion_group = light_group
-							OR  = {
-								has_evil_trait_trigger = yes
-								has_unpleasant_trait_trigger = yes
-								has_impious_trait_trigger = yes
-							}
-						}
-					}
-					current_heir = { narrative_event = { id = WCTHW.2000 days = 15 } }
-				}
+				primary_title = { save_event_target_as = target_realm }
+				current_heir = { narrative_event = { id = WCTHW.2000 days = 15 } }
 			}
 		}
 	}
@@ -311,8 +195,8 @@ character_event = {
 
 	trigger = {
 		OR = {
-			NOT = { trait = being_undead }	# Mustn't be undead
-			
+			NOT = { trait = being_undead }							# Mustn't be undead
+
 			# Exceptions
 			has_character_flag = transition_into_death_knight_flag	# Event changes your class...
 			has_character_flag = transition_into_wraith_flag		# Event changes your race...
@@ -321,12 +205,12 @@ character_event = {
 			has_character_flag = transition_into_vampire_flag		# Event gives you vampire trait...
 		}															# ...so being_undead isn't important
 		OR = {
-			can_be_undead_trigger = yes		# Only if can be undead
-			
+			can_be_undead_trigger = yes								# Only if can be undead
+
 			# Exceptions
 			has_character_flag = transition_into_wraith_flag		# Event changes your race...
 			has_character_flag = transition_into_abomination_flag	# Event changes your race...
-			has_character_flag = transition_into_lich_flag			# Event changes your race...	
+			has_character_flag = transition_into_lich_flag			# Event changes your race...
 			has_undead_gfx_trigger = yes							# You already have undead portrait...
 		}															# ...so can_be_undead_trigger isn't important
 	}
@@ -408,49 +292,6 @@ character_event = {
 			}
 		}
 		add_trait_undead_effect = yes
-
-		# If you has secret religion, you reveal yourself
-		if = {
-			limit = { has_secret_religion = yes }
-			convert_to_secret_religion = yes
-		}
-
-		hidden_effect = {
-			# Removes flags and symptoms in case you got the Plague
-			if = {
-				limit = { has_character_flag = got_plague_of_undeath }
-				clr_character_flag = developing_illness
-				clr_character_flag = got_plague_of_undeath
-				if = {
-					limit = {
-						trait = cramps
-					}
-					remove_trait = cramps
-				}
-				if = {
-					limit = {
-						trait = cough
-					}
-					remove_trait = cough
-				}
-				if = {
-					limit = {
-						trait = fatigue
-					}
-					remove_trait = fatigue
-				}
-			}
-			if = {
-				limit = { has_character_flag = being_raised_flag }
-				clr_character_flag = being_raised_flag
-			}
-
-			# Portrait changes
-			set_undead_gfx_effect = yes
-
-			# Notifies your family/spouse/friends/lovers
-			show_close_people_what_this_become_effect = yes
-		}
 
 		if = {
 			limit = {
@@ -569,6 +410,7 @@ character_event = {
 	option = {
 		name = EVTOPTA_WCPOD_10001
 
+		set_character_flag = event_war_exception_flag
 		e_scourge = {
 			show_scope_change = no
 			holder_scope = {
@@ -576,6 +418,7 @@ character_event = {
 					target = ROOT
 					casus_belli = scourge_subjugation
 					thirdparty_title = ROOT
+					infamy = 0
 				}
 			}
 		}

@@ -82,20 +82,20 @@ character_event = {
 		}
 		# Health modifiers
 		modifier = {
-			factor = 0.56
-			NOT = { health = 3 }
-		}
-		modifier = {
-			factor = 0.56
-			NOT = { health = 4 }
-		}
-		modifier = {
-			factor = 0.56
+			factor = 0.84
 			NOT = { health = 5 }
 		}
 		modifier = {
-			factor = 0.56
+			factor = 0.84
 			NOT = { health = 6 }
+		}
+		modifier = {
+			factor = 0.84
+			NOT = { health = 7 }
+		}
+		modifier = {
+			factor = 0.84
+			NOT = { health = 8 }
 		}
 		modifier = {
 			factor = 1.1
@@ -123,7 +123,11 @@ character_event = {
 		}
 		modifier = {
 			factor = 0.1
-			has_disease = yes
+			is_ill = yes
+		}
+		modifier = {
+			factor = 0.1
+			has_injury_trigger = yes
 		}
 	}
 	
@@ -131,12 +135,39 @@ character_event = {
 		name = ALAS
 		
 		if = {
-			limit = { has_disease = yes }
+			limit = {
+				OR = {
+					is_ill = yes
+					has_injury_trigger = yes
+				}
+			}
 			death = { death_reason = death_trait }
 		}
 		else = {
 			death_natural_effect = yes
 		}
+	}
+}
+
+# Kills characters that can't have race trait
+character_event = {
+	id = WCRAC.9
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	trigger = {
+		is_alive = yes
+		is_dying = no
+		
+		OR = {
+			graphical_culture = demonformgfx	# Placeholder without race
+			graphical_culture = ghoulgfx		# Placeholder without race
+		}
+	}
+	
+	immediate = {
+		death = { death_reason = death_missing }
 	}
 }
 
@@ -293,16 +324,16 @@ character_event = {
 			}
 			else = { death = { death_reason = death_missing } }
 		}
-		else_if = {
-			limit = { potential_race_ghoul_trigger = yes }
-			add_trait = creature_ghoul
-			add_trait_undead_effect = yes
-		}
-		else_if = {
-			limit = { potential_race_skeleton_trigger = yes }
-			add_trait = creature_skeleton
-			add_trait_undead_effect = yes
-		}
+		# else_if = {
+			# limit = { potential_race_ghoul_trigger = yes }
+			# add_trait = creature_ghoul
+			# add_trait_undead_effect = yes
+		# }
+		# else_if = {
+			# limit = { potential_race_skeleton_trigger = yes }
+			# add_trait = creature_skeleton
+			# add_trait_undead_effect = yes
+		# }
 		else_if = {
 			limit = { potential_race_wraith_trigger = yes }
 			add_trait = creature_wraith
@@ -331,17 +362,29 @@ character_event = {
 		else_if = {
 			limit = { potential_race_annihilan_trigger = yes }
 			add_trait = creature_annihilan
+			if = {
+				limit = { is_female = yes }
+				set_gender = male
+			}
 			add_trait_demon_effect = yes
 		}
 		else_if = {
 			limit = { potential_race_nathrezim_trigger = yes }
 			add_trait = creature_nathrezim
+			if = {
+				limit = { is_female = yes }
+				set_gender = male
+			}
 			add_trait_demon_effect = yes
 			culture = nathrezim
 		}
 		else_if = {
 			limit = { potential_race_eredruin_trigger = yes }
 			add_trait = creature_eredruin
+			if = {
+				limit = { is_female = yes }
+				set_gender = male
+			}
 			add_trait_demon_effect = yes
 		}
 		else_if = {
@@ -355,6 +398,10 @@ character_event = {
 		else_if = {
 			limit = { potential_race_satyr_trigger = yes }
 			add_trait = creature_satyr
+			if = {
+				limit = { is_female = yes }
+				set_gender = male
+			}
 			add_trait_demon_effect = yes
 		}
 		else_if = {
@@ -367,15 +414,27 @@ character_event = {
 			add_trait = creature_sayaadi
 			add_trait_demon_effect = yes
 			culture = sayaadi
+			if = {
+				limit = { is_female = no }
+				set_gender = female
+			}
 		}
 		else_if = {
 			limit = { potential_race_shivarra_trigger = yes }
 			add_trait = creature_shivarra
+			if = {
+				limit = { is_female = no }
+				set_gender = female
+			}
 			add_trait_demon_effect = yes
 		}
 		else_if = {
 			limit = { potential_race_moarg_trigger = yes }
 			add_trait = creature_moarg
+			if = {
+				limit = { is_female = yes }
+				set_gender = male
+			}
 			add_trait_demon_effect = yes
 		}
 		else_if = {
@@ -398,6 +457,10 @@ character_event = {
 		else_if = {
 			limit = { potential_race_flamewaker_trigger = yes }
 			add_trait = creature_flamewaker
+			if = {
+				limit = { is_female = yes }
+				set_gender = male
+			}
 		}
 		else_if = {
 			limit = { potential_race_water_elemental_trigger = yes }
@@ -461,6 +524,10 @@ character_event = {
 		else_if = {
 			limit = { potential_race_harpy_trigger = yes }
 			add_trait = creature_harpy
+			if = {
+				limit = { is_female = no }
+				set_gender = female
+			}
 		}
 		else_if = {
 			limit = { potential_race_mechagnome_trigger = yes }
@@ -553,6 +620,8 @@ character_event = {
 		}
 		if = {
 			limit = {
+				is_alive = yes
+				is_dying = no
 				OR = {
 					has_undead_gfx_trigger = yes
 					AND = {

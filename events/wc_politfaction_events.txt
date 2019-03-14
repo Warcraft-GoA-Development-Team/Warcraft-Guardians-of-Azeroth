@@ -217,6 +217,11 @@ character_event = {
 
 	trigger = {
 		OR = {
+			# It means that character only need to clear alliances
+			AND = {
+				is_in_political_faction_trigger = no
+				is_ruler = yes
+			}
 			AND = {
 				is_member_of_horde_faction_trigger = yes
 				can_be_in_horde_faction_trigger = no
@@ -230,21 +235,28 @@ character_event = {
 
 	immediate = {
 		log = "WCPLF.52 fired for [Root.GetBestName]"
-
-		### THE HORDE ###
+		
 		if = {
-			limit = { is_member_of_horde_faction_trigger = yes }
-			leave_horde_faction_effect = yes
+			limit = { is_in_political_faction_trigger = no }
+			break_alliances_with_horde_faction_effect = yes
+			break_alliances_with_alliance_faction_effect = yes
 		}
+		else = {
+			### THE HORDE ###
+			if = {
+				limit = { is_member_of_horde_faction_trigger = yes }
+				leave_horde_faction_effect = yes
+			}
 
-		### THE ALLIANCE ###
-		if = {
-			limit = { is_member_of_alliance_faction_trigger = yes }
-			leave_alliance_faction_effect = yes
+			### THE ALLIANCE ###
+			if = {
+				limit = { is_member_of_alliance_faction_trigger = yes }
+				leave_alliance_faction_effect = yes
+			}
 		}
 	}
 }
-# One of the members takes a faction under control
+# One of members takes faction under control
 narrative_event = {
 	id = WCPLF.60
 	title = EVTTITLE_WCPLF_60
@@ -254,9 +266,14 @@ narrative_event = {
 
 	is_triggered_only = yes
 	major = yes
-
+	
 	option = {
-		name = OK
+		trigger = { evil_true_religion_trigger = yes }
+		name = FOOLS
+	}
+	option = {
+		trigger = { evil_true_religion_trigger = no }
+		name = INTERESTING
 	}
 }
 
@@ -288,7 +305,7 @@ narrative_event = {
 	}
 	
 	option = {
-		name = OK
+		name = INTERESTING
 	}
 }
 
@@ -621,7 +638,7 @@ narrative_event = {
 		become_leader_of_alliance_faction_effect = yes
 	}
 	option = {
-		name = OK
+		name = INTERESTING
 	}
 }
 # Destruction of the Alliance
@@ -662,7 +679,7 @@ narrative_event = {
 		name = ALAS
 	}
 	option = {
-		trigger = { evil_true_religion_trigger = no
+		trigger = { evil_true_religion_trigger = no }
 		name = INTERESTING
 	}
 }

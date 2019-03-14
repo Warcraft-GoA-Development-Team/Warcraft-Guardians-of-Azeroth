@@ -117,6 +117,7 @@ character_event = {
 				OR = {
 					is_dark_being_trigger = yes
 					trait = worgen
+					dark_true_religion_trigger = yes
 				}
 				FROM = {
 					OR = {
@@ -125,7 +126,7 @@ character_event = {
 					}
 				}
 			}
-			text = EVTOPTB_WCPOD_5014_undead
+			text = INTERESTING
 		}
 		# You're shocked
 		name = {
@@ -139,6 +140,7 @@ character_event = {
 						OR = {
 							is_dark_being_trigger = yes
 							trait = worgen
+							dark_true_religion_trigger = yes
 						}
 						FROM = {
 							OR = {
@@ -172,31 +174,36 @@ character_event = {
 			}
 			modifier = {
 				factor = 0
-				evil_public_religion_trigger = no
-				FROM = { evil_public_religion_trigger = yes }
+				NOT = { opinion = { who = FROM value = -25 } }
 			}
 		}
 	}
-	# IT... isn't my son/daughter/etc anymore!
 	option = {
-		trigger = {
-			OR = {
-				AND = {
-					is_dark_being_trigger = no
-					NOT = { trait = worgen }
-					FROM = {
-						OR = {
-							is_dark_being_trigger = yes
-							trait = worgen
-						}
-					}
+		trigger = { is_unpleasant_creature_to_prev_trigger = yes }
+		name = {
+			trigger = {
+				OR = {
+					is_married = FROM
+					is_friend = FROM
+					is_lover = FROM
+					is_close_relative = FROM
 				}
-				ROOT = { FROM = { is_unholy_creature_to_prev_trigger = yes } }
 			}
+			text = EVTOPTB_WCDAC_150_close	# IT... isn't my son/daughter/etc anymore!
 		}
-		name = EVTOPTB_WCDAC_150
+		name = {
+			trigger = {
+				NOR = {
+					is_married = FROM
+					is_friend = FROM
+					is_lover = FROM
+					is_close_relative = FROM
+				}
+			}
+			text = EVTOPTB_WCDAC_150_stranger	# IT... isn't my son/daughter/etc anymore!
+		}
 
-		reverse_opinion = { modifier = opinion_accused_apostate who = FROM years = 20 }
+		opinion = { modifier = opinion_accused_apostate who = FROM years = 20 }
 		if = {
 			limit = { is_married = FROM }
 			remove_spouse = FROM
@@ -258,7 +265,6 @@ character_event = {
 		}
 	}
 }
-
 
 # Notification from decision join_the_scourge
 letter_event = {
@@ -351,12 +357,7 @@ character_event = {
 
 		higher_tier_than = KING
 		primary_title = { has_law = law_voting_power_1 }
-		shadow_council = {
-			any_society_member = {
-				is_society_grandmaster = yes
-				reverse_has_opinion_modifier = { who = ROOT modifier = opinion_loyal_servant }
-			}
-		}
+		society_member_of = shadow_council
 		OR = {
 			NOT = { has_assigned_minor_title = title_shadow_council_member_1 }
 			NOT = { has_assigned_minor_title = title_shadow_council_member_2 }
