@@ -59,85 +59,6 @@ can_declare_wars_trigger = {
 		}
 	}
 }
-# YOU CAN'T BE UNDEAD IF IT'S NOT TRUE
-can_be_undead_trigger = {
-	is_adult = yes
-	OR = {
-		AND = {
-			controls_religion = no
-			holy_order = no
-			mercenary = no
-		}
-		religion_group = necromancy_group
-	}
-
-	is_humanoid_trigger = yes
-	NOR = {
-		trait = being_demon
-		trait = being_void
-		trait = worgen
-		trait = creature_dryad
-		trait = creature_frostnymph
-		is_uncursed_titanforged_trigger = yes
-	}
-
-	is_pregnant = no
-}
-# YOU CAN'T BE DEMON AND GET FEL CORRUPTION IF IT'S NOT TRUE
-is_susceptible_to_fel_corruption_trigger = {
-	is_adult = yes
-	OR = {
-		AND = {
-			controls_religion = no
-			holy_order = no
-			mercenary = no
-		}
-		religion_group = fel_group
-	}
-
-	is_humanoid_trigger = yes
-	NOR = {
-		trait = being_undead
-		trait = worgen
-		trait = creature_dryad
-		trait = creature_frostnymph
-
-		has_character_modifier = void_corruption_1
-		has_character_modifier = void_corruption_2
-		trait = being_void
-
-		true_religion_group = void_group
-		true_religion = forsaken_cult
-		has_character_flag = consuming_void_magic_flag
-	}
-}
-# YOU CAN'T BE VOID CREATURE AND GET VOID CORRUPTION IF IT'S NOT TRUE
-is_susceptible_to_void_corruption_trigger = {
-	is_adult = yes
-	OR = {
-		AND = {
-			controls_religion = no
-			holy_order = no
-			mercenary = no
-		}
-		religion_group = void_group
-	}
-
-	is_humanoid_trigger = yes
-	NOR = {
-		trait = being_undead
-		trait = worgen
-		trait = creature_dryad
-		trait = creature_frostnymph
-
-		has_character_modifier = fel_corruption_1
-		has_character_modifier = fel_corruption_2
-		trait = being_demon
-
-		true_religion_group = fel_group
-		has_character_flag = consuming_fel_magic_flag
-	}
-}
 # YOU CAN'T BE WORGEN
 is_susceptible_to_worgen_curse_character_trigger = {
 	is_adult = yes
@@ -174,18 +95,48 @@ is_susceptible_to_worgen_curse_province_trigger = {
 	}
 }
 # CAN'T CHANGE RELIGION IF IT'S NOT TRUE
-can_be_converted_to_religion_character_trigger = {
-	NOR = {
-		AND = {
-			true_religion_group = fel_group
-			OR = {
-				trait = being_demon
-				has_character_modifier = fel_corruption_2
-				is_warlock_class_trigger = yes
+can_switch_religion_trigger = {
+	trigger_if = {
+		limit = {
+			has_invader_title_trigger = yes
+		}
+		has_invader_title_trigger = no
+	}
+	trigger_if = {
+		limit = {
+			has_game_rule = {
+				name = religion_change
+				value = evil_exceptions
 			}
 		}
-		true_religion_group = necromancy_group
-		true_religion_group = void_group
+		OR = {
+			custom_tooltip = {
+				text = evil_true_religion_trigger_negative_tooltip
+				evil_true_religion_trigger = no
+			}
+			trait = kind
+		}
+	}
+	trigger_if = {
+		limit = {
+			has_game_rule = {
+				name = religion_change
+				value = evil
+			}
+		}
+		custom_tooltip = {
+			text = evil_true_religion_trigger_negative_tooltip
+			evil_true_religion_trigger = no
+		}
+	}
+	trigger_if = {
+		limit = {
+			has_game_rule = {
+				name = religion_change
+				value = dark
+			}
+		}
+		dark_true_religion_trigger = no
 	}
 }
 # TITLE CAN'T BE CONQUERED IF IT'S NOT TRUE
@@ -221,7 +172,7 @@ can_get_sick_trigger = {
 }
 can_be_eaten_trigger = {
 	is_untouchable_trigger = no
-	
+
 	is_dark_being_trigger = no
 	is_humanoid_trigger = yes
 	is_uncursed_titanforged_trigger = no
@@ -265,7 +216,7 @@ can_has_sexual_relation_with_prev = {
 	}
 	OR = {
 		has_prev_race_trigger = yes
-		
+
 		# Can have sexual relationship with all "non- void_creature humanoid that can marry" races
 		AND = {
 			trait = creature_sayaadi
@@ -281,7 +232,7 @@ can_has_sexual_relation_with_prev = {
 			can_marry_trigger = yes
 			PREV = { trait = creature_sayaadi }
 		}
-		
+
 		AND = {
 			OR = {
 				is_high_elf_trigger = yes
@@ -371,7 +322,7 @@ can_has_sexual_relation_with_root = {
 	}
 	OR = {
 		has_prev_race_trigger = yes
-		
+
 		# Can have sexual relationship with all races
 		AND = {
 			trait = creature_sayaadi
@@ -387,7 +338,7 @@ can_has_sexual_relation_with_root = {
 			can_marry_trigger = yes
 			ROOT = { trait = creature_sayaadi }
 		}
-		
+
 		AND = {
 			OR = {
 				is_high_elf_trigger = yes
@@ -490,6 +441,11 @@ can_be_sacrificed_trigger = {
 	is_humanoid_trigger = yes
 	has_invader_title_trigger = no
 }
+# CAN'T HAVE COURT PHYSICIAN IF IT'S NOT TRUE
+# Evil demons, undead and void beings can't hire court physician even it their close relative are sick
+can_have_court_physician_trigger = {
+	can_rule_peacefully_trigger = yes
+}
 
 has_invader_title_trigger = {
 	OR = {
@@ -498,25 +454,14 @@ has_invader_title_trigger = {
 		has_landed_title = e_black_empire
 	}
 }
-is_dark_being_trigger = {
-	OR = {
-		trait = being_undead
-		trait = being_demon
-		trait = being_void
-	}
-}
+
 # They're more aggresive and have free CBs
 is_aggressive_trigger = {
 	custom_tooltip = {
 		text = is_aggressive_trigger_tooltip
 		hidden_tooltip = {
 			OR = {
-				evil_public_religion_trigger = yes
-				religion_group = elemental_lords_group
-				religion = scarlet_light
-				religion = cult_of_hakkar
-				religion_group = primitive_group
-				religion_group = vrykul_religion_group
+				is_aggressive_religion_trigger = yes
 
 				AND = {
 					OR = {
@@ -530,6 +475,19 @@ is_aggressive_trigger = {
 		}
 	}
 }
+is_aggressive_religion_trigger = {
+	OR = {
+		evil_public_religion_trigger = yes
+		religion = orcish_fel
+		religion = wolf_cult_religion
+		religion_group = elemental_lords_group
+		religion = scarlet_light
+		religion = cult_of_hakkar
+		religion_group = primitive_group
+		religion_group = vrykul_religion_group
+	}
+}
+
 evil_true_religion_trigger = {
 	custom_tooltip = {
 		text = evil_true_religion_trigger_tooltip
@@ -1337,12 +1295,12 @@ potential_race_trigger = {
 			potential_race_frostnymph_trigger = yes
 			potential_race_vulpera_trigger = yes
 			potential_race_sethrak_trigger = yes
-			
+
 			potential_race_protector_trigger = yes
 			potential_race_ancient_war_trigger = yes
 			potential_race_ancient_lore_trigger = yes
 			potential_race_ancient_wind_trigger = yes
-			
+
 		}
 }
 
@@ -1466,7 +1424,7 @@ has_race_trait_trigger = {
 		trait = creature_infinite_drake
 		trait = creature_infinite_dragon
 		trait = creature_infinite_wyrm
-		
+
 		trait = creature_old_god
 		trait = creature_vulpera
 		trait = creature_sethrak

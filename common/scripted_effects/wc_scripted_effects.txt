@@ -557,6 +557,17 @@ show_close_people_what_this_become_effect = {
 	if = {
 		limit = {
 			OR = {
+				is_married = yes
+				num_of_friends = 1
+				num_of_lovers = 1
+				has_children = yes
+				father = { always = yes }
+				mother = { always = yes }
+				is_ruler = yes
+				has_job_title = yes
+				has_minor_title = yes
+			}
+			OR = {
 				NOT = { has_character_flag = show_what_become_cooldown_flag }
 				had_character_flag = { flag = show_what_become_cooldown_flag days = 30 }
 			}
@@ -594,12 +605,13 @@ show_close_people_what_this_become_effect = {
 		}
 		if = {		# ...liege is almost your family
 			limit = {
+				independent = no
 				OR = {
 					is_ruler = yes
 					has_job_title = yes
 					has_minor_title = yes
 				}
-				
+
 				liege = {
 					NOT = { character = event_target:target_necromancer }	# This character turned THIS, so it already know
 					NOT = { is_married = PREV }
@@ -609,377 +621,6 @@ show_close_people_what_this_become_effect = {
 				}
 			}
 			liege = { character_event = { id = WCDAC.150 days = 5 } }
-		}
-	}
-}
-
-add_5_fel_corruption_effect = {
-	if = {
-		limit = { trait = has_magical_withdrawal }
-		remove_trait = has_magical_withdrawal
-	}
-	if = {
-		limit = {
-			NOT = { trait = being_demon }
-			is_susceptible_to_fel_corruption_trigger = yes
-		}
-		change_variable = { which = fel_corruption value = 5 }
-		if = {
-			limit = { check_variable = { which = fel_corruption value = 101 } }
-			set_variable = { which = fel_corruption value = 100 }
-		}
-		character_event = { id = WCFEL.10 }						# Moves on to the next stage of fel corruption
-	}
-}
-add_15_fel_corruption_effect = {
-	if = {
-		limit = { trait = has_magical_withdrawal }
-		remove_trait = has_magical_withdrawal
-	}
-	if = {
-		limit = {
-			NOT = { trait = being_demon }
-			is_susceptible_to_fel_corruption_trigger = yes
-		}
-		change_variable = { which = fel_corruption value = 15 }
-		if = {
-			limit = { check_variable = { which = fel_corruption value = 101 } }
-			set_variable = { which = fel_corruption value = 100 }
-		}
-		character_event = { id = WCFEL.10 }						# Moves on to the next stage of fel corruption
-	}
-}
-add_35_fel_corruption_effect = {
-	if = {
-		limit = { trait = has_magical_withdrawal }
-		remove_trait = has_magical_withdrawal
-	}
-	if = {
-		limit = {
-			NOT = { trait = being_demon }
-			is_susceptible_to_fel_corruption_trigger = yes
-		}
-		change_variable = { which = fel_corruption value = 35 }
-		if = {
-			limit = { check_variable = { which = fel_corruption value = 101 } }
-			set_variable = { which = fel_corruption value = 100 }
-		}
-		character_event = { id = WCFEL.10 }						# Moves on to the next stage of fel corruption
-	}
-}
-remove_5_fel_corruption_effect = {
-	if = {
-		limit = {
-			NOT = { trait = being_demon }
-			is_susceptible_to_fel_corruption_trigger = yes
-		}
-		change_variable = { which = fel_corruption value = -5 }
-		if = {
-			limit = { NOT = { check_variable = { which = fel_corruption value = 0 } } }
-			set_variable = { which = fel_corruption value = 0 }
-		}
-		character_event = { id = WCFEL.20 }		# Moves on to the previous stage of fel corruption
-	}
-}
-remove_15_fel_corruption_effect = {
-	if = {
-		limit = {
-			NOT = { trait = being_demon }
-			is_susceptible_to_fel_corruption_trigger = yes
-		}
-		change_variable = { which = fel_corruption value = -15 }
-		if = {
-			limit = { NOT = { check_variable = { which = fel_corruption value = 0 } } }
-			set_variable = { which = fel_corruption value = 0 }
-		}
-		character_event = { id = WCFEL.20 }		# Moves on to the previous stage of fel corruption
-	}
-}
-
-remove_fel_corruption_modifiers_effect = {
-	if = {
-		limit = { has_character_modifier = fel_corruption_1 }
-		remove_character_modifier = fel_corruption_1
-	}
-	if = {
-		limit = { has_character_modifier = fel_corruption_2 }
-		remove_character_modifier = fel_corruption_2
-	}
-}
-add_fel_corruption_modifier_effect = {
-	if = {
-		limit = { check_variable = { which = fel_corruption value = 100 } }
-		if = {
-			limit = { NOT = { trait = being_demon } }
-			add_trait_demon_effect = yes
-		}
-		major_soul_corruption_effect = yes
-	}
-	else = {
-		if = {
-			limit = { check_variable = { which = fel_corruption value = 66 } }
-			add_character_modifier = { name = fel_corruption_2 duration = -1 }
-			major_soul_corruption_effect = yes
-		}
-		else = {
-			if = {
-				limit = { check_variable = { which = fel_corruption value = 33 } }
-				add_character_modifier = { name = fel_corruption_1 duration = -1 }
-				minor_soul_corruption_effect = yes
-			}
-		}
-	}
-	hidden_effect = {
-		if = {
-			limit = {
-				is_pregnant = yes
-				can_has_children_trigger = no
-			}
-			death = { death_reason = death_childbirth }
-		}
-	}
-}
-add_trait_demon_effect = {
-	if = {
-		limit = { NOT = { trait = being_demon } }
-		add_trait = being_demon
-	}
-	# If you has secret religion, you reveal yourself
-	if = {
-		limit = { has_secret_religion = yes }
-		convert_to_secret_religion = yes
-	}
-
-	# Remove drunkard
-	if = { limit = { trait = drunkard } remove_trait = drunkard }
-
-	# Remove diseases
-	remove_disease_trait_effect = yes
-
-	# Removed negative genetic
-	remove_all_negative_congenital_traits_effect = yes
-
-	# Remove weight
-	if = {
-		limit = { trait = is_fat }
-		remove_trait = is_fat
-	}
-	if = {
-		limit = { trait = is_malnourished }
-		remove_trait = is_malnourished
-	}
-	remove_weight_modifier_effect = yes
-	clear_fat_flags_effect = yes
-	clear_malnourished_flags_effect = yes
-	hidden_effect = {
-		if = {
-			limit = {
-				is_pregnant = yes
-				can_has_children_trigger = no
-			}
-			death = { death_reason = death_childbirth }
-		}
-	}
-}
-
-remove_fel_presence_modifiers_effect = {
-	if = {
-		limit = { has_province_modifier = fel_presence_1 }
-		remove_province_modifier = fel_presence_1
-	}
-	if = {
-		limit = { has_province_modifier = fel_presence_2 }
-		remove_province_modifier = fel_presence_2
-	}
-	if = {
-		limit = { has_province_modifier = fel_presence_3 }
-		remove_province_modifier = fel_presence_3
-	}
-	if = {
-		limit = { has_province_modifier = fel_presence_4 }
-		remove_province_modifier = fel_presence_4
-	}
-}
-add_fel_presence_modifier_effect = {
-	if = {
-		limit = { check_variable = { which = fel_presence value = 100 } }
-		add_province_modifier = { name = fel_presence_4 duration = -1 }
-	}
-	else = {
-		if = {
-			limit = { check_variable = { which = fel_presence value = 75 } }
-			add_province_modifier = { name = fel_presence_3 duration = -1 }
-		}
-		else = {
-			if = {
-				limit = { check_variable = { which = fel_presence value = 50 } }
-				add_province_modifier = { name = fel_presence_2 duration = -1 }
-			}
-			else = {
-				if = {
-					limit = { check_variable = { which = fel_presence value = 25 } }
-					add_province_modifier = { name = fel_presence_1 duration = -1 }
-				}
-			}
-		}
-	}
-}
-
-add_5_void_corruption_effect = {
-	if = {
-		limit = { trait = has_magical_withdrawal }
-		remove_trait = has_magical_withdrawal
-	}
-	if = {
-		limit = {
-			NOT = { trait = being_void }
-			is_susceptible_to_void_corruption_trigger = yes
-		}
-		change_variable = { which = void_corruption value = 5 }
-		if = {
-			limit = { check_variable = { which = void_corruption value = 101 } }
-			set_variable = { which = void_corruption value = 100 }
-		}
-		character_event = { id = WCVOD.10 }						# Moves on to the next stage of void corruption
-	}
-}
-add_15_void_corruption_effect = {
-	if = {
-		limit = { trait = has_magical_withdrawal }
-		remove_trait = has_magical_withdrawal
-	}
-	if = {
-		limit = {
-			NOT = { trait = being_void }
-			is_susceptible_to_void_corruption_trigger = yes
-		}
-		change_variable = { which = void_corruption value = 15 }
-		if = {
-			limit = { check_variable = { which = void_corruption value = 101 } }
-			set_variable = { which = void_corruption value = 100 }
-		}
-		character_event = { id = WCVOD.10 }						# Moves on to the next stage of void corruption
-	}
-}
-add_35_void_corruption_effect = {
-	if = {
-		limit = { trait = has_magical_withdrawal }
-		remove_trait = has_magical_withdrawal
-	}
-	if = {
-		limit = {
-			NOT = { trait = being_void }
-			is_susceptible_to_void_corruption_trigger = yes
-		}
-		change_variable = { which = void_corruption value = 35 }
-		if = {
-			limit = { check_variable = { which = void_corruption value = 101 } }
-			set_variable = { which = void_corruption value = 100 }
-		}
-		character_event = { id = WCVOD.10 }						# Moves on to the next stage of void corruption
-	}
-}
-remove_5_void_corruption_effect = {
-	if = {
-		limit = {
-			NOT = { trait = being_void }
-			is_susceptible_to_void_corruption_trigger = yes
-		}
-		change_variable = { which = void_corruption value = -5 }
-		if = {
-			limit = { NOT = { check_variable = { which = void_corruption value = 0 } } }
-			set_variable = { which = void_corruption value = 0 }
-		}
-		character_event = { id = WCVOD.20 }		# Moves on to the previous stage of void corruption
-	}
-}
-remove_15_void_corruption_effect = {
-	if = {
-		limit = {
-			NOT = { trait = being_void }
-			is_susceptible_to_void_corruption_trigger = yes
-		}
-		change_variable = { which = void_corruption value = -15 }
-		if = {
-			limit = { NOT = { check_variable = { which = void_corruption value = 0 } } }
-			set_variable = { which = void_corruption value = 0 }
-		}
-		character_event = { id = WCVOD.20 }		# Moves on to the previous stage of void corruption
-	}
-}
-
-remove_void_corruption_modifiers_effect = {
-	if = {
-		limit = { has_character_modifier = void_corruption_1 }
-		remove_character_modifier = void_corruption_1
-	}
-	if = {
-		limit = { has_character_modifier = void_corruption_2 }
-		remove_character_modifier = void_corruption_2
-	}
-}
-add_void_corruption_modifier_effect = {
-	if = {
-		limit = { check_variable = { which = void_corruption value = 66 } }
-		add_character_modifier = { name = void_corruption_2 duration = -1 }
-		major_soul_corruption_effect = yes
-	}
-	else = {
-		if = {
-			limit = { check_variable = { which = void_corruption value = 33 } }
-			add_character_modifier = { name = void_corruption_1 duration = -1 }
-			minor_soul_corruption_effect = yes
-		}
-	}
-	hidden_effect = {
-		if = {
-			limit = {
-				is_pregnant = yes
-				can_has_children_trigger = no
-			}
-			death = { death_reason = death_childbirth }
-		}
-	}
-}
-add_trait_void_creature_effect = {
-	if = {
-		limit = { NOT = { trait = being_void } }
-		add_trait = being_void
-	}
-	# If you has secret religion, you reveal yourself
-	if = {
-		limit = { has_secret_religion = yes }
-		convert_to_secret_religion = yes
-	}
-
-	# Remove drunkard
-	if = { limit = { trait = drunkard } remove_trait = drunkard }
-
-	# Remove diseases
-	remove_disease_trait_effect = yes
-
-	# Removed negative genetic
-	remove_all_negative_congenital_traits_effect = yes
-
-	# Remove weight
-	if = {
-		limit = { trait = is_fat }
-		remove_trait = is_fat
-	}
-	if = {
-		limit = { trait = is_malnourished }
-		remove_trait = is_malnourished
-	}
-	remove_weight_modifier_effect = yes
-	clear_fat_flags_effect = yes
-	clear_malnourished_flags_effect = yes
-	hidden_effect = {
-		if = {
-			limit = {
-				is_pregnant = yes
-				can_has_children_trigger = no
-			}
-			death = { death_reason = death_childbirth }
 		}
 	}
 }
@@ -1065,7 +706,7 @@ suggest_fel_source_effect = {
 						ai = no
 						NOT = { has_character_flag = ai_refused_dark_magic_flag }
 					}
-					
+
 					is_susceptible_to_fel_corruption_trigger = yes
 					is_high_elf_trigger = yes
 					NOR = {
@@ -1088,7 +729,7 @@ suggest_void_source_effect = {
 						ai = no
 						NOT = { has_character_flag = ai_refused_dark_magic_flag }
 					}
-					
+
 					is_susceptible_to_void_corruption_trigger = yes
 					is_high_elf_trigger = yes
 					NOR = {
@@ -1687,48 +1328,50 @@ remove_3_mind_control_power_effect = {
 	}
 	character_event = { id = WCUND.1107 days = 1 }		# Decreases power of mind control
 }
+
 set_undead_gfx_effect = {
 	if = {
-		limit = { has_human_gfx_trigger = yes }
-		set_graphical_culture = human_undead
-	}
-	if = {
-		limit = {
-			OR = {
-				graphical_culture = murlocgfx
-				graphical_culture = murlocundeadgfx
-			}
+		limit = { has_undead_gfx_trigger = no }	# If you add new undead gfx, don't forget to add your gfx in this trigger
+		if = {
+			limit = { has_human_gfx_trigger = yes }
+			set_graphical_culture = human_undead
 		}
-		set_graphical_culture = murloc_undead
-	}
-	if = {
-		limit = {
-			OR = {
-				graphical_culture = quilboargfx
-				graphical_culture = quilboarundeadgfx
+		else_if = {
+			limit = {
+				OR = {
+					graphical_culture = murlocgfx
+					graphical_culture = murlocundeadgfx
+				}
 			}
+			set_graphical_culture = murloc_undead
 		}
-		set_graphical_culture = quilboar_undead
-	}
-	if = {
-		limit = { graphical_culture = vrykulgfx }
-		set_graphical_culture = vrykul_undead
-	}
-	if = {
-		limit = {
-			OR = {
-				graphical_culture = gnollgfx
-				graphical_culture = gnollundeadgfx
+		else_if = {
+			limit = {
+				OR = {
+					graphical_culture = quilboargfx
+					graphical_culture = quilboarundeadgfx
+				}
 			}
+			set_graphical_culture = quilboar_undead
 		}
-		set_graphical_culture = gnoll_undead
-	}
-	if = {
-		limit = { has_undead_gfx_trigger = no }
-		set_graphical_culture = ghoul
+		else_if = {
+			limit = { graphical_culture = vrykulgfx }
+			set_graphical_culture = vrykul_undead
+		}
+		else_if = {
+			limit = {
+				OR = {
+					graphical_culture = gnollgfx
+					graphical_culture = gnollundeadgfx
+				}
+			}
+			set_graphical_culture = gnoll_undead
+		}
+		else = {
+			set_graphical_culture = ghoul
+		}
 	}
 }
-
 add_trait_undead_effect = {
 	# Undead children shall not pass
 	if = {
@@ -1746,35 +1389,22 @@ add_trait_undead_effect = {
 			convert_to_secret_religion = yes
 		}
 
-		# Remove drunkard
-		if = { limit = { trait = drunkard } remove_trait = drunkard }
+		# Removes drunkard, diseases, negative genetic and weight
+		clean_dark_beings_effect = yes
 
-		# Remove diseases
-		remove_disease_trait_effect = yes
+		set_undead_gfx_effect = yes
 
-		# Removed negative genetic
-		remove_all_negative_congenital_traits_effect = yes
-
-		# Remove weight
-		if = {
-			limit = { trait = is_fat }
-			remove_trait = is_fat
-		}
-		if = {
-			limit = { trait = is_malnourished }
-			remove_trait = is_malnourished
-		}
-		remove_weight_modifier_effect = yes
-		clear_fat_flags_effect = yes
-		clear_malnourished_flags_effect = yes
-	}
-	hidden_effect = {
-		if = {
-			limit = {
-				is_pregnant = yes
-				can_has_children_trigger = no
+		hidden_effect = {
+			if = {
+				limit = { has_character_flag = being_raised_flag }
+				clr_character_flag = being_raised_flag
 			}
-			death = { death_reason = death_childbirth }
+
+			# Pregnant shall not pass
+			cancel_pregnancy_effect = yes
+
+			# Notifies your family/spouse/friends/lovers
+			show_close_people_what_this_become_effect = yes
 		}
 	}
 }
@@ -1864,6 +1494,54 @@ add_voidwell_effect = {
 	clr_global_flag = sunwell_is_being_restored_flag
 	remove_sunwells_effect = yes
 	b_sunwell = { add_building = tp_voidwell }
+}
+
+add_max_depopulation_effect = {
+	if = {
+		limit = {
+			has_dlc = "Reapers"
+
+			NOT = { has_province_modifier = depopulated_3 }
+			any_province_holding = {
+				OR = {
+					holding_type = city
+					holding_type = temple
+					holding_type = castle
+					holding_type = tribal
+				}
+			}
+		}
+		hidden_effect = { set_variable = { which = prosperity_value value = 0 } }
+		if = { limit = { has_province_modifier = prosperity_modifier_1 } remove_province_modifier = prosperity_modifier_1 }
+		if = { limit = { has_province_modifier = prosperity_modifier_2 } remove_province_modifier = prosperity_modifier_2 }
+		if = { limit = { has_province_modifier = prosperity_modifier_3 } remove_province_modifier = prosperity_modifier_3 }
+		if = { limit = { has_province_modifier = depopulated_1 } remove_province_modifier = depopulated_1 }
+		if = { limit = { has_province_modifier = depopulated_2 } remove_province_modifier = depopulated_2 }
+		add_province_modifier = { name = depopulated_3 duration = -1 }
+		hidden_effect = {
+			clr_province_flag = recent_depopulation_1
+			clr_province_flag = recent_depopulation_2
+			set_province_flag = recent_depopulation_3
+		}
+	}
+}
+
+cancel_pregnancy_effect = {
+	if = {
+		limit = {
+			is_pregnant = yes
+		}
+		if = { limit = { trait = hard_pregnancy } remove_trait = hard_pregnancy }
+		if = { limit = { trait = pregnant } remove_trait = pregnant }
+		cancel_pregnancy = yes
+	}
+}
+
+remove_has_magical_withdrawal_trait_effect = {
+	if = {
+		limit = { trait = has_magical_withdrawal }
+		remove_trait = has_magical_withdrawal
+	}
 }
 
 find_right_spouse_effect = {
