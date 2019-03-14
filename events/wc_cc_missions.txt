@@ -40,6 +40,10 @@ character_event = {
 				modifier = { factor = 0 is_playable = no } # Only playable characters get focuses
 				set_character_flag = cenarion_circle_mission_theology
 			}
+			10 = {
+				modifier = { factor = 0 is_landed = no }
+				set_character_flag = cenarion_circle_mission_barrow_den
+			}
 			50 = { # AI bypasses missions at times
 				modifier = {
 					factor = 0
@@ -103,6 +107,7 @@ character_event = {
 				on_trigger = has_character_flag
 				cenarion_circle_enter_emerald_dream = { clr_character_flag = cenarion_circle_enter_emerald_dream society_quest_event = { id = WCCC.211} }
 				cenarion_circle_mission_theology = { clr_character_flag = cenarion_circle_mission_theology society_quest_event = { id = WCCC.212} }
+				cenarion_circle_mission_barrow_den = { clr_character_flag = cenarion_circle_mission_theology society_quest_event = { id = WCCC.213} }
 			}
 		}
 	}
@@ -136,6 +141,7 @@ society_quest_event = {
 		ai_chance = { factor = 0 }
 	}
 }
+#QUEST: Pick theology focus
 society_quest_event = {
 	id = WCCC.212
 	border = GFX_event_letter_frame_religion
@@ -161,5 +167,218 @@ society_quest_event = {
 		}
 
 		ai_chance = { factor = 0 }
+	}
+}
+#QUEST: Build barrow den
+society_quest_event = {
+	id = WCCC.213
+	border = GFX_event_letter_frame_religion
+
+	desc = {
+		text = EVTDESC_WCCC.213
+	}
+	is_triggered_only = yes
+
+	option = {
+		name = ACCEPT
+		set_quest = mission_build_barrow_den
+		character_event = { id = WCCC.230 days = 30 }
+	}
+
+	option = {
+		name = DECLINE
+		custom_tooltip = { text = decline_quest_tooltip }
+
+		add_character_modifier = {
+			name = quest_cooldown_timer
+			hidden = yes
+			days = 1000
+		}
+
+		ai_chance = { factor = 0 }
+	}
+}
+character_event = {
+	id = WCCC.230
+	desc = EVTDESC_WCCC.230
+	picture = GFX_evt_ritual_scroll
+	border = GFX_event_normal_frame_religion
+	
+	is_triggered_only = yes
+
+	
+	option = {
+		name = EVTOPTA_WCCC.230
+		character_event = { id = WCCC.231 }
+	}
+}
+character_event = {
+	id = WCCC.231
+	desc = EVTDESC_WCCC.231
+	picture = GFX_evt_ritual_scroll
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+
+	option = {
+		name = EVTOPTA_WCCC.231
+		set_character_flag = barrow_den_small
+		character_event = { id = WCCC.232 days = 60 }
+	}
+	option = {
+		name = EVTOPTB_WCCC.231
+		trigger = {
+			OR = {
+				ai = no
+				wealth = 100
+			}
+		}
+		set_character_flag = barrow_den_medium
+		character_event = { id = WCCC.232 days = 60 }
+	}
+	option = {
+		name = EVTOPTC_WCCC.231
+		trigger = {
+			OR = {
+				ai = no
+				wealth = 300
+			}
+		}
+		set_character_flag = barrow_den_large
+		character_event = { id = WCCC.232 days = 60 }
+	}
+	option = {
+		name = EVTOPTD_WCCC.231
+		trigger = { is_society_grandmaster = yes }
+		set_character_flag = barrow_den_enormous
+		character_event = { id = WCCC.232 days = 60 }
+	}
+}
+character_event = {
+	id = WCCC.232
+	desc = EVTDESC_WCCC.232
+	picture = GFX_evt_ritual_scroll
+	border = GFX_event_normal_frame_religion
+	
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCCC.232
+		trigger = {
+			has_character_flag = barrow_den_small
+		}
+	}
+	option = {
+		name = EVTOPTB_WCCC.232
+		trigger = {
+			is_society_grandmaster = no
+		}
+		if = {
+			limit = {
+				has_character_flag = barrow_den_medium
+			}
+			wealth = -100
+			character_event = { id = WCCC.233 days = 360 random = 360 }
+		}
+		if = {
+			limit = {
+				has_character_flag = barrow_den_large
+			}
+			wealth = -300
+			character_event = { id = WCCC.233 days = 360 random = 360 }
+		}
+	}
+	option = {
+		name = EVTOPTC_WCCC.232
+		trigger = {
+			has_character_flag = barrow_den_medium
+			piety = 100
+			piety < 300
+			is_society_grandmaster = no
+		}
+		piety = -100
+		character_event = { id = WCCC.233 days = 360 random = 360 }
+	}
+	option = {
+		name = EVTOPTC_WCCC.232
+		trigger = {
+			has_character_flag = barrow_den_large
+			piety = 300
+			is_society_grandmaster = no
+		}
+		piety = -300
+		character_event = { id = WCCC.233 days = 360 random = 360 }
+	}
+	# option = {
+		# name = EVTOPTD_WCCC.232
+		# trigger = { is_society_grandmaster = yes }
+		# cenarion_circle = { any_society_member = { letter_event = { id = WCCC.240 } } }
+	# }
+}
+character_event = {
+	id = WCCC.233
+	desc = EVTDESC_WCCC.233
+	picture = GFX_evt_ritual_scroll
+	border = GFX_event_normal_frame_religion
+	
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCCC.233
+		clr_quest = mission_build_barrow_den
+		add_society_currency_medium_effect = yes
+		if = {
+			limit = {
+				has_character_flag = barrow_den_small
+			}
+			add_character_modifier = barrow_den_small
+			piety = 100
+		}
+		if = {
+			limit = {
+				has_character_flag = barrow_den_medium
+			}
+			add_character_modifier = barrow_den_medium
+			piety = 200
+		}
+		if = {
+			limit = {
+				has_character_flag = barrow_den_large
+			}
+			add_character_modifier = barrow_den_large
+			piety = 300
+		}
+	}
+}
+letter_event = {
+	id = WCCC.240
+	desc = EVTDESC_WCCC.240
+	border = GFX_event_letter_frame_religion
+	
+	is_triggered_only = yes
+
+	
+	option = {
+		name = ACCEPT
+		add_trait = travelling
+		character_event = { id = WCCC.241 }
+	}
+	option = {
+		name = DECLINE
+	}
+}
+character_event = {
+	id = WCCC.241
+	desc = EVTDESC_WCCC.241
+	picture = GFX_evt_ritual_scroll
+	border = GFX_event_normal_frame_religion
+	
+	is_triggered_only = yes
+
+	
+	option = {
+		name = EVTOPTA_WCCC.241
+		character_event = { id = WCCC.242 days = 30 }
 	}
 }
