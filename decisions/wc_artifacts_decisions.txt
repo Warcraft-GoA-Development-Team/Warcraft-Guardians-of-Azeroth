@@ -1,43 +1,5 @@
 decisions = {
 
-	open_market = {
-
-		ai = no
-		potential = {
-			NOT = { has_character_flag = market_open }
-			char_can_buy_artifacts = yes
-		}
-
-		allow = {
-			prisoner = no
-			is_incapable = no
-			is_inaccessible_trigger = no
-		}
-
-		effect = {
-			set_character_flag = market_open
-		}
-
-	}
-
-	close_market = {
-
-		is_high_prio = yes
-		ai = no
-		potential = {
-			has_character_flag = market_open
-		}
-
-		allow = {
-			NOT = { has_character_flag = bought_thing_recently }
-		}
-
-		effect = {
-			clr_character_flag = market_open
-		}
-
-	}
-	
 	# Artifacts
 	market_buy_top_hat = {
 
@@ -194,6 +156,7 @@ decisions = {
 		only_playable = yes
 		potential = {
 			char_can_buy_artifacts = yes
+			is_landed = yes
 			OR = {
 				ai = yes
 				has_character_flag = market_open
@@ -230,6 +193,47 @@ decisions = {
 }
 
 targetted_decisions = {
+
+	open_market = {
+		
+		filter = self
+		ai = no
+		potential = {
+			NOT = { has_character_flag = market_open }
+			char_can_buy_artifacts = yes
+		}
+
+		allow = {
+			prisoner = no
+			is_incapable = no
+			is_inaccessible_trigger = no
+		}
+
+		effect = {
+			set_character_flag = market_open
+		}
+
+	}
+
+	close_market = {
+
+		filter = self
+		is_high_prio = yes
+		ai = no
+		potential = {
+			has_character_flag = market_open
+		}
+
+		allow = {
+			NOT = { has_character_flag = bought_thing_recently }
+		}
+
+		effect = {
+			clr_character_flag = market_open
+		}
+
+	}
+
 	upgrade_artifacts = {
 		filter = self
 		third_party_filter = artifacts
@@ -238,11 +242,6 @@ targetted_decisions = {
 		ai_third_party_filter = artifacts
 		ai_check_interval = 120
 		only_playable = yes
-
-		from_potential = {
-			char_can_buy_artifacts = yes
-			has_character_flag = market_open
-		}
 
 		potential = {
 			char_can_buy_artifacts = yes
@@ -338,7 +337,10 @@ targetted_decisions = {
 				}
 
 				is_artifact_active = yes
-				#is_artifact_equipped = no
+				OR = {
+					is_artifact_equipped = no
+					artifact_owner = { ai = yes }
+				}
 			}
 		}
 
