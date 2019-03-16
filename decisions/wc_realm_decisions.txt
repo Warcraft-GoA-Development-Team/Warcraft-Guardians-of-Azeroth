@@ -142,7 +142,7 @@ decisions = {
 
 		allow = {
 			war = no
-			
+
 			religion = cult_of_sunwell
 			b_sunwell = { holder_scope = { religion = ROOT } }
 
@@ -305,9 +305,9 @@ decisions = {
 		potential = {
 			is_playable = yes
 			independent = yes
-			
+
 			NOT = { has_character_flag = claim_capital_city_attempt_flag }
-			
+
 			OR = {
 				stromgarde_is_capital_trigger = yes
 				stratholme_is_capital_trigger = yes
@@ -335,7 +335,7 @@ decisions = {
 
 		effect = {
 			set_character_flag = claim_capital_city_attempt_flag
-			
+
 			if = {
 				limit = { stromgarde_is_capital_trigger = yes }
 				c_stromgarde = {
@@ -423,7 +423,7 @@ decisions = {
 
 		potential = {
 			NOT = { has_global_flag = reawakening_of_cthun_flag }
-			
+
 			religion = old_gods_worship
 			culture = qiraji
 
@@ -438,7 +438,7 @@ decisions = {
 		effect = {
 			scaled_wealth = { value = -25 min = -1000 }
 			piety = -250
-			
+
 			narrative_event = { id = WCVOD.1000 }
 		}
 
@@ -446,7 +446,7 @@ decisions = {
 			factor = 1
 		}
 	}
-	
+
 	horde_invite_bloodthirsty_clans = {
 		is_high_prio = yes
 
@@ -455,7 +455,7 @@ decisions = {
 		only_playable = yes
 		only_independent = yes
 
-		potential = {	
+		potential = {
 			has_global_flag = orcish_invasion_flag
 			NOT = { has_global_flag = horde_invited_bloodthirsty_clans_flag }
 
@@ -483,7 +483,7 @@ decisions = {
 
 		effect = {
 			prestige = -1000
-			
+
 			narrative_event = { id = WCFTW.4 }
 		}
 
@@ -582,7 +582,7 @@ title_decisions = {
 				NOT = { true_religion = FROM }
 				NOT = { culture_group = FROM }
 			}
-			
+
 			OR = {
 				AND = {
 					location = { NOT = { has_province_modifier = undead_province } }
@@ -955,20 +955,20 @@ title_decisions = {
 			factor = 0.1
 		}
 	}
-	
+
 	# Copy of monastic_order_convert_county
 	# Converts elf province if you holds the right sunwell
 	sunwell_ruler_convert_county = {
 		is_high_prio = yes
-		
+
 		ai_check_interval = 60
-		
+
 		only_playable = yes
-		
+
 		from_potential = {
 			# Warcraft
 			is_untouchable_trigger = no
-			
+
 			b_sunwell = {
 				holder_scope = {
 					OR = {
@@ -980,10 +980,10 @@ title_decisions = {
 			}
 			public_religion_associated_with_sunwell_trigger = yes
 		}
-		
+
 		potential = {
 			tier = COUNT
-			
+
 			location = {
 				NOT = { religion = FROM }
 				culture_group = high_elf_group
@@ -995,14 +995,14 @@ title_decisions = {
 				}
 			}
 		}
-		
+
 		allow = {
 			FROM = { piety = 250 }
 			location = {
 				owner = { NOT = { religion = PREV } } # Cannot convert counties of owners who has that religion
 			}
 		}
-		
+
 		effect = {
 			location = {
 				religion = FROM
@@ -1024,7 +1024,7 @@ title_decisions = {
 				}
 			}
 		}
-		
+
 		ai_will_do = {
 			factor = 1
 		}
@@ -1034,7 +1034,7 @@ settlement_decisions = {
 	corrupt_world_tree = {
 		is_high_prio = yes
 
-		ai_check_interval = 240
+		ai_check_interval = 120
 
 		filter = sub_realm_owned
 		ai_target_filter = vassal_owned
@@ -1054,7 +1054,7 @@ settlement_decisions = {
 
 		potential = {
 			location = { NOT = { has_province_flag = corrupt_world_tree_ongoing_flag } }
-			
+
 			has_title_flag = world_tree_title_flag
 			holding_type = temple
 			has_siege = no
@@ -1075,23 +1075,119 @@ settlement_decisions = {
 
 		effect = {
 			save_event_target_as = target_title
-			
+
 			FROM = {
 				save_event_target_as = target_corruptor
-				
+
 				wealth = -1000
 				piety = -5000
 			}
-			
+
 			custom_tooltip = {
 				text = corrupt_world_tree_tooltip
 				hidden_tooltip = {
 					location = {
 						save_event_target_as = target_province
-						
+
 						set_province_flag = corrupt_world_tree_ongoing_flag		# Stops from firing decision twice
 					}
 					FROM = { narrative_event = { id = WCVOD.410 } }
+				}
+			}
+		}
+		revoke_allowed = {
+			always = no
+		}
+		ai_will_do = {
+			factor = 1
+		}
+	}
+	# WCRLM.595 is another way to fire WCRLM.600 event, check its condtions as well
+	burn_world_tree = {
+		is_high_prio = yes
+
+		ai_check_interval = 60
+
+		filter = sub_realm_owned
+		ai_target_filter = vassal_owned
+
+		only_playable = yes
+
+		from_potential = {
+			is_untouchable_trigger = no
+
+			is_playable = yes
+			is_adult = yes
+			is_incapable = no
+			prisoner = no
+
+			trigger_if = {
+				limit = { ROOT = { NOT = { has_title_flag = nightmare_tree_title_flag } } }
+				NOT = { religion_group = druidism_group }
+			}
+			NOT = { religion = old_gods_worship }
+		}
+
+		potential = {
+			location = { NOT = { has_province_flag = burn_world_tree_ongoing_flag } }
+
+			OR = {
+				has_title_flag = world_tree_title_flag
+				has_title_flag = nightmare_tree_title_flag
+			}
+			holding_type = temple
+			has_siege = no
+			is_occupied = no
+			
+			# AI Preferences
+			FROM = {
+				OR = {
+					ai = no
+					evil_true_religion_trigger = yes
+					trait = cruel
+					trait = lunatic
+					ROOT = { has_title_flag = nightmare_tree_title_flag }
+				}
+			}
+		}
+
+		allow = {
+			holder_scope = {
+				trigger_if = {
+					limit = { ROOT = { NOT = { has_title_flag = nightmare_tree_title_flag } } }
+					NOT = { religion_group = druidism_group }
+				}
+				NOT = { religion = old_gods_worship }
+			}
+
+			FROM = {
+				trigger_if = {
+					limit = { ROOT = { NOT = { has_title_flag = nightmare_tree_title_flag } } }
+					NOT = { true_religion_group = druidism_group }
+				}
+				NOT = { true_religion = old_gods_worship }
+			}
+		}
+
+		effect = {
+			# immediate of WCRLM.600
+			save_event_target_as = target_title
+			location = {
+				save_event_target_as = target_province
+
+				set_province_flag = burn_world_tree_ongoing_flag		# Stops from firing decision twice
+			}
+			FROM = { save_event_target_as = target_arsonist }
+
+			FROM = {
+				show_scope_change = no
+
+				# option of WCRLM.600
+				prestige = 2500
+
+				custom_tooltip = {
+					text = burn_world_tree_tooltip	# Needs FROM as a scope
+					hidden_tooltip = { narrative_event = { id = WCRLM.600 } }
 				}
 			}
 		}
