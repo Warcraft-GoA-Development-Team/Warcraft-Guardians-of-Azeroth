@@ -1,0 +1,811 @@
+decisions = {
+
+	# Artifacts
+	market_buy_top_hat = {
+		only_playable = yes
+
+		ai_check_interval = 60
+
+		potential = {
+			char_can_buy_artifacts = yes
+			OR = {
+				ai = yes
+				has_character_flag = market_open
+			}
+			OR = {
+				ai = no
+				culture = gilnean
+				culture = tirassian
+				culture_group = goblin_group
+			}
+			OR = {
+				ai = no
+				NOT = {
+					any_artifact = {
+						has_artifact_flag = head
+					}
+				}
+			}
+		}
+
+		allow = {
+			prisoner = no
+			is_incapable = no
+			OR = {
+				AND = {
+					OR = {
+						culture = gilnean
+						culture = tirassian
+						culture_group = goblin_group
+					}
+					wealth = 62.5
+				}
+				wealth = 625
+			}
+			NOT = {	has_character_flag = bought_thing_recently }
+		}
+
+		effect = {
+			if = {
+				limit = {
+					OR = {
+						culture = gilnean
+						culture = tirassian
+						culture_group = goblin_group
+					}
+				}
+				wealth = -62.5
+			}
+			else = {
+				wealth = -625
+			}
+
+			set_character_flag = bought_artifact_top_hat
+			set_character_flag = bought_from_tailor
+			set_character_flag = bought_thing_recently
+
+			high_chance_buy_artifact_effect = yes
+
+		}
+
+	}
+
+	market_buy_rogue_dagger = {
+		only_playable = yes
+
+		ai_check_interval = 60
+
+		potential = {
+			char_can_buy_artifacts = yes
+			is_rogue_class_trigger = yes
+			OR = {
+				ai = yes
+				has_character_flag = market_open
+			}
+			OR = {
+				ai = no
+				NOT = {
+					any_artifact = {
+						has_artifact_flag = dagger
+						count = 2
+					}
+				}
+			}
+		}
+
+		allow = {
+			prisoner = no
+			is_incapable = no
+			wealth = 125
+			NOT = {	has_character_flag = bought_thing_recently }
+		}
+
+		effect = {
+			wealth = -125
+			set_character_flag = bought_artifact_rogue_dagger
+			set_character_flag = bought_from_blacksmith
+			set_character_flag = bought_thing_recently
+
+			high_chance_buy_artifact_effect = yes
+			
+		}
+
+	}
+	
+	market_buy_copper_ring = {
+		only_playable = yes
+
+		ai_check_interval = 60
+
+		potential = {
+			char_can_buy_artifacts = yes
+			OR = {
+				ai = yes
+				has_character_flag = market_open
+			}
+			OR = {
+				ai = no
+				NOT = {
+					any_artifact = {
+						has_artifact_flag = ring
+						count = 2
+					}
+				}
+			}
+		}
+
+		allow = {
+			prisoner = no
+			is_incapable = no
+			wealth = 250
+			NOT = {	has_character_flag = bought_thing_recently }
+		}
+
+		effect = {
+			wealth = -250
+			set_character_flag = bought_artifact_copper_ring
+			set_character_flag = bought_from_jeweler
+			set_character_flag = bought_thing_recently
+
+			low_chance_buy_artifact_effect = yes
+
+		}
+
+	}
+	
+	market_buy_ruler_crown = {
+		only_playable = yes
+
+		ai_check_interval = 60
+
+		potential = {
+			char_can_buy_artifacts = yes
+			holy_order = no
+			mercenary = no
+			is_landed = yes
+			OR = {
+				ai = yes
+				has_character_flag = market_open
+			}
+			OR = {
+				ai = no
+				NOT = {
+					any_artifact = {
+						has_artifact_flag = head
+					}
+				}
+			}
+		}
+
+		allow = {
+			prisoner = no
+			is_incapable = no
+			wealth = 500
+			NOT = {	has_character_flag = bought_thing_recently }
+		}
+
+		effect = {
+			wealth = -500
+			set_character_flag = bought_artifact_ruler_crown
+			set_character_flag = bought_from_jeweler
+			set_character_flag = bought_thing_recently
+
+			low_chance_buy_artifact_effect = yes
+
+		}
+
+	}
+	
+}
+
+targetted_decisions = {
+
+	market_open_market = {
+		ai = no
+
+		filter = self
+
+		potential = {
+			NOT = { has_character_flag = market_open }
+			char_can_buy_artifacts = yes
+		}
+
+		allow = {
+			prisoner = no
+			is_incapable = no
+			is_inaccessible_trigger = no
+		}
+
+		effect = {
+			set_character_flag = market_open
+		}
+
+	}
+
+	market_close_market = {
+		ai = no
+
+		filter = self
+		is_high_prio = yes
+
+		potential = {
+			has_character_flag = market_open
+		}
+
+		allow = {
+			NOT = { has_character_flag = bought_thing_recently }
+		}
+
+		effect = {
+			clr_character_flag = market_open
+		}
+
+	}
+
+	market_upgrade_artifacts = {
+		only_playable = yes
+
+		filter = self
+		third_party_filter = artifacts
+		show_third_party_potential = yes
+		ai_target_filter = self
+		ai_third_party_filter = artifacts
+		ai_check_interval = 120
+
+		potential = {
+			char_can_buy_artifacts = yes
+			OR = {
+				has_character_flag = market_open
+				ai = yes
+			}
+		}
+
+		allow = {
+			show_only_failed_conditions = yes
+			FROM = {
+				is_adult = yes
+				is_incapable = no
+				prisoner = no
+				is_inaccessible_trigger = no
+				custom_tooltip = {
+					text = text_can_upgrade_artifact_rn
+					NOT = { has_character_flag = bought_thing_recently }
+				}
+			}
+		}
+
+		third_party_potential = {
+			show_only_failed_conditions = yes
+			FROMFROM = {
+				show_scope_change = no
+				custom_tooltip = {
+					text = text_can_be_upgrated
+
+					has_artifact_flag = can_be_upgrated
+					NOT = {
+						has_artifact_flag = improved_artifact
+					}
+				}
+			}
+		}
+
+		third_party_allow = {
+			FROMFROM = {
+				custom_tooltip = {
+					text = text_can_be_upgrated
+
+					has_artifact_flag = can_be_upgrated
+				}
+				
+				trigger_if = {
+					limit = {
+						has_artifact_flag = expensive
+					}
+					
+					trigger_if = {
+						limit = { quality == 1 }
+						artifact_owner = { wealth = 500 }
+					}
+					trigger_if = {
+						limit = { quality == 2 }
+						artifact_owner = { wealth = 1000 }
+					}
+					trigger_if = {
+						limit = { quality == 3 }
+						artifact_owner = { wealth = 2500 }
+					}
+					trigger_if = {
+						limit = { quality == 4 }
+						artifact_owner = { wealth = 5000 }
+					}
+				}
+				trigger_if = {
+					limit = {
+						NOT = { has_artifact_flag = expensive }
+					}
+					
+					trigger_if = {
+						limit = { quality == 1 }
+						artifact_owner = { wealth = 250 }
+					}
+					trigger_if = {
+						limit = { quality == 2 }
+						artifact_owner = { wealth = 500 }
+					}
+					trigger_if = {
+						limit = { quality == 3 }
+						artifact_owner = { wealth = 1250 }
+					}
+					trigger_if = {
+						limit = { quality == 4 }
+						artifact_owner = { wealth = 2500 }
+					}
+				}
+
+				is_artifact_active = yes
+				OR = {
+					is_artifact_equipped = no
+					artifact_owner = { ai = yes }
+				}
+			}
+		}
+
+		third_party_score = {
+			factor = -125
+			additive_modifier = {
+				value = -125
+				FROMFROM = {
+					quality >= 1
+				}
+			}
+			additive_modifier = {
+				value = -250
+				FROMFROM = {
+					quality >= 2
+				}
+			}
+			additive_modifier = {
+				value = -750
+				FROMFROM = {
+					quality >= 3
+				}
+			}
+			additive_modifier = {
+				value = -1250
+				FROMFROM = {
+					quality >= 4
+				}
+			}
+			modifier = {
+				factor = 2
+				FROMFROM = {
+					has_artifact_flag = expensive
+				}
+			}
+			# modifier = { # don't work
+				# factor = 1.1
+				# ROOT_FROM = {
+					# diplomacy < 8
+				# }
+			# }
+			# modifier = {
+				# factor = 1.1
+				# FROM = {
+					# stewardship < 8
+				# }
+			# }
+			# modifier = {
+				# factor = 1.1
+				# ROOT_FROM = {
+					# diplomacy < 4
+				# }
+			# }
+			# modifier = {
+				# factor = 1.1
+				# FROM = {
+					# stewardship < 4
+				# }
+			# }
+			# modifier = { 
+				# factor = 0.95
+				# FROMFROM = {
+					# artifact_owner = {
+						# diplomacy = 12
+					# }
+				# }
+			# }
+			# modifier = {
+				# factor = 0.95
+				# FROMFROM = {
+					# artifact_owner = {
+						# stewardship = 12
+					# }
+				# }
+			# }
+			# modifier = {
+				# factor = 0.95
+				# FROMFROM = {
+					# artifact_owner = {
+						# diplomacy = 16
+					# }
+				# }
+			# }
+			# modifier = {
+				# factor = 0.95
+				# FROMFROM = {
+					# artifact_owner = {
+						# stewardship = 16
+					# }
+				# }
+			# }
+			# modifier = {
+				# factor = 0.95
+				# FROMFROM = {
+					# artifact_owner = {
+						# diplomacy = 20
+					# }
+				# }
+			# }
+			# modifier = {
+				# factor = 0.95
+				# FROMFROM = {
+					# artifact_owner = {
+						# stewardship = 20
+					# }
+				# }
+			# }
+			# modifier = {
+				# factor = 0.95
+				# FROMFROM = {
+					# artifact_owner = {
+						# diplomacy = 24
+					# }
+				# }
+			# }
+			# modifier = {
+				# factor = 0.95
+				# FROMFROM = {
+					# artifact_owner = {
+						# stewardship = 24
+					# }
+				# }
+			# }
+		}
+
+		effect = {
+			hidden_tooltip = {
+				FROMFROM = {
+					set_artifact_flag = improved_artifact
+					save_event_target_as = improved_artifact
+				}
+				set_character_flag = bought_thing_recently
+				if = {
+					limit = { FROMFROM = { quality == 1 } }
+					set_character_flag = improved_artifact_1
+				}
+				if = {
+					limit = { FROMFROM = { quality == 2 } }
+					set_character_flag = improved_artifact_2
+				}
+				if = {
+					limit = { FROMFROM = { quality == 3 } }
+					set_character_flag = improved_artifact_3
+				}
+				if = {
+					limit = { FROMFROM = { quality == 4 } }
+					set_character_flag = improved_artifact_4
+				}
+				
+				FROMFROM = {
+					trigger_switch = {
+						on_trigger = has_artifact_flag
+						blacksmith	= { artifact_owner = { set_character_flag = bought_from_blacksmith			}	}
+						tailor		= { artifact_owner = { set_character_flag = bought_from_tailor				}	}
+						enchanter	= { artifact_owner = { set_character_flag = bought_from_enchanter			}	}
+						alchemist	= { artifact_owner = { set_character_flag = bought_from_alchemist			}	}
+						jeweler		= { artifact_owner = { set_character_flag = bought_from_jeweler				}	}
+					}
+				}
+				FROMFROM = {
+					trigger_switch = {
+						on_trigger = has_artifact_flag
+						dagger		= { artifact_owner = { set_character_flag = bought_artifact_rogue_dagger	}	}
+						hat			= { artifact_owner = { set_character_flag = bought_artifact_top_hat			}	}
+						ring		= { artifact_owner = { set_character_flag = bought_artifact_copper_ring		}	}
+						crown		= { artifact_owner = { set_character_flag = bought_artifact_ruler_crown		}	}
+					}
+				}
+
+				character_event = { id = WCAE.2 }
+			}
+		}
+	
+		revoke_allowed = {
+			always = no
+		}
+	
+		ai_will_do = {
+			factor = 1
+			modifier = {
+				factor = 0
+				OR = {
+					trait = content
+					war = yes
+				}
+			}
+			modifier = {
+				factor = 0.25
+				trait = greedy
+			}
+		}
+	}
+	
+	market_sell_artifacts = {
+		only_playable = yes
+
+		filter = self
+		third_party_filter = artifacts
+		show_third_party_potential = yes
+
+		potential = {
+			char_can_buy_artifacts = yes
+			OR = {
+				has_character_flag = market_open
+				ai = yes
+			}
+		}
+
+		allow = {
+			show_only_failed_conditions = yes
+			FROM = {
+				is_adult = yes
+				is_incapable = no
+				prisoner = no
+				is_inaccessible_trigger = no
+				custom_tooltip = {
+					text = text_can_upgrade_artifact_rn
+					NOT = { has_character_flag = bought_thing_recently }
+				}
+			}
+		}
+
+		third_party_potential = {
+			show_only_failed_conditions = yes
+			FROMFROM = {
+				show_scope_change = no
+				custom_tooltip = {
+					text = text_can_be_upgrated
+
+					is_indestructible = no
+				}
+			}
+		}
+
+		third_party_allow = {
+			always = yes
+		}
+
+		third_party_score = {
+			factor = 25
+			additive_modifier = {
+				value = 75
+				FROMFROM = {
+					quality >= 2
+				}
+			}
+			additive_modifier = {
+				value = 150
+				FROMFROM = {
+					quality >= 3
+				}
+			}
+			additive_modifier = {
+				value = 250
+				FROMFROM = {
+					quality >= 4
+				}
+			}
+			additive_modifier = {
+				value = 500
+				FROMFROM = {
+					quality >= 5
+				}
+			}
+			modifier = {
+				factor = 0.5
+				FROMFROM = {
+					has_artifact_flag = improved_artifact # damaged
+				}
+			}
+			modifier = {
+				factor = 5
+				FROMFROM = {
+					has_artifact_flag = can_be_sold_expensive
+				}
+			}
+			modifier = {
+				factor = 0.9
+				FROM = {
+					diplomacy < 8
+				}
+			}
+			modifier = {
+				factor = 0.9
+				FROM = {
+					stewardship < 8
+				}
+			}
+			modifier = {
+				factor = 0.9
+				FROM = {
+					diplomacy < 4
+				}
+			}
+			modifier = {
+				factor = 0.9
+				FROM = {
+					stewardship < 4
+				}
+			}
+			modifier = {
+				factor = 1.05
+				FROM = {
+					diplomacy = 12
+				}
+			}
+			modifier = {
+				factor = 1.05
+				FROM = {
+					stewardship = 12
+				}
+			}
+			modifier = {
+				factor = 1.05
+				FROM = {
+					diplomacy = 16
+				}
+			}
+			modifier = {
+				factor = 1.05
+				FROM = {
+					stewardship = 16
+				}
+			}
+			modifier = {
+				factor = 1.05
+				FROM = {
+					diplomacy = 20
+				}
+			}
+			modifier = {
+				factor = 1.05
+				FROM = {
+					stewardship = 20
+				}
+			}
+			modifier = {
+				factor = 1.05
+				FROM = {
+					diplomacy = 24
+				}
+			}
+			modifier = {
+				factor = 1.05
+				FROM = {
+					stewardship = 24
+				}
+			}
+		}
+
+		effect = {
+			wealth = local_third_party_score
+			FROMFROM = {
+				show_scope_change = no
+				destroy_artifact = yes
+			}
+		}
+
+		ai_will_do = {
+			factor = 1
+			modifier = {
+				factor = 0
+				wealth > 0
+			}
+			modifier = {
+				factor = 0.1
+				wealth > -100
+			}
+			modifier = {
+				factor = 0.25
+				wealth > -250
+			}
+			modifier = {
+				factor = 0.5
+				wealth > -500
+			}
+			modifier = {
+				factor = 0.75
+				wealth > -750
+			}
+			modifier = {
+				factor = 0
+				FROMFROM = {
+					quality > 3
+				}
+			}
+			modifier = {
+				factor = 0.1 # slow down
+			}
+		}
+	}
+	
+	market_open_chest = {
+		only_playable = yes
+
+		filter = self
+		third_party_filter = artifacts
+		show_third_party_potential = yes
+		
+		potential = {
+			OR = {
+				has_character_flag = market_open
+				ai = yes
+			}
+		}
+
+		allow = {
+			show_only_failed_conditions = yes
+			FROM = {
+				is_adult = yes
+				is_incapable = no
+				prisoner = no
+				is_inaccessible_trigger = no
+				custom_tooltip = {
+					text = text_can_upgrade_artifact_rn
+					NOT = { has_character_flag = bought_thing_recently }
+				}
+			}
+		}
+		
+		third_party_potential = {
+			show_only_failed_conditions = yes
+			FROMFROM = {
+				show_scope_change = no
+				custom_tooltip = {
+					text = text_it_can_be_opened
+
+					has_artifact_flag = treasure_chest
+				}
+			}
+		}
+		
+		effect = {
+			hidden_tooltip = {
+				FROMFROM = {
+					set_artifact_flag = improved_artifact
+					save_event_target_as = improved_artifact
+				}
+				set_character_flag = bought_thing_recently
+				if = {
+					limit = { FROMFROM = { quality == 1 } }
+					set_character_flag = opened_lootbox_1
+				}
+				if = {
+					limit = { FROMFROM = { quality == 2 } }
+					set_character_flag = opened_lootbox_2
+				}
+				if = {
+					limit = { FROMFROM = { quality == 3 } }
+					set_character_flag = opened_lootbox_3
+				}
+				if = {
+					limit = { FROMFROM = { quality == 4 } }
+					set_character_flag = opened_lootbox_4
+				}
+
+				character_event = { id = WCTC.2 }
+			}
+		}
+		
+	}
+}
