@@ -34,7 +34,7 @@ character_event = {
 						random_demesne_title = {
 							limit = {
 								tier = COUNT
-								
+
 								is_capital = no
 							}
 							grant_title_no_opinion = PREVPREVPREV
@@ -99,7 +99,7 @@ character_event = {
 						random_demesne_title = {
 							limit = {
 								tier = COUNT
-								
+
 								is_capital = no
 							}
 							grant_title_no_opinion = PREVPREVPREV
@@ -178,10 +178,10 @@ character_event = {
 # Ping event, because WCWAR.460 requires FROMFROM
 character_event = {
 	id = WCSDW.5
-	
+
 	is_triggered_only = yes
 	hide_window = yes
-	
+
 	immediate = {
 		character_event = { id = WCSDW.6 }
 	}
@@ -189,10 +189,10 @@ character_event = {
 # Ping-ping event
 character_event = {
 	id = WCSDW.6
-	
+
 	is_triggered_only = yes
 	hide_window = yes
-	
+
 	immediate = {
 		character_event = { id = WCWAR.460 }
 	}
@@ -207,7 +207,7 @@ character_event = {
 	picture = GFX_evt_orcish_dragon_rider
 
 	is_triggered_only = yes
-	
+
 	only_playable = yes
 	min_age = 16
 	only_capable = yes
@@ -215,7 +215,7 @@ character_event = {
 
 	trigger = {
 		always = no			# TODO
-		
+
 		is_alive = yes
 		is_dying = no
 		is_inaccessible_trigger = no
@@ -386,7 +386,7 @@ character_event = {
 	# picture = GFX_evt_orc_and_human
 
 	# is_triggered_only = yes
-	
+
 	# only_playable = yes
 	# only_independent = yes
 	# has_global_flag = orcish_invasion_flag
@@ -395,7 +395,7 @@ character_event = {
 	# trigger = {
 		# is_alive = yes
 		# is_dying = no
-		
+
 		# has_global_flag = orcish_invasion_flag
 		# NOT = { has_global_flag = second_war_flag }
 
@@ -480,7 +480,7 @@ narrative_event = {
 	is_triggered_only = yes
 
 	major = yes
-	
+
 	only_playable = yes
 
 	trigger = {
@@ -489,11 +489,11 @@ narrative_event = {
 			religion = burning_legion_religion
 			culture_group = orc_group
 			culture_group = ogre_group
-			
+
 			has_landed_title = e_horde
 			top_liege = { has_landed_title = e_horde }
 		}
-		
+
 		FROM = {
 			OR = {
 				title = b_darkhollow
@@ -502,7 +502,7 @@ narrative_event = {
 		}
 		73 = { has_province_modifier = dark_portal_is_open_2 }
 	}
-	
+
 	immediate = {
 		log = "WCSDW.250 fired for [Root.GetBestName]"
 		73 = {
@@ -510,7 +510,7 @@ narrative_event = {
 			add_province_modifier = { name = dark_portal_is_open_1 duration = -1 }
 		}
 	}
-	
+
 	option = {
 		trigger = { evil_public_religion_trigger = yes }
 		name = FOOLS
@@ -526,7 +526,7 @@ narrative_event = {
 		}
 		name = ALAS
 	}
-	
+
 	option = {
 		trigger = {
 			evil_public_religion_trigger = no
@@ -549,7 +549,7 @@ narrative_event = {
 	border = GFX_event_narrative_frame_war
 
 	is_triggered_only = yes
-	
+
 	min_age = 16
 	only_capable = yes
 	prisoner = no
@@ -558,7 +558,7 @@ narrative_event = {
 		is_adult = yes
 		is_incapable = no
 		prisoner = no
-		
+
 		is_alive = yes
 		is_dying = no
 		is_inaccessible_trigger = no
@@ -607,6 +607,7 @@ narrative_event = {
 		name = EVTOPTA_WCFTW_1000
 
 		remove_3_mana_effect = yes
+		save_event_target_as = target_necromancer	# Needed for WCPOD.5013
 
 		hidden_effect = { narrative_event = { id = WCSDW.1011 days = 30 } }
 	}
@@ -625,14 +626,21 @@ narrative_event = {
 	border = GFX_event_narrative_frame_war
 
 	is_triggered_only = yes
+	
 	major = yes
-	major_trigger = {
-		any_demesne_province = {
-			region = world_eastern_kingdoms
-		}
-	}
 
 	immediate = {
+		if = {
+			limit = { is_ruler = yes }
+			save_event_target_as = target_owner
+			capital_scope = { save_event_target_as = target_province }
+		}
+		else = {
+			liege = {
+				save_event_target_as = target_owner
+				capital_scope = { save_event_target_as = target_province }
+			}
+		}
 		set_global_flag = fel_death_knight_flag
 		create_character = {
 			religion = orcish_fel
@@ -654,25 +662,27 @@ narrative_event = {
 				limit = {
 					is_untouchable_trigger = no
 
+					ai = yes
 					is_alive = yes
 					is_adult = yes
 					is_incapable = no
 					prisoner = no
-					
+
+					NOT = { trait = being_undead }
 					religion = orcish_fel
 					true_religion = orcish_fel
+
+					can_be_undead_trigger = yes
 				}
-				hidden_tooltip = {
-					set_graphical_culture = human_undead
-					set_name = Teron
-					dynasty = 2352	# Gorefiend
-					remove_class_trait_effect = yes
-					remove_racial_traits_effect = yes
-					character_event = { id = WCRAC.10 }
-				}
-				add_trait_undead_effect = yes
 				set_graphical_culture = human_undead
-				add_trait = class_death_knight_6
+				set_name = Teron
+				dynasty = 2352	# Gorefiend
+				remove_racial_traits_effect = yes
+				add_trait = creature_human
+				
+				set_character_flag = transition_into_death_knight_flag
+				character_event = { id = WCPOD.5013 }
+				
 				move_character = ROOT
 			}
 		}
@@ -682,41 +692,40 @@ narrative_event = {
 				limit = {
 					is_untouchable_trigger = no
 
+					ai = yes
 					is_alive = yes
 					is_adult = yes
 					is_incapable = no
 					prisoner = no
-					
+
+					NOT = { trait = being_undead }
 					religion = orcish_fel
 					true_religion = orcish_fel
-					
-					potential_death_knight_trigger = yes
+
+					can_be_undead_trigger = yes
 				}
-				hidden_tooltip = {
-					set_graphical_culture = human_undead
-					remove_class_trait_effect = yes
-					remove_racial_traits_effect = yes
-					character_event = { id = WCRAC.10 }
-				}
-				add_trait_undead_effect = yes
-				add_trait = class_death_knight_6
+				set_graphical_culture = human_undead
+				remove_racial_traits_effect = yes
+				add_trait = creature_human
+				
+				set_character_flag = transition_into_death_knight_flag
+				character_event = { id = WCPOD.5013 }
+				
 				move_character = ROOT
 			}
 		}
-		capital_scope = {
-			PREV = {
-				spawn_unit = {
-					owner = ROOT
-					province = PREV
-					home = PREV
-					troops = {
-						death_knights = { 100 100 }
-					}
-					attrition = 0
-					reinforces = yes
-					maintenance = no
-					earmark = death_knights_forces
+		event_target:target_owner = {
+			spawn_unit = {
+				owner = event_target:target_owner
+				province = event_target:target_province
+				home = event_target:target_province
+				troops = {
+					death_knights = { 100 100 }
 				}
+				attrition = 0
+				reinforces = yes
+				maintenance = no
+				earmark = death_knights_forces
 			}
 		}
 	}
