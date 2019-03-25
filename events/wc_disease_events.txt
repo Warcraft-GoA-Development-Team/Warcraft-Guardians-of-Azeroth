@@ -1,0 +1,185 @@
+namespace = WCSYM
+
+### Adds symptoms, when there's enought, adds disease
+character_event = { 
+	id = WCSYM.5011
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	trigger = {
+		has_character_flag = got_corrupted_blood
+	}
+	
+	immediate = {
+		random_list = {
+			100 = {
+				modifier = {
+					factor = 0
+					trait = rash
+					trait = fever
+					trait = headache
+				}
+				add_corrupted_blood_symptom_effect = yes #Disease effect
+			}
+			50 = {
+				modifier = {
+					factor = 0
+					NOR = {
+						trait = rash
+						trait = fever
+						trait = headache
+					}
+				}
+				character_event = { id = WCSYM.5051 days = 20 random = 20 } #Disease develops
+			}
+		}
+	}
+}
+
+### Adds disease
+character_event = { 
+	id = WCSYM.5051
+	desc = EVTDESC_WCSYM_5051
+	picture = GFX_evt_illness
+	border = GFX_event_normal_frame_religion
+	
+	hide_from = yes
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = ALAS
+		add_trait = corrupted_blood
+		set_character_flag = manifest_corrupted_blood
+		add_disease_level_effect = yes
+		blessing_removes_disease_effect = yes
+		deaths_gift_removes_disease_effect = yes
+		scrying_omen_fulfilled_by_gaining_disease_effect = yes
+
+		if = { limit = { trait = fever } remove_trait = fever }
+		if = { limit = { trait = rash } remove_trait = rash }
+		if = { limit = { trait = headache } remove_trait = headache }
+		hidden_tooltip = {
+			if = {
+				limit = { is_unimportant_trigger = yes }
+				health = -4
+			}
+			if = { 
+				limit = { is_playable = no }
+				host = {
+					random_courtier_or_vassal = { #Markus doing
+						limit = {
+							liege = { character = PREVPREV }
+							has_minor_title = title_court_physician
+						}
+						character_event = { id = RIP.11031 days = 1 }
+					}
+				}
+			}
+			if = { 
+				limit = { is_playable = yes }
+				random_courtier_or_vassal = { #Markus doing
+					limit = {
+						has_minor_title = title_court_physician
+					}
+					character_event = { id = RIP.11031 days = 1 }
+				}
+			}
+			father = {
+				if = {
+					limit = { 
+						ai = no 
+						is_liege_of = ROOT
+						NOT = { has_character_modifier = in_seclusion }
+					}
+					set_character_flag = announce_corrupted_blood
+					character_event = { id = RIP.5060 }
+				}
+			}
+			mother = {
+				if = {
+					limit = { 
+						ai = no 
+						is_liege_of = ROOT
+						NOT = { has_character_modifier = in_seclusion }
+					}
+					set_character_flag = announce_corrupted_blood
+					character_event = { id = RIP.5060 }
+				}
+			}
+			clr_character_flag = developing_illness
+			clr_character_flag = got_corrupted_blood
+		}
+	}
+}
+
+### Removes disease
+character_event = {
+	id = WCSYM.6001
+	picture = GFX_evt_recovery
+	desc = EVTDESC_WCSYM_6001
+	border = GFX_event_normal_frame_religion
+	
+	is_sick = yes
+
+	trigger = { 
+		trait = corrupted_blood 
+		has_dlc = "Reapers"
+		OR = {
+			had_character_flag = { flag = manifest_corrupted_blood days = 30 }
+			NOT = { has_character_flag = manifest_corrupted_blood }
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 12
+		
+		modifier = {
+			factor = 0.75
+			health = 6
+		}
+		modifier = {
+			factor = 0.5
+			health = 7
+		}
+		modifier = {
+			factor = 0.5
+			health = 8
+		}
+		modifier = {
+			factor = 1.5
+			NOT = { health = 5 }
+		}
+		modifier = {
+			factor = 2.0
+			NOT = { health = 4 }
+		}
+		modifier = {
+			factor = 2.0
+			is_ill = yes
+		}
+		modifier = {
+			factor = 4.0
+			trait = infirm
+		}
+		modifier = {
+			factor = 5.0
+			is_incapable = yes
+		}
+	}
+
+	option = {
+		name = EXCELLENT
+		remove_trait = corrupted_blood
+		clear_disease_level_effect = yes
+		clr_character_flag = developing_illness
+		clr_character_flag = got_corrupted_blood
+		clr_character_flag = manifest_corrupted_blood
+		set_character_flag = immune_corrupted_blood
+		scrying_omen_fulfilled_by_removing_disease_effect = yes
+		hidden_tooltip = {
+			remove_treatment_modifiers_effect = yes
+		}
+	}
+}

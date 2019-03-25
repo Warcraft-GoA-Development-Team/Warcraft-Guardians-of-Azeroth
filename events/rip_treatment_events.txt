@@ -3064,6 +3064,9 @@ character_event = {
 		custom_tooltip = { text = CURED_RIP_TOOLTIP }
 
 		hidden_tooltip = {
+			# Warcraft
+			if = { limit = { trait = corrupted_blood } remove_trait = corrupted_blood set_character_flag = immune_corrupted_blood }
+				
 			if = { limit = { trait = flu } remove_trait = flu }
 			if = { limit = { trait = dysentery } remove_trait = dysentery }
 			if = { limit = { trait = gout }	remove_trait = gout }
@@ -3899,6 +3902,9 @@ character_event = {
 			custom_tooltip = { text = CURED_RIP_TOOLTIP }
 
 			hidden_tooltip = {
+				# Warcraft
+				if = { limit = { trait = corrupted_blood } remove_trait = corrupted_blood set_character_flag = immune_corrupted_blood }
+				
 				if = { limit = { trait = flu } remove_trait = flu }
 				if = { limit = { trait = dysentery } remove_trait = dysentery }
 				if = { limit = { trait = gout }	remove_trait = gout }
@@ -4404,6 +4410,38 @@ character_event = {
 		text = EVTDESC_RIP_11045_plague_of_undeath_uncertain
 		trigger = {
 			has_character_flag = EVTDESC_RIP_11045_plague_of_undeath_uncertain
+		}
+	}
+	
+	# Warcraft
+	desc = {
+		text = EVTDESC_RIP_11045_corrupted_blood
+		trigger = {
+			has_character_flag = EVTDESC_RIP_11045_corrupted_blood_flag
+		}
+	}
+	desc = {
+		text = EVTDESC_RIP_11045_corrupted_blood_horse
+		trigger = {
+			has_character_flag = EVTDESC_RIP_11045_corrupted_blood_flag_horse
+		}
+	}
+	desc = {
+		text = EVTDESC_RIP_11045_corrupted_blood_certain
+		trigger = {
+			has_character_flag = EVTDESC_RIP_11045_corrupted_blood_flag_certain
+		}
+	}
+	desc = {
+		text = EVTDESC_RIP_11045_corrupted_blood_sure
+		trigger = {
+			has_character_flag = EVTDESC_RIP_11045_corrupted_blood_flag_sure
+		}
+	}
+	desc = {
+		text = EVTDESC_RIP_11045_corrupted_blood_uncertain
+		trigger = {
+			has_character_flag = EVTDESC_RIP_11045_corrupted_blood_flag_uncertain
 		}
 	}
 
@@ -5148,6 +5186,83 @@ character_event = {
 				}
 				
 				set_character_flag = EVTDESC_RIP_11045_plague_of_undeath_flag
+			}
+			10 = {
+				modifier = {
+					factor  = 0
+					AND = {
+						has_character_flag = correct_diagnosis
+						NOT = { has_character_flag = got_corrupted_blood }
+					}
+				}
+				modifier = {
+					factor  = 0
+					AND = {
+						has_character_flag = faulty_diagnosis
+						has_character_flag = got_corrupted_blood
+					}
+				}
+				
+				if = {
+					limit = {	#horse
+						FROM = {
+							culture = horse
+						}	
+					}
+					set_character_flag = EVTDESC_RIP_11045_corrupted_blood_flag_horse
+					break = yes
+				}
+				if = {
+					limit = {
+						has_character_flag = correct_diagnosis #Really good doctors know for sure
+						FROM = {
+							OR = {
+								learning = 25
+								AND = {
+									physician_good_trigger = yes
+									learning = 20
+								}
+							}
+						}	
+					}
+					set_character_flag = EVTDESC_RIP_11045_corrupted_blood_flag_certain
+					break = yes
+				}
+				if = {	#Good doctors are pretty sure
+					limit = {
+						FROM = {
+							OR = {
+								learning = 20
+								AND = {
+									physician_good_trigger = yes
+									learning = 15
+								}
+							}
+						}	
+					}
+					set_character_flag = EVTDESC_RIP_11045_corrupted_blood_flag_sure
+					break = yes
+				}
+				if = {
+					limit = { # awful doctors are uncertain 
+						FROM = {
+							OR = {
+								AND = {
+									NOT = { learning = 10 }	
+									physician_bad_trigger = no
+								}
+								AND = {
+									NOT = { learning = 15 }	
+									physician_bad_trigger = yes
+								}
+							}
+						}	
+					}
+					set_character_flag = EVTDESC_RIP_11045_corrupted_blood_flag_uncertain
+					break = yes
+				}
+				
+				set_character_flag = EVTDESC_RIP_11045_corrupted_blood_flag
 			}
 
 			10 = {
@@ -6620,6 +6735,11 @@ character_event = {
 			clr_character_flag = EVTDESC_RIP_11045_plague_of_undeath_flag_certain
 			clr_character_flag = EVTDESC_RIP_11045_plague_of_undeath_flag_sure
 			clr_character_flag = EVTDESC_RIP_11045_plague_of_undeath_flag_uncertain
+			clr_character_flag = EVTDESC_RIP_11045_corrupted_blood_flag
+			clr_character_flag = EVTDESC_RIP_11045_corrupted_blood_flag_horse
+			clr_character_flag = EVTDESC_RIP_11045_corrupted_blood_flag_certain
+			clr_character_flag = EVTDESC_RIP_11045_corrupted_blood_flag_sure
+			clr_character_flag = EVTDESC_RIP_11045_corrupted_blood_flag_uncertain
 
 			clr_character_flag = faulty_diagnosis
 			clr_character_flag = correct_diagnosis
