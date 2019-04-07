@@ -7,33 +7,32 @@ char_can_buy_artifacts = {
 	}
 }
 
-can_equip_onehanded_trigger = {
+can_equip_onehanded_trigger = { # any weapon but daggers
 	custom_tooltip = { #Can't equip onehanded weapon if already equipped twohanded
 		text = can_equip_onehanded_tooltip
-		trigger_if = {
-			limit = {
-				AND = {
-					any_artifact = {
-						has_artifact_flag = twohanded
-					}
-					any_artifact = {
-						has_artifact_flag = onehanded
-					}
-				}
-			}
-			NOT = {
-				any_artifact = {
-					has_artifact_flag = twohanded
-					is_artifact_equipped = yes
-				}
+		NOT = {
+			any_artifact = {
+				has_artifact_flag = twohanded
+				is_artifact_equipped = yes
 			}
 		}
 	}
-	custom_tooltip = { #Can't equip two onehanded weapon if one handed
+
+	custom_tooltip = { #Can't equip two onehanded weapon
 		text = can_equip_more_onehanded_tooltip
 		trigger_if = {
 			limit = {
-				trait = one_handed
+				OR = {
+					NOR = {
+						trait = class_warrior_5
+						trait = class_warrior_6
+						trait = class_warrior_7
+						trait = class_warrior_8
+						trait = class_warrior_9
+						trait = class_warrior_10
+					}
+					trait = one_handed
+				}
 			}
 
 			NOR = {
@@ -41,18 +40,14 @@ can_equip_onehanded_trigger = {
 					#ai = yes
 					OR = {
 						FROM = {
-							AND = {
-								has_artifact_flag = onehanded
-								is_artifact_equipped = no
-								is_artifact_active = yes
-							}
+							has_artifact_flag = onehanded
+							is_artifact_equipped = no
+							is_artifact_active = yes
 						}
 						FROM = {
-							AND = {
-								has_artifact_flag = onehanded
-								is_artifact_equipped = no
-								is_artifact_active = no
-							}
+							has_artifact_flag = onehanded
+							is_artifact_equipped = no
+							is_artifact_active = no
 						}
 					}
 					any_artifact = {
@@ -61,12 +56,75 @@ can_equip_onehanded_trigger = {
 						count = 1
 					}
 				}
-				AND = { #Can't equip two onehanded weapon if one handed
+				AND = { #Can't equip two onehanded weapon
 					FROM = {
-						AND = {
+						has_artifact_flag = onehanded
+						is_artifact_equipped = yes
+					}
+					any_artifact = {
+						has_artifact_flag = onehanded
+						is_artifact_equipped = yes
+						count = 2
+					}
+				}
+			}
+		}
+	}
+}
+
+can_equip_dagger_trigger = { # For rogue daggers
+	custom_tooltip = { #Can't equip onehanded weapon if already equipped twohanded
+		text = can_equip_onehanded_tooltip
+		NOT = {
+			any_artifact = {
+				has_artifact_flag = twohanded
+				is_artifact_equipped = yes
+			}
+		}
+	}
+
+	custom_tooltip = { #Can't equip two onehanded weapon
+		text = can_equip_more_onehanded_tooltip
+		trigger_if = {
+			limit = {
+				OR = {
+					NOR = {
+						trait = class_rogue_5
+						trait = class_rogue_6
+						trait = class_rogue_7
+						trait = class_rogue_8
+						trait = class_rogue_9
+						trait = class_rogue_10
+					}
+					trait = one_handed
+				}
+			}
+
+			NOR = {
+				AND = { # Prevents endless AI changing artifacts loop
+					#ai = yes
+					OR = {
+						FROM = {
 							has_artifact_flag = onehanded
-							is_artifact_equipped = yes
+							is_artifact_equipped = no
+							is_artifact_active = yes
 						}
+						FROM = {
+							has_artifact_flag = onehanded
+							is_artifact_equipped = no
+							is_artifact_active = no
+						}
+					}
+					any_artifact = {
+						has_artifact_flag = onehanded
+						is_artifact_equipped = yes
+						count = 1
+					}
+				}
+				AND = { #Can't equip two onehanded weapon
+					FROM = {
+						has_artifact_flag = onehanded
+						is_artifact_equipped = yes
 					}
 					any_artifact = {
 						has_artifact_flag = onehanded
@@ -82,22 +140,10 @@ can_equip_onehanded_trigger = {
 can_equip_twohanded_trigger = {
 	custom_tooltip = { #Can't equip twohanded weapon if already equipped onehanded
 		text = can_equip_twohanded_tooltip
-		trigger_if = {
-			limit = {
-				AND = {
-					any_artifact = {
-						has_artifact_flag = twohanded
-					}
-					any_artifact = {
-						has_artifact_flag = onehanded
-					}
-				}
-			}
-			NOT = {
-				any_artifact = {
-					has_artifact_flag = onehanded
-					is_artifact_equipped = yes
-				}
+		NOT = {
+			any_artifact = {
+				has_artifact_flag = onehanded
+				is_artifact_equipped = yes
 			}
 		}
 	}
@@ -108,18 +154,14 @@ can_equip_twohanded_trigger = {
 				#ai = yes
 				OR = {
 					FROM = {
-						AND = {
-							has_artifact_flag = twohanded
-							is_artifact_equipped = no
-							is_artifact_active = yes
-						}
+						has_artifact_flag = twohanded
+						is_artifact_equipped = no
+						is_artifact_active = yes
 					}
 					FROM = {
-						AND = {
-							has_artifact_flag = twohanded
-							is_artifact_equipped = no
-							is_artifact_active = no
-						}
+						has_artifact_flag = twohanded
+						is_artifact_equipped = no
+						is_artifact_active = no
 					}
 				}
 				any_artifact = {
@@ -130,10 +172,8 @@ can_equip_twohanded_trigger = {
 			}
 			AND = { #Can't equip two twohanded weapons
 				FROM = {
-					AND = {
-						has_artifact_flag = twohanded
-						is_artifact_equipped = yes
-					}
+					has_artifact_flag = twohanded
+					is_artifact_equipped = yes
 				}
 				any_artifact = {
 					has_artifact_flag = twohanded
@@ -151,7 +191,7 @@ can_equip_two_hats_trigger = {
 		trigger_if = {
 			limit = {
 				NOT = { trait = twoheaded }
-				any_artifact = { # Idk. Perhaps this will help improve performance? Game will checks only those mono-heads who have hats? Idk.
+				any_artifact = { # Game will checks only those mono-heads who have hats
 					has_artifact_flag = head
 				}
 			}
@@ -161,18 +201,14 @@ can_equip_two_hats_trigger = {
 					#ai = yes
 					OR = {
 						FROM = {
-							AND = {
-								has_artifact_flag = head
-								is_artifact_equipped = no
-								is_artifact_active = yes
-							}
+							has_artifact_flag = head
+							is_artifact_equipped = no
+							is_artifact_active = yes
 						}
 						FROM = {
-							AND = {
-								has_artifact_flag = head
-								is_artifact_equipped = no
-								is_artifact_active = no
-							}
+							has_artifact_flag = head
+							is_artifact_equipped = no
+							is_artifact_active = no
 						}
 					}
 					any_artifact = {
@@ -183,10 +219,8 @@ can_equip_two_hats_trigger = {
 				}
 				AND = { #Can't equip two hats if one headed
 					FROM = {
-						AND = {
-							has_artifact_flag = head
-							is_artifact_equipped = yes
-						}
+						has_artifact_flag = head
+						is_artifact_equipped = yes
 					}
 					any_artifact = {
 						has_artifact_flag = head
@@ -212,18 +246,14 @@ can_equip_rings_trigger = {
 					#ai = yes
 					OR = {
 						FROM = {
-							AND = {
-								has_artifact_flag = ring
-								is_artifact_equipped = no
-								is_artifact_active = yes
-							}
+							has_artifact_flag = ring
+							is_artifact_equipped = no
+							is_artifact_active = yes
 						}
 						FROM = {
-							AND = {
-								has_artifact_flag = ring
-								is_artifact_equipped = no
-								is_artifact_active = no
-							}
+							has_artifact_flag = ring
+							is_artifact_equipped = no
+							is_artifact_active = no
 						}
 					}
 					any_artifact = {
@@ -234,10 +264,8 @@ can_equip_rings_trigger = {
 				}
 				AND = { #Can't equip two rings if one handed
 					FROM = {
-						AND = {
-							has_artifact_flag = ring
-							is_artifact_equipped = yes
-						}
+						has_artifact_flag = ring
+						is_artifact_equipped = yes
 					}
 					any_artifact = {
 						has_artifact_flag = ring
