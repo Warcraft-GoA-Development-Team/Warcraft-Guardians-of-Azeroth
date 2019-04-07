@@ -82,19 +82,19 @@ character_event = {
 		}
 		# Health modifiers
 		modifier = {
-			factor = 0.56
+			factor = 0.84
 			NOT = { health = 5 }
 		}
 		modifier = {
-			factor = 0.56
+			factor = 0.84
 			NOT = { health = 6 }
 		}
 		modifier = {
-			factor = 0.56
+			factor = 0.84
 			NOT = { health = 7 }
 		}
 		modifier = {
-			factor = 0.56
+			factor = 0.84
 			NOT = { health = 8 }
 		}
 		modifier = {
@@ -161,7 +161,8 @@ character_event = {
 		is_alive = yes
 		is_dying = no
 		
-		potential_race_trigger = yes
+		# potential_race_trigger = yes
+		has_race_trait_trigger = no
 	}
 
 	immediate = {
@@ -302,16 +303,16 @@ character_event = {
 			}
 			else = { death = { death_reason = death_missing } }
 		}
-		else_if = {
-			limit = { potential_race_ghoul_trigger = yes }
-			add_trait = creature_ghoul
-			add_trait_undead_effect = yes
-		}
-		else_if = {
-			limit = { potential_race_skeleton_trigger = yes }
-			add_trait = creature_skeleton
-			add_trait_undead_effect = yes
-		}
+		# else_if = {
+			# limit = { potential_race_ghoul_trigger = yes }
+			# add_trait = creature_ghoul
+			# add_trait_undead_effect = yes
+		# }
+		# else_if = {
+			# limit = { potential_race_skeleton_trigger = yes }
+			# add_trait = creature_skeleton
+			# add_trait_undead_effect = yes
+		# }
 		else_if = {
 			limit = { potential_race_wraith_trigger = yes }
 			add_trait = creature_wraith
@@ -340,17 +341,29 @@ character_event = {
 		else_if = {
 			limit = { potential_race_annihilan_trigger = yes }
 			add_trait = creature_annihilan
+			if = {
+				limit = { is_female = yes }
+				set_gender = male
+			}
 			add_trait_demon_effect = yes
 		}
 		else_if = {
 			limit = { potential_race_nathrezim_trigger = yes }
 			add_trait = creature_nathrezim
+			if = {
+				limit = { is_female = yes }
+				set_gender = male
+			}
 			add_trait_demon_effect = yes
 			culture = nathrezim
 		}
 		else_if = {
 			limit = { potential_race_eredruin_trigger = yes }
 			add_trait = creature_eredruin
+			if = {
+				limit = { is_female = yes }
+				set_gender = male
+			}
 			add_trait_demon_effect = yes
 		}
 		else_if = {
@@ -364,6 +377,10 @@ character_event = {
 		else_if = {
 			limit = { potential_race_satyr_trigger = yes }
 			add_trait = creature_satyr
+			if = {
+				limit = { is_female = yes }
+				set_gender = male
+			}
 			add_trait_demon_effect = yes
 		}
 		else_if = {
@@ -384,15 +401,19 @@ character_event = {
 		else_if = {
 			limit = { potential_race_shivarra_trigger = yes }
 			add_trait = creature_shivarra
-			add_trait_demon_effect = yes
 			if = {
 				limit = { is_female = no }
 				set_gender = female
 			}
+			add_trait_demon_effect = yes
 		}
 		else_if = {
 			limit = { potential_race_moarg_trigger = yes }
 			add_trait = creature_moarg
+			if = {
+				limit = { is_female = yes }
+				set_gender = male
+			}
 			add_trait_demon_effect = yes
 		}
 		else_if = {
@@ -415,6 +436,10 @@ character_event = {
 		else_if = {
 			limit = { potential_race_flamewaker_trigger = yes }
 			add_trait = creature_flamewaker
+			if = {
+				limit = { is_female = yes }
+				set_gender = male
+			}
 		}
 		else_if = {
 			limit = { potential_race_water_elemental_trigger = yes }
@@ -570,25 +595,35 @@ character_event = {
 			culture = protector
 		}
 		else = {
+			gfx_culture_scope = { save_event_target_as = target_gfx_culture }
+			log = "(IMPORTANT) [This.GetBestName] couldn't get race trait. GFX culture is [target_gfx_culture.GetName]."
 			death = { death_reason = death_missing }
 		}
+		
 		if = {
 			limit = {
-				OR = {
-					has_undead_gfx_trigger = yes
-					AND = {
-						can_be_undead_trigger = yes
-						location = { has_province_modifier = undead_province }
-						liege = { trait = being_undead }
-					}
-				}
+				is_alive = yes
+				is_dying = no
 			}
 			# Adds undead trait
 			if = {
-				limit = { NOT = { trait = being_undead } }
+				limit = {
+					NOT = { trait = being_undead }
+					
+					OR = {
+						has_undead_gfx_trigger = yes
+						AND = {
+							can_be_undead_trigger = yes
+							location = { has_province_modifier = undead_province }
+							liege = { trait = being_undead }
+						}
+					}
+				}
 				save_event_target_as = target_necromancer
 				character_event = { id = WCPOD.5013 }
 			}
+			# Adds default traits when new character spawns
+			add_default_traits = yes
 		}
 	}
 }

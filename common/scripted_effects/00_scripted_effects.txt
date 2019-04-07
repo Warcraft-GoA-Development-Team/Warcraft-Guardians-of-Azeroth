@@ -1492,10 +1492,6 @@ add_maimed_trait_effect = {
 	}
 	if = {
 		limit = {
-			# Warcraft
-			is_dark_being_trigger = no
-			is_humanoid_trigger = yes
-			
 			AND = {
 				has_dlc = "Reapers"
 				NOT = { trait = severely_injured }
@@ -1508,6 +1504,11 @@ add_maimed_trait_effect = {
 					character_event = { id = RIP.11000 days = 90 random = 275}
 				}
 				25 = { #Get rid of severely_injured but develop infection
+					# Warcraft
+					trigger = {
+						can_get_sick_trigger = yes
+					}
+					
 					set_character_flag = pending_infection
 					character_event = { id = RIP.11000 days = 90 random = 275}
 				}
@@ -2614,6 +2615,11 @@ remove_treatment_modifiers_effect = {
 }
 
 remove_disease_flags_effect = {
+	# Warcraft
+	clr_character_flag = got_plague_of_undeath
+	clr_character_flag = got_corrupted_blood
+	clr_character_flag = manifest_corrupted_blood
+	
 	clr_character_flag = developing_illness
 	clr_character_flag = got_syphilis
 	clr_character_flag = got_tuberculosis
@@ -2666,6 +2672,20 @@ leave_court_and_die_effect = {
 }
 
 give_epidemic_disease_effect = {
+	# Warcraft
+	if = {
+		limit = {
+			can_get_sick_trigger = yes
+			
+			location = { disease = corrupted_blood_epidemic }
+			NOT = { has_character_flag = immune_corrupted_blood }
+		}
+		
+		give_corrupted_blood_effect = yes
+		
+		break = yes
+	}
+	
 	if = {
 		limit = {
 			# Warcraft
@@ -2810,6 +2830,12 @@ deaths_gift_removes_disease_effect = {
 }
 
 remove_disease_trait_effect = {
+	# Warcraft
+	if = {
+	 	limit = { trait = corrupted_blood }
+	 	remove_trait = corrupted_blood
+	}
+
 	if = {
 	 	limit = { trait = ill }
 	 	remove_trait = ill
@@ -3658,8 +3684,7 @@ venereal_disease_effect_event_target = {
 	# Warcraft
 	if = {
 		limit = {
-			is_humanoid_trigger = yes
-			is_dark_being_trigger = no
+			can_get_sick_trigger = yes
 		}
 		#Great pox and aztec disease for sex_partner
 		if = {
@@ -3896,8 +3921,7 @@ venereal_disease_effect = {
 	# Warcraft
 	if = {
 		limit = {
-			is_humanoid_trigger = yes
-			is_dark_being_trigger = no
+			can_get_sick_trigger = yes
 		}
 		#Great pox and aztec disease for FROM
 		if = {
@@ -4941,6 +4965,15 @@ remove_random_maimed_effect = { #remember to clear flags if using this effect :D
 
 remove_random_disease_effect = { # Do actual trait removal in event. This is a clunky solution, but communication to player has been prioritised for the sake of event MNM.7119
 	random_list = {
+		# Warcraft
+		10 = {
+			modifier = {
+				NOT = { trait = corrupted_blood }
+				factor = 0
+			}
+			set_character_flag = removing_corrupted_blood
+		}
+		
 		40 = {
 			modifier = {
 				NOT = { trait = flu }
@@ -5018,6 +5051,15 @@ remove_random_disease_effect = { # Do actual trait removal in event. This is a c
 
 remove_random_epidemic_disease_effect = {
 	random_list = {
+		# Warcraft
+		10 = {
+			modifier = {
+				NOT = { trait = corrupted_blood }
+				factor = 0
+			}
+			set_character_flag = removing_corrupted_blood
+		}
+		
 		10 = {
 			modifier = {
 				NOT = { trait = has_tuberculosis}
@@ -21391,6 +21433,13 @@ random_list = {
 			factor = 1.15
 			trait = scarred
 		} 
+		
+		# Warcraft
+		modifier = {
+			factor = 3
+			trait = corrupted_blood
+		}
+		
 		modifier = { 
 			factor = 1.5
 			trait = ill
@@ -21761,6 +21810,13 @@ random_list = {
 			factor = 1.15
 			trait = scarred
 		} 
+		
+		# Warcraft
+		modifier = {
+			factor = 3
+			trait = corrupted_blood
+		}
+		
 		modifier = { 
 			factor = 1.5
 			trait = ill
