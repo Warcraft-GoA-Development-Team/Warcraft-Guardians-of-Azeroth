@@ -149,28 +149,6 @@ character_event = {
 	}
 }
 
-# Kills characters that can't have race trait
-character_event = {
-	id = WCRAC.9
-	
-	is_triggered_only = yes
-	hide_window = yes
-	
-	trigger = {
-		is_alive = yes
-		is_dying = no
-		
-		OR = {
-			graphical_culture = demonformgfx	# Placeholder without race
-			graphical_culture = ghoulgfx		# Placeholder without race
-		}
-	}
-	
-	immediate = {
-		death = { death_reason = death_missing }
-	}
-}
-
 # Adds race traits
 # Fired by decision, on_birth, on_new_holder, on_new_holder_inheritance, on_new_holder_usurpation
 character_event = {
@@ -183,7 +161,8 @@ character_event = {
 		is_alive = yes
 		is_dying = no
 		
-		potential_race_trigger = yes
+		# potential_race_trigger = yes
+		has_race_trait_trigger = no
 	}
 
 	immediate = {
@@ -616,27 +595,35 @@ character_event = {
 			culture = protector
 		}
 		else = {
+			gfx_culture_scope = { save_event_target_as = target_gfx_culture }
+			log = "(IMPORTANT) [This.GetBestName] couldn't get race trait. GFX culture is [target_gfx_culture.GetName]."
 			death = { death_reason = death_missing }
 		}
+		
 		if = {
 			limit = {
 				is_alive = yes
 				is_dying = no
-				OR = {
-					has_undead_gfx_trigger = yes
-					AND = {
-						can_be_undead_trigger = yes
-						location = { has_province_modifier = undead_province }
-						liege = { trait = being_undead }
-					}
-				}
 			}
 			# Adds undead trait
 			if = {
-				limit = { NOT = { trait = being_undead } }
+				limit = {
+					NOT = { trait = being_undead }
+					
+					OR = {
+						has_undead_gfx_trigger = yes
+						AND = {
+							can_be_undead_trigger = yes
+							location = { has_province_modifier = undead_province }
+							liege = { trait = being_undead }
+						}
+					}
+				}
 				save_event_target_as = target_necromancer
 				character_event = { id = WCPOD.5013 }
 			}
+			# Adds default traits when new character spawns
+			add_default_traits = yes
 		}
 	}
 }
