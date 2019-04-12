@@ -7,6 +7,11 @@ namespace = WCDRN
 # Creates the Draenei and characters
 character_event = {
 	id = WCDRN.99
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	ai = no
 
 	trigger = {
 		NOT = { has_global_flag = exodar_has_crashed_flag }
@@ -29,32 +34,132 @@ character_event = {
 			age = 600
 		}
 		new_character = {
+			# Saves Velen in event_target:target_velen for future use
+			save_event_target_as = target_velen
+			
 			3320 = {
-				capital_holding = { convert_tribal_to_temple_effect = yes }
-				county = { grant_title_no_opinion = { target = PREVPREV } }
-				culture = PREV
-				religion = PREV
+				# Adds slot and holding because why not?
+				if = {
+					limit = { NOT = { num_of_max_settlements = 7 } }
+					add_holding_slot = 1
+				}
+				if = {
+					limit = { has_empty_holding = yes }
+					build_holding = { type = temple holder = event_target:target_velen }
+				}
+				else = {	# In case when new holding can't be created give just something to save Velen from being landless and game over
+					random_province_holding = {
+						limit = { is_capital = no }
+						preferred_limit = { holding_type = temple }
+						grant_title_no_opinion = event_target:target_velen
+					}
+				}
+				
+				# Rename one temple as Exodar
+				random_province_holding = {
+					limit = { holding_type = temple }
+					# Prefer when Velen is holder
+					preferred_limit = { holder_scope = { character = event_target:target_velen } }
+					set_name = "EXODAR"
+				}
+				
+				# Rename province as Exodar
+				set_name = "EXODAR"
+				culture = event_target:target_velen
+				religion = event_target:target_velen
+				
+				# Gives claim if holder is player or title if holder is AI
+				county = { give_claim_or_title_to_prevprev_effect = yes }
+				
+				# Upgrade tribal if there's one
+				if = {
+					limit = { any_province_holding = { holding_type = tribal } }
+					random_province_holding = {
+						limit = { holding_type = tribal }
+						convert_tribal_to_temple_effect = yes
+					}
+				}
 			}
 			3322 = {
-				capital_holding = { convert_tribal_to_castle_effect = yes }
-				county = { grant_title_no_opinion = { target = PREVPREV } }
-				culture = PREV
-				religion = PREV
+				# Adds slot and holding because why not?
+				if = {
+					limit = { NOT = { num_of_max_settlements = 7 } }
+					add_holding_slot = 1
+				}
+				if = {
+					limit = { has_empty_holding = yes }
+					build_holding = { type = castle holder = event_target:target_velen }
+				}
+				
+				culture = event_target:target_velen
+				religion = event_target:target_velen
+				
+				# Gives claim if holder is player or title if holder is AI
+				county = { give_claim_or_title_to_prevprev_effect = yes }
+				
+				# Upgrade tribal if there's one
+				if = {
+					limit = { any_province_holding = { holding_type = tribal } }
+					random_province_holding = {
+						limit = { holding_type = tribal }
+						convert_tribal_to_castle_effect = yes
+					}
+				}
 			}			
 			3324 = {
-				capital_holding = { convert_tribal_to_castle_effect = yes }
-				county = { grant_title_no_opinion = { target = PREVPREV } }
-				culture = PREV
-				religion = PREV
+				# Adds slot and holding because why not?
+				if = {
+					limit = { NOT = { num_of_max_settlements = 7 } }
+					add_holding_slot = 1
+				}
+				if = {
+					limit = { has_empty_holding = yes }
+					build_holding = { type = castle holder = event_target:target_velen }
+				}
+				
+				culture = event_target:target_velen
+				religion = event_target:target_velen
+				
+				# Gives claim if holder is player or title if holder is AI
+				county = { give_claim_or_title_to_prevprev_effect = yes }
+				
+				# Upgrade tribal if there's one
+				if = {
+					limit = { any_province_holding = { holding_type = tribal } }
+					random_province_holding = {
+						limit = { holding_type = tribal }
+						convert_tribal_to_castle_effect = yes
+					}
+				}
 			}
 			3326 = {
-				capital_holding = { convert_tribal_to_castle_effect = yes }
-				county = { grant_title_no_opinion = { target = PREVPREV } }
-				culture = PREV
-				religion = PREV
+				# Adds slot and holding because why not?
+				if = {
+					limit = { NOT = { num_of_max_settlements = 7 } }
+					add_holding_slot = 1
+				}
+				if = {
+					limit = { has_empty_holding = yes }
+					build_holding = { type = castle holder = event_target:target_velen }
+				}
+				
+				culture = event_target:target_velen
+				religion = event_target:target_velen
+				
+				# Gives claim if holder is player or title if holder is AI
+				county = { give_claim_or_title_to_prevprev_effect = yes }
+				
+				# Upgrade tribal if there's one
+				if = {
+					limit = { any_province_holding = { holding_type = tribal } }
+					random_province_holding = {
+						limit = { holding_type = tribal }
+						convert_tribal_to_castle_effect = yes
+					}
+				}
 			}			
 			activate_title = { title = k_exodar status = yes }
-			k_exodar = { gain_title = PREV }	
+			k_exodar = { gain_title = event_target:target_velen }
 			narrative_event = { id = WCDRN.100 }
 			give_nickname = nick_the_divine
 			set_global_flag = exodar_has_crashed_flag	
@@ -120,7 +225,7 @@ character_event = {
 				name = Sulaa
 				female = yes
 				dynasty = none
-				culture = draenei religion = orcish_shamanism
+				culture = draenei religion = shamanism
 				attributes = {
 					martial=3 diplomacy=7 stewardship=4 intrigue=4 learning=8
 				}
@@ -193,8 +298,42 @@ character_event = {
 					random_traits = yes
 					age = 480
 				}
-			}	
-		}	
+			}
+			
+			# If Velen has no 3320 province, declares war
+			3320 = {
+				county = {
+					holder_scope = {
+						top_liege = {
+							# If has 2 or more claims, claims all
+							if = {
+								limit = {
+									event_target:target_velen = {
+										total_claims = {
+											who = PREV
+											strong = yes
+											value = 2
+										}
+									}
+								}
+								reverse_unsafe_war = {
+									target = event_target:target_velen
+									casus_belli = claim_all
+									thirdparty_title = THIS
+								}
+							}
+							else = {
+								reverse_unsafe_war = {
+									target = event_target:target_velen
+									casus_belli = claim
+									thirdparty_title = PREVPREV
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 }
 
@@ -213,18 +352,18 @@ narrative_event = {
 	hide_from = yes
 	
 	immediate = {
-		capital_scope = {
+		3320 = {
 			ROOT = {
 				spawn_unit = {
 					owner = ROOT
 					province = PREV
 					home = PREV
 					troops = {
-						archers = { 600 600 }
-						light_infantry = { 900 900 }
-						heavy_infantry = { 1125 1125 }
-						light_cavalry = { 150 150 }
-						knights = { 225 225 }
+						archers = { 1000 1000 }
+						light_infantry = { 1500 1500 }
+						heavy_infantry = { 1875 1875 }
+						light_cavalry = { 250 250 }
+						knights = { 375 375 }
 					}
 					cannot_inherit = no
 					attrition = 1.0
