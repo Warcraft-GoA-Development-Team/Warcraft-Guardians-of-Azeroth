@@ -1901,7 +1901,9 @@ province_event = {
 					is_occupied = no
 				}
 			}
-			if = {
+			# SUCCESSS CASES
+			# Who shall get event?
+			if = {		# Fires for target_druid
 				limit = {
 					event_target:target_druid = {
 						is_alive = yes
@@ -1918,11 +1920,12 @@ province_event = {
 				}
 				event_target:target_druid = { narrative_event = { id = WCCLS.820 } }
 			}
-			else_if = {
+			else_if = {		# Fires for liege of title's holder if title's holder isn't playable
 				limit = {
 					event_target:target_title = {
 						holder_scope = {
-							top_liege = {
+							is_playable = no
+							liege = {
 								religion_group = druidism_group
 							}
 						}
@@ -1930,7 +1933,7 @@ province_event = {
 				}
 				event_target:target_title = {
 					holder_scope = {
-						top_liege = {
+						liege = {
 							clear_event_target = target_druid
 							save_event_target_as = target_druid
 							
@@ -1939,14 +1942,70 @@ province_event = {
 					}
 				}
 			}
+			else_if = {		# Fires for title's holder
+				limit = {
+					event_target:target_title = {
+						holder_scope = {
+							religion_group = druidism_group
+						}
+					}
+				}
+				event_target:target_title = {
+					holder_scope = {
+						clear_event_target = target_druid
+						save_event_target_as = target_druid
+						
+						narrative_event = { id = WCCLS.820 }
+					}
+				}
+			}
 			else = {	# Failed
-				event_target:target_province = { remove_province_modifier = world_tree_province_modifier }
-				event_target:target_druid = { character_event = { id = WCCLS.821 } }
+				set_province_flag = failed_world_tree_flag
 			}
 		}
 		else = {		# Failed
+			set_province_flag = failed_world_tree_flag
+		}
+		# FAIL CASES
+		# Who shall get event?
+		if = {
+			limit = { has_province_flag = failed_world_tree_flag }
+			clr_province_flag = failed_world_tree_flag
+			
 			event_target:target_province = { remove_province_modifier = world_tree_province_modifier }
-			event_target:target_druid = { character_event = { id = WCCLS.821 } }
+			
+			if = {			# Fires for target_druid
+				limit = {
+					event_target:target_druid = {
+						is_alive = yes
+						is_dying = no
+					}
+				}
+				event_target:target_druid = { character_event = { id = WCCLS.821 } }
+			}
+			else_if = {		# Fires for liege of title's holder if title's holder isn't playable
+				limit = {
+					event_target:target_title = {
+						holder_scope = {
+							is_playable = no
+						}
+					}
+				}
+				event_target:target_title = {
+					holder_scope = {
+						liege = {
+							character_event = { id = WCCLS.821 }
+						}
+					}
+				}
+			}
+			else = {		# Fires for title's holder
+				event_target:target_title = {
+					holder_scope = {
+						character_event = { id = WCCLS.821 }
+					}
+				}
+			}
 		}
 	}
 }
@@ -2027,6 +2086,7 @@ narrative_event = {
 		}
 	}
 }
+# Notification that failed
 character_event = {
 	id = WCCLS.821
 	desc = EVTDESC_WCCLS_821
@@ -2038,8 +2098,11 @@ character_event = {
 	option = {
 		name = ALAS
 
-		wealth = 1000
-		piety = 5000
+		if = {
+			limit = { character = event_target:target_druid }
+			wealth = 1000
+			piety = 5000
+		}
 	}
 }
 
