@@ -506,21 +506,21 @@ defined_text = {
 			}
 		}
 	}
-	text = {
-		localisation_key = GetRelation_Acquaintance 
-		trigger = { 
-			NOR = { 
-				relationship_with_root_trigger = yes
-				family_of_root_trigger = yes
-				liege = { character = ROOT }
-				is_liege_of = ROOT
-				AND = {
-					dynasty = ROOT
-					NOT = { dynasty = none }
-				}
-			} 
-		}
-	}
+#	text = { # Outcommented, now that we have proper fallback text.
+#		localisation_key = GetRelation_Acquaintance 
+#		trigger = { 
+#			NOR = { 
+#				relationship_with_root_trigger = yes
+#				family_of_root_trigger = yes
+#				liege = { character = ROOT }
+#				is_liege_of = ROOT
+#				AND = {
+#					dynasty = ROOT
+#					NOT = { dynasty = none }
+#				}
+#			} 
+#		}
+#	}
 	text = {
 		localisation_key = GetRelation_fellow_member
 		trigger = { 
@@ -551,6 +551,49 @@ defined_text = {
 		trigger = { 
 			is_consort = ROOT
 			is_female = no
+		}
+	}
+	text = {
+		localisation_key = GetRelation_enemy
+		weight_multiplier = { factor = 100 }
+		trigger = {
+			any_war = {
+				OR = {
+					any_attacker = {
+						character = ROOT
+					}
+					any_defender = {
+						character = ROOT
+					}
+				}
+			}
+		}
+	}
+	text = {
+		localisation_key = GetRelation_sway_target
+		weight_multiplier = { factor = 1 }
+		trigger = { 
+			ROOT = {
+				persistent_event_target:sway_target = {
+					character = PREVPREV
+				}
+			}
+		}
+	}
+	text = {
+		localisation_key = GetRelation_antagonist
+		weight_multiplier = { factor = 1 }
+		trigger = { 
+			OR = {
+				ROOT = {
+					persistent_event_target:antagonize_target = {
+						character = PREVPREV
+					}
+				}
+				persistent_event_target:antagonize_target = {
+					character = ROOT
+				}
+			}
 		}
 	}
 	fallback_text = {
@@ -1820,17 +1863,6 @@ defined_text = {
 	text = {
 		localisation_key = String_Twilight
 		trigger = { society_member_of = twilights_hammer_cult }
-	}
-	
-	text = {
-		localisation_key = String_Satan
-		trigger = {
-			society_member_of = the_satanists
-			OR = {
-				religion_group = christian
-				religion_group = jewish_group
-			}
-		}
 	}
 
 	text = {
@@ -7251,7 +7283,11 @@ defined_text = {
 	text = {
 		trigger = { has_character_flag = armor_set }
 		localisation_key = String_set_of_armor
-	}	
+	}
+	text = {
+		trigger = { has_character_flag = zweihanded_sword }
+		localisation_key = String_sword
+	}
 }
 
 defined_text = {
@@ -16130,6 +16166,48 @@ defined_text = { ### Needs a province scope - USE ONLY TOGETHER WITH GetTerrain!
 	}
 }
 defined_text = { ### Needs a province scope - USE ONLY TOGETHER WITH GetTerrain! ###
+	name = GetInOnCap
+	text = {
+		trigger = { terrain = forest }
+		localisation_key = string_In
+	}
+	text = {
+		trigger = { terrain = hills }
+		localisation_key = string_In
+	}
+	text = {
+		trigger = { terrain = mountain }
+		localisation_key = string_In
+	}
+	text = {
+		trigger = { terrain = plains }
+		localisation_key = string_On
+	}
+	text = {
+		trigger = { terrain = farmlands }
+		localisation_key = string_On
+	}
+	text = {
+		trigger = { terrain = steppe }
+		localisation_key = string_On
+	}
+	text = {
+		trigger = { terrain = desert }
+		localisation_key = string_In
+	}
+	text = {
+		trigger = { terrain = jungle }
+		localisation_key = string_In
+	}
+	text = {
+		trigger = { terrain = arctic }
+		localisation_key = string_In
+	}
+	fallback_text = {
+		localisation_key = string_In
+	}
+}
+defined_text = { ### Needs a province scope - USE ONLY TOGETHER WITH GetTerrain! ###
 	name = GetThroughOver
 	text = {
 		trigger = { terrain = forest }
@@ -17047,7 +17125,10 @@ defined_text = {
 
 	text = {
 		trigger = {
-			has_character_flag = sword_tier_2
+			OR = {
+				has_character_flag = sword_tier_2
+				has_character_flag = zweihanded_sword
+				}
 		}
 		localisation_key = string_greatsword
 	}
@@ -19299,3 +19380,117 @@ defined_text = {
 		localisation_key = string_vanilla_augustus_desc
 	}
 }
+defined_text = {
+	name = GetPrincelyElectorsList
+	text = {
+		trigger = {
+			e_hre = {
+				persistent_event_target:hre_title_1_per = {
+					always = yes #If one of them exists then all of them do.
+				}
+			}
+		}
+		localisation_key = string_princely_elective_elector_list_desc
+	}
+
+	fallback_text = {
+		localisation_key = String_empty_space
+	}
+}
+
+
+defined_text = {
+	name = GetGirlWomanBoyMan
+
+	text = {
+		localisation_key = String_girl
+		trigger = {
+			is_female = yes
+			is_adult = no
+		}
+	}
+	text = {
+		localisation_key = String_woman
+		trigger = {
+			is_female = yes
+			is_adult = yes
+		}
+	}
+	text = {
+		localisation_key = String_boy
+		trigger = {
+			is_female = no
+			is_adult = no
+		}
+	}
+	text = {
+		localisation_key = String_man
+		trigger = {
+			is_female = no
+			is_adult = yes
+		}
+	}
+}
+
+
+defined_text = {
+	name = GetArtifactStorage
+
+	text = {
+		localisation_key = String_library
+		trigger = {
+			has_artifact_flag = book
+		}
+	}
+	text = {
+		localisation_key = String_armory
+		trigger = {
+			OR = {
+				has_artifact_flag = armor
+				has_artifact_flag = combat_weapon
+			}
+			NOT = { artifact_age = 30 }
+		}
+	}
+	text = {
+		localisation_key = String_old_armory
+		trigger = {
+			OR = {
+				has_artifact_flag = armor
+				has_artifact_flag = combat_weapon
+			}
+			artifact_age = 30
+		}
+	}
+	text = {
+		localisation_key = String_treasury
+		trigger = {
+			has_artifact_flag = jewelry
+		}
+	}
+	text = {
+		localisation_key = String_temple
+		trigger = {
+			has_artifact_flag = saint
+			ROOT = { religion_group = christian }
+		}
+	}
+	text = {
+		localisation_key = String_temple
+		trigger = {
+			has_artifact_flag = saint
+			has_artifact_flag = bodypart
+		}
+	}
+	text = {
+		localisation_key = String_treasury
+		trigger = {
+			has_artifact_flag = skull
+		}
+	}
+	
+	fallback_text = {
+		localisation_key = String_treasury
+	}
+}
+

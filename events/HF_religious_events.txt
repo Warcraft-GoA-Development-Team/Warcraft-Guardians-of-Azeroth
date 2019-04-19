@@ -28,7 +28,13 @@ character_event = {
 					trait = bloodthirsty_gods_2
 					trait = bloodthirsty_gods_3
 				}
-			} 
+			}
+			NOT = { 
+				any_realm_wonder_upgrade = {
+					has_wonder_upgrade = upgrade_sacrificial_altar
+					is_active = yes
+				}
+			}
 		} 
 		text = EVTDESCHF23002
 	}
@@ -41,8 +47,46 @@ character_event = {
 					trait = bloodthirsty_gods_3
 				}
 			} 
+			NOT = { 
+				any_realm_wonder_upgrade = {
+					has_wonder_upgrade = upgrade_sacrificial_altar
+					is_active = yes
+				}
+			}
 		} 
 		text = EVTDESCHF23002_B 	#Do it yourself.
+	}
+	desc = { 
+		trigger = { 
+			ROOT = { 
+				NOR = {  
+					trait = bloodthirsty_gods_1
+					trait = bloodthirsty_gods_2
+					trait = bloodthirsty_gods_3
+				}
+			}
+			any_realm_wonder_upgrade = {
+				has_wonder_upgrade = upgrade_sacrificial_altar
+				is_active = yes
+			}
+		} 
+		text = EVTDESCHF23002_C
+	}
+	desc = { 
+		trigger = { 
+			ROOT = { 
+				OR = {  
+					trait = bloodthirsty_gods_1
+					trait = bloodthirsty_gods_2
+					trait = bloodthirsty_gods_3
+				}
+			} 
+			any_realm_wonder_upgrade = {
+				has_wonder_upgrade = upgrade_sacrificial_altar
+				is_active = yes
+			}
+		}
+		text = EVTDESCHF23002_D 	#Do it yourself.
 	}
 	
 	picture = { 
@@ -70,55 +114,70 @@ character_event = {
 	border = GFX_event_normal_frame_war
 	
 	is_triggered_only = yes
+
+	immediate = {
+		random_realm_wonder_upgrade = {
+			limit = {
+				has_wonder_upgrade = upgrade_sacrificial_altar
+				is_active = yes
+			}
+			save_event_target_as = the_sacrificial_altar
+			wonder = { save_event_target_as = the_temple }
+		}
+	}
 	
 	option = {
 		name = EVTOPTAHF23002
-		if = { 
-			limit = { 
-				FROM = { 
-					is_ruler = no 
-				} 
+		if = {
+			limit = {
+				any_realm_wonder_upgrade = {
+					has_wonder_upgrade = upgrade_sacrificial_altar
+					is_active = yes
+				}
 			}
+			prestige = 10
+		}
+	}
+
+	option = {
+		name = EVTOPTBHF23002
+		trigger = {
+			any_realm_wonder_upgrade = {
+				has_wonder_upgrade = upgrade_sacrificial_altar
+				is_active = yes
+			}
+		}
+		tooltip_info_custom = EVTOPTBHF23002_TT
+		add_character_modifier = {
+			name = ate_beating_heart
+			months = 6
+		}
+	}
+
+
+	after = {
+		if = { 
+			limit = { FROM = { is_ruler = no } }
 			piety = 5
 		}
 		if = { 
-			limit = { 
-				FROM = { 
-					tier = BARON
-				} 
-			}
+			limit = { FROM = { tier = BARON } }
 			piety = 15
 		}
 		if = { 
-			limit = { 
-				FROM = { 
-					tier = COUNT
-				} 
-			}
+			limit = { FROM = { tier = COUNT } }
 			piety = 30
 		}
 		if = { 
-			limit = { 
-				FROM = { 
-					tier = DUKE
-				} 
-			}
+			limit = { FROM = { tier = DUKE } }
 			piety = 75
 		}
 		if = { 
-			limit = { 
-				FROM = { 
-					tier = KING
-				} 
-			}
+			limit = { FROM = { tier = KING } }
 			piety = 150
 		}
 		if = { 
-			limit = { 
-				FROM = { 
-					tier = EMPEROR
-				} 
-			}
+			limit = { FROM = { tier = EMPEROR } }
 			piety = 250
 		}
 		#Bloodthirsty Bloodline bonus.
@@ -10908,6 +10967,31 @@ character_event = {
 			character_event = { id = HF.23443 days = 5 } #Pick your champion.
 		}
 	}
+	
+	option = { #Hold it in your Amphitheater
+		name = EVTOPTBHF23440
+		set_character_flag = flag_preparing_blood_games #Used for on_death notifications.
+		
+		prestige = 200
+		trigger = { has_wonder = wonder_amphitheater }
+		tooltip_info_custom = EVTOPTBHF23440_tt
+		hidden_tooltip = {
+			any_vassal = {
+				limit = { 
+					NOT = { has_character_flag = do_not_disturb }
+					NOT = { has_character_modifier = holding_large_feast }
+					is_adult = yes
+					NOT = { trait = incapable }
+					NOT = { is_inaccessible_trigger = yes }
+					religion = ROOT
+					higher_tier_than = BARON 
+					NOT = { has_any_opinion_modifier = opinion_blood_games_guest } #Not already tangled in some other blood games from a previous liege.
+				}
+				letter_event = { id = HF.23441 }
+			}
+			character_event = { id = HF.23443 days = 5 } #Pick your champion.
+		}
+	}
 }
 #Vassal receives invitation.
 letter_event = {
@@ -11885,6 +11969,18 @@ character_event = {
 		persistent_event_target:my_blood_contender = { add_character_modifier =  { name = gladiatorial_equipment months = 3 } }
 		ai_chance = { factor = 20 }
 	}
+	
+	option = { 
+		name = EVTOPTEHF23445
+		tooltip_info_custom = EVTOPTEHF23445_tt
+		trigger = { 
+			any_realm_wonder = {
+				has_wonder_upgrade = upgrade_animal_cages 
+			}
+		}
+		ai_chance = { factor = 10 }
+	}
+	
 	option = { #Nothing
 		name = EVTOPTDHF23445
 		ai_chance = { factor = 30 }
