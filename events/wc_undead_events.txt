@@ -2433,3 +2433,204 @@ character_event = {
 		death = { death_reason = death_missing }
 	}
 }
+
+# Checks if character is delving into necromantic arts
+character_event = {
+	id = WCUND.1300
+	desc = {
+		text = EVTDESC_WCUND_1300
+		picture = GFX_evt_cemetery
+	}
+	border = GFX_event_normal_frame_intrigue
+
+	is_triggered_only = yes
+	hide_from = yes
+	hide_new = yes
+
+	trigger = {
+		OR = {
+			trait = being_undead
+			trait = class_necromancer_1
+			trait = class_necromancer_2
+			trait = class_necromancer_3
+			trait = class_necromancer_4
+			trait = class_necromancer_5
+			trait = class_necromancer_6
+			trait = class_necromancer_7
+			trait = class_necromancer_8
+			trait = class_necromancer_9
+			trait = class_necromancer_10
+		}
+		NOT = {
+			religion = arcane_religion
+			religion = forsaken_cult
+		}
+	}
+
+	option = {
+		name = {
+			trigger = {
+				NOT = { true_religion_group = necromancy_group }
+			}
+			text = ALAS
+		}
+		name = {
+			trigger = {
+				true_religion_group = necromancy_group
+			}
+			text = EXCELLENT
+		}
+
+		# Followup
+		if = {
+			if = {
+				limit = { NOT = { true_religion_group = necromancy_group } }
+				character_event = { id = WCUND.1301 days = 3 }
+			}
+			else_if = {
+				limit = { secret_religion_group = necromancy_group }
+				convert_to_secret_religion = yes
+			}
+		}
+	}
+}
+
+# If character isn't a necromantic worshipper, converts to the necromantic religions
+character_event = {
+	id = WCUND.1301
+	desc = EVTDESC_WCUND_1301
+	picture = GFX_evt_cemetery
+
+	is_triggered_only = yes
+
+	trigger = { NOT = { true_religion_group = necromancy_group } }
+
+	# I will not serve anyone!
+	option = {
+		name = EVTOPTA_WCUND_1301
+
+		if = {
+			limit = {
+				OR = {
+					trait = being_undead
+					trait = class_necromancer_1
+					trait = class_necromancer_2
+					trait = class_necromancer_3
+					trait = class_necromancer_4
+					trait = class_necromancer_5
+					trait = class_necromancer_6
+					trait = class_necromancer_7
+					trait = class_necromancer_8
+					trait = class_necromancer_9
+					trait = class_necromancer_10
+					liege = { religion = shadowlander }
+				}
+			}
+			if = { limit = { has_secret_religion = yes } clear_secret_religion = yes }
+			religion = shadowlander
+		}
+		else = { set_secret_religion = shadowlander }
+
+		ai_chance = {
+			factor = 60
+			modifier = {
+				factor = 2
+				has_benevolent_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.5
+				has_pleasant_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.5
+				has_pious_trait_trigger = yes
+			}
+		}
+	}
+
+	# I'll serve the Lich King!
+	option = {
+		name = EVTOPTB_WCUND_1301
+
+		if = {
+			limit = {
+				OR = {
+					trait = being_undead
+					trait = class_necromancer_1
+					trait = class_necromancer_2
+					trait = class_necromancer_3
+					trait = class_necromancer_4
+					trait = class_necromancer_5
+					trait = class_necromancer_6
+					trait = class_necromancer_7
+					trait = class_necromancer_8
+					trait = class_necromancer_9
+					trait = class_necromancer_10
+					liege = { religion = death_god }
+				}
+			}
+			if = { limit = { has_secret_religion = yes } clear_secret_religion = yes }
+			religion = death_god
+		}
+		else = { set_secret_religion = death_god }
+
+		ai_chance = {
+			factor = 40
+			modifier = {
+				factor = 2.25
+				has_impious_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.75
+				has_evil_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.75
+				has_unpleasant_trait_trigger = yes
+			}
+		}
+	}
+	
+	# I shall draw my strength from the Blighted Lands!
+	option = {
+		name = EVTOPTC_WCUND_1301
+
+		if = {
+			limit = {
+				OR = {
+					trait = being_undead
+					trait = class_necromancer_1
+					trait = class_necromancer_2
+					trait = class_necromancer_3
+					trait = class_necromancer_4
+					trait = class_necromancer_5
+					trait = class_necromancer_6
+					trait = class_necromancer_7
+					trait = class_necromancer_8
+					trait = class_necromancer_9
+					trait = class_necromancer_10
+					liege = { religion = throssian }
+				}
+			}
+			if = { limit = { has_secret_religion = yes } clear_secret_religion = yes }
+			religion = throssian
+		}
+		else = { set_secret_religion = throssian }
+
+		ai_chance = {
+			factor = 40
+			modifier = {
+				factor = 2.25
+				has_impious_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.75
+				has_evil_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.75
+				has_unpleasant_trait_trigger = yes
+			}
+		}
+	}
+}
