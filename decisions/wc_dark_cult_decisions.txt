@@ -29,6 +29,8 @@ decisions = {
 			prisoner = no
 
 			war = no
+			
+			e_scourge = { holder_scope = { NOT = { reverse_has_opinion_modifier = { who = ROOT modifier = opinion_granted_independence } } } }
 		}
 
 		effect = {
@@ -153,6 +155,8 @@ decisions = {
 			prisoner = no
 
 			war = no
+			
+			e_burning_legion = { holder_scope = { NOT = { reverse_has_opinion_modifier = { who = ROOT modifier = opinion_granted_independence } } } }
 		}
 
 		effect = {
@@ -276,6 +280,8 @@ decisions = {
 			prisoner = no
 
 			war = no
+			
+			e_black_empire = { holder_scope = { NOT = { reverse_has_opinion_modifier = { who = ROOT modifier = opinion_granted_independence } } } }
 		}
 
 		effect = {
@@ -788,8 +794,7 @@ targetted_decisions = {
 		}
 	}
 	fel_corrupt_character = {
-		filter = realm
-		ai_target_filter = realm
+		ai_target_filter = court
 		
 		ai_check_interval = 36
 		
@@ -812,16 +817,20 @@ targetted_decisions = {
 			is_adult = yes
 
 			NOT = { character = FROM }
-			OR = {
-				FROM = { ai = yes } # Only checks realm, so by definition in range
-				is_within_diplo_range = FROM
-			}
-
-			NOT = { same_society_as = FROM }
-			NOT = { true_religion_group = fel_group}
+			from_in_range_to_hurt_this_trigger = yes
+			
+			#Makes sure the AI does good choices
+			ai_from_prefer_to_hurt_this_trigger = yes
 		}
 
 		allow = {
+			is_inaccessible_trigger = no
+			
+			NOT = { religion_group = fel_group }
+			NOT = { true_religion_group = fel_group }
+			
+			NOT = { society_member_of = shadow_council }
+
 			FROM = {
 				is_inaccessible_trigger = no
 
@@ -837,20 +846,14 @@ targetted_decisions = {
 
 				has_society_currency_tiny_trigger = yes
 			}
-			ROOT = {
-				is_inaccessible_trigger = no
-			}
 		}
 
 		effect = {
+			character_event = { id = WCDAC.4030 days = 3 }
 			FROM = {
 				set_character_flag = attempted_fel_corrupt_character_flag
-			}
-
-			ROOT = {
-				character_event = { id = WCDAC.4030 days = 3 }
-			}
-			FROM = {
+				
+				add_10_fel_corruption_effect = yes
 				detract_society_currency_tiny_effect = yes
 				increase_visibility_effect = yes
 			}
@@ -862,7 +865,6 @@ targetted_decisions = {
 	}
 
 	attract_old_gods_attention = {
-		filter = realm
 		ai_target_filter = court
 		
 		ai_check_interval = 36
@@ -885,35 +887,36 @@ targetted_decisions = {
 
 			is_adult = yes
 
-			is_within_diplo_range = FROM
 			NOT = { character = FROM }
-
-			NOT = { society_member_of = twilights_hammer_cult }
+			from_in_range_to_hurt_this_trigger = yes
 
 			#Makes sure the AI does good choices
 			ai_from_prefer_to_hurt_this_trigger = yes
 		}
 
 		allow = {
+			is_inaccessible_trigger = no
+
+			NOT = { has_character_modifier = dark_presence }
+			
+			NOT = { religion = old_gods_worship }
+			NOT = { true_religion = old_gods_worship }
+			
+			NOT = { society_member_of = twilights_hammer_cult }
+
 			FROM = {
 				is_inaccessible_trigger = no
 
 				has_society_currency_medium_trigger = yes
 			}
-			ROOT = {
-				is_inaccessible_trigger = no
-
-				NOT = { has_character_modifier = dark_presence }
-			}
 		}
 
 		effect = {
-			ROOT = {
-				add_character_modifier = { name = dark_presence years = 5 }
+			add_character_modifier = { name = dark_presence years = 5 }
 
-				character_event = { id = WCDAC.5100 days = 7 }
-			}
+			character_event = { id = WCDAC.5100 days = 7 }
 			FROM = {
+				add_10_void_corruption_effect = yes
 				detract_society_currency_medium_effect = yes
 				minor_soul_corruption_effect = yes
 				increase_visibility_minor_effect = yes
@@ -963,32 +966,31 @@ targetted_decisions = {
 
 			NOT = { trait = being_void }
 			is_susceptible_to_void_corruption_trigger = yes
-			religion = old_gods_worship
-			true_religion = old_gods_worship
 		}
 
 		allow = {
+			conditional_tooltip = {
+				trigger = { NOT = { character  = FROM } }
+				is_inaccessible_trigger = no
+			}
+			
+			religion = old_gods_worship
+			true_religion = old_gods_worship
+			
 			FROM = {
 				is_inaccessible_trigger = no
 
 				has_society_currency_major_trigger = yes
 			}
-			ROOT = {
-				conditional_tooltip = {
-					trigger = { NOT = { character  = FROM } }
-					is_inaccessible_trigger = no
-				}
-			}
 		}
 
 		effect = {
-			ROOT = {
-				set_character_flag = void_mutation_flag
-				character_event = { id = WCVOD.300 }
-			}
+			set_character_flag = void_mutation_flag
+			
+			character_event = { id = WCVOD.300 }
 
 			FROM = {
-				show_scope_change = no
+				add_15_void_corruption_effect = yes
 				detract_society_currency_major_effect = yes
 				increase_visibility_effect = yes
 			}

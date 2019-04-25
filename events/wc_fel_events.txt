@@ -73,7 +73,7 @@ character_event = {
 
 		remove_fel_corruption_modifiers_effect = yes
 		add_fel_corruption_modifier_effect = yes
-		
+
 		# Stage effects
 		if = {
 			limit = { check_variable = { which = fel_corruption value = 66 } }
@@ -81,47 +81,17 @@ character_event = {
 				limit = { NOT = { true_religion_group = fel_group } }
 				character_event = { id = WCFEL.170 days = 3 }
 			}
-			else = {
-				if = {
-					limit = { secret_religion_group = fel_group }
-					convert_to_secret_religion = yes
-				}
+			else_if = {
+				limit = { secret_religion_group = fel_group }
+				convert_to_secret_religion = yes
 			}
 		}
-		hidden_effect = {
-			# Portrait changes
-			if = {
-				limit = { graphical_culture = orcbrowngfx }
-				set_graphical_culture = warsong
-			}
-			if = {
-				limit = { check_variable = { which = fel_corruption value = 66 } }
-				if = {
-					limit = { has_orc_gfx_trigger = yes }
-					if = {
-						limit = { trait = creature_orc }
-						remove_trait = creature_orc
-					}
-					if = {
-						limit = { NOT = { trait = creature_fel_orc } }
-						add_trait = creature_fel_orc
-					}
-					set_graphical_culture = orcfel
-				}
-			}
-			if = {
-				limit = { check_variable = { which = fel_corruption value = 100 } }
-				if = {
-					limit = { has_demon_gfx_trigger = no }
-					set_graphical_culture = demon_form
-				}
-			}
-			# Notifies your family/spouse/friends/lovers
-			if = {
-				limit = { trait = being_demon }
-				show_close_people_what_this_become_effect = yes
-			}
+		# Portrait changes
+		if = {
+			limit = { graphical_culture = orcbrowngfx }
+			set_graphical_culture = warsong
 		}
+		set_demon_gfx_effect = yes
 	}
 }
 
@@ -179,68 +149,28 @@ character_event = {
 	trigger = {
 		is_alive = yes
 		is_dying = no
-		
+
 		NOT = { trait = being_demon }
+		is_susceptible_to_fel_corruption_trigger = yes
 		OR = {
 			AND = {
-				AND = {
-					is_corruptible_warlock_trigger = no
-					is_susceptible_to_fel_corruption_trigger = no
-				}
-				NOT = { check_variable = { which = fel_corruption value = 0 } }
-			}
-			AND = {
 				OR = {
-					is_corruptible_warlock_trigger = yes
-					is_susceptible_to_fel_corruption_trigger = yes
-				}
-				NOT = { check_variable = { which = fel_corruption value = 100 } }
-				OR = {
-					# If you turned into felform, you'll receive a very very large "dose" of fel
-					AND = {
-						has_character_modifier = fel_corruption_2
-						NOT = { check_variable = { which = fel_corruption value = 70 } }	# Fel corruption "ceiling"
-					}
-					# If you're a high lvl warlock, you'll receive a very large "dose" of fel
-					AND = {
-						is_warlock_class_trigger = yes
-						is_weak_warlock_class_trigger = no
-						NOT = { check_variable = { which = fel_corruption value = 55 } }	# Fel corruption "ceiling"
-					}
-					# If you're a weak warlock, you'll receive an average "dose" of fel
-					AND = {
-						is_warlock_class_trigger = yes
-						is_weak_warlock_class_trigger = yes
-						NOT = { check_variable = { which = fel_corruption value = 45 } }	# Fel corruption "ceiling"
-					}
-					# If you're a fel worshiper, you'll receive an average "dose" of fel
-					AND = {
-						OR = {
-							true_religion_group = fel_group
-							has_character_flag = consuming_fel_magic_flag
-						}
-						NOT = { check_variable = { which = fel_corruption value = 40 } }	# Fel corruption "ceiling"
-					}
-					# If you're only located amoung the fel worshipers, you'll receive
-					# a small "dose" of fel, but, anyway, this will be enough for the minor exposure
-					AND = {
-						location = { religion_group = fel_group }
-						NOT = { check_variable = { which = fel_corruption value = 35 } }	# Fel corruption "ceiling"
-					}
-				}
-			}
-			AND = {
-				OR = {
-					is_corruptible_warlock_trigger = yes
-					is_susceptible_to_fel_corruption_trigger = yes
-				}
-				check_variable = { which = fel_corruption value = 1 }
-				NOR = {
-					has_character_modifier = fel_corruption_2
-					is_warlock_class_trigger = yes
 					true_religion_group = fel_group
+					has_character_flag = consuming_fel_magic_flag
 					location = { religion_group = fel_group }
 				}
+				NOT = { check_variable = { which = fel_corruption value = 35 } }	# Minimal Fel Corruption if other conditions are met
+			}
+			AND = {
+				OR = {
+					NOR = {
+						true_religion_group = fel_group
+						has_character_flag = consuming_fel_magic_flag
+						location = { religion_group = fel_group }
+					}
+					check_variable = { which = fel_corruption value = 40 }
+				}
+				check_variable = { which = fel_corruption value = 1 }
 			}
 		}
 	}
@@ -248,61 +178,16 @@ character_event = {
 	immediate = {
 		if = {
 			limit = {
-				AND = {
-					is_corruptible_warlock_trigger = no
-					is_susceptible_to_fel_corruption_trigger = no
-				}
-				NOT = { check_variable = { which = fel_corruption value = 0 } }
-			}
-			character_event = { id = WCFEL.115 }
-			break = yes
-		}
-		if = {
-			limit = {
 				OR = {
-					is_corruptible_warlock_trigger = yes
-					is_susceptible_to_fel_corruption_trigger = yes
+					true_religion_group = fel_group
+					has_character_flag = consuming_fel_magic_flag
+					location = { religion_group = fel_group }
 				}
-				NOT = { check_variable = { which = fel_corruption value = 100 } }
-				OR = {
-					# If you turned into felform, you'll receive a very very large "dose" of fel
-					AND = {
-						has_character_modifier = fel_corruption_2
-						NOT = { check_variable = { which = fel_corruption value = 70 } }	# Fel corruption "ceiling"
-					}
-					# If you're a high lvl warlock, you'll receive a very large "dose" of fel
-					AND = {
-						is_warlock_class_trigger = yes
-						is_weak_warlock_class_trigger = no
-						NOT = { check_variable = { which = fel_corruption value = 55 } }	# Fel corruption "ceiling"
-					}
-					# If you're a weak warlock, you'll receive an average "dose" of fel
-					AND = {
-						is_warlock_class_trigger = yes
-						is_weak_warlock_class_trigger = yes
-						NOT = { check_variable = { which = fel_corruption value = 45 } }	# Fel corruption "ceiling"
-					}
-					# If you're Fel worshiper, you'll receive an average "dose" of fel
-					AND = {
-						OR = {
-							true_religion_group = fel_group
-							has_character_flag = consuming_fel_magic_flag
-						}
-						NOT = { check_variable = { which = fel_corruption value = 40 } }	# Fel corruption "ceiling"
-					}
-					# If you're only located among the fel worshipers, you'll receive
-					# a small "dose" of fel, but, anyway, this will be enough for the minor exposure
-					AND = {
-						location = { religion_group = fel_group }
-						NOT = { check_variable = { which = fel_corruption value = 35 } }	# Fel corruption "ceiling"
-					}
-				}
+				NOT = { check_variable = { which = fel_corruption value = 35 } }	# Minimal Fel Corruption if other conditions are met
 			}
 			character_event = { id = WCFEL.100 }
-			break = yes
 		}
-		if = {
-			limit = { check_variable = { which = fel_corruption value = 1 } }
+		else = {
 			character_event = { id = WCFEL.110 }
 		}
 	}
@@ -327,6 +212,7 @@ character_event = {
 			text = EXCELLENT
 		}
 		add_5_fel_corruption_effect = yes
+
 		hidden_effect = { log = "Fel corruption of [Root.GetBestName] is [Root.fel_corruption.GetValue]" }
 	}
 }
@@ -341,29 +227,19 @@ character_event = {
 	is_triggered_only = yes
 
 	option = {
-		name = {
-			trigger = { NOT = { true_religion_group = fel_group } }
-			text = EXCELLENT
-		}
-		name = {
-			trigger = { true_religion_group = fel_group }
-			text = ALAS
-		}
+		name = EXCELLENT
+
 		remove_5_fel_corruption_effect = yes
+
 		hidden_effect = { log = "Fel corruption of [Root.GetBestName] is [Root.fel_corruption.GetValue]" }
 	}
-}
 
-# Removes fel corruption
-character_event = {
-	id = WCFEL.115
+	option = {
+		name = EVTOPTB_WCFEL_110
 
-	is_triggered_only = yes
-	hide_window = yes
-
-	immediate = {
-		set_variable = { which = fel_corruption value = 0 }
-		log = "Fel corruption of [Root.GetBestName] is [Root.fel_corruption.GetValue]"
+		ai_chance = {
+			factor = 0
+		}
 	}
 }
 
@@ -1007,7 +883,7 @@ narrative_event = {
 		if = {
 			limit = { NOT = { has_global_flag = advanced_legion_buildings_enabled } }
 			set_global_flag = advanced_legion_buildings_enabled
-		}	
+		}
 		e_burning_legion = { gain_title = ROOT }
 		FROM = {
 			if = {
@@ -1016,9 +892,9 @@ narrative_event = {
 					in_revolt = no
 					is_nomadic = no
 					NOT = { tier = EMPEROR }
-					
+
 					NOT = { religion = death_god }
-					
+
 					NOT = { is_offmap_governor = yes }
 				}
 				prev_subjugate_this_destroy_titles_effect = yes
@@ -1045,11 +921,11 @@ narrative_event = {
 					if = {
 						limit = {
 							is_untouchable_trigger = no
-							
+
 							NOT = { religion = burning_legion_religion }
 							NOT = { true_religion = burning_legion_religion }
 						}
-						set_character_flag = total_invasion_exception_flag
+						set_character_flag = event_war_exception_flag
 						ROOT = {
 							unsafe_war = {
 								target = PREV
@@ -1078,7 +954,7 @@ narrative_event = {
 	# id = WCFEL.1009
 
 	# hide_window = yes
-	
+
 	# only_playable = yes
 	# has_global_flag = burning_legion_invasion_flag
 
@@ -1144,7 +1020,7 @@ character_event = {
 	trigger = {
 		is_alive = yes
 		is_dying = no
-		
+
 		is_susceptible_to_fel_corruption_trigger = yes
 		OR = {
 			NOT = { trait = being_demon }
@@ -1775,7 +1651,7 @@ narrative_event = {
 					factor = 0
 					OR = {
 						ai = no
-						
+
 						is_ruler = no
 						NOR = {
 							is_feudal = yes
@@ -1896,7 +1772,7 @@ narrative_event = {
 						ai = yes
 
 						has_character_modifier = drank_demon_blood
-						
+
 						trait = being_demon
 						is_susceptible_to_fel_corruption_trigger = no
 					}
@@ -1973,7 +1849,7 @@ narrative_event = {
 						ai = yes
 
 						has_character_modifier = drank_demon_blood
-						
+
 						trait = being_demon
 						is_susceptible_to_fel_corruption_trigger = no
 					}
