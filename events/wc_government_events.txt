@@ -154,3 +154,55 @@ character_event = {
 		recalc_succession = yes
 	}
 }
+
+# Starts patrician election every 10 years
+character_event = {
+	id = WCGOV.8000
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	only_playable = yes
+	is_patrician = yes
+	
+	trigger = {
+		is_merchant_republic = yes
+		ruled_years = 9
+	}
+	
+	immediate = {
+		log = "WCGOV.8000 fired for [Root.GetBestName]"
+		
+		if = {
+			limit = { current_heir = { dynasty = ROOT } }
+			abdicate_to = current_heir
+		}
+		else = {
+			any_vassal = {
+				limit = { is_patrician = yes }
+				set_character_flag = is_patrician_flag
+			}
+			hold_election = yes
+			set_government_type = merchant_republic_government
+			if = {
+				limit = { is_merchant_republic = yes }
+				any_vassal = {
+					limit = { has_character_flag = is_patrician_flag }
+					set_government_type = merchant_republic_government
+					clr_character_flag = is_patrician_flag
+				}
+			}
+			else = {
+				liege = {
+					set_government_type = merchant_republic_government
+					any_vassal = {
+						limit = { has_character_flag = is_patrician_flag }
+						set_government_type = merchant_republic_government
+						clr_character_flag = is_patrician_flag
+					}
+				}
+			}
+		}
+		recalc_succession = yes
+	}
+}
