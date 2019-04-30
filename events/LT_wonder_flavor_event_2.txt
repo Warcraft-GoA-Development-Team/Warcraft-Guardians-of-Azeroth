@@ -1,0 +1,580 @@
+###########################################
+#                                         #
+# Wonder Flavor Events          	      #             
+#                                         #
+# ID LT.60000-                            #
+#                                         #
+###########################################
+
+# Written by Linnéa Thimrén
+
+namespace = LT
+
+
+
+#A town appears around the wonder
+character_event = {
+	id = LT.60001
+	title = EVT_TITLE_LT_60001
+	desc = EVTDESC_LT_60001
+	picture = GFX_evt_construction_site
+	border = GFX_event_normal_frame_religion
+	
+	is_triggered_only = yes
+
+	trigger = {
+		is_alive = yes
+		is_inaccessible_trigger = no
+		war = no
+		FROMFROM = {
+			wonder_age = 50
+			num_of_wonder_upgrades = 2
+		}
+		FROMFROMFROM = { NOT = { has_province_flag = had_event_LT_60001 } }
+	}
+	
+	immediate = {
+		FROMFROM = { save_event_target_as = target_wonder }
+    	FROMFROMFROM = {
+    		set_province_flag = had_event_LT_60001
+    		save_event_target_as = target_province
+    	}
+	}
+
+	option = { #Cool!
+		name = EVTOPTA_LT_60001
+		event_target:target_province = {
+			add_holding_slot = 1
+		}
+		ai_chance = {
+			factor = 50
+			modifier = {
+				factor = 0
+				NOT = { wealth = 50 }
+			}
+		}
+	}
+
+	option = { #Bulldoze it and take everything valuable
+		name = EVTOPTB_LT_60001
+		treasury = 40
+		ai_chance = {
+			factor = 30
+			modifier = {
+				trait = greedy
+				factor = 1.5
+			}
+		}
+	}
+}
+
+
+#Library lets you write a cooler book
+character_event = {
+	id = LT.60101
+	title = EVT_TITLE_LT_60101
+	desc = EVTDESC_LT_60101
+	picture = GFX_evt_open_book_hf
+	border = GFX_event_normal_frame_religion
+	
+	is_triggered_only = yes
+
+	trigger = {
+		has_character_flag = currently_working_on_a_book
+		has_wonder = wonder_library
+		is_alive = yes
+		is_inaccessible_trigger = no
+		war = no
+	}
+	
+	immediate = {
+		random_realm_wonder = {
+			limit = {
+				has_wonder = wonder_library
+			}
+			save_event_target_as = target_wonder
+		}
+	}
+
+	option = { #Cool!
+		name = EVTOPTA_LT_60101
+		custom_tooltip = { text = EVTOPTA_TT_LT_60101 }
+		custom_tooltip = { text = higher_quality_of_book_TT }
+		set_higher_quality_of_book_flags_effect = yes
+	}
+}
+
+
+#Drink from the fountain of youth
+character_event = {
+	id = LT.60201
+	title = EVT_TITLE_LT_60201
+	desc = {
+    	trigger = {
+    		NOT = { trait = lunatic }
+    	}
+    	text = EVTDESC_LT_60201_1
+    }
+	desc = {
+    	trigger = {
+    		trait = lunatic
+    	}
+    	text = EVTDESC_LT_60201_2
+    }
+	picture = GFX_evt_garden
+	border = GFX_event_normal_frame_religion
+	
+	is_triggered_only = yes
+	
+	immediate = {
+		random_realm_wonder = {
+			limit = {
+				has_wonder = wonder_garden
+			}
+			save_event_target_as = target_wonder
+		}
+	}
+
+	option = { #Chug!
+		name = EVTOPTA_LT_60201
+		trigger = {
+			NOT = { trait = lunatic }
+		}
+		add_age = -2
+	}
+
+	option = { #Chug as a lunatic!
+		name = EVTOPTB_LT_60201
+		trigger = {
+			trait = lunatic
+		}
+		add_age = 2
+	}
+}
+
+
+#Tavern lets you lose the "stressed" trait
+character_event = {
+	id = LT.60301
+	title = EVT_TITLE_LT_60301
+	desc = EVTDESC_LT_60301
+	picture = GFX_evt_feast
+	border = GFX_event_normal_frame_diplomacy
+	portrait = event_target:drinking_buddy
+	
+	is_triggered_only = yes
+
+	trigger = {
+		any_realm_wonder = {
+			has_wonder_upgrade = upgrade_tavern
+		}
+		trait = stressed
+	}
+	
+	immediate = {
+		save_drinking_character_effect = yes
+		random_realm_wonder = {
+			limit = {
+				has_wonder_upgrade = upgrade_tavern
+			}
+			save_event_target_as = target_wonder
+		}
+	}
+
+	option = { #Let loose!
+		name = EVTOPTA_LT_60301
+		remove_trait = stressed
+		if = {
+			limit = {
+				# Warcraft
+				can_be_drunkard_trigger = yes
+				
+				NOT = { trait = drunkard }
+			}
+			custom_tooltip = {
+				text = EVTOPTA_LT_60301_TT
+				random = { #Adds Drunkard trait
+					chance = 5
+					character_event = { id = LT.60302 days = 15 random = 30 }
+				}
+			}
+		}
+	}
+
+	option = { #Be a party-pooper 
+		name = EVTOPTB_LT_60301
+		if = {
+			limit = {
+				NOT = {
+					event_target:drinking_buddy = {
+						any_friend = { character = root }
+					}
+				}
+			}
+			event_target:drinking_buddy = {
+				opinion = {
+					who = ROOT
+					modifier = opinion_budding_friendship
+				}
+			}
+		}
+		else = {
+			event_target:drinking_buddy = {
+				opinion = {
+					who = ROOT
+					modifier = kind_pos
+				}
+			}
+		}
+	}
+}
+
+
+#Become drunkard from the tavern
+character_event = {
+	id = LT.60302
+	title = EVT_TITLE_LT_60302
+	desc = EVTDESC_LT_60302
+	picture = GFX_evt_drunk
+	border = GFX_event_normal_frame_diplomacy
+	
+	is_triggered_only = yes
+
+	trigger = {
+		NOT = { trait = drunkard }
+	}
+
+	option = { #Drink up!
+		name = EVTOPTA_LT_60302
+		add_trait = drunkard
+	}
+}
+
+
+#Traps kills courtiers in the new court
+character_event = {
+	id = LT.60401
+	title = EVT_TITLE_LT_60401
+	desc = EVTDESC_LT_60401
+	picture = GFX_evt_died_funeral
+	border = GFX_event_normal_frame_intrigue
+	
+	is_triggered_only = yes
+
+	trigger = {
+		any_realm_wonder = {
+			has_wonder_upgrade = upgrade_traps
+		}
+	}
+	
+	immediate = {
+		save_event_target_as = new_owner
+		FROMFROM = {
+			save_event_target_as = old_owner
+		}
+		random_realm_wonder = {
+			limit = {
+				has_wonder_upgrade = upgrade_traps
+			}
+			save_event_target_as = target_wonder
+		}
+		random_courtier = {
+			score_value = { #Select someone that matters more!
+                value = 2
+                beloved_target_selection_score = yes
+            }
+			save_event_target_as = target_courtier
+		}
+		random_courtier = {
+			limit = {
+				NOT = {
+					character = event_target:target_courtier
+				}
+			}
+			save_event_target_as = target_courtier_2
+		}
+	}
+
+	option = { #Oh woe!
+		name = EVTOPTA_LT_60401
+		event_target:target_courtier = {
+			death = { death_reason = death_accident_wonder_traps }
+		}
+		event_target:target_courtier_2 = {
+			death = { death_reason = death_accident_wonder_traps }
+		}
+		if = {
+			limit = {
+				event_target:old_owner = {
+					is_alive = yes
+				}
+			}
+			event_target:old_owner = {
+				character_event = { id = LT.60402 }
+			}
+		}
+	}
+}
+
+#Traps have killed courtiers in the new court!
+character_event = {
+	id = LT.60402
+	title = EVT_TITLE_LT_60401
+	desc = EVTDESC_LT_60402
+	picture = GFX_evt_died_funeral
+	border = GFX_event_normal_frame_intrigue
+	
+	is_triggered_only = yes
+	
+	immediate = {
+	
+	}
+
+	option = { #Mohaha!
+		name = EVTOPTA_LT_60402
+		tooltip = {
+			event_target:target_courtier = {
+				death = { death_reason = death_accident_wonder_traps }
+			}
+			event_target:target_courtier_2 = {
+				death = { death_reason = death_accident_wonder_traps }
+			}
+		}
+	}
+}
+
+#Gain opinion boost from your liege if you have a wonder in your province
+letter_event = {
+	id = LT.60501
+	desc = EVTDESC_LT_60501
+	border = GFX_event_letter_frame_diplomacy
+	portrait = event_target:target_liege
+
+	is_triggered_only = yes
+
+	trigger = {
+		any_demesne_province = {
+			has_wonder = yes
+			liege = {
+				always = yes
+			}
+		}
+	}
+	
+	immediate = {
+		save_event_target_as = target_vassal
+		random_demesne_wonder = {
+			save_event_target_as = target_wonder
+			wonder_owner = {
+				save_event_target_as = target_liege
+			}
+		}
+	}
+
+	option = { #Oh no, YOU have!
+		name = EVTOPTA_LT_60501
+		if = {
+			limit = {
+				event_target:target_liege = {
+					is_alive = yes
+				}
+			}
+			event_target:target_liege = {
+				opinion = {
+					modifier = opinion_kind
+					who = root
+				}
+				character_event = { id = LT.60502 days = 3 }
+			}
+		}
+		ai_chance = {
+			factor = 100
+		}
+	}
+
+	option = { #Ehehe, yeah.
+		name = EVTOPTB_LT_60501
+		prestige = 50
+		ai_chance = {
+			factor = 25
+			modifier = {
+				factor = 4
+				trait = proud
+			}
+		}
+	}
+}
+
+#Vassal with a wonder in their province likes you better
+letter_event = {
+	id = LT.60502
+	desc = EVTDESC_LT_60502
+	border = GFX_event_letter_frame_diplomacy
+
+	is_triggered_only = yes
+
+	option = { #Oh thank you!
+		name = EVTOPTA_LT_60502
+		if = {
+			limit = {
+				event_target:target_vassal = {
+					is_alive = yes
+				}
+			}
+			event_target:target_vassal = {
+				opinion = {
+					modifier = opinion_kind
+					who = root
+				}
+			}
+		}
+	}
+}
+
+
+#A part of your wonder has fallen off!
+character_event = {
+	id = LT.60601
+	title = EVT_TITLE_LT_60601
+	desc = EVTDESC_LT_60601
+	picture = GFX_evt_leaning_tower
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	trigger = {
+		any_realm_wonder = {
+			wonder_age = 100
+			has_wonder_flag = is_destructible
+		}
+	}
+	
+	immediate = {
+		save_event_target_as = target_vassal
+		liege = {
+			save_event_target_as = target_liege
+		}
+		random_realm_wonder = {
+			limit = {
+				wonder_age = 100
+				has_wonder_flag = is_destructible
+			}
+			save_event_target_as = target_wonder
+		}
+	}
+
+	option = { #I will repair it
+		name = EVTOPTA_LT_60601
+		wealth = -50
+		prestige = 40
+		ai_chance = {
+			factor = 75
+			modifier = {
+				factor = 2
+				trait = zealous
+			}
+		}
+	}
+
+	option = { #I will sell the pieces!
+		name = EVTOPTB_LT_60601
+		wealth = 100
+		ai_chance = {
+			factor = 25
+			modifier = {
+				factor = 3
+				trait = greedy
+			}
+		}
+	}
+}
+
+
+#Periodically pick herbs (Hermetic artifact)
+character_event = {
+	id = LT.60701
+	title = EVT_TITLE_LT_60701
+	desc = EVTDESC_LT_60701
+	picture = GFX_evt_mysterious_forest
+	border = GFX_event_normal_frame_diplomacy
+	
+	is_triggered_only = yes
+
+	trigger = {
+		any_realm_wonder = {
+			has_wonder_upgrade = upgrade_herb_garden
+		}
+		trigger_if = {
+			limit = {
+				any_artifact = {
+					count = 1
+				}
+			}
+			any_artifact = {
+				count < 15 #Doesn't already have a shitton of herbs
+				is_ingredient_herb_trigger = yes
+				has_artifact_flag = ingredient
+			}
+		}
+	}
+	
+	immediate = {
+		save_event_target_as = new_owner
+		random_realm_wonder = {
+			limit = {
+				has_wonder_upgrade = upgrade_herb_garden
+			}
+			save_event_target_as = target_wonder
+			location = {
+				save_event_target_as = target_province
+			}
+		}
+		hidden_effect = { #To give some randomization to the event
+			random_list = {
+				10 = {
+					set_variable = {
+						which = gath_res
+						value = 1
+					}
+				}
+				10 = {
+					set_variable = {
+						which = gath_res
+						value = 2
+					}
+				}
+				10 = {
+					set_variable = {
+						which = gath_res
+						value = 3
+					}
+				}
+			}
+		}
+	}
+
+	option = { #Herbs!
+		name = EVTOPTA_LT_60701
+		sound_effect = hermetic_society_acquire_seed
+		while = {
+			limit = {
+				check_variable = {
+					which = gath_res
+					value = 1
+				}
+			}
+			hermetic_add_herbal_ingredient_effect = yes
+			
+			subtract_variable = {
+				which = gath_res
+				value = 1
+			}
+		}
+		custom_tooltip = { text = EVTTOOLTIP_MNM_1812 }
+	}
+
+	option = { #Rest!
+		name = EVTOPTB_LT_60701
+		health = 1
+	}
+}
