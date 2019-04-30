@@ -540,15 +540,15 @@ show_close_people_what_this_become_effect = {
 				num_of_friends = 1
 				num_of_lovers = 1
 				has_children = yes
-				father = { always = yes }
-				mother = { always = yes }
+				father = { character = yes }
+				mother = { character = yes }
 				is_ruler = yes
 				has_job_title = yes
 				has_minor_title = yes
 			}
 			OR = {
 				NOT = { has_character_flag = show_what_become_cooldown_flag }
-				had_character_flag = { flag = show_what_become_cooldown_flag days = 30 }
+				had_character_flag = { flag = show_what_become_cooldown_flag days = 365 }
 			}
 		}
 		set_character_flag = show_what_become_cooldown_flag
@@ -556,14 +556,16 @@ show_close_people_what_this_become_effect = {
 			limit = {
 				NOT = { character = event_target:target_necromancer }	# This character turned THIS, so it already know
 			}
-			character_event = { id = WCDAC.150 days = 5 }
+			set_notification_type_of_prev_effect = yes
+			character_event = { id = WCDAC.150 }
 		}
 		any_friend = {
 			limit = {
 				NOT = { character = event_target:target_necromancer }	# This character turned THIS, so it already know
 				NOT = { is_married = PREV }
 			}
-			character_event = { id = WCDAC.150 days = 5 }
+			set_notification_type_of_prev_effect = yes
+			character_event = { id = WCDAC.150 }
 		}
 		any_lover = {
 			limit = {
@@ -571,7 +573,8 @@ show_close_people_what_this_become_effect = {
 				NOT = { is_married = PREV }
 				NOT = { is_friend = PREV }
 			}
-			character_event = { id = WCDAC.150 days = 5 }
+			set_notification_type_of_prev_effect = yes
+			character_event = { id = WCDAC.150 }
 		}
 		any_close_relative = {
 			limit = {
@@ -580,7 +583,8 @@ show_close_people_what_this_become_effect = {
 				NOT = { is_friend = PREV }
 				NOT = { is_lover = PREV }
 			}
-			character_event = { id = WCDAC.150 days = 5 }
+			set_notification_type_of_prev_effect = yes
+			character_event = { id = WCDAC.150 }
 		}
 		if = {		# ...liege is almost your family
 			limit = {
@@ -599,8 +603,31 @@ show_close_people_what_this_become_effect = {
 					NOT = { is_close_relative = PREV }
 				}
 			}
-			liege = { character_event = { id = WCDAC.150 days = 5 } }
+			liege = {
+				set_notification_type_of_prev_effect = yes
+				character_event = { id = WCDAC.150 }
+			}
 		}
+	}
+	clear_flags_with_prefix = show_notification_
+}
+# Copy notification type of PREV
+set_notification_type_of_prev_effect = {
+	if = {
+		limit = { PREV = { has_character_flag = show_notification_undead_flag } }
+		set_character_flag = show_notification_undead_flag
+	}
+	else_if = {
+		limit = { PREV = { has_character_flag = show_notification_demon_flag } }
+		set_character_flag = show_notification_demon_flag
+	}
+	else_if = {
+		limit = { PREV = { has_character_flag = show_notification_void_flag } }
+		set_character_flag = show_notification_void_flag
+	}
+	else_if = {
+		limit = { PREV = { has_character_flag = show_notification_worgen_flag } }
+		set_character_flag = show_notification_worgen_flag
 	}
 }
 
@@ -654,6 +681,7 @@ become_intelligent_worget_effect = {
 	add_trait = worgen
 	hidden_effect = {
 		# Notifies your family/spouse/friends/lovers
+		set_character_flag = show_notification_worgen_flag	# Type of notification
 		show_close_people_what_this_become_effect = yes
 	}
 }
@@ -664,6 +692,7 @@ become_mindless_worgen_effect = {
 		character_event = { id = WCDRU.1000 days = 60 }			# Mindless worgen events
 
 		# Notifies your family/spouse/friends/lovers
+		set_character_flag = show_notification_worgen_flag	# Type of notification
 		show_close_people_what_this_become_effect = yes
 	}
 }
@@ -1383,6 +1412,7 @@ add_trait_undead_effect = {
 			cancel_pregnancy_effect = yes
 
 			# Notifies your family/spouse/friends/lovers
+			set_character_flag = show_notification_undead_flag	# Type of notification
 			show_close_people_what_this_become_effect = yes
 		}
 	}
