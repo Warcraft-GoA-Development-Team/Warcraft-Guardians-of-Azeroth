@@ -69,21 +69,24 @@ character_event = {
 
 		# Stage effects
 		if = {
-			limit = { check_variable = { which = fel_corruption value = 66 }  }
+			limit = { check_variable = { which = void_corruption value = 66 }  }
 			if = {
 				limit = { NOT = { true_religion = old_gods_worship } }
 				if = {
-					limit = { liege = { religion = old_gods_worship } }
+					limit = {
+						OR = {
+							trait = being_void
+							# has_character_modifier = void_corruption_2		# Cagy cultists :3
+							liege = { religion = old_gods_worship }
+						}
+					}
 					if = { limit = { has_secret_religion = yes } clear_secret_religion = yes }
 					religion = old_gods_worship
 				}
 				else = { set_secret_religion = old_gods_worship }
 			}
 		}
-		if = {
-			limit = { NOT = { true_religion_group = void_group } }
-			character_event = { id = WCVOD.170 days = 3 }
-		}
+		character_event = { id = WCVOD.170 days = 3 }		# Changes religion
 	}
 }
 # Moves on to the previous stage of void corruption
@@ -234,7 +237,7 @@ character_event = {
 	}
 }
 
-# If character isn't a void worshiper, converts to the void religions
+# If character isn't a dark worshiper, converts to the void religions
 character_event = {
 	id = WCVOD.170
 	desc = EVTDESC_WCVOD_170
@@ -243,8 +246,13 @@ character_event = {
 	is_triggered_only = yes
 
 	trigger = {
-		NOT = { true_religion_group = void_group }
-		NOT = { true_religion = forsaken_cult }
+		NOT = { has_character_flag = void_group_switch_flag }
+		
+		dark_true_religion_trigger = no
+	}
+	
+	immediate = {
+		set_character_flag = void_group_switch_flag
 	}
 
 	# No! Everything should be in balance!
@@ -260,9 +268,8 @@ character_event = {
 		if = {
 			limit = {
 				OR = {
-					trait = being_void
-					has_character_modifier = void_corruption_2
-					has_character_modifier = void_corruption_1
+					is_dark_being_trigger = yes
+					# has_character_modifier = void_corruption_2		# Cagy cultists :3
 					liege = { religion = forsaken_cult }
 				}
 			}
@@ -295,9 +302,8 @@ character_event = {
 		if = {
 			limit = {
 				OR = {
-					trait = being_void
-					has_character_modifier = void_corruption_2
-					has_character_modifier = void_corruption_1
+					is_dark_being_trigger = yes
+					# has_character_modifier = void_corruption_2		# Cagy cultists :3
 					liege = { religion = voidfarer }
 				}
 			}
@@ -337,8 +343,8 @@ character_event = {
 		if = {
 			limit = {
 				OR = {
-					trait = being_void
-					has_character_modifier = void_corruption_2
+					is_dark_being_trigger = yes
+					# has_character_modifier = void_corruption_2		# Cagy cultists :3
 					liege = { religion = old_gods_worship }
 				}
 			}
@@ -365,6 +371,16 @@ character_event = {
 				factor = 3
 				has_unpleasant_trait_trigger = yes
 			}
+		}
+	}
+	
+	option = {
+		name = I_WILL_NOT_BETRAY_RELIGION
+		
+		piety = -100
+		
+		ai_chance = {
+			factor = 0
 		}
 	}
 }
