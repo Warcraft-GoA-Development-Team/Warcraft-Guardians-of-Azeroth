@@ -1538,15 +1538,50 @@ narrative_event = {
 	only_rulers = yes
 
 	immediate = {
-		random_courtier = {
+		# Finds character to sacriface
+		if = {
 			limit = {
-				prisoner = no
-				NOT = { dynasty = FROM }
-				NOT = { any_spouse = { character = ROOT } }
-				NOT = { trait = being_undead }
-				NOT = { trait = being_demon }
+				any_courtier = {
+					can_be_sacrificed_trigger = yes
+					
+					is_adult = yes
+					prisoner = no
+					
+					is_ruler = no
+					
+					NOT = { is_close_relative = ROOT }
+				}
 			}
-			save_event_target_as = target_victim_for_ritual
+			random_courtier = {
+				limit = {
+					can_be_sacrificed_trigger = yes
+					
+					is_adult = yes
+					prisoner = no
+					
+					is_ruler = no
+					
+					NOT = { is_close_relative = ROOT }
+				}
+				save_event_target_as = target_victim_for_ritual
+			}
+		}
+		else = {
+			create_character = {
+				dynasty = none
+				culture = gnome religion = ROOT
+				attributes = {
+					martial=0 diplomacy=0 stewardship=0 intrigue=0 learning=0
+				}
+				trait=detached_priest
+				trait=creature_gnome
+				trait=class_mage_1
+				trait=ugly trait=weak trait=slothful trait=envious trait=craven
+				age = 40
+			}
+			new_character = {
+				save_event_target_as = target_victim_for_ritual
+			}
 		}
 	}
 
