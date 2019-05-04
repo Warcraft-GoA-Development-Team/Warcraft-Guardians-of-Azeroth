@@ -179,7 +179,7 @@ character_event = {
 		}
 	}
 	option = {
-		trigger = { is_unpleasant_creature_to_prev_trigger = yes }
+		trigger = { FROM = { is_unpleasant_creature_to_prev_trigger = yes } }
 		name = {
 			trigger = {
 				OR = {
@@ -986,6 +986,10 @@ narrative_event = {
 	border = GFX_event_narrative_frame_intrigue
 
 	is_triggered_only = yes
+	
+	immediate = {
+		add_trait = travelling
+	}
 
 	# I will fulfill the will of the Gods!
 	option = {
@@ -1141,72 +1145,42 @@ narrative_event = {
 	is_triggered_only = yes
 
 	immediate = {
+		# Used in scripted effects
+		save_event_target_as = target_settler
+		
 		religion = old_gods_worship
 		clear_event_target = yes
-		k_silithus = {
+		
+		remove_trait = travelling
+		
+		c_hivezora = {
+			# event_target:target_settler and its people settle here
+			settle_as_target_settler_effect = yes
+		}
+		
+		# If you're not independent ruler, gives old titles to liege
+		give_old_titles_to_liege_effect = yes
+		
+		d_crystalvale = {
 			any_direct_de_jure_vassal_title = {
-				any_direct_de_jure_vassal_title = {
-					limit = { holder_scope = { government = uncolonized_government } }
-					grant_title_no_opinion = PREVPREVPREV
-					location = {
-						culture = ROOT
-						religion = ROOT
-					}
-				}
+				# event_target:target_settler and its people settle here
+				settle_as_target_settler_effect = yes
 			}
 		}
-		k_ahnqiraj = {
+		d_scarab_wall = {
 			any_direct_de_jure_vassal_title = {
-				any_direct_de_jure_vassal_title = {
-					limit = { holder_scope = { government = uncolonized_government } }
-					grant_title_no_opinion = PREVPREVPREV
-					location = {
-						culture = ROOT
-						religion = ROOT
-					}
-				}
+				# event_target:target_settler and its people settle here
+				settle_as_target_settler_effect = yes
 			}
 		}
-		# If you're not independent ruler, gives your old titles to liege
-		if = {
-			limit = {
-				is_ruler = yes
-				independent = no
-			}
-			liege = {
-				ROOT = {
-					any_vassal = {
-						limit = {
-							capital_holding = {
-								NOR = {
-									de_jure_liege_or_above = k_silithus
-									de_jure_liege_or_above = k_ahnqiraj
-								}
-							}
-						}
-						set_defacto_liege = PREVPREV
-					}
-					any_demesne_title = {
-						limit = {
-							lower_tier_than = DUKE
-							NOR = {
-								de_jure_liege_or_above = k_silithus
-								de_jure_liege_or_above = k_ahnqiraj
-							}
-						}
-						grant_title_no_opinion = PREVPREV
-						if = {
-							limit = { tier = COUNT }
-							location = {
-								culture = PREVPREVPREV
-								religion = PREVPREVPREV
-							}
-						}
-					}
-				}
-			}
+		
+		c_hivezora = {
+			# Declares war against player
+			target_settler_declare_war_effect = yes
 		}
-		set_defacto_liege = THIS
+		
+		clear_settler_flag_effect = yes
+		
 		# Spawns army for start
 		capital_scope = {
 			ROOT = {
@@ -1235,8 +1209,10 @@ narrative_event = {
 
 		leave_society = yes
 		join_society_twilights_hammer_cult_effect = yes
-		set_society_grandmaster = yes # Set character as Grand Master
-		add_society_currency_massive_effect = yes # Give the Grand Master a start-up capital to induct members
+		hidden_effect = {
+			set_society_grandmaster = yes # Set character as Grand Master
+			add_society_currency_massive_effect = yes # Give the Grand Master a start-up capital to induct members
+		}
 
 		add_35_void_corruption_effect = yes
 
