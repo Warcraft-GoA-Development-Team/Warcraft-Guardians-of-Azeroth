@@ -50,13 +50,6 @@ province_event = {
 				is_incapable = no
 				prisoner = no
 				is_inaccessible_trigger = no
-				is_consort = no
-				
-				OR = {
-					is_ruler = no
-					is_feudal = yes
-					is_tribal = yes
-				}
 				
 				NOT = { has_character_flag = do_not_disturb }
 				NOT = { has_character_flag = exodus_horde_declined_flag }
@@ -64,7 +57,8 @@ province_event = {
 				trait = creature_orc
 				religion_group = shamanism_group
 				culture_group = orc_group
-
+				
+				can_resettle_trigger = yes
 				is_in_political_faction_trigger = no
 				location = { region = world_eastern_kingdoms }
 			}
@@ -106,6 +100,8 @@ narrative_event = {
 	is_triggered_only = yes
 
 	immediate = {
+		add_trait = travelling
+		
 		log = "WCTHW.100 fired for [Root.GetBestName]"
 		if = {
 			limit = { is_ruler = yes }
@@ -129,6 +125,7 @@ narrative_event = {
 				random_independent_ruler = {
 					limit = {
 						is_untouchable_trigger = no
+						is_inaccessible_trigger = no
 						
 						lower_real_tier_than = EMPEROR
 
@@ -138,6 +135,7 @@ narrative_event = {
 						religion_group = shamanism_group
 						culture_group = orc_group
 
+						can_resettle_trigger = yes
 						is_in_political_faction_trigger = no
 					}
 					preferred_limit = {
@@ -164,6 +162,7 @@ narrative_event = {
 		custom_tooltip = {
 			text = stops_the_event_chain
 		}
+		remove_trait = travelling
 
 		ai_chance = {
 			factor = 0
@@ -177,6 +176,10 @@ letter_event = {
 	border = GFX_event_letter_frame_diplomacy
 
 	is_triggered_only = yes
+	
+	immediate = {
+		# add_trait = travelling
+	}
 
 	option = {
 		name = ACCEPT
@@ -188,6 +191,8 @@ letter_event = {
 	}
 	option = {
 		name = DECLINE
+		
+		# remove_trait = travelling
 
 		ai_chance = {
 			factor = 0
@@ -248,9 +253,11 @@ narrative_event = {
 					can_rule_peacefully_trigger = yes
 					evil_public_religion_trigger = no
 					
-					culture_group = troll_group
-					
 					NOT = { tier = EMPEROR }
+					
+					culture_group = troll_group
+				
+					can_resettle_trigger = yes
 					has_landed_title = d_darkspear
 				}
 			}
@@ -334,9 +341,11 @@ narrative_event = {
 					can_rule_peacefully_trigger = yes
 					evil_public_religion_trigger = no
 					
-					culture_group = troll_group
-					
 					NOT = { tier = EMPEROR }
+					
+					culture_group = troll_group
+				
+					can_resettle_trigger = yes
 					has_landed_title = d_darkspear
 				}
 			}
@@ -358,9 +367,7 @@ narrative_event = {
 			holder_scope = {
 				top_liege = {
 					opinion = { modifier = opinion_very_grateful who = ROOT years = 10 }
-					primary_title = {
-						set_title_flag = trolls_sailed_to_kalimdor_flag
-					}
+					event_target:target_troll_primary_title = { set_title_flag = trolls_sailed_to_kalimdor_flag }
 				}
 			}
 		}
@@ -398,11 +405,11 @@ narrative_event = {
 	id = WCTHW.116
 	title = EVTTITLE_WCTHW_100
 	desc = {
-		trigger = { primary_title = { has_title_flag = trolls_sailed_to_kalimdor_flag } }
+		trigger = { event_target:target_troll_primary_title = { has_title_flag = trolls_sailed_to_kalimdor_flag } }
 		text = EVTDESC_WCTHW_116_case_01
 	}
 	desc = {
-		trigger = { primary_title = { NOT = { has_title_flag = trolls_sailed_to_kalimdor_flag } } }
+		trigger = { event_target:target_troll_primary_title = { NOT = { has_title_flag = trolls_sailed_to_kalimdor_flag } } }
 		text = EVTDESC_WCTHW_116_case_02
 	}
 	picture = GFX_evt_sea_serpent
@@ -412,18 +419,18 @@ narrative_event = {
 
 	immediate = {
 		if = {
-			limit = { primary_title = { NOT = { has_title_flag = trolls_sailed_to_kalimdor_flag } } }
+			limit = { event_target:target_troll_primary_title = { NOT = { has_title_flag = trolls_sailed_to_kalimdor_flag } } }
 			3625 = { province_event = { id = WCVOD.705 } }
 		}
 	}
 
 	option = {
 		name = {
-			trigger = { primary_title = { has_title_flag = trolls_sailed_to_kalimdor_flag } }
+			trigger = { event_target:target_troll_primary_title = { has_title_flag = trolls_sailed_to_kalimdor_flag } }
 			text = EVTOPTA_WCTHW_116_case_01
 		}
 		name = {
-			trigger = { primary_title = { NOT = { has_title_flag = trolls_sailed_to_kalimdor_flag } } }
+			trigger = { event_target:target_troll_primary_title = { NOT = { has_title_flag = trolls_sailed_to_kalimdor_flag } } }
 			text = EVTOPTA_WCTHW_116_case_02
 		}
 	}
@@ -481,6 +488,11 @@ narrative_event = {
 	hide_new = yes
 
 	immediate = {
+		# Used in scripted effects
+		save_event_target_as = target_settler
+		
+		remove_trait = travelling
+		
 		if = {
 			limit = {
 				is_ruler = yes
@@ -491,96 +503,47 @@ narrative_event = {
 			}
 			abdicate = yes
 		}
-		# Gives new titles
-		3043 = {
-			capital_holding = { convert_tribal_to_castle_effect = yes }
-			county = {
-				grant_title_no_opinion = ROOT
-				ROOT = { capital = PREV }
-			}
-			culture = ROOT
-			religion = ROOT
-			any_province_holding = { grant_title_no_opinion = ROOT }
+		
+		c_orgrimmar = {
+			# event_target:target_settler and its people settle here
+			settle_as_target_settler_effect = yes
 		}
-		# If you're not independent ruler, gives your old titles to liege
-		if = {
-			limit = {
-				is_ruler = yes
-				independent = no
-			}
-			liege = {
-				ROOT = {
-					any_vassal = {
-						limit = {
-							capital_holding = {
-								NOR = {
-									de_jure_liege_or_above = d_orgrimmar
-									de_jure_liege_or_above = d_drygulch
-									de_jure_liege_or_above = d_sarkoth
-								}
-							}
-						}
-						set_defacto_liege = PREVPREV
-					}
-					any_demesne_title = {
-						limit = {
-							lower_tier_than = DUKE
-							NOR = {
-								de_jure_liege_or_above = d_orgrimmar
-								de_jure_liege_or_above = d_drygulch
-								de_jure_liege_or_above = d_sarkoth
-							}
-						}
-						grant_title_no_opinion = PREVPREV
-						if = {
-							limit = { tier = COUNT }
-							location = {
-								culture = PREVPREVPREV
-								religion = PREVPREVPREV
-							}
-						}
-					}
-				}
-			}
-		}
-		set_defacto_liege = THIS
+		
 		if = {
 			limit = { is_government_potential = tribal_monarchy_government }
 			set_government_type = tribal_monarchy_government
 		}
+		
+		# If you're not independent ruler, gives old titles to liege
+		give_old_titles_to_liege_effect = yes
+		
 		d_orgrimmar = {
 			any_direct_de_jure_vassal_title = {
-				limit = { holder_scope = { government = uncolonized_government } }
-				grant_title_no_opinion = ROOT
-				location = {
-					culture = ROOT
-					religion = ROOT
-				}
+				# event_target:target_settler and its people settle here
+				settle_as_target_settler_effect = yes
 			}
 			grant_title_no_opinion = ROOT
 		}
 		d_drygulch = {
 			any_direct_de_jure_vassal_title = {
-				limit = { holder_scope = { government = uncolonized_government } }
-				grant_title_no_opinion = ROOT
-				location = {
-					culture = ROOT
-					religion = ROOT
-				}
+				# event_target:target_settler and its people settle here
+				settle_as_target_settler_effect = yes
 			}
-			# grant_title_no_opinion = ROOT
 		}
 		d_sarkoth = {
 			any_direct_de_jure_vassal_title = {
-				limit = { holder_scope = { government = uncolonized_government } }
-				grant_title_no_opinion = ROOT
-				location = {
-					culture = ROOT
-					religion = ROOT
-				}
+				# event_target:target_settler and its people settle here
+				settle_as_target_settler_effect = yes
 			}
-			# grant_title_no_opinion = ROOT
 		}
+		
+		c_orgrimmar = {
+			# Declares war against player
+			target_settler_declare_war_effect = yes
+		}
+		
+		clear_settler_flag_effect = yes
+		
 		# Spawns army for start
 		capital_scope = {
 			ROOT = {
@@ -612,26 +575,30 @@ narrative_event = {
 				clr_title_flag = trolls_sailed_to_kalimdor_flag
 
 				holder_scope = {
-					3057 = {
-						capital_holding = { convert_tribal_to_castle_effect = yes }
-						county = {
-							grant_title_no_opinion = PREVPREV
-							PREVPREV = { capital = PREV }
-						}
-						culture = PREV
-						religion = PREV
-						any_province_holding = { grant_title_no_opinion = PREV }
+					# Used in scripted effects
+					save_event_target_as = target_settler
+					
+					c_echo_isle = {
+						# event_target:target_settler and its people settle here
+						settle_as_target_settler_effect = yes
 					}
 					d_echo_isles = {
 						any_direct_de_jure_vassal_title = {
-							limit = { holder_scope = { government = uncolonized_government } }
-							grant_title_no_opinion = PREVPREV
-							location = {
-								culture = PREVPREVPREV
-								religion = PREVPREVPREV
-							}
+							# event_target:target_settler and its people settle here
+							settle_as_target_settler_effect = yes
 						}
 					}
+					
+					# If you're not independent ruler, gives old titles to liege
+					give_old_titles_to_liege_effect = yes
+					
+					c_echo_isle = {
+						# Declares war against player
+						target_settler_declare_war_effect = yes
+					}
+		
+					clear_settler_flag_effect = yes
+					
 					create_character = {
 						female = yes
 						dynasty = none
@@ -676,14 +643,8 @@ narrative_event = {
 							religion = event_target:target_naga
 						}
 					}
-					event_target:target_naga = {
-						if = {
-							limit = { is_government_potential = feudal_government }
-							set_government_type = feudal_government
-						}
-						set_defacto_liege = THIS
-					}
-					set_defacto_liege = ROOT
+
+					event_target:target_naga = { set_defacto_liege = THIS }
 				}
 			}
 		}
@@ -702,12 +663,18 @@ narrative_event = {
 			}
 		}
 		name = EVTOPTA_WCTHW_120
+		
+		# if = {
+			# limit = { trait = travelling }
+			# remove_trait = travelling
+		# }
 
-		primary_title = {
-			show_scope_change = no
-			if = {
-				limit = { has_title_flag = clan_sailed_to_kalimdor_flag }
-
+		if = {
+			limit = {
+				is_playable = yes
+				primary_title = { has_title_flag = clan_sailed_to_kalimdor_flag }
+			}
+			primary_title = {
 				clr_title_flag = clan_sailed_to_kalimdor_flag
 
 				ROOT = {
@@ -715,10 +682,14 @@ narrative_event = {
 					random_demesne_title = {
 						limit = {
 							NOT = { title = c_orgrimmar }
-							tier = COUNT
+							lower_tier_than = DUKE
 
 							de_jure_liege_or_above = k_barrens
 						}
+						preferred_limit = {
+							tier = COUNT
+						}
+						
 						grant_title = { target = PREVPREVPREV }
 						location = {
 							culture = PREVPREVPREVPREV
@@ -773,13 +744,6 @@ province_event = {
 				is_incapable = no
 				prisoner = no
 				is_inaccessible_trigger = no
-				is_consort = no
-				
-				OR = {
-					is_ruler = no
-					is_feudal = yes
-					is_tribal = yes
-				}
 				
 				NOT = { has_character_flag = do_not_disturb }
 				NOT = { has_character_flag = foundation_theramore_declined_flag }
@@ -791,6 +755,7 @@ province_event = {
 					religion = tidemother
 				}
 				
+				can_resettle_trigger = yes
 				location = { region = world_eastern_kingdoms }
 			}
 			preferred_limit = {
@@ -832,6 +797,9 @@ narrative_event = {
 
 	immediate = {
 		log = "WCTHW.150 fired for [Root.GetBestName]"
+		
+		add_trait = travelling
+		
 		if = {
 			limit = { is_ruler = yes }
 			primary_title = { save_event_target_as = target_primary_title }
@@ -856,6 +824,9 @@ narrative_event = {
 		clr_global_flag = foundation_theramore_happened_flag
 		# If player declines, tries to find another leader
 		set_character_flag = foundation_theramore_declined_flag
+		
+		remove_trait = travelling
+		
 		73 = { province_event = { id = WCTHW.145 } }
 
 		ai_chance = {
@@ -916,6 +887,11 @@ narrative_event = {
 	hide_new = yes
 
 	immediate = {
+		# Used in scripted effects
+		save_event_target_as = target_settler
+		
+		remove_trait = travelling
+		
 		if = {
 			limit = {
 				is_ruler = yes
@@ -926,16 +902,30 @@ narrative_event = {
 			}
 			abdicate = yes
 		}
-		3140 = {
-			capital_holding = { convert_tribal_to_castle_effect = yes }
-			county = {
-				grant_title_no_opinion = ROOT
-				ROOT = { capital = PREV }
-			}
-			culture = ROOT
-			religion = ROOT
-			any_province_holding = { grant_title_no_opinion = ROOT }
+		
+		c_theramore = {
+			# event_target:target_settler and its people settle here
+			settle_as_target_settler_effect = yes
 		}
+		c_alcaz = {
+			# event_target:target_settler and its people settle here
+			settle_as_target_settler_effect = yes
+		}
+		c_fray = {
+			# event_target:target_settler and its people settle here
+			settle_as_target_settler_effect = yes
+		}
+		
+		# If you're not independent ruler, gives old titles to liege
+		give_old_titles_to_liege_effect = yes
+		
+		c_theramore = {
+			# Declares war against player
+			target_settler_declare_war_effect = yes
+		}
+		
+		clear_settler_flag_effect = yes
+		
 		capital_scope = {
 			ROOT = {
 				spawn_unit = {
@@ -964,27 +954,6 @@ narrative_event = {
 				}
 			}
 		}
-		d_theramore = {
-			any_direct_de_jure_vassal_title = {
-				limit = { holder_scope = { government = uncolonized_government } }
-				grant_title_no_opinion = PREVPREV
-				location = {
-					culture = ROOT
-					religion = ROOT
-				}
-			}
-		}
-		d_nittawosew = {
-			any_direct_de_jure_vassal_title = {
-				limit = { holder_scope = { government = uncolonized_government } }
-				grant_title_no_opinion = PREVPREV
-				location = {
-					culture = ROOT
-					religion = ROOT
-				}
-			}
-		}
-		set_defacto_liege = THIS
 	}
 
 	option = {
@@ -2504,6 +2473,7 @@ narrative_event = {
 		custom_tooltip = {
 			text = you_manage_to_avoid_your_fate_tooltip
 		}
+		remove_trait = travelling
 
 		ai_chance = {
 			factor = 0
@@ -2607,6 +2577,7 @@ narrative_event = {
 		custom_tooltip = {
 			text = you_manage_to_avoid_your_fate_tooltip
 		}
+		remove_trait = travelling
 	}
 }
 # The Lich King's reaction to target_champion's leaving of Northrend
@@ -2886,7 +2857,7 @@ narrative_event = {
 	}
 
 	immediate = {
-		clr_character_flag = do_not_disturb
+		remove_trait = travelling
 		
 		imprison = no
 		if = {
@@ -2903,10 +2874,6 @@ narrative_event = {
 			limit = {
 				is_ruler = yes
 				independent = yes
-				OR = {
-					is_feudal = yes
-					is_tribal = yes
-				}
 			}
 			set_character_flag = homecoming_inde_ruler_desc_flag
 			break = yes

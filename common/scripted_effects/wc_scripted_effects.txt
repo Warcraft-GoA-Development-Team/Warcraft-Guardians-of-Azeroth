@@ -1984,6 +1984,7 @@ upgrade_province_as_target_settler_effect = {
 		limit = { any_province_holding = { holding_type = tribal } }
 		random_province_holding = {
 			limit = { holding_type = tribal }
+			make_capital_holding = yes
 			if = {
 				limit = { event_target:target_settler = { has_character_flag = prefer_temples_flag } }
 				convert_tribal_to_temple_effect = yes
@@ -2000,28 +2001,32 @@ upgrade_province_as_target_settler_effect = {
 }
 # target_settler and its people settle here
 settle_as_target_settler_effect = {
-	location = {
-		show_scope_change = no
+	if = {
+		limit = { holder_scope = { NOT = { character = event_target:target_settler } } }
 		
-		# event_target:target_settler build new holding or usurp existing one
-		build_or_give_holding_to_target_settler_effect = yes
-	
-		culture = event_target:target_settler
-		religion = event_target:target_settler
-	}
-	
-	# Give claim to event_target:target_settler if title holder is player or title if holder is AI
-	give_claim_or_title_to_target_settler_effect = yes
-	
-	# Upgrade tribal if there's one
-	location = {
-		show_scope_change = no
+		location = {
+			show_scope_change = no
+			
+			# event_target:target_settler build new holding or usurp existing one
+			build_or_give_holding_to_target_settler_effect = yes
+		}
 		
-		upgrade_province_as_target_settler_effect = yes
+		# Give claim to event_target:target_settler if title holder is player or title if holder is AI
+		give_claim_or_title_to_target_settler_effect = yes
+		
+		location = {
+			show_scope_change = no
+			
+			# Upgrade tribal if there's one
+			upgrade_province_as_target_settler_effect = yes
+		
+			culture = event_target:target_settler
+			religion = event_target:target_settler
+		}
+		
+		# Used in scripted effects
+		set_title_flag = new_title_flag	# Note: this flag isn't removed
 	}
-	
-	# Used in scripted effects
-	set_title_flag = new_title_flag	# Note: this flag isn't removed
 }
 clear_settler_flag_effect = {
 	hidden_effect = {
@@ -2064,6 +2069,8 @@ give_old_titles_to_liege_effect = {
 			}
 		}
 		clear_event_target = target_liege
+		
+		set_defacto_liege = THIS
 	}
 }
 # Declares war against player
