@@ -2417,7 +2417,7 @@ society_quest_event = {
 }
 
 # on_county_religion_change
-# Gives modifier to province if province's converted to evil religion
+# Upgrades tribals, builds buildings when province is converted to evil religion
 province_event = {
 	id = WCDAC.9990
 
@@ -2425,18 +2425,14 @@ province_event = {
 	hide_window = yes
 
 	trigger = {
-		evil_public_religion_trigger = yes
+		OR = {
+			use_scourge_buildings_trigger = yes
+			use_legion_buildings_trigger = yes
+			use_shathyar_buildings_trigger = yes
+		}
 	}
 
 	immediate = {
-		if = {
-			limit = { NOT = { has_province_modifier = unholy_architecture } }
-			if = {
-				limit = { holder_scope = { ai = yes } }
-				add_province_modifier = { name = unholy_architecture years = 5 }
-			}
-			else = { add_province_modifier = { name = unholy_architecture years = 3 } }
-		}
 		if = {
 			limit = {
 				any_province_holding = {
@@ -2446,6 +2442,57 @@ province_event = {
 			random_province_holding = {
 				limit = { holding_type = tribal }
 				convert_tribal_to_castle_effect = yes
+			}
+		}
+		any_province_holding = {
+			limit = {
+				OR = {
+					holding_type = castle
+					holding_type = city
+					holding_type = temple
+				}
+			}
+			if = {
+				limit = { ROOT = { use_scourge_buildings_trigger = yes } }
+				if = {
+					limit = { holding_type = castle }
+					build_scourge_castle_buildings_effect = yes
+				}
+				else_if = {
+					limit = { holding_type = city }
+					build_scourge_city_buildings_effect = yes
+				}
+				else = {
+					build_scourge_temple_buildings_effect = yes
+				}
+			}
+			else_if = {
+				limit = { ROOT = { use_legion_buildings_trigger = yes } }
+				if = {
+					limit = { holding_type = castle }
+					build_legion_castle_buildings_effect = yes
+				}
+				else_if = {
+					limit = { holding_type = city }
+					build_legion_city_buildings_effect = yes
+				}
+				else = {
+					build_legion_temple_buildings_effect = yes
+				}
+			}
+			else_if = {
+				limit = { ROOT = { use_shathyar_buildings_trigger = yes } }
+				if = {
+					limit = { holding_type = castle }
+					build_shathyar_castle_buildings_effect = yes
+				}
+				else_if = {
+					limit = { holding_type = city }
+					build_shathyar_city_buildings_effect = yes
+				}
+				else = {
+					build_shathyar_temple_buildings_effect = yes
+				}
 			}
 		}
 	}
