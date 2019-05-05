@@ -3969,6 +3969,7 @@ settlement_decisions = {
 		from_potential = {
 			is_untouchable_trigger = no
 
+			is_playable = yes
 			is_adult = yes
 			is_incapable = no
 			prisoner = no
@@ -3983,6 +3984,8 @@ settlement_decisions = {
 			location = { NOT = { has_province_modifier = druid_blessing } }
 
 			is_capital = yes
+			has_siege = no
+			is_occupied = no
 		}
 
 		allow = {
@@ -4020,4 +4023,108 @@ settlement_decisions = {
 			factor = 0.25
 		}
 	}
+
+	### Druid ###
+	# Adds "World Tree" building and 2 holding slots
+	plant_world_tree = {
+		is_high_prio = yes
+
+		ai_check_interval = 240
+
+		filter = sub_realm_owned
+		ai_target_filter = vassal_owned
+
+		only_playable = yes
+
+		from_potential = {
+			is_untouchable_trigger = no
+
+			is_playable = yes
+			is_adult = yes
+			is_incapable = no
+			prisoner = no
+
+			is_druid_class_trigger = yes
+		}
+
+		potential = {
+			location = { NOT = { has_province_modifier = world_tree_province_modifier } }
+
+			holding_type = temple
+			has_siege = no
+			is_occupied = no
+			NOT = { has_holding_modifier = looted_modifier }
+		}
+
+		allow = {
+			custom_tooltip = {
+				text = only_one_world_tree_per_realm_tooltip
+				hidden_tooltip = {
+					FROM = { NOT = { any_realm_province = { has_province_modifier = world_tree_province_modifier } } }
+				}
+			}
+
+			holder_scope = {
+				religion = FROM
+				liege = { religion_group = druidism_group }
+			}
+			location = {
+				religion = FROM
+
+				NOR = {
+					terrain = arctic
+					terrain = desert
+					terrain = burnt_earth
+					terrain = scorched_earth
+					terrain = underground
+				}
+			}
+
+			FROM = {
+				higher_tier_than = COUNT
+
+				religion_group = druidism_group
+				true_religion_group = druidism_group
+
+				is_9_10_magic_class_trigger = yes
+
+				wealth = 1000
+				piety = 5000
+				has_5_mana_trigger = yes
+			}
+		}
+
+		effect = {
+			save_event_target_as = target_title
+			FROM = {
+				save_event_target_as = target_druid
+
+				wealth = -1000
+				piety = -5000
+				remove_5_mana_effect = yes
+				
+				character_event = { id = WCCLS.815 }
+			}
+
+			custom_tooltip = {
+				text = plant_world_tree_tooltip
+				hidden_tooltip = {
+					location = {
+						save_event_target_as = target_province
+
+						add_province_modifier = { name = world_tree_province_modifier duration = -1 }
+
+						province_event = { id = WCCLS.819 years = 3 }	# If you changed years, rewrite plant_world_tree_tooltip localization
+					}
+				}
+			}
+		}
+		revoke_allowed = {
+			always = no
+		}
+		ai_will_do = {
+			factor = 1
+		}
+	}
+	# corrupt_world_tree and burn_world_tree are in wc_realm_decisions.txt
 }

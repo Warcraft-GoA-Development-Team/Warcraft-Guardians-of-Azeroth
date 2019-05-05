@@ -740,6 +740,9 @@ title_decisions = {
 					text = "PILLAGE_DESTROY_BUILDINGS"
 					hidden_tooltip = {
 						any_province_holding = {
+							limit = {
+								settlement_can_be_destroyed_trigger = yes
+							}
 							destroy_random_building = THIS
 							destroy_random_building = THIS
 						}
@@ -866,6 +869,9 @@ title_decisions = {
 					text = "PILLAGE_DESTROY_BUILDINGS"
 					hidden_tooltip = {
 						any_province_holding = {
+							limit = {
+								settlement_can_be_destroyed_trigger = yes
+							}
 							destroy_random_building = THIS
 							destroy_random_building = THIS
 						}
@@ -990,6 +996,9 @@ title_decisions = {
 					text = "PILLAGE_DESTROY_BUILDINGS"
 					hidden_tooltip = {
 						any_province_holding = {
+							limit = {
+								settlement_can_be_destroyed_trigger = yes
+							}
 							destroy_random_building = THIS
 							destroy_random_building = THIS
 						}
@@ -1069,6 +1078,181 @@ title_decisions = {
 			}
 		}
 
+		ai_will_do = {
+			factor = 1
+		}
+	}
+}
+settlement_decisions = {
+	corrupt_world_tree = {
+		is_high_prio = yes
+
+		ai_check_interval = 120
+
+		filter = sub_realm_owned
+		ai_target_filter = vassal_owned
+
+		only_playable = yes
+
+		from_potential = {
+			is_untouchable_trigger = no
+
+			is_playable = yes
+			is_adult = yes
+			is_incapable = no
+			prisoner = no
+
+			religion = old_gods_worship
+		}
+
+		potential = {
+			location = { NOT = { has_province_flag = corrupt_world_tree_ongoing_flag } }
+
+			has_title_flag = world_tree_title_flag
+			holding_type = temple
+			has_siege = no
+			is_occupied = no
+		}
+
+		allow = {
+			holder_scope = {
+				religion = FROM
+				liege = {
+					religion = old_gods_worship
+				}
+			}
+			location = { religion = FROM }
+
+			FROM = {
+				true_religion = old_gods_worship
+
+				wealth = 1000
+				piety = 5000
+			}
+		}
+
+		effect = {
+			save_event_target_as = target_title
+
+			FROM = {
+				save_event_target_as = target_corruptor
+
+				wealth = -1000
+				piety = -5000
+			}
+
+			custom_tooltip = {
+				text = corrupt_world_tree_tooltip
+				hidden_tooltip = {
+					location = {
+						save_event_target_as = target_province
+
+						set_province_flag = corrupt_world_tree_ongoing_flag		# Stops from firing decision twice
+					}
+					FROM = { narrative_event = { id = WCVOD.410 } }
+				}
+			}
+		}
+		revoke_allowed = {
+			always = no
+		}
+		ai_will_do = {
+			factor = 1
+		}
+	}
+	# WCRLM.595 is another way to fire WCRLM.600 event, check its condtions as well
+	burn_world_tree = {
+		is_high_prio = yes
+
+		ai_check_interval = 60
+
+		filter = sub_realm_owned
+		ai_target_filter = vassal_owned
+
+		only_playable = yes
+
+		from_potential = {
+			is_untouchable_trigger = no
+
+			is_playable = yes
+			is_adult = yes
+			is_incapable = no
+			prisoner = no
+
+			NOT = { religion = old_gods_worship }
+		}
+
+		potential = {
+			location = { NOT = { has_province_flag = burn_world_tree_ongoing_flag } }
+			
+			trigger_if = {
+				limit = { NOT = { has_title_flag = nightmare_tree_title_flag } }
+				FROM = { NOT = { religion_group = druidism_group } }
+			}
+
+			OR = {
+				has_title_flag = world_tree_title_flag
+				has_title_flag = nightmare_tree_title_flag
+			}
+			holding_type = temple
+			has_siege = no
+			is_occupied = no
+			
+			# AI Preferences
+			FROM = {
+				OR = {
+					ai = no
+					evil_true_religion_trigger = yes
+					trait = cruel
+					trait = lunatic
+					ROOT = { has_title_flag = nightmare_tree_title_flag }
+				}
+			}
+		}
+
+		allow = {
+			holder_scope = {
+				trigger_if = {
+					limit = { ROOT = { NOT = { has_title_flag = nightmare_tree_title_flag } } }
+					NOT = { religion_group = druidism_group }
+				}
+				NOT = { religion = old_gods_worship }
+			}
+
+			FROM = {
+				trigger_if = {
+					limit = { ROOT = { NOT = { has_title_flag = nightmare_tree_title_flag } } }
+					NOT = { true_religion_group = druidism_group }
+				}
+				NOT = { true_religion = old_gods_worship }
+			}
+		}
+
+		effect = {
+			# immediate of WCRLM.600
+			save_event_target_as = target_title
+			location = {
+				save_event_target_as = target_province
+
+				set_province_flag = burn_world_tree_ongoing_flag		# Stops from firing decision twice
+			}
+			FROM = { save_event_target_as = target_arsonist }
+
+			FROM = {
+				show_scope_change = no
+
+				# option of WCRLM.600
+				prestige = 2500
+
+				custom_tooltip = {
+					text = burn_world_tree_tooltip	# Needs FROM as a scope
+					hidden_tooltip = { narrative_event = { id = WCRLM.600 } }
+				}
+			}
+		}
+		revoke_allowed = {
+			always = no
+		}
 		ai_will_do = {
 			factor = 1
 		}
