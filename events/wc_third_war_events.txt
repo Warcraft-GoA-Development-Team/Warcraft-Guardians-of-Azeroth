@@ -119,33 +119,30 @@ narrative_event = {
 		remove_trait_envious_effect = yes
 
 		hidden_effect = {
-			# Invites other clans
-			while = {
-				limit = { always = yes }
-				count = 5
-				random_independent_ruler = {
-					limit = {
-						is_untouchable_trigger = no
-						is_inaccessible_trigger = no
-						
-						lower_real_tier_than = EMPEROR
+			# Invites another clan
+			random_independent_ruler = {
+				limit = {
+					is_untouchable_trigger = no
+					is_inaccessible_trigger = no
+					
+					lower_real_tier_than = EMPEROR
 
-						NOT = { has_character_flag = invitation_to_sail_is_sent_flag }
+					NOT = { has_character_flag = invitation_to_sail_is_sent_flag }
 
-						trait = creature_orc
-						religion_group = shamanism_group
-						culture_group = orc_group
+					trait = creature_orc
+					religion_group = shamanism_group
+					culture_group = orc_group
 
-						can_resettle_trigger = yes
-						is_in_political_faction_trigger = no
-					}
-					preferred_limit = {
-						ai = no
-					}
-					set_character_flag = invitation_to_sail_is_sent_flag
-
-					letter_event = { id = WCTHW.105 days = 3 }
+					can_resettle_trigger = yes
+					is_in_political_faction_trigger = no
 				}
+				preferred_limit = {
+					ai = no
+				}
+				set_character_flag = invitation_to_sail_is_sent_flag
+
+				primary_title = { save_event_target_as = target_clan }
+				letter_event = { id = WCTHW.105 days = 3 }
 			}
 			73 = { province_event = { id = WCTHW.109 days = 10 } }
 		}
@@ -187,7 +184,9 @@ letter_event = {
 
 		FROM = { letter_event = { id = WCTHW.106 } }
 		hidden_effect = {
-			primary_title = { set_title_flag = clan_sailed_to_kalimdor_flag }
+			primary_title = {
+				set_title_flag = clan_sailed_to_kalimdor_flag
+			}
 		}
 	}
 	option = {
@@ -198,6 +197,10 @@ letter_event = {
 		ai_chance = {
 			factor = 0
 		}
+	}
+	
+	after = {
+		clr_character_flag = invitation_to_sail_is_sent_flag
 	}
 }
 # FROM want to sail to Kalimdor with you
@@ -274,7 +277,7 @@ narrative_event = {
 			holder_scope = {
 				top_liege = {
 					narrative_event = { id = WCTHW.111 }
-					primary_title = { save_event_target_as = target_troll_primary_title }
+					primary_title = { save_event_target_as = target_trolls }
 				}
 			}
 		}
@@ -368,7 +371,7 @@ narrative_event = {
 			holder_scope = {
 				top_liege = {
 					opinion = { modifier = opinion_very_grateful who = ROOT years = 10 }
-					event_target:target_troll_primary_title = { set_title_flag = trolls_sailed_to_kalimdor_flag }
+					event_target:target_trolls = { set_title_flag = trolls_sailed_to_kalimdor_flag }
 				}
 			}
 		}
@@ -406,11 +409,11 @@ narrative_event = {
 	id = WCTHW.116
 	title = EVTTITLE_WCTHW_100
 	desc = {
-		trigger = { event_target:target_troll_primary_title = { has_title_flag = trolls_sailed_to_kalimdor_flag } }
+		trigger = { event_target:target_trolls = { has_title_flag = trolls_sailed_to_kalimdor_flag } }
 		text = EVTDESC_WCTHW_116_case_01
 	}
 	desc = {
-		trigger = { event_target:target_troll_primary_title = { NOT = { has_title_flag = trolls_sailed_to_kalimdor_flag } } }
+		trigger = { event_target:target_trolls = { NOT = { has_title_flag = trolls_sailed_to_kalimdor_flag } } }
 		text = EVTDESC_WCTHW_116_case_02
 	}
 	picture = GFX_evt_sea_serpent
@@ -420,18 +423,18 @@ narrative_event = {
 
 	immediate = {
 		if = {
-			limit = { event_target:target_troll_primary_title = { NOT = { has_title_flag = trolls_sailed_to_kalimdor_flag } } }
+			limit = { event_target:target_trolls = { NOT = { has_title_flag = trolls_sailed_to_kalimdor_flag } } }
 			3625 = { province_event = { id = WCVOD.705 } }
 		}
 	}
 
 	option = {
 		name = {
-			trigger = { event_target:target_troll_primary_title = { has_title_flag = trolls_sailed_to_kalimdor_flag } }
+			trigger = { event_target:target_trolls = { has_title_flag = trolls_sailed_to_kalimdor_flag } }
 			text = EVTOPTA_WCTHW_116_case_01
 		}
 		name = {
-			trigger = { event_target:target_troll_primary_title = { NOT = { has_title_flag = trolls_sailed_to_kalimdor_flag } } }
+			trigger = { event_target:target_trolls = { NOT = { has_title_flag = trolls_sailed_to_kalimdor_flag } } }
 			text = EVTOPTA_WCTHW_116_case_02
 		}
 	}
@@ -484,6 +487,9 @@ narrative_event = {
 	is_triggered_only = yes
 
 	major = yes
+	major_trigger = {
+		ai = no
+	}
 	show_root = yes
 	hide_from = yes
 	hide_new = yes
@@ -568,8 +574,8 @@ narrative_event = {
 		}
 		narrative_event = { id = WCPLF.100 }			# Foundation of the Horde (faction)
 		
-		# Trolls
-		event_target:target_troll_primary_title = {
+		# Grant titles to trolls
+		event_target:target_trolls = {
 			if = {
 				limit = { has_title_flag = trolls_sailed_to_kalimdor_flag }
 
@@ -649,6 +655,38 @@ narrative_event = {
 				}
 			}
 		}
+		
+		# Grant title to invited clan
+		event_target:target_clan = {
+			if = {
+				limit = { has_title_flag = clan_sailed_to_kalimdor_flag }
+				clr_title_flag = clan_sailed_to_kalimdor_flag
+				
+				holder_scope = {
+					ROOT = {
+						show_scope_change = no
+						random_demesne_title = {
+							limit = {
+								NOT = { title = c_orgrimmar }
+								lower_tier_than = DUKE
+
+								de_jure_liege_or_above = k_barrens
+							}
+							preferred_limit = {
+								tier = COUNT
+							}
+							
+							grant_title = { target = PREVPREV }
+							location = {
+								culture = PREVPREVPREV
+								religion = PREVPREVPREV
+							}
+						}
+						set_defacto_vassal = PREV
+					}
+				}
+			}
+		}
 	}
 
 	option = {
@@ -669,38 +707,6 @@ narrative_event = {
 			# limit = { trait = travelling }
 			# remove_trait = travelling
 		# }
-
-		if = {
-			limit = {
-				is_playable = yes
-				primary_title = { has_title_flag = clan_sailed_to_kalimdor_flag }
-			}
-			primary_title = {
-				clr_title_flag = clan_sailed_to_kalimdor_flag
-
-				ROOT = {
-					show_scope_change = no
-					random_demesne_title = {
-						limit = {
-							NOT = { title = c_orgrimmar }
-							lower_tier_than = DUKE
-
-							de_jure_liege_or_above = k_barrens
-						}
-						preferred_limit = {
-							tier = COUNT
-						}
-						
-						grant_title = { target = PREVPREVPREV }
-						location = {
-							culture = PREVPREVPREVPREV
-							religion = PREVPREVPREVPREV
-						}
-					}
-					set_defacto_vassal = PREV
-				}
-			}
-		}
 	}
 
 	option = {
@@ -883,6 +889,9 @@ narrative_event = {
 	is_triggered_only = yes
 
 	major = yes
+	major_trigger = {
+		ai = no
+	}
 	show_root = yes
 	hide_from = yes
 	hide_new = yes
@@ -1018,6 +1027,11 @@ narrative_event = {
 	border = GFX_event_narrative_frame_war
 
 	major = yes
+	major_trigger = {
+		ai = no
+	}
+	show_root = yes
+	
 	is_triggered_only = yes
 
 	immediate = {
@@ -1168,6 +1182,14 @@ narrative_event = {
 	is_triggered_only = yes
 
 	major = yes
+	major_trigger = {
+		OR = {
+			ai = no
+			trait = creature_high_elf
+			trait = creature_blood_elf
+		}
+	}
+	show_root = yes
 
 	option = {
 		trigger = {
@@ -2081,9 +2103,14 @@ narrative_event = {
 		picture = GFX_evt_corrupted_sunwell_fel
 	}
 	border = GFX_event_narrative_frame_religion
+	
+	major = yes
+	major_trigger = {
+		ai = no
+	}
+	show_root = yes
 
 	is_triggered_only = yes
-	major = yes
 
 	immediate = {
 		save_event_target_as = target_religion
@@ -2377,6 +2404,9 @@ narrative_event = {
 	is_triggered_only = yes
 
 	major = yes
+	major_trigger = {
+		ai = no
+	}
 	show_from_from = yes
 
 	option = {
@@ -3011,6 +3041,9 @@ narrative_event = {
 	is_triggered_only = yes
 
 	major = yes
+	major_trigger = {
+		ai = no
+	}
 	show_root = yes
 	hide_from = yes
 	hide_new = yes
