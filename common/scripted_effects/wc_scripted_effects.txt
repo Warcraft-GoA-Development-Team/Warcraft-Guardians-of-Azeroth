@@ -469,62 +469,61 @@ clr_all_society_recruitment_flags_effect = {
 
 add_prev_useful_flesh = {
 	if = {
+		limit = {
+			any_realm_wonder_upgrade = {
+				has_wonder_upgrade = upgrade_plagueworks
+				is_active = yes
+			}
+		}
+		change_variable = { which = useful_flesh value = 4 }
+	}
+	if = {
 		limit = { PREV = { is_large_humanoid_trigger = yes } }
 		if = {
 			limit = { PREV = { is_strong_trigger = yes } }
 			change_variable = { which = useful_flesh value = 12 }
 			PREV = { set_character_flag = brawny_corpse_flag }
 		}
+		else_if = {
+			limit = { PREV = { is_weak_trigger = yes } }
+			change_variable = { which = useful_flesh value = 8 }
+			PREV = { set_character_flag = brawny_corpse_flag }
+		}
 		else = {
-			if = {
-				limit = { PREV = { is_weak_trigger = yes } }
-				change_variable = { which = useful_flesh value = 8 }
-				PREV = { set_character_flag = brawny_corpse_flag }
-			}
-			else = {
-				change_variable = { which = useful_flesh value = 10 }
-				PREV = { set_character_flag = brawny_corpse_flag }
-			}
+			change_variable = { which = useful_flesh value = 10 }
+			PREV = { set_character_flag = brawny_corpse_flag }
 		}
 	}
-	else = {
+	else_if = {
+		limit = { PREV = { is_small_humanoid_trigger = yes } }
 		if = {
-			limit = { PREV = { is_small_humanoid_trigger = yes } }
-			if = {
-				limit = { PREV = { is_strong_trigger = yes } }
-				change_variable = { which = useful_flesh value = 4 }
-				PREV = { set_character_flag = frail_corpse_flag }
-			}
-			else = {
-				if = {
-					limit = { PREV = { is_weak_trigger = yes } }
-					change_variable = { which = useful_flesh value = 2 }
-					PREV = { set_character_flag = frail_corpse_flag }
-				}
-				else = {
-					change_variable = { which = useful_flesh value = 3 }
-					PREV = { set_character_flag = frail_corpse_flag }
-				}
-			}
+			limit = { PREV = { is_strong_trigger = yes } }
+			change_variable = { which = useful_flesh value = 4 }
+			PREV = { set_character_flag = frail_corpse_flag }
+		}
+		else_if = {
+			limit = { PREV = { is_weak_trigger = yes } }
+			change_variable = { which = useful_flesh value = 2 }
+			PREV = { set_character_flag = frail_corpse_flag }
 		}
 		else = {
-			if = {
-				limit = { PREV = { is_strong_trigger = yes } }
-				change_variable = { which = useful_flesh value = 8 }
-				PREV = { set_character_flag = brawny_corpse_flag }
-			}
-			else = {
-				if = {
-					limit = { PREV = { is_weak_trigger = yes } }
-					change_variable = { which = useful_flesh value = 4 }
-					PREV = { set_character_flag = frail_corpse_flag }
-				}
-				else = {
-					change_variable = { which = useful_flesh value = 6 }
-					PREV = { set_character_flag = normal_corpse_flag }
-				}
-			}
+			change_variable = { which = useful_flesh value = 3 }
+			PREV = { set_character_flag = frail_corpse_flag }
 		}
+	}
+	else_if = {
+		limit = { PREV = { is_strong_trigger = yes } }
+		change_variable = { which = useful_flesh value = 8 }
+		PREV = { set_character_flag = brawny_corpse_flag }
+	}
+	else_if = {
+		limit = { PREV = { is_weak_trigger = yes } }
+		change_variable = { which = useful_flesh value = 4 }
+		PREV = { set_character_flag = frail_corpse_flag }
+	}
+	else = {
+		change_variable = { which = useful_flesh value = 6 }
+		PREV = { set_character_flag = normal_corpse_flag }
 	}
 }
 
@@ -1468,41 +1467,62 @@ become_blood_elf_effect = {
 	}
 }
 remove_sunwells_effect = {
-	b_sunwell = {
-		remove_building = tp_sunwell
-		remove_building = tp_sunwell_light
-		remove_building = tp_sunwellcorrupted
-		remove_building = tp_felwell
-		remove_building = tp_voidwell
-	}
+	clr_wonder_flag = wonder_lightwell_flag
+	clr_wonder_flag = wonder_deathwell_flag
+	clr_wonder_flag = wonder_felwell_flag
+	clr_wonder_flag = wonder_voidwell_flag
 }
 add_sunwell_effect = {
 	clr_global_flag = sunwell_is_being_restored_flag
-	remove_sunwells_effect = yes
-	b_sunwell = { add_building = tp_sunwell }
+	394 = {
+		wonder = {
+			remove_sunwells_effect = yes
+			set_name = wonder_sunwell_sunwell
+		}
+	}
 }
 add_lightwell_effect = {
 	clr_global_flag = sunwell_is_being_restored_flag
 	clr_global_flag = sunwell_naaru_spark_flag
-	remove_sunwells_effect = yes
-	b_sunwell = { add_building = tp_sunwell_light }
+	394 = {
+		wonder = {
+			remove_sunwells_effect = yes
+			set_wonder_flag = wonder_lightwell_flag
+			set_name = wonder_sunwell_sunwell
+		}
+	}
 }
 add_deathwell_effect = {
 	clr_global_flag = sunwell_is_being_restored_flag
-	remove_sunwells_effect = yes
-	b_sunwell = { add_building = tp_sunwellcorrupted }
+	394 = {
+		wonder = {
+			remove_sunwells_effect = yes
+			set_wonder_flag = wonder_deathwell_flag
+			set_name = wonder_sunwell_deathwell
+		}
+	}
 }
 add_felwell_effect = {
 	clr_global_flag = felwell_restoring_flag
 	clr_global_flag = sunwell_is_being_restored_flag
-	remove_sunwells_effect = yes
-	b_sunwell = { add_building = tp_felwell }
+	394 = {
+		wonder = {
+			remove_sunwells_effect = yes
+			set_wonder_flag = wonder_felwell_flag
+			set_name = wonder_sunwell_felwell
+		}
+	}
 }
 add_voidwell_effect = {
 	clr_global_flag = voidwell_restoring_flag
 	clr_global_flag = sunwell_is_being_restored_flag
-	remove_sunwells_effect = yes
-	b_sunwell = { add_building = tp_voidwell }
+	394 = {
+		wonder = {
+			remove_sunwells_effect = yes
+			set_wonder_flag = wonder_voidwell_flag
+			set_name = wonder_sunwell_voidwell
+		}
+	}
 }
 
 add_max_depopulation_effect = {
@@ -1836,5 +1856,163 @@ create_religious_head_effect = {
 			
 			narrative_event = { id = WCREL.10 }
 		}
+	}
+}
+
+plant_world_tree_effect = {
+	event_target:target_druid = {
+		show_scope_change = no
+		if = {
+			limit = { religion_group = druidism_group }
+			religion_authority = { modifier = new_world_tree }
+		}
+	}
+	event_target:target_title = {
+		show_scope_change = no
+		set_title_flag = world_tree_title_flag
+		if = {
+			limit = { title = b_nordrassil }
+			add_building = tp_nordrassil
+		}
+		else = {
+			add_building = tp_world_tree
+		}
+	}
+	event_target:target_province = {
+		show_scope_change = no
+		if = {
+			limit = { ROOT = { character = event_target:target_druid } }
+			if = {
+				limit = { NOT = { num_of_max_settlements = 6 } }
+				add_holding_slot = 2
+			}
+			else_if = {
+				limit = { NOT = { num_of_max_settlements = 7 } }
+				add_holding_slot = 1
+			}
+		}
+	}
+}
+corrupt_world_tree_effect = {
+	event_target:target_corruptor = {
+		show_scope_change = no
+		if = {
+			limit = { religion = old_gods_worship }
+			religion_authority = { modifier = corrupted_world_tree_good }
+		}
+	}
+	event_target:target_title = {
+		show_scope_change = no
+		if = {
+			limit = { has_building = tp_world_tree }
+			remove_building = tp_world_tree
+		}
+		if = {
+			limit = { has_building = tp_nordrassil }
+			remove_building = tp_nordrassil
+			hidden_effect = {
+				if = {
+					limit = { NOT = { has_global_flag = night_elves_lost_immortality_flag } }
+					set_global_flag = night_elves_lost_immortality_flag
+					# Delayed notification event
+					3264 = { province_event = { id = WCDRU.5500 days = 10 random = 10 } }
+				}
+			}
+		}
+		clr_title_flag = world_tree_title_flag
+		set_title_flag = nightmare_tree_title_flag
+		add_building = tp_nightmare_tree
+	}
+	event_target:target_province = {
+		show_scope_change = no
+		
+		clr_province_flag = corrupt_world_tree_ongoing_flag
+	}
+}
+burn_world_tree_effect = {
+	event_target:target_arsonist = {
+		if = {
+			limit = { event_target:target_title = { has_title_flag = world_tree_title_flag } }
+			add_character_modifier = { name = burned_world_tree_opinion years = 100 }
+		}
+	}
+	event_target:target_title = {
+		show_scope_change = no
+		if = {
+			limit = { has_building = tp_world_tree }
+			remove_building = tp_world_tree
+		}
+		if = {
+			limit = { has_building = tp_nordrassil }
+			remove_building = tp_nordrassil
+			hidden_effect = {
+				if = {
+					limit = { NOT = { has_global_flag = night_elves_lost_immortality_flag } }
+					set_global_flag = night_elves_lost_immortality_flag
+					# Delayed notification event
+					3264 = { province_event = { id = WCDRU.5500 days = 10 random = 10 } }
+				}
+			}
+		}
+		if = {
+			limit = { has_building = tp_nightmare_tree }
+			remove_building = tp_nightmare_tree
+		}
+		clr_title_flag = world_tree_title_flag
+		clr_title_flag = nightmare_tree_title_flag
+	}
+	event_target:target_province = {
+		show_scope_change = no
+		remove_province_modifier = world_tree_province_modifier
+		clr_province_flag = corrupt_world_tree_ongoing_flag
+		clr_province_flag = burn_world_tree_ongoing_flag
+	}
+}
+
+# Give claim if title holder is player or title if holder is AI
+give_claim_or_title_to_prevprev_effect = {
+	if = {
+		limit = {
+			holder_scope = {
+				OR = {
+					ai = no
+					any_liege = { ai = no }
+				}
+			}
+		}
+		add_pressed_claim = PREVPREV
+	}
+	else = {
+		grant_title_no_opinion = PREVPREV
+	}
+}
+
+add_soul_shard_effect = {
+	add_artifact = soul_shard
+	if = {
+		limit = {
+			any_realm_wonder_upgrade = {
+				has_wonder_upgrade = upgrade_soul_extractor
+				is_active = yes
+			}
+		}
+		random = {
+			chance = 50
+			add_artifact = soul_shard
+		}
+	}
+}
+add_inflow_of_the_fel_effect = {
+	custom_tooltip = {
+		text = add_inflow_of_the_fel_tooltip		# To make tooltip shorter
+		hidden_effect = { remove_character_modifier = inflow_of_the_fel }
+		add_character_modifier = { name = inflow_of_the_fel duration = 1825 }
+	}
+}
+add_inflow_of_the_void_effect = {
+	custom_tooltip = {
+		text = add_inflow_of_the_void_tooltip		# To make tooltip shorter
+		hidden_effect = { remove_character_modifier = inflow_of_the_void }
+		add_character_modifier = { name = inflow_of_the_void duration = 1825 }
 	}
 }
