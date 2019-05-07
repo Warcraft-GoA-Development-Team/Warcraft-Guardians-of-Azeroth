@@ -1565,27 +1565,50 @@ character_event = {
 			random_list = {
 				20 = {
 					modifier = {
-						factor = 1.92
+						factor = 1.5
+						any_realm_wonder_upgrade = {
+							has_wonder_upgrade = upgrade_sanctuary_of_shadows
+							is_active = yes
+						}
+					}
+					modifier = {
+						factor = 1.5
+						trait = creature_nathrezim
+					}
+					modifier = {
+						factor = 1.5
+						trait = creature_cthraxxi
+					}
+					modifier = {
+						factor = 1.5
+						trait = creature_qiraji
+					}
+					modifier = {
+						factor = 1.5
+						trait = vampire
+					}
+					modifier = {
+						factor = 1.5
 						society_rank > 3
 					}
 					modifier = {
-						factor = 1.92
+						factor = 1.5
 						true_religion_group = void_group
 					}
 					modifier = {
-						factor = 1.92
+						factor = 2
 						is_3_4_magic_class_trigger = yes
 					}
 					modifier = {
-						factor = 1.92
+						factor = 2
 						is_5_6_magic_class_trigger = yes
 					}
 					modifier = {
-						factor = 1.92
+						factor = 2
 						is_7_8_magic_class_trigger = yes
 					}
 					modifier = {
-						factor = 1.92
+						factor = 2
 						is_9_10_magic_class_trigger = yes
 					}
 					character_event = { id = WCCLS.616 }	# Success
@@ -1866,6 +1889,242 @@ character_event = {
 		name = EXCELLENT
 
 		event_target:target_province = { tooltip = { add_province_modifier = { name = druid_blessing duration = 1825 } } }
+	}
+}
+
+### New World Tree
+# Notification of planted seed
+character_event = {
+	id = WCCLS.815
+	desc = EVTDESC_WCCLS_815
+	picture = GFX_evt_stone_church
+	border = GFX_event_normal_frame_religion
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = EVTOPTA_WCCLS_815
+	}
+}
+# Delayer event
+province_event = {
+	id = WCCLS.819
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		if = {
+			limit = {
+				event_target:target_druid = { religion_group = druidism_group }
+				event_target:target_province = { religion_group = druidism_group }
+				event_target:target_title = {
+					holding_type = temple
+					has_siege = no
+					is_occupied = no
+					NOT = { has_holding_modifier = looted_modifier }
+				}
+			}
+			# SUCCESSS CASES
+			# Who shall get event?
+			if = {		# Fires for target_druid
+				limit = {
+					event_target:target_druid = {
+						is_alive = yes
+						is_dying = no
+					}
+					event_target:target_title = {
+						holder_scope = {
+							OR = {
+								character = event_target:target_druid
+								is_vassal_or_below_of = event_target:target_druid
+							}
+						}
+					}
+				}
+				event_target:target_druid = { narrative_event = { id = WCCLS.820 } }
+			}
+			else_if = {		# Fires for liege of title's holder if title's holder isn't playable
+				limit = {
+					event_target:target_title = {
+						holder_scope = {
+							is_playable = no
+							liege = {
+								religion_group = druidism_group
+							}
+						}
+					}
+				}
+				event_target:target_title = {
+					holder_scope = {
+						liege = {
+							clear_event_target = target_druid
+							save_event_target_as = target_druid
+							
+							narrative_event = { id = WCCLS.820 }
+						}
+					}
+				}
+			}
+			else_if = {		# Fires for title's holder
+				limit = {
+					event_target:target_title = {
+						holder_scope = {
+							religion_group = druidism_group
+						}
+					}
+				}
+				event_target:target_title = {
+					holder_scope = {
+						clear_event_target = target_druid
+						save_event_target_as = target_druid
+						
+						narrative_event = { id = WCCLS.820 }
+					}
+				}
+			}
+			else = {	# Failed
+				set_province_flag = failed_world_tree_flag
+			}
+		}
+		else = {		# Failed
+			set_province_flag = failed_world_tree_flag
+		}
+		# FAIL CASES
+		# Who shall get event?
+		if = {
+			limit = { has_province_flag = failed_world_tree_flag }
+			clr_province_flag = failed_world_tree_flag
+			
+			event_target:target_province = { remove_province_modifier = world_tree_province_modifier }
+			
+			if = {			# Fires for target_druid
+				limit = {
+					event_target:target_druid = {
+						is_alive = yes
+						is_dying = no
+					}
+				}
+				event_target:target_druid = { character_event = { id = WCCLS.821 } }
+			}
+			else_if = {		# Fires for liege of title's holder if title's holder isn't playable
+				limit = {
+					event_target:target_title = {
+						holder_scope = {
+							is_playable = no
+						}
+					}
+				}
+				event_target:target_title = {
+					holder_scope = {
+						liege = {
+							character_event = { id = WCCLS.821 }
+						}
+					}
+				}
+			}
+			else = {		# Fires for title's holder
+				event_target:target_title = {
+					holder_scope = {
+						character_event = { id = WCCLS.821 }
+					}
+				}
+			}
+		}
+	}
+}
+# Delayed event
+narrative_event = {
+	id = WCCLS.820
+	title = EVTTITLE_WCCLS_820
+	desc = EVTDESC_WCCLS_820
+	picture = GFX_evt_world_tree
+	border = GFX_event_narrative_frame_religion
+
+	is_triggered_only = yes
+
+	# major = yes
+	
+	immediate = {
+		if = {
+			limit = { character = event_target:target_druid }
+			any_player = {
+				limit = { NOT = { character = ROOT } }
+				narrative_event = { id = WCCLS.820 }
+			}
+		}
+	}
+
+	option = {
+		trigger = { evil_true_religion_trigger = yes }
+		name = FOOLS
+		
+		tooltip = { plant_world_tree_effect = yes }
+	}
+	option = {
+		trigger = { true_religion_group = druidism_group }
+		name = EVTOPTA_WCCLS_820	# This tree shall endure...
+		
+		tooltip = { plant_world_tree_effect = yes }
+	}
+	option = {
+		trigger = {
+			evil_true_religion_trigger = no
+			NOT = { true_religion_group = druidism_group }
+		}
+		name = EVTOPTB_WCCLS_820	# Strange... but magnificent.
+		
+		tooltip = { plant_world_tree_effect = yes }
+	}
+	option = {
+		trigger = {
+			evil_true_religion_trigger = no
+			NOT = { true_religion_group = druidism_group }
+			trait = zealous
+		}
+		name = EVTOPTC_WCCLS_820	# Ha! These heretics worship the big tree!
+		tooltip_info = zealous
+		
+		tooltip = { plant_world_tree_effect = yes }
+	}
+	option = {
+		trigger = {
+			evil_true_religion_trigger = no
+			NOT = { true_religion_group = druidism_group }
+			trait = cynical
+		}
+		name = EVTOPTD_WCCLS_820	# Meh... nothing special, one spark and...
+		tooltip_info = cynical
+		
+		tooltip = { plant_world_tree_effect = yes }
+	}
+
+	after = {
+		hidden_effect = {
+			if = {
+				limit = { character = event_target:target_druid }
+				plant_world_tree_effect = yes
+			}
+		}
+	}
+}
+# Notification that failed
+character_event = {
+	id = WCCLS.821
+	desc = EVTDESC_WCCLS_821
+	picture = GFX_evt_world_tree
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	option = {
+		name = ALAS
+
+		if = {
+			limit = { character = event_target:target_druid }
+			wealth = 500
+			piety = 2500
+		}
 	}
 }
 
@@ -2298,7 +2557,7 @@ character_event = {
 	border = GFX_event_normal_frame_intrigue
 
 	is_triggered_only = yes
-	
+
 	option = {
 		name = EXCELLENT
 	}
@@ -2512,14 +2771,15 @@ character_event = {
 			female = no
 			dynasty = none
 			culture = nraqi religion = ROOT secret_religion = ROOT
-			trait = creature_nraqi
 			trait = cruel
 			random_traits = yes
 			age = 300
-			trait = being_void
+			flag = race_delay_flag
 		}
 		new_character = {
 			save_event_target_as = target_nraqi
+
+			character_event = { id = WCRAC.10 }		# Adds race traits
 
 			remove_education_effect = yes
 			random_list = {
@@ -4158,6 +4418,15 @@ character_event = {
 			learning = 30
 		}
 		modifier = {
+			factor = 0.75
+			OR = {
+				has_focus = focus_intrigue
+				
+				has_focus = focus_scholarship
+				has_focus = focus_theology
+			}
+		}
+		modifier = {
 			factor = 0.5
 			trait = diligent
 		}
@@ -4282,6 +4551,15 @@ character_event = {
 		modifier = {
 			factor = 0.75
 			martial = 30
+		}
+		modifier = {
+			factor = 0.75
+			OR = {
+				has_focus = focus_intrigue
+				
+				has_focus = focus_hunting
+				has_focus = focus_war
+			}
 		}
 		modifier = {
 			factor = 0.5
