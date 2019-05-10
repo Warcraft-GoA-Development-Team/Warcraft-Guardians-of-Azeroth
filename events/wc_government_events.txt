@@ -155,15 +155,86 @@ character_event = {
 	}
 }
 
-# Starts patrician election every 10 years
+### Starts patrician election every 10 years ###
+# Starts election in 1 year, sends notification to patricians
 character_event = {
-	id = WCGOV.8000
+	id = WCGOV.7990
 	
 	is_triggered_only = yes
 	hide_window = yes
 	
 	only_playable = yes
 	is_patrician = yes
+	
+	trigger = {
+		is_merchant_republic = yes
+		ruled_years = 8
+		
+		primary_title = { NOT = { has_title_flag = upcoming_elections_flag } }
+	}
+	
+	immediate = {
+		log = "WCGOV.7995 fired for [Root.GetBestName]"
+		primary_title = {
+			set_title_flag = upcoming_elections_flag
+			
+			save_event_target_as = target_republic
+		}
+		
+		capital_scope = { province_event = { id = WCGOV.7995 days = 365 } }
+		
+		# Notifications
+		character_event = { id = WCGOV.7992 }
+		any_vassal = {
+			limit = {
+				NOT = { character = ROOT }
+				
+				is_patrician = yes
+			}
+			character_event = { id = WCGOV.7992 }
+		}
+	}
+}
+# Notification of upcoming elections
+character_event = {
+	id = WCGOV.7992
+	desc = EVTDESC_WCGOV_7992
+	picture = GFX_evt_doge_republic
+	border = GFX_event_normal_frame_economy
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = INTERESTING
+	}
+}
+# Starts elections, delayer event
+province_event = {
+	id = WCGOV.7995
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
+		if = {
+			limit = {
+				event_target:target_republic = {
+					is_merchant_republic = yes
+					ruled_years = 8
+				}
+			}
+			event_target:target_republic = { holder_scope = { character_event = { id = WCGOV.8000 } } }
+		}
+		
+		event_target:target_republic = { clr_title_flag = upcoming_elections_flag }
+	}
+}
+# Starts elections, delayed event
+character_event = {
+	id = WCGOV.8000
+	
+	is_triggered_only = yes
+	hide_window = yes
 	
 	trigger = {
 		is_merchant_republic = yes
@@ -211,6 +282,7 @@ character_event = {
 		
 		recalc_succession = yes
 		
+		# Notifications
 		ROOT = { character_event = { id = WCGOV.8005 } }
 		event_target:target_new_doge = {
 			if = {
@@ -228,7 +300,7 @@ character_event = {
 		}
 	}
 }
-# Notification
+# Notification of held elections
 character_event = {
 	id = WCGOV.8005
 	desc = EVTDESC_WCGOV_8005
