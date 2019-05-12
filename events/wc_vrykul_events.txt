@@ -71,3 +71,219 @@ long_character_event = {
 		name = ALAS
 	}
 }
+
+### DRUST INCURSION EVENTS ###
+# Waycrest's spouse is sick - begin the Incursion
+character_event = {
+	id = WCVRK.100
+	
+	is_triggered_only = yes
+	only_playable = yes
+	hide_window = yes
+
+	trigger = {
+		is_untouchable_trigger = no
+
+		is_alive = yes
+		is_dying = no
+		is_adult = yes
+		is_incapable = no
+		prisoner = no
+		is_inaccessible_trigger = no
+		capital_scope = { de_jure_liege_or_above = d_drustwar }
+    
+		OR = {
+			is_feudal = yes
+			is_tribal = yes
+		}
+
+		NOT = { has_global_flag = drust_incursion_happened_flag }
+		NOT = { has_character_flag = drust_incursion_declined_flag }
+    
+		can_be_undead_trigger = yes
+		dark_public_religion_trigger = no
+		dark_true_religion_trigger = no
+		
+		trigger_if = {
+			limit = { is_female = no }
+			character_disease_trigger = yes
+		}
+    
+		spouse = {
+			is_untouchable_trigger = no
+
+			is_alive = yes
+			is_dying = no
+			is_adult = yes
+			is_incapable = no
+			prisoner = no
+			is_inaccessible_trigger = no
+        
+			OR = {
+				is_ruler = no
+				is_feudal = yes
+				is_tribal = yes
+			}
+        
+			can_be_undead_trigger = yes
+			dark_public_religion_trigger = no
+			dark_true_religion_trigger = no
+        
+			trigger_if = {
+				limit = { is_female = no }
+				character_disease_trigger = yes
+			}
+		}
+	}
+	
+	immediate = {
+		set_global_flag = drust_incursion_happened_flag
+		if = {
+			limit = { is_female = no }
+			save_event_target_as = target_mothers_spouse
+		}
+		else = {
+			save_event_target_as = target_mother
+		}
+		spouse = {
+			if = {
+				limit = { is_female = no }
+				save_event_target_as = target_mothers_spouse
+			}
+			else = {
+				save_event_target_as = target_mother
+			}
+		}
+		
+		event_target:target_mother = { narrative_event = { id = WCVRK.110 } }
+	}
+}
+
+#Gorak Tul contacts the grief-stricken spouse
+narrative_event = {
+	id = WCVRK.110
+	desc = EVTDESC_WCVRK_110
+	picture = GFX_evt_kvaldir
+	border = GFX_event_long_frame_war
+	
+	is_triggered_only = yes
+	
+	immediate = {
+		log = "WCVRK.110 fired for [Root.GetBestName]"
+		if = {
+			limit = {
+				any_child = {
+					is_adult = yes
+					is_incapable = no
+					prisoner = no
+					is_inaccessible_trigger = no
+            
+					is_ruler = no	# ...since she's gonna become head of holy order
+					is_dark_being_trigger = no
+					dark_public_religion_trigger = no
+					dark_true_religion_trigger = no
+				}
+			}
+			random_child = {
+				limit = {
+					is_adult = yes
+					is_incapable = no
+					prisoner = no
+					is_inaccessible_trigger = no
+            
+					is_ruler = no	# ...since she's gonna become head of holy order
+					is_dark_being_trigger = no
+					dark_public_religion_trigger = no
+					dark_true_religion_trigger = no
+				}
+				save_event_target_as = target_ooe_founder
+				religion = holy_light
+			}
+		}
+		else = {
+			create_character = {
+				random_traits = yes
+				dynasty = none
+				religion = holy_light
+				culture = tirassian
+				female = yes
+				age = 26
+				attributes = {
+					martial = 7
+				}
+				trait = creature_human
+				trait = brilliant_strategist
+				trait = class_paladin_7
+			}
+			new_character = {
+				save_event_target_as = target_ooe_founder
+			}
+		}
+		event_target:target_ooe_founder = { narrative_event = { id = WCVRK.120 days = 1} }
+		#event_target:target_mother = { narrative_event = { id = WCVRK.140 days = 1} }
+	}
+
+	# Not even death will do us part
+	option = {
+		name = EVTOPTA_WCVRK_110
+		event_target:target_mother = {
+				add_trait = being_undead
+				remove_trait = creature_human
+				add_trait = creature_banshee
+				set_graphical_culture = human_undead
+				religion = throssian
+		}
+		event_target:target_mothers_spouse = {
+				add_trait = being_undead
+				remove_trait = creature_human
+				add_trait = creature_plague_eruptor
+				set_graphical_culture = human_undead
+				religion = throssian
+		}
+		ai_chance = {
+			factor = 1
+		}
+	}
+		
+	# NO!
+	option = {
+		name = EVTOPTB_WCVRK_110
+
+		clr_global_flag = drust_incursion_happened_flag
+		set_character_flag = drust_incursion_declined_flag
+
+		custom_tooltip = {
+			text = stops_the_event_chain
+		}
+
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+
+#The Order of Embers
+narrative_event = {
+	id = WCVRK.120
+	desc = EVTDESC_WCVRK_120
+	picture = GFX_evt_kvaldir
+	border = GFX_event_long_frame_war
+	
+	major = yes
+	
+	is_triggered_only = yes
+	
+	immediate = {
+		log = "WCTHW.120 fired for [Root.GetBestName]"
+		activate_title = { title = d_order_of_embers status = yes }
+		d_order_of_embers = { grant_title = event_target:target_ooe_founder }
+		event_target:target_ooe_founder = { 
+			wealth = 500
+			#character_event = { id = WCVRK.130 }
+		}
+	}
+	
+	option = {
+		name = EVTOPTA_WCVRK_120
+	}
+}
