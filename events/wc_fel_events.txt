@@ -27,28 +27,32 @@ character_event = {
 	hide_new = yes
 
 	trigger = {
-		OR = {
-			AND = {
-				NOR = {
-					has_character_modifier = fel_corruption_1
-					has_character_modifier = fel_corruption_2
-					trait = being_demon
-				}
-				check_variable = { which = fel_corruption value = 33 }
-			}
-			AND = {
-				NOR = {
-					has_character_modifier = fel_corruption_2
-					trait = being_demon
-				}
-				check_variable = { which = fel_corruption value = 66 }
-			}
-			AND = {
-				NOT = { trait = being_undead }
-				NOT = { trait = being_demon }
-				check_variable = { which = fel_corruption value = 100 }
+		NOT = { has_character_flag = fel_stage_add_flag }
+		
+		check_variable = { which = fel_corruption value = 33 }
+		trigger_if = {
+			limit = { check_variable = { which = fel_corruption value = 100 } }
+			NOT = { trait = being_demon }
+		}
+		trigger_else_if = {
+			limit = { check_variable = { which = fel_corruption value = 66 } }
+			NOR = {
+				has_character_modifier = fel_corruption_2
+				trait = being_demon
 			}
 		}
+		trigger_else = {
+			NOR = {
+				has_character_modifier = fel_corruption_1
+				has_character_modifier = fel_corruption_2
+				trait = being_demon
+			}
+		}
+	}
+	
+	immediate = {
+		# Used to prevent twice firing of event
+		set_character_flag = fel_stage_add_flag
 	}
 
 	option = {
@@ -93,6 +97,10 @@ character_event = {
 		}
 		set_demon_gfx_effect = yes
 	}
+	
+	after = {
+		clr_character_flag = fel_stage_add_flag
+	}
 }
 
 # Moves on to the previous stage of fel corruption
@@ -107,16 +115,24 @@ character_event = {
 	hide_new = yes
 
 	trigger = {
-		OR = {
-			AND = {
+		NOT = { has_character_flag = fel_stage_remove_flag }
+		
+		NOT = { check_variable = { which = fel_corruption value = 66 } }
+		trigger_if = {
+			limit = { NOT = { check_variable = { which = fel_corruption value = 33 } } }
+			OR = {
 				has_character_modifier = fel_corruption_1
-				NOT = { check_variable = { which = fel_corruption value = 33 } }
-			}
-			AND = {
 				has_character_modifier = fel_corruption_2
-				NOT = { check_variable = { which = fel_corruption value = 66 } }
 			}
 		}
+		trigger_else = {
+			has_character_modifier = fel_corruption_2
+		}
+	}
+	
+	immediate = {
+		# Used to prevent twice firing of event
+		set_character_flag = fel_stage_remove_flag
 	}
 
 	option = {
@@ -132,6 +148,10 @@ character_event = {
 		# Modifiers
 		remove_fel_corruption_modifiers_effect = yes
 		add_fel_corruption_modifier_effect = yes
+	}
+	
+	after = {
+		clr_character_flag = fel_stage_remove_flag
 	}
 }
 
@@ -891,6 +911,10 @@ narrative_event = {
 	is_triggered_only = yes
 
 	major = yes
+	major_trigger = {
+		ai = no
+	}
+	show_root = yes
 
 	immediate = {
 		73 = { province_event = { id = WCTHW.50 } } # When shit happens, Medivh tries to fix it
@@ -1000,7 +1024,12 @@ narrative_event = {
 	border = GFX_event_narrative_frame_war
 
 	is_triggered_only = yes
+	
 	major = yes
+	major_trigger = {
+		ai = no
+	}
+	show_root = yes
 
 	immediate = {
 		activate_title = { title = e_burning_legion status = no }

@@ -539,15 +539,15 @@ show_close_people_what_this_become_effect = {
 				num_of_friends = 1
 				num_of_lovers = 1
 				has_children = yes
-				father = { always = yes }
-				mother = { always = yes }
+				father = { character = yes }
+				mother = { character = yes }
 				is_ruler = yes
 				has_job_title = yes
 				has_minor_title = yes
 			}
 			OR = {
 				NOT = { has_character_flag = show_what_become_cooldown_flag }
-				had_character_flag = { flag = show_what_become_cooldown_flag days = 30 }
+				had_character_flag = { flag = show_what_become_cooldown_flag days = 365 }
 			}
 		}
 		set_character_flag = show_what_become_cooldown_flag
@@ -555,14 +555,16 @@ show_close_people_what_this_become_effect = {
 			limit = {
 				NOT = { character = event_target:target_necromancer }	# This character turned THIS, so it already know
 			}
-			character_event = { id = WCDAC.150 days = 5 }
+			set_notification_type_of_prev_effect = yes
+			character_event = { id = WCDAC.150 }
 		}
 		any_friend = {
 			limit = {
 				NOT = { character = event_target:target_necromancer }	# This character turned THIS, so it already know
 				NOT = { is_married = PREV }
 			}
-			character_event = { id = WCDAC.150 days = 5 }
+			set_notification_type_of_prev_effect = yes
+			character_event = { id = WCDAC.150 }
 		}
 		any_lover = {
 			limit = {
@@ -570,7 +572,8 @@ show_close_people_what_this_become_effect = {
 				NOT = { is_married = PREV }
 				NOT = { is_friend = PREV }
 			}
-			character_event = { id = WCDAC.150 days = 5 }
+			set_notification_type_of_prev_effect = yes
+			character_event = { id = WCDAC.150 }
 		}
 		any_close_relative = {
 			limit = {
@@ -579,7 +582,8 @@ show_close_people_what_this_become_effect = {
 				NOT = { is_friend = PREV }
 				NOT = { is_lover = PREV }
 			}
-			character_event = { id = WCDAC.150 days = 5 }
+			set_notification_type_of_prev_effect = yes
+			character_event = { id = WCDAC.150 }
 		}
 		if = {		# ...liege is almost your family
 			limit = {
@@ -598,8 +602,31 @@ show_close_people_what_this_become_effect = {
 					NOT = { is_close_relative = PREV }
 				}
 			}
-			liege = { character_event = { id = WCDAC.150 days = 5 } }
+			liege = {
+				set_notification_type_of_prev_effect = yes
+				character_event = { id = WCDAC.150 }
+			}
 		}
+	}
+	clear_flags_with_prefix = show_notification_
+}
+# Copy notification type of PREV
+set_notification_type_of_prev_effect = {
+	if = {
+		limit = { PREV = { has_character_flag = show_notification_undead_flag } }
+		set_character_flag = show_notification_undead_flag
+	}
+	else_if = {
+		limit = { PREV = { has_character_flag = show_notification_demon_flag } }
+		set_character_flag = show_notification_demon_flag
+	}
+	else_if = {
+		limit = { PREV = { has_character_flag = show_notification_void_flag } }
+		set_character_flag = show_notification_void_flag
+	}
+	else_if = {
+		limit = { PREV = { has_character_flag = show_notification_worgen_flag } }
+		set_character_flag = show_notification_worgen_flag
 	}
 }
 
@@ -653,6 +680,7 @@ become_intelligent_worget_effect = {
 	add_trait = worgen
 	hidden_effect = {
 		# Notifies your family/spouse/friends/lovers
+		set_character_flag = show_notification_worgen_flag	# Type of notification
 		show_close_people_what_this_become_effect = yes
 	}
 }
@@ -663,6 +691,7 @@ become_mindless_worgen_effect = {
 		character_event = { id = WCDRU.1000 days = 60 }			# Mindless worgen events
 
 		# Notifies your family/spouse/friends/lovers
+		set_character_flag = show_notification_worgen_flag	# Type of notification
 		show_close_people_what_this_become_effect = yes
 	}
 }
@@ -1450,7 +1479,29 @@ cancel_pregnancy_effect = {
 		limit = {
 			is_pregnant = yes
 		}
-		if = { limit = { trait = hard_pregnancy } remove_trait = hard_pregnancy }
+		hidden_effect = {
+			remove_trait = pregnancy_finishing
+			remove_trait = in_hiding
+			remove_trait = travelling
+			remove_character_modifier = mother_praying_health
+			remove_character_modifier = mother_resting_health
+			remove_character_modifier = mother_partying_health
+			clr_character_flag = mother_asked_retirement 
+			clr_character_flag = flag_mother_dark_rest
+			clr_character_flag = mother_gossip_listening #Safety check, they should already have been removed
+			clr_character_flag = mother_gossip_talking
+			clr_character_flag = mother_gossip_trusting
+			clr_character_flag = mother_gossip_plotting
+			clr_character_flag = mother_gossip_envious
+			clr_character_flag = mother_gossip_shy
+			clr_character_flag = mother_gossip_learning
+			clr_character_flag = mother_gossip_content
+			clr_character_flag = mother_gossip_gluttonous
+			remove_trait = hard_pregnancy
+
+			character_event = { id = HFP.20597 days = 35 } #Clears persistent Physician targets. They are still on on_birth since post-partum complications may require their services.
+		}
+		
 		if = { limit = { trait = pregnant } remove_trait = pregnant }
 		cancel_pregnancy = yes
 	}
@@ -1859,8 +1910,9 @@ burn_world_tree_effect = {
 	}
 }
 
-# Give claim if title holder is player or title if holder is AI
-give_claim_or_title_to_prevprev_effect = {
+### These effects are used to give lands to event_target:target_settler
+# Give claim to event_target:target_settler if title holder is player or title if holder is AI
+give_claim_or_title_to_target_settler_effect = {
 	if = {
 		limit = {
 			holder_scope = {
@@ -1870,10 +1922,186 @@ give_claim_or_title_to_prevprev_effect = {
 				}
 			}
 		}
-		add_pressed_claim = PREVPREV
+		add_pressed_claim = event_target:target_settler
 	}
 	else = {
-		grant_title_no_opinion = PREVPREV
+		grant_title_no_opinion = event_target:target_settler
+	}
+}
+# target_settler build new holding or usurp existing one
+build_or_give_holding_to_target_settler_effect = {
+	hidden_effect = {
+		if = {
+			limit = { NOT = { num_of_max_settlements = 7 } }
+			add_holding_slot = 1
+		}
+		if = {
+			limit = { has_empty_holding = yes }
+			if = {
+				limit = { event_target:target_settler = { has_character_flag = prefer_temples_flag } }
+				build_holding = { type = temple holder = event_target:target_settler }
+			}
+			else_if = {
+				limit = { event_target:target_settler = { has_character_flag = prefer_cities_flag } }
+				build_holding = { type = city holder = event_target:target_settler }
+			}
+			else = {
+				build_holding = { type = castle holder = event_target:target_settler }
+			}
+		}
+		else = {	# In case when new holding can't be created give just something to save from game over
+			random_province_holding = {
+				limit = { is_capital = no }
+				preferred_limit = {
+					holding_type = temple
+					event_target:target_settler = { has_character_flag = prefer_temples_flag }
+				}
+				preferred_limit = {
+					holding_type = city
+					event_target:target_settler = { has_character_flag = prefer_cities_flag }
+				}
+				preferred_limit = {
+					holding_type = castle
+				}
+				grant_title_no_opinion = event_target:target_settler
+			}
+		}
+	}
+}
+# Upgrade tribal if there's one as target_settler prefer
+upgrade_province_as_target_settler_effect = {
+	if = {
+		limit = { any_province_holding = { holding_type = tribal } }
+		random_province_holding = {
+			limit = { holding_type = tribal }
+			make_capital_holding = yes
+			if = {
+				limit = { event_target:target_settler = { has_character_flag = prefer_temples_flag } }
+				convert_tribal_to_temple_effect = yes
+			}
+			else_if = {
+				limit = { event_target:target_settler = { has_character_flag = prefer_cities_flag } }
+				convert_tribal_to_city_effect = yes
+			}
+			else = {
+				convert_tribal_to_castle_effect = yes
+			}
+		}
+	}
+}
+# target_settler and its people settle here
+settle_as_target_settler_effect = {
+	if = {
+		limit = { holder_scope = { NOT = { character = event_target:target_settler } } }
+
+		location = {
+			show_scope_change = no
+			
+			# event_target:target_settler build new holding or usurp existing one
+			build_or_give_holding_to_target_settler_effect = yes
+		}
+		
+		# Give claim to event_target:target_settler if title holder is player or title if holder is AI
+		give_claim_or_title_to_target_settler_effect = yes
+		
+		location = {
+			show_scope_change = no
+			
+			# Upgrade tribal if there's one
+			upgrade_province_as_target_settler_effect = yes
+		
+			culture = event_target:target_settler
+			religion = event_target:target_settler
+		}
+		
+		# Used in scripted effects
+		set_title_flag = new_title_flag	# Note: this flag isn't removed
+	}
+}
+clear_settler_flag_effect = {
+	hidden_effect = {
+		event_target:target_settler = {
+			clr_character_flag = prefer_temples_flag
+			clr_character_flag = prefer_cities_flag
+		}
+	}
+}
+# If you're not independent ruler, gives old titles to liege
+give_old_titles_to_liege_effect = {
+	hidden_effect = {
+		if = {
+			limit = {
+				is_ruler = yes
+				independent = no
+			}
+		}
+		liege = { save_event_target_as = target_liege }
+		any_vassal = {
+			limit = { dejure_liege_title = { NOT = { has_title_flag = new_title_flag } } }
+			set_defacto_liege = event_target:target_liege
+		}
+		any_demesne_title = {
+			limit = {
+				lower_tier_than = DUKE
+				NOT = { has_title_flag = new_title_flag }
+				trigger_if = {
+					limit = { tier = BARON }
+					county = { NOT = { has_title_flag = new_title_flag } }
+				}
+			}
+			grant_title_no_opinion = event_target:target_liege
+			if = {
+				limit = { tier = COUNT }
+				location = {
+					culture = event_target:target_liege
+					religion = event_target:target_liege
+				}
+			}
+		}
+		clear_event_target = target_liege
+		
+		set_defacto_liege = THIS
+	}
+}
+# Declares war against player
+target_settler_declare_war_effect = {
+	hidden_effect = {
+		if = {
+			limit = {
+				holder_scope = {
+					NOT = { character = event_target:target_settler }
+					top_liege = { NOT = { character = event_target:target_settler } }
+				}
+			}
+			holder_scope = {
+				top_liege = {
+					# If has 2 or more claims, claims all
+					if = {
+						limit = {
+							event_target:target_velen = {
+								total_claims = {
+									who = PREV
+									strong = yes
+									value = 2
+								}
+							}
+						}
+						reverse_unsafe_war = {
+							target = event_target:target_settler
+							casus_belli = claim_all
+							thirdparty_title = THIS
+						}
+					}
+					else = {
+						reverse_unsafe_war = {
+							target = event_target:target_settler
+							casus_belli = claim
+							thirdparty_title = PREVPREV
+						}
+					}
+				}
+			}
+		}
 	}
 }
 
