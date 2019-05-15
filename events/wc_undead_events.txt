@@ -32,6 +32,8 @@ province_event = {
 			# Used in scripted effects
 			save_event_target_as = target_province_holder
 			save_event_target_as = target_settler
+			
+			set_global_flag = lich_king_happened
 
 			wealth = 1000
 			prestige = 1000
@@ -54,29 +56,29 @@ province_event = {
 				}
 			}
 			d_skalmarnes = {
-				any_direct_de_jure_vassal_title = {
-					location = { convert_to_target_undead_province_effect = yes }
+					any_direct_de_jure_vassal_title = {
+						location = { convert_to_target_undead_province_effect = yes }
 				
 					# event_target:target_settler and its people settle here
 					settle_as_target_settler_effect = yes
+					}
 				}
-			}
 			d_silentreach = {
 				any_direct_de_jure_vassal_title = {
-					location = { convert_to_target_undead_province_effect = yes }
+						location = { convert_to_target_undead_province_effect = yes }
 				
 					# event_target:target_settler and its people settle here
 					settle_as_target_settler_effect = yes
+					}
 				}
-			}
 			d_dragonwastes = {
 				any_direct_de_jure_vassal_title = {
-					location = { convert_to_target_undead_province_effect = yes }
+						location = { convert_to_target_undead_province_effect = yes }
 				
 					# event_target:target_settler and its people settle here
 					settle_as_target_settler_effect = yes
+					}
 				}
-			}
 			d_snowdrift = {
 				any_direct_de_jure_vassal_title = {
 					location = { convert_to_target_undead_province_effect = yes }
@@ -96,7 +98,7 @@ province_event = {
 			spawn_scourge_troops_effect = yes
 			spawn_scourge_troops_effect = yes
 			spawn_scourge_troops_effect = yes
-			
+
 			c_icecrown = {
 				# Declares war against player
 				target_settler_declare_war_effect = yes
@@ -2464,5 +2466,71 @@ character_event = {
 
 	immediate = {
 		death = { death_reason = death_missing }
+	}
+}
+
+# If character isn't a dark worshipper, converts to the necromantic religions
+character_event = {
+	id = WCUND.1301
+	desc = EVTDESC_WCUND_1301
+	picture = GFX_evt_cemetery
+
+	is_triggered_only = yes
+
+	trigger = {
+		NOT = { has_character_flag = necromancy_group_switch_flag }
+		
+		dark_true_religion_trigger = no
+		NOT = { true_religion_group = loa_group }		# Because of Bwonsamdi
+	}
+	
+	immediate = {
+		set_character_flag = necromancy_group_switch_flag
+	}
+
+	# I'll serve the Lich King!
+	option = {
+		trigger = {
+			has_global_flag = lich_king_happened
+		}
+		name = EVTOPTB_WCUND_1301
+
+		if = {
+			limit = {
+				OR = {
+					is_dark_being_trigger = yes
+					liege = { religion = death_god }
+				}
+			}
+			if = { limit = { has_secret_religion = yes } clear_secret_religion = yes }
+			religion = death_god
+		}
+		else = { set_secret_religion = death_god }
+
+		ai_chance = {
+			factor = 40
+			modifier = {
+				factor = 2.25
+				has_impious_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.75
+				has_evil_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.75
+				has_unpleasant_trait_trigger = yes
+			}
+		}
+	}
+	
+	option = {
+		name = I_WILL_NOT_BETRAY_RELIGION
+		
+		piety = -100
+		
+		ai_chance = {
+			factor = 0
+		}
 	}
 }
