@@ -757,6 +757,9 @@ narrative_event = {
 	is_triggered_only = yes
 
 	major = yes
+	major_trigger = {
+		ai = no
+	}
 	show_root = yes
 
 	immediate = {
@@ -812,6 +815,9 @@ narrative_event = {
 	is_triggered_only = yes
 
 	major = yes
+	major_trigger = {
+		ai = no
+	}
 	hide_from = yes
 	hide_new = yes
 
@@ -1099,24 +1105,38 @@ province_event = {
 				trait = mastermind_theologian
 				trait = class_shadow_priest_10
 				trait = scholar trait = quick trait = cruel trait = deceitful
-				random_traits = yes
+				random_traits = no
 				age = 300
 				trait = being_void
 			}
 			new_character = {
-				k_ahnqiraj = {
+				# Used in scripted effects
+				save_event_target_as = target_settler
+				
+				d_ahnqiraj = {
 					any_direct_de_jure_vassal_title = {
-						any_direct_de_jure_vassal_title = {
-							usurp_title_plus_barony_if_unlanded_and_vassals = { target = PREVPREVPREV type = claim }
-							location = {
-								culture = PREVPREVPREVPREV
-								religion = PREVPREVPREVPREV
-							}
-						}
+						# event_target:target_settler and its people settle here
+						settle_as_target_settler_effect = yes
 					}
 				}
-				activate_title = { title = e_ahnqiraj status = yes }
-				e_ahnqiraj = { gain_title = PREV }
+				
+				if = {
+					limit = { is_government_potential = black_pact_government }
+					set_government_type = black_pact_government
+				}
+				
+				e_ahnqiraj = {
+					destroy_landed_title = THIS
+					gain_title = PREV
+				}
+				
+				c_ahnqiraj = {
+					# Declares war against player
+					target_settler_declare_war_effect = yes
+				}
+				
+				clear_settler_flag_effect = yes
+
 				narrative_event = { id = WCVOD.1005 }
 			}
 		}
@@ -1133,6 +1153,10 @@ narrative_event = {
 	is_triggered_only = yes
 
 	major = yes
+	major_trigger = {
+		ai = no
+	}
+	show_root = yes
 
 	immediate = {
 		set_global_flag = reawakening_of_cthun_flag
@@ -1893,6 +1917,8 @@ character_event = {
 			}
 			10 = {
 				narrative_event = { id = WCVOD.10005 }	# The Ancient Creature
+			}
+			1 = {	# Small chance of nothing
 			}
 		}
 	}
