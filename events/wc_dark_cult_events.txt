@@ -179,7 +179,7 @@ character_event = {
 		}
 	}
 	option = {
-		trigger = { FROM = { is_unpleasant_creature_to_prev_trigger = yes } }
+		trigger = { is_unpleasant_creature_to_prev_trigger = yes }
 		name = {
 			trigger = {
 				OR = {
@@ -287,13 +287,9 @@ narrative_event = {
 	picture = GFX_evt_secret_ceremony
 
 	is_triggered_only = yes
+	hide_from = yes
 
 	major = yes
-	major_trigger = {
-		ai = no
-	}
-	# show_root = yes
-	hide_from = yes
 
 	option = {
 		trigger = {
@@ -990,10 +986,6 @@ narrative_event = {
 	border = GFX_event_narrative_frame_intrigue
 
 	is_triggered_only = yes
-	
-	immediate = {
-		add_trait = travelling
-	}
 
 	# I will fulfill the will of the Gods!
 	option = {
@@ -1149,42 +1141,72 @@ narrative_event = {
 	is_triggered_only = yes
 
 	immediate = {
-		# Used in scripted effects
-		save_event_target_as = target_settler
-		
 		religion = old_gods_worship
 		clear_event_target = yes
-		
-		remove_trait = travelling
-		
-		c_hivezora = {
-			# event_target:target_settler and its people settle here
-			settle_as_target_settler_effect = yes
-		}
-		
-		# If you're not independent ruler, gives old titles to liege
-		give_old_titles_to_liege_effect = yes
-		
-		d_crystalvale = {
+		k_silithus = {
 			any_direct_de_jure_vassal_title = {
-				# event_target:target_settler and its people settle here
-				settle_as_target_settler_effect = yes
+				any_direct_de_jure_vassal_title = {
+					limit = { holder_scope = { government = uncolonized_government } }
+					grant_title_no_opinion = PREVPREVPREV
+					location = {
+						culture = ROOT
+						religion = ROOT
+					}
+				}
 			}
 		}
-		d_scarab_wall = {
+		k_ahnqiraj = {
 			any_direct_de_jure_vassal_title = {
-				# event_target:target_settler and its people settle here
-				settle_as_target_settler_effect = yes
+				any_direct_de_jure_vassal_title = {
+					limit = { holder_scope = { government = uncolonized_government } }
+					grant_title_no_opinion = PREVPREVPREV
+					location = {
+						culture = ROOT
+						religion = ROOT
+					}
+				}
 			}
 		}
-		
-		c_hivezora = {
-			# Declares war against player
-			target_settler_declare_war_effect = yes
+		# If you're not independent ruler, gives your old titles to liege
+		if = {
+			limit = {
+				is_ruler = yes
+				independent = no
+			}
+			liege = {
+				ROOT = {
+					any_vassal = {
+						limit = {
+							capital_holding = {
+								NOR = {
+									de_jure_liege_or_above = k_silithus
+									de_jure_liege_or_above = k_ahnqiraj
+								}
+							}
+						}
+						set_defacto_liege = PREVPREV
+					}
+					any_demesne_title = {
+						limit = {
+							lower_tier_than = DUKE
+							NOR = {
+								de_jure_liege_or_above = k_silithus
+								de_jure_liege_or_above = k_ahnqiraj
+							}
+						}
+						grant_title_no_opinion = PREVPREV
+						if = {
+							limit = { tier = COUNT }
+							location = {
+								culture = PREVPREVPREV
+								religion = PREVPREVPREV
+							}
+						}
+					}
+				}
+			}
 		}
-		
-		clear_settler_flag_effect = yes
-		
+		set_defacto_liege = THIS
 		# Spawns army for start
 		capital_scope = {
 			ROOT = {
@@ -1213,10 +1235,8 @@ narrative_event = {
 
 		leave_society = yes
 		join_society_twilights_hammer_cult_effect = yes
-		hidden_effect = {
-			set_society_grandmaster = yes # Set character as Grand Master
-			add_society_currency_massive_effect = yes # Give the Grand Master a start-up capital to induct members
-		}
+		set_society_grandmaster = yes # Set character as Grand Master
+		add_society_currency_massive_effect = yes # Give the Grand Master a start-up capital to induct members
 
 		add_35_void_corruption_effect = yes
 
@@ -1242,13 +1262,9 @@ narrative_event = {
 	picture = GFX_evt_shadow_acolytes
 
 	is_triggered_only = yes
+	hide_from = yes
 
 	major = yes
-	major_trigger = {
-		ai = no
-	}
-	# show_root = yes
-	hide_from = yes
 
 	option = {
 		trigger = {
@@ -2417,7 +2433,7 @@ society_quest_event = {
 }
 
 # on_county_religion_change
-# Upgrades tribals, builds buildings when province is converted to evil religion
+# Gives modifier to province if province's converted to evil religion
 province_event = {
 	id = WCDAC.9990
 
@@ -2425,14 +2441,18 @@ province_event = {
 	hide_window = yes
 
 	trigger = {
-		OR = {
-			use_scourge_buildings_trigger = yes
-			use_legion_buildings_trigger = yes
-			use_shathyar_buildings_trigger = yes
-		}
+		evil_public_religion_trigger = yes
 	}
 
 	immediate = {
+		if = {
+			limit = { NOT = { has_province_modifier = unholy_architecture } }
+			if = {
+				limit = { holder_scope = { ai = yes } }
+				add_province_modifier = { name = unholy_architecture years = 5 }
+			}
+			else = { add_province_modifier = { name = unholy_architecture years = 3 } }
+		}
 		if = {
 			limit = {
 				any_province_holding = {
@@ -2442,57 +2462,6 @@ province_event = {
 			random_province_holding = {
 				limit = { holding_type = tribal }
 				convert_tribal_to_castle_effect = yes
-			}
-		}
-		any_province_holding = {
-			limit = {
-				OR = {
-					holding_type = castle
-					holding_type = city
-					holding_type = temple
-				}
-			}
-			if = {
-				limit = { ROOT = { use_scourge_buildings_trigger = yes } }
-				if = {
-					limit = { holding_type = castle }
-					build_scourge_castle_buildings_effect = yes
-				}
-				else_if = {
-					limit = { holding_type = city }
-					build_scourge_city_buildings_effect = yes
-				}
-				else = {
-					build_scourge_temple_buildings_effect = yes
-				}
-			}
-			else_if = {
-				limit = { ROOT = { use_legion_buildings_trigger = yes } }
-				if = {
-					limit = { holding_type = castle }
-					build_legion_castle_buildings_effect = yes
-				}
-				else_if = {
-					limit = { holding_type = city }
-					build_legion_city_buildings_effect = yes
-				}
-				else = {
-					build_legion_temple_buildings_effect = yes
-				}
-			}
-			else_if = {
-				limit = { ROOT = { use_shathyar_buildings_trigger = yes } }
-				if = {
-					limit = { holding_type = castle }
-					build_shathyar_castle_buildings_effect = yes
-				}
-				else_if = {
-					limit = { holding_type = city }
-					build_shathyar_city_buildings_effect = yes
-				}
-				else = {
-					build_shathyar_temple_buildings_effect = yes
-				}
 			}
 		}
 	}
