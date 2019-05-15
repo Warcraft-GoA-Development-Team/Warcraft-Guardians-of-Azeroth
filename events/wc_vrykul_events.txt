@@ -90,15 +90,14 @@ character_event = {
 		is_incapable = no
 		prisoner = no
 		is_inaccessible_trigger = no
-		capital_scope = { de_jure_liege_or_above = d_drustwar }
     
 		OR = {
 			is_feudal = yes
 			is_tribal = yes
 		}
 
-		NOT = { has_global_flag = drust_incursion_happened_flag }
-		NOT = { has_character_flag = drust_incursion_declined_flag }
+		NOT = { has_global_flag = heartsbane_coven_event_flag }
+		NOT = { has_character_flag = heartsbane_coven_declined_flag }
     
 		can_be_undead_trigger = yes
 		dark_public_religion_trigger = no
@@ -120,9 +119,9 @@ character_event = {
 			is_inaccessible_trigger = no
         
 			OR = {
-				is_ruler = no
 				is_feudal = yes
 				is_tribal = yes
+				is_ruler = no
 			}
         
 			can_be_undead_trigger = yes
@@ -134,10 +133,17 @@ character_event = {
 				character_disease_trigger = yes
 			}
 		}
+		
+		OR = {
+			has_landed_title = d_drustwar
+			spouse = {
+				has_landed_title = d_drustwar
+			}
+		}
 	}
 	
 	immediate = {
-		set_global_flag = drust_incursion_happened_flag
+		set_global_flag = heartsbane_coven_event_flag
 		if = {
 			limit = { is_female = no }
 			save_event_target_as = target_mothers_spouse
@@ -238,7 +244,7 @@ narrative_event = {
 			narrative_event = { id = WCVRK.111 }
 		}
 		event_target:target_ooe_founder = { 
-			narrative_event = { id = WCVRK.120 days = 1 } 
+			narrative_event = { id = WCVRK.120 } 
 		}
 		if = {
 			limit = { event_target:target_mother = { is_landed = yes } }
@@ -277,6 +283,35 @@ narrative_event = {
 				maintenance = no
 			}
 		}
+		if = {
+			limit = {
+				event_target:target_mother = {
+					de_facto_liege = event_target:target_mothers_spouse
+				}
+			}
+			event_target:target_mothers_spouse = {
+				set_defacto_liege = THIS
+			}
+		}
+		else_if = {
+			limit = {
+				event_target:target_mothers_spouse = {
+					de_facto_liege = event_target:target_mother
+				}
+			}
+			event_target:target_mother = {
+				set_defacto_liege = THIS
+			}
+		}
+		else = {
+			event_target:target_mother = {
+				set_defacto_liege = THIS
+			}
+			event_target:target_mothers_spouse = {
+				set_defacto_liege = THIS
+			}
+		}
+			
 		ai_chance = {
 			factor = 1
 		}
@@ -285,8 +320,8 @@ narrative_event = {
 	# I refuse
 	option = {
 		name = EVTOPTB_WCVRK_110
-		clr_global_flag = drust_incursion_happened_flag
-		set_character_flag = drust_incursion_declined_flag
+		clr_global_flag = heartsbane_coven_event_flag
+		set_character_flag = heartsbane_coven_declined_flag
 		custom_tooltip = {
 			text = stops_the_event_chain
 		}
@@ -301,7 +336,7 @@ narrative_event = {
 	}
 }
 
-#Ping the spouse
+#Ping the spouse (he never asked for this)
 narrative_event = {
 	id = WCVRK.111
 	title = EVTTITLE_WCVRK_111
@@ -378,29 +413,26 @@ narrative_event = {
 				}
 			}
 		}
-		# Declares war against Waycrest (wip)
-		3535 = {
+		# Declares war against the duchy of Drustvar
+		d_drustwar = {
 			holder_scope = {
-				top_liege = {
-					if = {
-						limit = {
-							is_untouchable_trigger = no
-
-							NOT = { religion = tidemother }
-							NOT = { true_religion = tidemother }
+				if = {
+					limit = {
+						OR = {
+							character = event_target:target_mother
+							character = event_target:target_mothers_spouse
 						}
-						ROOT = {
-							unsafe_war = {
-								target = PREV
-								casus_belli = claim
-								thirdparty_title = PREV
-							}
+					}
+					event_target:target_ooe_founder = {
+						unsafe_war = {
+							target = PREV
+							casus_belli = religious
+							thirdparty_title = PREVPREV
 						}
 					}
 				}
 			}
 		}
-		event_target:target_mother = { narrative_event = { id = WCVRK.130 days = 365 } }
 	}
 	
 	option = {
@@ -419,7 +451,7 @@ narrative_event = {
 	}
 }
 
-#Gorak Tul invades
+#Gorak Tul invades - triggered by decision
 narrative_event = {
 	id = WCVRK.130
 	title = EVTTITLE_WCVRK_130
@@ -436,112 +468,79 @@ narrative_event = {
 	
 	immediate = {
 		log = "WCTHW.130 fired for [Root.GetBestName]"
-		if = {
-			limit = {
-				d_drustwar = {
-					holder_scope = {
-						religion = throssian
+		set_global_flag = drust_incursion_happened
+		create_character = {
+			name = Gorak
+			dynasty = 70201
+			culture = drust
+			religion = throssian
+			attributes = {
+				martial=5 diplomacy=5 stewardship=5 intrigue=6 learning=6
+			}
+			trait=mastermind_theologian
+			trait=creature_vrykul
+			trait=class_necromancer_9
+			trait=cruel trait=patient trait=zealous trait=deceitful trait=being_undead
+			age = 500
+		}
+		new_character = {
+			save_event_target_as = target_gorak_tul
+			effect = {
+				set_graphical_culture = vrykul_undead
+			}
+		}
+		activate_title = { title = k_drustvar status = yes }
+		k_drustvar = { grant_title = event_target:target_gorak_tul }
+		c_fates_end = { grant_title = event_target:target_gorak_tul }
+		event_target:target_gorak_tul = { 
+			wealth = 1000
+			set_government_type = tribal_monarchy_government
+		}
+		3553 = {
+			ROOT = {
+				spawn_unit = {
+					owner = event_target:target_gorak_tul
+					province = PREV
+					home = PREV
+					troops = {
+						archers = { 2000 2000 }
+						light_infantry = { 3000 3000 }
+						heavy_infantry = { 3750 3750 }
+						light_cavalry = { 500 500 }
+						knights = { 750 750 }
 					}
+					cannot_inherit = no
+					attrition = 1.0
+					reinforces = yes
+					maintenance = no
 				}
-			}
-			create_character = {
-				name = Gorak
-				dynasty = 70201
-				culture = drust
-				religion = throssian
-				attributes = {
-					martial=5 diplomacy=5 stewardship=5 intrigue=6 learning=6
-				}
-				trait=mastermind_theologian
-				trait=creature_vrykul
-				trait=class_necromancer_9
-				trait=cruel trait=patient trait=zealous trait=deceitful trait=being_undead
-				age = 500
-			}
-			new_character = {
-				save_event_target_as = target_gorak_tul
-				effect = {
-					set_graphical_culture = vrykul_undead
-				}
-			}
-			activate_title = { title = k_drustvar status = yes }
-			k_drustvar = { grant_title = event_target:target_gorak_tul }
-			c_fates_end = { grant_title = event_target:target_gorak_tul }
-			event_target:target_gorak_tul = { 
-				wealth = 1000
-				set_government_type = tribal_monarchy_government
-			}
-			3553 = {
-				ROOT = {
-					spawn_unit = {
-						owner = event_target:target_gorak_tul
-						province = PREV
-						home = PREV
-						troops = {
-							archers = { 2000 2000 }
-							light_infantry = { 3000 3000 }
-							heavy_infantry = { 3750 3750 }
-							light_cavalry = { 500 500 }
-							knights = { 750 750 }
-						}
-						cannot_inherit = no
-						attrition = 1.0
-						reinforces = yes
-						maintenance = no
-					}
-				}
-			}
-			# make the d_drustwar owner change allegiance
-			if = {
-				limit = {
-					event_target:target_mother = {
-						is_landed = yes
-					}
-				}
-				d_drustwar = {
-					set_defacto_liege = k_drustvar
-				}
-			}
-			else = {
-				limit = {
-					event_target:target_mothers_spouse = {
-						is_landed = yes
-					}
-				}
-				d_drustwar = {
-					set_defacto_liege = k_drustvar
-				}
-			}
-			# Declares war against Kul Tiras (wip)
-			3526 = {
-				holder_scope = {
-					top_liege = {
-						if = {
-							limit = {
-								is_untouchable_trigger = no
-
-								NOT = { religion = throssian }
-								NOT = { true_religion = throssian }
-							}
-							event_target:target_gorak_tul = {
-								set_character_flag = event_war_exception_flag
-								unsafe_war = {
-									target = PREV
-									casus_belli = total_invasion
-									thirdparty_title = PREV
-								}
-							}
-						}
+				spawn_fleet = {
+					province = closest # closest sea zone
+					owner = ROOT
+					disband_on_peace = yes
+					troops = {
+						galleys = { 100 100 }
 					}
 				}
 			}
 		}
-		else = {
-			event_target:target_ooe_founder = { narrative_event = { id = WCVRK.131 } }
-			break = yes
+		# make the person that fired the decison a vassal of Gorak Tul
+		event_target:target_summoner_of_gorak = {
+			set_defacto_liege = k_drustvar
 		}
-			
-	}
+		# Declares war against Kul Tiras (wip)
+		k_kul_tiras = {
+			holder_scope = {
+                event_target:target_gorak_tul = {
+                    unsafe_war = {
+                        target = PREV
+                        casus_belli = invasion
+                        thirdparty_title = PREVPREV
+                    }
+                }
+            }
+        }
+	}		
 	
 	option = {
 		name = EVTOPTA_WCVRK_130
