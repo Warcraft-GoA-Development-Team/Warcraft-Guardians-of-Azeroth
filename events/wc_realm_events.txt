@@ -7,12 +7,12 @@ narrative_event = {
 	border = GFX_event_narrative_frame_diplomacy
 
 	is_triggered_only = yes
+	
 	major = yes
 	major_trigger = {
-		any_demesne_province = {
-			region = world_eastern_kingdoms
-		}
+		ai = no
 	}
+	show_root = yes
 
 	option = {
 		name = {
@@ -208,18 +208,49 @@ character_event = {
 	}
 }
 
-# Clears genocide modifiers if province has been conquered
+### Clears genocide modifiers if province has been conquered ###
+# on_siege_over_winner
 character_event = {
-	id = WCRLM.202
-
+	id = WCRLM.1200
+	
 	is_triggered_only = yes
 	hide_window = yes
+	
+	# only_playable = yes
+	
+	trigger = {
+		FROM = {
+			tier = BARON
+			is_capital = yes
 
-	only_playable = yes
-
+			location = {
+				OR = {
+					has_province_modifier = ongoing_genocide
+					has_province_modifier = ongoing_culling
+					has_province_modifier = spreading_of_death
+				}
+			}
+			holder_scope = { top_liege = { any_current_enemy = { character = ROOT } } }
+		}
+	}
+	
+	immediate = {
+		narrative_event = { id = WCRLM.202 }
+	}
+}
+# on_new_holder, on_new_holder_inheritance, on_new_holder_usurpation
+character_event = {
+	id = WCRLM.1201
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	# only_playable = yes
+	
 	trigger = {
 		FROM = {
 			tier = COUNT
+
 			location = {
 				OR = {
 					has_province_modifier = ongoing_genocide
@@ -229,6 +260,18 @@ character_event = {
 			}
 		}
 	}
+	
+	immediate = {
+		narrative_event = { id = WCRLM.202 }
+	}
+}
+character_event = {
+	id = WCRLM.202
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	# only_playable = yes
 
 	immediate = {
 		log = "WCRLM.202 fired for [Root.GetBestName]"
@@ -348,6 +391,8 @@ narrative_event = {
 				}
 				NOT = { true_religion = old_gods_worship }
 			}
+			
+			holder_scope = { top_liege = { any_current_enemy = { character = ROOT } } }
 		}
 	}
 

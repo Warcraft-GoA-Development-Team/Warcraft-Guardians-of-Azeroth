@@ -173,7 +173,7 @@ can_get_sick_trigger = {
 		trait = creature_dryad
 		trait = creature_frostnymph
 		is_uncursed_titanforged_trigger = yes
-		
+
 		trait = horse
 		trait = cat
 	}
@@ -477,7 +477,6 @@ is_aggressive_religion_trigger = {
 		religion = scarlet_light
 		religion = lightbound
 		religion = cult_of_hakkar
-		religion = throssian
 		religion_group = primitive_group
 		religion_group = vrykul_religion_group
 	}
@@ -1406,7 +1405,7 @@ has_race_trait_trigger = {
 		trait = creature_dryad
 		trait = creature_frostnymph
 		trait = creature_highborne
-		
+
 		# Infinite dragons
 		trait = creature_infinite_whelp
 		trait = creature_infinite_drake
@@ -1418,7 +1417,7 @@ has_race_trait_trigger = {
 		trait = creature_sethrak
 		trait = creature_titan_keeper
 		trait = creature_titan
-		
+
 		# Ancients
 		trait = creature_protector
 		trait = creature_ancient_war
@@ -1489,12 +1488,12 @@ has_prev_race_trigger = {
 		AND = { trait = creature_earthen 			PREV = { trait = creature_earthen 				} }
 		AND = { is_bronze_dragon_trigger = yes		PREV = { is_bronze_dragon_trigger = yes			} }
 		AND = { trait = creature_ice_giant 			PREV = { trait = creature_ice_giant 			} }
-		
+
 		AND = {
 			OR = { trait = creature_nraqi trait = creature_cthraxxi }
 			PREV = { OR = { trait = creature_nraqi trait = creature_cthraxxi } }
 		}
-		
+
 		AND = { trait = creature_night_elf 			PREV = { trait = creature_night_elf 			} }
 		AND = { trait = creature_tauren 			PREV = { trait = creature_tauren 				} }
 		AND = { trait = creature_centaur 			PREV = { trait = creature_centaur 				} }
@@ -1504,16 +1503,16 @@ has_prev_race_trigger = {
 		AND = { trait = creature_dryad 				PREV = { trait = creature_dryad 				} }
 		AND = { trait = creature_frostnymph 		PREV = { trait = creature_frostnymph 			} }
 		AND = { trait = creature_highborne			PREV = { trait = creature_highborne 			} }
-		
+
 		# Infinite Dragons
 		AND = { is_infinite_dragon_trigger = yes	PREV = { is_infinite_dragon_trigger = yes		} }
-		
+
 		AND = { trait = creature_old_god 			PREV = { trait = creature_old_god 				} }
 		AND = { trait = creature_vulpera 			PREV = { trait = creature_vulpera 				} }
 		AND = { trait = creature_sethrak 			PREV = { trait = creature_sethrak 				} }
 		AND = { trait = creature_titan_keeper 		PREV = { trait = creature_titan_keeper 			} }
 		AND = { trait = creature_titan 				PREV = { trait = creature_titan 				} }
-		
+
 		# Ancients
 		AND = { trait = creature_protector			PREV = { trait = creature_protector				} }
 		AND = { trait = creature_ancient_war		PREV = { trait = creature_ancient_war			} }
@@ -2084,7 +2083,7 @@ is_unpleasant_creature_to_prev_trigger = {
 					is_necromancer_class_trigger = no
 					is_shadow_priest_class_trigger = no
 					dark_true_religion_trigger = no
-					
+
 					trigger_if = {
 						limit = { is_ruler = yes }
 						NOR = {
@@ -2235,35 +2234,8 @@ has_access_to_powerful_source_of_magic_trigger = {
 		text = has_access_to_powerful_source_of_magic_tooltip
 		hidden_tooltip = {
 			OR = {
-				b_sunwell = {
-					OR = {
-						controlled_by = PREV
-						holder_scope = {
-							OR = {
-								character = PREVPREV
-								is_liege_or_above = PREVPREV
-							}
-						}
-					}
-					OR = {
-						has_building = tp_felwell
-						has_building = tp_voidwell
-						has_building = tp_sunwell
-						has_building = tp_sunwellcorrupted
-					}
-				}
+				has_wonder = wonder_sunwell
 				b_violet_citadel = {
-					OR = {
-						controlled_by = PREV
-						holder_scope = {
-							OR = {
-								character = PREVPREV
-								is_liege_or_above = PREVPREV
-							}
-						}
-					}
-				}
-				b_nexus = {
 					OR = {
 						controlled_by = PREV
 						holder_scope = {
@@ -2678,59 +2650,103 @@ prevs_title_can_has_laws_trigger = {
 	}
 }
 public_religion_associated_with_sunwell_trigger = {
-	OR = {
-		AND = {
+	trigger_if = {
+		limit = {
 			OR = {
 				religion_group = arcane_group
 				religion_group = light_group
 			}
-			b_sunwell = {
-				OR = {
-					has_building = tp_sunwell
-					has_building = tp_sunwell_light
+		}
+		394 = {
+			wonder = {
+				has_wonder = wonder_sunwell
+				NOR = {
+					has_wonder_flag = wonder_deathwell_flag
+					has_wonder_flag = wonder_felwell_flag
+					has_wonder_flag = wonder_voidwell_flag
 				}
 			}
 		}
-		AND = {
-			religion_group = necromancy_group
-			b_sunwell = { has_building = tp_sunwellcorrupted }
+	}
+	trigger_else_if = {
+		limit = { religion_group = necromancy_group }
+		394 = {
+			wonder = {
+				has_wonder = wonder_sunwell
+				has_wonder_flag = wonder_deathwell_flag
+			}
 		}
-		AND = {
-			religion_group = fel_group
-			b_sunwell = { has_building = tp_felwell }
+	}
+	trigger_else_if = {
+		limit = { religion_group = fel_group }
+		394 = {
+			wonder = {
+				has_wonder = wonder_sunwell
+				has_wonder_flag = wonder_felwell_flag
+			}
 		}
-		AND = {
-			religion_group = void_group
-			b_sunwell = { has_building = tp_voidwell }
+	}
+	trigger_else_if = {
+		limit = { religion_group = void_group }
+		394 = {
+			wonder = {
+				has_wonder = wonder_sunwell
+				has_wonder_flag = wonder_voidwell_flag
+			}
 		}
+	}
+	trigger_else = {
+		always = no
 	}
 }
 true_religion_associated_with_sunwell_trigger = {
-	OR = {
-		AND = {
+	trigger_if = {
+		limit = {
 			OR = {
 				true_religion_group = arcane_group
 				true_religion_group = light_group
 			}
-			b_sunwell = {
-				OR = {
-					has_building = tp_sunwell
-					has_building = tp_sunwell_light
+		}
+		394 = {
+			wonder = {
+				has_wonder = wonder_sunwell
+				NOR = {
+					has_wonder_flag = wonder_deathwell_flag
+					has_wonder_flag = wonder_felwell_flag
+					has_wonder_flag = wonder_voidwell_flag
 				}
 			}
 		}
-		AND = {
-			true_religion_group = necromancy_group
-			b_sunwell = { has_building = tp_sunwellcorrupted }
+	}
+	trigger_else_if = {
+		limit = { true_religion_group = necromancy_group }
+		394 = {
+			wonder = {
+				has_wonder = wonder_sunwell
+				has_wonder_flag = wonder_deathwell_flag
+			}
 		}
-		AND = {
-			true_religion_group = fel_group
-			b_sunwell = { has_building = tp_felwell }
+	}
+	trigger_else_if = {
+		limit = { true_religion_group = fel_group }
+		394 = {
+			wonder = {
+				has_wonder = wonder_sunwell
+				has_wonder_flag = wonder_felwell_flag
+			}
 		}
-		AND = {
-			true_religion_group = void_group
-			b_sunwell = { has_building = tp_voidwell }
+	}
+	trigger_else_if = {
+		limit = { true_religion_group = void_group }
+		394 = {
+			wonder = {
+				has_wonder = wonder_sunwell
+				has_wonder_flag = wonder_voidwell_flag
+			}
 		}
+	}
+	trigger_else = {
+		always = no
 	}
 }
 
@@ -2843,7 +2859,7 @@ is_ambitious_being_trigger = {
 	OR = {
 		trait = being_demon
 		trait = being_void
-		
+
 		trait = creature_troll
 		is_elf_trigger = yes
 		trait = creature_naga
@@ -2856,7 +2872,7 @@ is_arbitrary_being_trigger = {
 	OR = {
 		trait = being_demon
 		trait = being_void
-		
+
 		evil_public_religion_trigger = yes
 	}
 }
@@ -2865,7 +2881,7 @@ is_cruel_being_trigger = {
 	OR = {
 		trait = being_demon
 		trait = being_void
-		
+
 		evil_public_religion_trigger = yes
 	}
 }
@@ -2874,12 +2890,12 @@ is_cynical_being_trigger = {
 	OR = {
 		trait = being_demon
 		trait = being_void
-		
+
 		is_high_elf_trigger = yes
 		trait = creature_naga
 		trait = creature_nerubian
 		trait = creature_highborne
-		
+
 		dark_public_religion_trigger = yes
 	}
 }
@@ -2888,7 +2904,7 @@ is_deceitful_being_trigger = {
 	OR = {
 		trait = being_demon
 		trait = being_void
-		
+
 		evil_public_religion_trigger = yes
 	}
 }
@@ -2896,7 +2912,7 @@ is_deceitful_being_trigger = {
 is_gluttonous_being_trigger = {
 	OR = {
 		trait = creature_goblin
-		
+
 		religion = cult_of_wealth
 	}
 }
@@ -2905,9 +2921,9 @@ is_greedy_being_trigger = {
 	OR = {
 		trait = being_demon
 		trait = being_void
-		
+
 		trait = creature_goblin
-		
+
 		evil_public_religion_trigger = yes
 		religion = cult_of_wealth
 	}
@@ -2929,13 +2945,13 @@ is_proud_being_trigger = {
 	OR = {
 		trait = being_demon
 		trait = being_void
-		
+
 		trait = creature_troll
 		is_elf_trigger = yes
 		trait = creature_naga
 		trait = creature_nerubian
 		is_dragon_race_trigger = yes
-		
+
 		evil_public_religion_trigger = yes
 	}
 }
@@ -2944,7 +2960,7 @@ is_wroth_being_trigger = {
 	OR = {
 		trait = being_demon
 		trait = being_void
-		
+
 		evil_public_religion_trigger = yes
 	}
 }
@@ -3044,4 +3060,26 @@ frostwolf_exodus_d_frostwolf_trigger = {
 	religion_group = shamanism_group
 	
 	primary_title = { title = d_frostwolf }
+}
+
+# Such character can safely acquire new lands, change overlord, travel
+can_resettle_trigger = {
+	is_consort = no
+	
+	mercenary = no
+	holy_order = no
+	OR = {
+		is_ruler = no
+		AND = {
+			is_landed = yes
+			OR = {
+				is_feudal = yes
+				is_tribal = yes
+			}
+		}
+	}
+}
+
+is_demigod_trigger = {
+	trait = forest_demigod
 }
