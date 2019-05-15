@@ -1,7 +1,89 @@
 # Here you can find effects of magical corruption and magical creatures like demons, undead and void beings
 
 ### NECROMANCY ###
+set_undead_gfx_effect = {
+	if = {
+		limit = { has_undead_gfx_trigger = no }	# If you add new undead gfx, don't forget to add your gfx in this trigger
+		if = {
+			limit = { has_human_gfx_trigger = yes }
+			set_graphical_culture = human_undead
+		}
+		else_if = {
+			limit = {
+				OR = {
+					graphical_culture = murlocgfx
+					graphical_culture = murlocundeadgfx
+				}
+			}
+			set_graphical_culture = murloc_undead
+		}
+		else_if = {
+			limit = {
+				OR = {
+					graphical_culture = quilboargfx
+					graphical_culture = quilboarundeadgfx
+				}
+			}
+			set_graphical_culture = quilboar_undead
+		}
+		else_if = {
+			limit = { graphical_culture = vrykulgfx }
+			set_graphical_culture = vrykul_undead
+		}
+		else_if = {
+			limit = {
+				OR = {
+					graphical_culture = gnollgfx
+					graphical_culture = gnollundeadgfx
+				}
+			}
+			set_graphical_culture = gnoll_undead
+		}
+		# You're too ugly, sorry
+		# else = {
+			# set_graphical_culture = ghoul
+		# }
+	}
+}
+add_trait_undead_effect = {
+	# Undead children shall not pass
+	if = {
+		limit = { is_adult = no }
+		death = { death_reason = death_poor_health }
+	}
+	else = {
+		if = {
+			limit = { NOT = { trait = being_undead } }
+			add_trait = being_undead
+		}
+		# If you has secret religion, you reveal yourself
+		if = {
+			limit = { has_secret_religion = yes }
+			convert_to_secret_religion = yes
+		}
 
+		# Removes drunkard, diseases, negative genetic and weight
+		clean_dark_beings_effect = yes
+
+		set_undead_gfx_effect = yes
+
+		hidden_effect = {
+			if = {
+				limit = { has_character_flag = being_raised_flag }
+				clr_character_flag = being_raised_flag
+			}
+			
+			character_event = { id = WCUND.1301 days = 3 }		# Changes religion
+
+			# Pregnant shall not pass
+			cancel_pregnancy_effect = yes
+
+			# Notifies your family/spouse/friends/lovers
+			set_character_flag = show_notification_undead_flag	# Type of notification
+			show_close_people_what_this_become_effect = yes
+		}
+	}
+}
 
 ### FEL ###
 add_2_fel_corruption_effect = {

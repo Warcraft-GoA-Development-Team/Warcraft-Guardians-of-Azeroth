@@ -1336,87 +1336,6 @@ remove_3_mind_control_power_effect = {
 	character_event = { id = WCUND.1107 days = 1 }		# Decreases power of mind control
 }
 
-set_undead_gfx_effect = {
-	if = {
-		limit = { has_undead_gfx_trigger = no }	# If you add new undead gfx, don't forget to add your gfx in this trigger
-		if = {
-			limit = { has_human_gfx_trigger = yes }
-			set_graphical_culture = human_undead
-		}
-		else_if = {
-			limit = {
-				OR = {
-					graphical_culture = murlocgfx
-					graphical_culture = murlocundeadgfx
-				}
-			}
-			set_graphical_culture = murloc_undead
-		}
-		else_if = {
-			limit = {
-				OR = {
-					graphical_culture = quilboargfx
-					graphical_culture = quilboarundeadgfx
-				}
-			}
-			set_graphical_culture = quilboar_undead
-		}
-		else_if = {
-			limit = { graphical_culture = vrykulgfx }
-			set_graphical_culture = vrykul_undead
-		}
-		else_if = {
-			limit = {
-				OR = {
-					graphical_culture = gnollgfx
-					graphical_culture = gnollundeadgfx
-				}
-			}
-			set_graphical_culture = gnoll_undead
-		}
-		else = {
-			set_graphical_culture = ghoul
-		}
-	}
-}
-add_trait_undead_effect = {
-	# Undead children shall not pass
-	if = {
-		limit = { is_adult = no }
-		death = { death_reason = death_poor_health }
-	}
-	else = {
-		if = {
-			limit = { NOT = { trait = being_undead } }
-			add_trait = being_undead
-		}
-		# If you has secret religion, you reveal yourself
-		if = {
-			limit = { has_secret_religion = yes }
-			convert_to_secret_religion = yes
-		}
-
-		# Removes drunkard, diseases, negative genetic and weight
-		clean_dark_beings_effect = yes
-
-		set_undead_gfx_effect = yes
-
-		hidden_effect = {
-			if = {
-				limit = { has_character_flag = being_raised_flag }
-				clr_character_flag = being_raised_flag
-			}
-
-			# Pregnant shall not pass
-			cancel_pregnancy_effect = yes
-
-			# Notifies your family/spouse/friends/lovers
-			set_character_flag = show_notification_undead_flag	# Type of notification
-			show_close_people_what_this_become_effect = yes
-		}
-	}
-}
-
 free_from_lich_king_effect = {
 	if = {
 		limit = {
@@ -1991,8 +1910,9 @@ burn_world_tree_effect = {
 	}
 }
 
-# Give claim if title holder is player or title if holder is AI
-give_claim_or_title_to_prevprev_effect = {
+### These effects are used to give lands to event_target:target_settler
+# Give claim to event_target:target_settler if title holder is player or title if holder is AI
+give_claim_or_title_to_target_settler_effect = {
 	if = {
 		limit = {
 			holder_scope = {
@@ -2002,10 +1922,186 @@ give_claim_or_title_to_prevprev_effect = {
 				}
 			}
 		}
-		add_pressed_claim = PREVPREV
+		add_pressed_claim = event_target:target_settler
 	}
 	else = {
-		grant_title_no_opinion = PREVPREV
+		grant_title_no_opinion = event_target:target_settler
+	}
+}
+# target_settler build new holding or usurp existing one
+build_or_give_holding_to_target_settler_effect = {
+	hidden_effect = {
+		if = {
+			limit = { NOT = { num_of_max_settlements = 7 } }
+			add_holding_slot = 1
+		}
+		if = {
+			limit = { has_empty_holding = yes }
+			if = {
+				limit = { event_target:target_settler = { has_character_flag = prefer_temples_flag } }
+				build_holding = { type = temple holder = event_target:target_settler }
+			}
+			else_if = {
+				limit = { event_target:target_settler = { has_character_flag = prefer_cities_flag } }
+				build_holding = { type = city holder = event_target:target_settler }
+			}
+			else = {
+				build_holding = { type = castle holder = event_target:target_settler }
+			}
+		}
+		else = {	# In case when new holding can't be created give just something to save from game over
+			random_province_holding = {
+				limit = { is_capital = no }
+				preferred_limit = {
+					holding_type = temple
+					event_target:target_settler = { has_character_flag = prefer_temples_flag }
+				}
+				preferred_limit = {
+					holding_type = city
+					event_target:target_settler = { has_character_flag = prefer_cities_flag }
+				}
+				preferred_limit = {
+					holding_type = castle
+				}
+				grant_title_no_opinion = event_target:target_settler
+			}
+		}
+	}
+}
+# Upgrade tribal if there's one as target_settler prefer
+upgrade_province_as_target_settler_effect = {
+	if = {
+		limit = { any_province_holding = { holding_type = tribal } }
+		random_province_holding = {
+			limit = { holding_type = tribal }
+			make_capital_holding = yes
+			if = {
+				limit = { event_target:target_settler = { has_character_flag = prefer_temples_flag } }
+				convert_tribal_to_temple_effect = yes
+			}
+			else_if = {
+				limit = { event_target:target_settler = { has_character_flag = prefer_cities_flag } }
+				convert_tribal_to_city_effect = yes
+			}
+			else = {
+				convert_tribal_to_castle_effect = yes
+			}
+		}
+	}
+}
+# target_settler and its people settle here
+settle_as_target_settler_effect = {
+	if = {
+		limit = { holder_scope = { NOT = { character = event_target:target_settler } } }
+
+		location = {
+			show_scope_change = no
+			
+			# event_target:target_settler build new holding or usurp existing one
+			build_or_give_holding_to_target_settler_effect = yes
+		}
+		
+		# Give claim to event_target:target_settler if title holder is player or title if holder is AI
+		give_claim_or_title_to_target_settler_effect = yes
+		
+		location = {
+			show_scope_change = no
+			
+			# Upgrade tribal if there's one
+			upgrade_province_as_target_settler_effect = yes
+		
+			culture = event_target:target_settler
+			religion = event_target:target_settler
+		}
+		
+		# Used in scripted effects
+		set_title_flag = new_title_flag	# Note: this flag isn't removed
+	}
+}
+clear_settler_flag_effect = {
+	hidden_effect = {
+		event_target:target_settler = {
+			clr_character_flag = prefer_temples_flag
+			clr_character_flag = prefer_cities_flag
+		}
+	}
+}
+# If you're not independent ruler, gives old titles to liege
+give_old_titles_to_liege_effect = {
+	hidden_effect = {
+		if = {
+			limit = {
+				is_ruler = yes
+				independent = no
+			}
+		}
+		liege = { save_event_target_as = target_liege }
+		any_vassal = {
+			limit = { dejure_liege_title = { NOT = { has_title_flag = new_title_flag } } }
+			set_defacto_liege = event_target:target_liege
+		}
+		any_demesne_title = {
+			limit = {
+				lower_tier_than = DUKE
+				NOT = { has_title_flag = new_title_flag }
+				trigger_if = {
+					limit = { tier = BARON }
+					county = { NOT = { has_title_flag = new_title_flag } }
+				}
+			}
+			grant_title_no_opinion = event_target:target_liege
+			if = {
+				limit = { tier = COUNT }
+				location = {
+					culture = event_target:target_liege
+					religion = event_target:target_liege
+				}
+			}
+		}
+		clear_event_target = target_liege
+		
+		set_defacto_liege = THIS
+	}
+}
+# Declares war against player
+target_settler_declare_war_effect = {
+	hidden_effect = {
+		if = {
+			limit = {
+				holder_scope = {
+					NOT = { character = event_target:target_settler }
+					top_liege = { NOT = { character = event_target:target_settler } }
+				}
+			}
+			holder_scope = {
+				top_liege = {
+					# If has 2 or more claims, claims all
+					if = {
+						limit = {
+							event_target:target_velen = {
+								total_claims = {
+									who = PREV
+									strong = yes
+									value = 2
+								}
+							}
+						}
+						reverse_unsafe_war = {
+							target = event_target:target_settler
+							casus_belli = claim_all
+							thirdparty_title = THIS
+						}
+					}
+					else = {
+						reverse_unsafe_war = {
+							target = event_target:target_settler
+							casus_belli = claim
+							thirdparty_title = PREVPREV
+						}
+					}
+				}
+			}
+		}
 	}
 }
 
