@@ -25,23 +25,32 @@ character_event = {
 	hide_new = yes
 
 	trigger = {
-		OR = {
-			AND = {
-				NOR = {
-					has_character_modifier = void_corruption_1
-					has_character_modifier = void_corruption_2
-					trait = being_void
-				}
-				check_variable = { which = void_corruption value = 33 }
-			}
-			AND = {
-				NOR = {
-					has_character_modifier = void_corruption_2
-					trait = being_void
-				}
-				check_variable = { which = void_corruption value = 66 }
+		NOT = { has_character_flag = void_stage_add_flag }
+		
+		check_variable = { which = void_corruption value = 33 }
+		trigger_if = {
+			limit = { check_variable = { which = void_corruption value = 100 } }
+			NOT = { trait = being_void }
+		}
+		trigger_else_if = {
+			limit = { check_variable = { which = void_corruption value = 66 } }
+			NOR = {
+				has_character_modifier = void_corruption_2
+				trait = being_void
 			}
 		}
+		trigger_else = {
+			NOR = {
+				has_character_modifier = void_corruption_1
+				has_character_modifier = void_corruption_2
+				trait = being_void
+			}
+		}
+	}
+	
+	immediate = {
+		# Used to prevent twice firing of event
+		set_character_flag = void_stage_add_flag
 	}
 
 	option = {
@@ -88,6 +97,10 @@ character_event = {
 		}
 		character_event = { id = WCVOD.170 days = 3 }		# Changes religion
 	}
+	
+	after = {
+		clr_character_flag = void_stage_add_flag
+	}
 }
 # Moves on to the previous stage of void corruption
 character_event = {
@@ -101,16 +114,24 @@ character_event = {
 	hide_new = yes
 
 	trigger = {
-		OR = {
-			AND = {
-				has_character_modifier = void_corruption_2
-				NOT = { check_variable = { which = void_corruption value = 66 } }
-			}
-			AND = {
+		NOT = { has_character_flag = void_stage_remove_flag }
+		
+		NOT = { check_variable = { which = void_corruption value = 66 } }
+		trigger_if = {
+			limit = { NOT = { check_variable = { which = void_corruption value = 33 } } }
+			OR = {
 				has_character_modifier = void_corruption_1
-				NOT = { check_variable = { which = void_corruption value = 33 } }
+				has_character_modifier = void_corruption_2
 			}
 		}
+		trigger_else = {
+			has_character_modifier = void_corruption_2
+		}
+	}
+	
+	immediate = {
+		# Used to prevent twice firing of event
+		set_character_flag = void_stage_remove_flag
 	}
 
 	option = {
@@ -126,6 +147,10 @@ character_event = {
 		# Modifiers
 		remove_void_corruption_modifiers_effect = yes
 		add_void_corruption_modifier_effect = yes
+	}
+	
+	after = {
+		clr_character_flag = void_stage_remove_flag
 	}
 }
 
