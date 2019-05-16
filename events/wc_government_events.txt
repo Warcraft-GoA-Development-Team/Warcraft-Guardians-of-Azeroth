@@ -245,38 +245,34 @@ character_event = {
 		log = "WCGOV.8000 fired for [Root.GetBestName]"
 		primary_title = { save_event_target_as = target_republic }
 		
-		if = {
-			limit = { current_heir = { dynasty = ROOT } }
-			current_heir = {
-				save_event_target_as = target_new_doge
-				
-				wealth = ROOT
-				ROOT = {
-					clear_wealth = yes
-					abdicate_to = PREV
-					move_character = PREV
-				}
-			}
-		}
-		else = {
+		add_trait = secret_patrician
+		any_vassal = {
+			limit = { is_patrician = yes }
 			add_trait = secret_patrician
-			any_vassal = {
-				limit = { is_patrician = yes }
-				add_trait = secret_patrician
+		}
+		
+		hold_election = yes
+		
+		remove_trait = secret_patrician
+		
+		event_target:target_republic = { holder_scope = { save_event_target_as = target_new_doge } }
+		
+		if = {
+			limit = { dynasty = event_target:target_new_doge }
+			event_target:target_new_doge = { wealth = ROOT }
+			clear_wealth = yes
+			any_artifact = {
+				transfer_artifact = { from = ROOT to = event_target:target_new_doge }
 			}
-			
-			hold_election = yes
-			
-			remove_trait = secret_patrician
-			
-			event_target:target_republic = { holder_scope = { save_event_target_as = target_new_doge } }
+			abdicate_to = event_target:target_new_doge
+			move_character = event_target:target_new_doge
+		}
 
-			event_target:target_new_doge = {
+		event_target:target_new_doge = {
+			remove_trait = secret_patrician
+			any_vassal = {
+				limit = { trait = secret_patrician }
 				remove_trait = secret_patrician
-				any_vassal = {
-					limit = { trait = secret_patrician }
-					remove_trait = secret_patrician
-				}
 			}
 		}
 		
