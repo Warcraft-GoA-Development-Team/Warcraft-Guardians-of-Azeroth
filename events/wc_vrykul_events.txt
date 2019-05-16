@@ -490,6 +490,10 @@ narrative_event = {
 			effect = {
 				set_graphical_culture = vrykul_undead
 			}
+			create_bloodline = {
+				type = gorak_tul
+				has_dlc = "Holy Fury"
+			}
 		}
 		activate_title = { title = k_drustvar status = yes }
 		k_drustvar = { grant_title = event_target:target_gorak_tul }
@@ -542,6 +546,8 @@ narrative_event = {
                 }
             }
         }
+		# The Thornspeakers take action
+		narrative_event = { id = WCVRK.150 days = 7 } 
 	}		
 	
 	option = {
@@ -554,14 +560,18 @@ narrative_event = {
 	id = WCVRK.140
 	title = "EVTTITLE_WCVRK_140"
 	desc = "EVTDESC_WCVRK_140"
+
 	major = yes
+	major_triggger = {
+		ai = no
+	}
+	
+	religion = throssian
 	
 	picture = "GFX_evt_boralus_siege"
 	border = "GFX_event_narrative_frame_war"
 	
 	is_triggered_only = yes
-	
-	culture = drust
 	
 	trigger = {
 		NOT = { has_global_flag = drust_sack_boralus }
@@ -602,7 +612,7 @@ narrative_event = {
 					top_liege = { has_landed_title = k_drustvar }
 				}
 			}
-			narrative_event = { id = WCVRK.140 }
+			narrative_event = { id = WCVRK.141 }
 		}
 		3526 = {
 			add_max_depopulation_effect = yes
@@ -653,5 +663,84 @@ narrative_event = {
 	option = {
 		name = "EVTOPTA_WCVRK_141"
 		prestige = 100
+	}
+}
+
+#The Thornspeakers
+narrative_event = {
+	id = WCVRK.150
+	title = EVTTITLE_WCVRK_150
+	desc = EVTDESC_WCVRK_150
+	picture = GFX_evt_drustvar
+	border = GFX_event_narrative_frame_war
+	
+	major = yes
+	major_triggger = {
+		ai = no
+	}
+	
+	is_triggered_only = yes
+	
+	immediate = {
+		if = {
+			limit = {
+				c_430000 = {	# Ulfar
+					is_untouchable_trigger = no
+					
+					ai = yes
+					is_alive = yes
+					is_adult = yes
+					
+					religion = old_ways
+					true_religion = old_ways
+				}
+			}
+			c_430000 = { 
+				save_event_target_as = target_thornspeakers_founder 
+			}
+		}
+		else = {
+			create_character = {
+				random_traits = yes
+				dynasty = none
+				religion = old_ways
+				culture = drust
+				female = no
+				age = 80
+				attributes = {
+					learning = 7
+				}
+				trait = creature_vrykul
+				trait = mastermind_theologian
+				trait = class_druid_7
+			}
+			new_character = {
+				save_event_target_as = target_thornspeakers_founder
+			}
+		}
+		activate_title = { title = d_thornspeakers status = yes }
+		d_thornspeakers = { grant_title = event_target:target_thornspeakers_founder }
+		religion_authority = {
+			modifier = religious_order_formed
+			years = 10
+		}
+		event_target:target_thornspeakers_founder = { 
+			wealth = 500
+		}
+	}
+	
+	option = {
+		trigger = {
+			NOT = {
+				true_religion = throssian
+			}
+		}
+		name = EVTOPTA_WCVRK_150
+	}
+	option = {
+		trigger = { 
+			true_religion = throssian
+		} 
+		name = EVTOPTB_WCVRK_150
 	}
 }
