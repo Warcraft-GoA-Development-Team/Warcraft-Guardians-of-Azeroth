@@ -29,52 +29,65 @@ province_event = {
 		}
 		new_character = {
 			save_event_target_as = target_lich_king
+			# Used in scripted effects
 			save_event_target_as = target_province_holder
+			save_event_target_as = target_settler
+			
+			set_global_flag = lich_king_happened
 
 			wealth = 1000
 			prestige = 1000
 			piety = 250
 			set_graphical_culture = nerzhul
 			add_artifact = scepter_of_sargeras
-			695 = {
-				county = { grant_title_no_opinion = PREVPREV }
-				convert_to_target_undead_province_effect = yes
-				add_holding_slot = 5
+			
+			c_icecrown = {
+				location = { convert_to_target_undead_province_effect = yes }
+				
+				# event_target:target_settler and its people settle here
+				settle_as_target_settler_effect = yes
 			}
-			k_icecrown = {
+			d_icecrown = {
 				any_direct_de_jure_vassal_title = {
-					any_direct_de_jure_vassal_title = {
-						limit = { holder_scope = { government = uncolonized_government } }
-						grant_title_no_opinion = PREVPREVPREV
-						location = { convert_to_target_undead_province_effect = yes }
-					}
+					location = { convert_to_target_undead_province_effect = yes }
+				
+					# event_target:target_settler and its people settle here
+					settle_as_target_settler_effect = yes
 				}
 			}
-			k_dragonblight = {
-				any_direct_de_jure_vassal_title = {
+			d_skalmarnes = {
 					any_direct_de_jure_vassal_title = {
-						limit = { holder_scope = { government = uncolonized_government } }
-						grant_title_no_opinion = PREVPREVPREV
 						location = { convert_to_target_undead_province_effect = yes }
+				
+					# event_target:target_settler and its people settle here
+					settle_as_target_settler_effect = yes
 					}
 				}
-			}
-			k_crystalsong_forest = {
+			d_silentreach = {
 				any_direct_de_jure_vassal_title = {
-					any_direct_de_jure_vassal_title = {
-						limit = { holder_scope = { government = uncolonized_government } }
-						grant_title_no_opinion = PREVPREVPREV
 						location = { convert_to_target_undead_province_effect = yes }
+				
+					# event_target:target_settler and its people settle here
+					settle_as_target_settler_effect = yes
 					}
 				}
-			}
+			d_dragonwastes = {
+				any_direct_de_jure_vassal_title = {
+						location = { convert_to_target_undead_province_effect = yes }
+				
+					# event_target:target_settler and its people settle here
+					settle_as_target_settler_effect = yes
+					}
+				}
 			d_snowdrift = {
 				any_direct_de_jure_vassal_title = {
-					limit = { holder_scope = { government = uncolonized_government } }
-					grant_title_no_opinion = PREVPREV
 					location = { convert_to_target_undead_province_effect = yes }
+				
+					# event_target:target_settler and its people settle here
+					settle_as_target_settler_effect = yes
 				}
 			}
+			
 			activate_title = { title = e_scourge status = yes }
 			e_scourge = {
 				gain_title = PREV
@@ -85,6 +98,13 @@ province_event = {
 			spawn_scourge_troops_effect = yes
 			spawn_scourge_troops_effect = yes
 			spawn_scourge_troops_effect = yes
+
+			c_icecrown = {
+				# Declares war against player
+				target_settler_declare_war_effect = yes
+			}
+			
+			clear_settler_flag_effect = yes
 
 			# Creates the dreadlords
 			character_event = { id = WCUND.102 days = 7 }
@@ -443,7 +463,7 @@ character_event = {
 narrative_event = {
 	id = WCUND.130
 	title = EVTTITLE_WCUND_130
-	text = EVTDESC_WCUND_130
+	desc = EVTDESC_WCUND_130
 	picture = GFX_evt_burning_legion
 	border = GFX_event_narrative_frame_war
 
@@ -462,12 +482,24 @@ narrative_event = {
 			show_scope_change = no
 			holder_scope = {
 				show_scope_change = no
+				hidden_effect = {
+					ROOT = {
+						any_vassal = {
+							set_defacto_liege = PREVPREV
+						}
+					}
+				}
 				e_scourge = {
 					show_scope_change = no
-					set_title_flag = is_destroying_flag
-					grant_title_no_opinion = PREV
 					activate_title = { title = e_scourge status = no }
 					destroy_landed_title = THIS
+				}
+				if = {
+					limit = { ai = yes }
+					ROOT = {
+						show_scope_change = no
+						set_player_character = PREV
+					}
 				}
 				hidden_effect = {
 					ROOT = {
@@ -504,7 +536,7 @@ narrative_event = {
 				}
 			}
 		}
-		death = { death_reason = death_battle }
+		death = { death_reason = death_missing }
 
 		ai_chance = {
 			factor = 50
@@ -553,11 +585,11 @@ narrative_event = {
 	id = WCUND.135
 	title = EVTTITLE_WCUND_130
 	desc = {
-		trigger = { NOT = { has_global_flag = the_scourge_is_under_the_legion_control_flag } }
+		trigger = { has_global_flag = the_scourge_is_under_the_legion_control_flag }
 		text = EVTDESC_WCUND_135_case_01
 	}
 	desc = {
-		trigger = { has_global_flag = the_scourge_is_under_the_legion_control_flag }
+		trigger = { NOT = { has_global_flag = the_scourge_is_under_the_legion_control_flag } }
 		text = EVTDESC_WCUND_135_case_02
 	}
 	picture = GFX_evt_icecrown
@@ -1645,8 +1677,13 @@ narrative_event = {
 	picture = GFX_evt_icecrown
 	border = GFX_event_narrative_frame_diplomacy
 
-	major = yes
 	is_triggered_only = yes
+
+	major = yes
+	major_trigger = {
+		ai = no
+	}
+	show_root = yes
 
 	immediate = { clr_global_flag = merging_with_the_lich_king }
 
@@ -1681,8 +1718,6 @@ character_event = {
 	trigger = {
 		FROM = {
 			title = e_scourge
-
-			NOT = { has_title_flag = is_destroying_flag }
 		}
 	}
 
@@ -2476,5 +2511,107 @@ character_event = {
 
 	immediate = {
 		death = { death_reason = death_missing }
+	}
+}
+
+# If character isn't a dark worshipper, converts to the necromantic religions
+character_event = {
+	id = WCUND.1301
+	desc = EVTDESC_WCUND_1301
+	picture = GFX_evt_cemetery
+
+	is_triggered_only = yes
+
+	trigger = {
+		NOT = { has_character_flag = necromancy_group_switch_flag }
+		
+		dark_true_religion_trigger = no
+		NOT = { true_religion_group = loa_group }		# Because of Bwonsamdi
+	}
+	
+	immediate = {
+		set_character_flag = necromancy_group_switch_flag
+	}
+
+	# I will not serve anyone!
+	option = {
+		name = EVTOPTA_WCUND_1301
+
+		if = {
+			limit = {
+				OR = {
+					is_dark_being_trigger = yes
+					liege = { religion = shadowlander }
+				}
+			}
+			if = { limit = { has_secret_religion = yes } clear_secret_religion = yes }
+			religion = shadowlander
+		}
+		else = { set_secret_religion = shadowlander }
+
+		ai_chance = {
+			factor = 60
+			modifier = {
+				factor = 2
+				has_benevolent_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.5
+				has_pleasant_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.5
+				has_pious_trait_trigger = yes
+			}
+		}
+	}
+
+	# I'll serve the Lich King!
+	option = {
+		trigger = {
+			OR = {
+				has_global_flag = lich_king_happened
+				start_date = 603.1.1
+			}
+		}
+		name = EVTOPTB_WCUND_1301
+
+		if = {
+			limit = {
+				OR = {
+					is_dark_being_trigger = yes
+					liege = { religion = death_god }
+				}
+			}
+			if = { limit = { has_secret_religion = yes } clear_secret_religion = yes }
+			religion = death_god
+		}
+		else = { set_secret_religion = death_god }
+
+		ai_chance = {
+			factor = 40
+			modifier = {
+				factor = 2.25
+				has_impious_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.75
+				has_evil_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.75
+				has_unpleasant_trait_trigger = yes
+			}
+		}
+	}
+	
+	option = {
+		name = I_WILL_NOT_BETRAY_RELIGION
+		
+		piety = -100
+		
+		ai_chance = {
+			factor = 0
+		}
 	}
 }
