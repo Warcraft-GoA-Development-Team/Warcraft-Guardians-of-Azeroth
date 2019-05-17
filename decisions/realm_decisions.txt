@@ -9,8 +9,7 @@ decisions = {
 			# Warcraft
 			is_untouchable_trigger = no
 			can_rule_peacefully_trigger = yes
-			is_uncursed_titanforged = no
-			
+			is_uncursed_titanforged_trigger = no
 			
 			is_playable = yes
 			NOR = {
@@ -754,7 +753,10 @@ decisions = {
 		# potential = {
 			# is_playable = yes
 			# independent = yes
-			# is_female = no
+			# OR = {
+				# is_female = no
+				# gender_equality_trigger = yes
+			# }
 			# prisoner = no
 			# is_adult = yes
 			# NOT = { is_incapable = yes }
@@ -785,16 +787,34 @@ decisions = {
 			# activate_title = { title = d_varangian_guard status = yes }
 			# hidden_tooltip = {
 				# narrative_event = { id = TOG.3100 }
-				# create_character = {
-					# random_traits = yes
-					# religion = norse_pagan
-					# culture = norse
-					# dynasty = NONE
-					# female = no
-					# age = 34
-					# trait = skilled_tactician
+				# if = {
+					# limit = {
+						# gender_equality_trigger = yes
+					# }
+					# create_character = {
+						# random_traits = yes
+						# religion = norse_pagan
+						# culture = norse
+						# dynasty = NONE
+						# female = 50
+						# age = 34
+						# trait = skilled_tactician
+					# }
+				# }
+				# else = {
+					# create_character = {
+						# random_traits = yes
+						# religion = norse_pagan
+						# culture = norse
+						# dynasty = NONE
+						# female = no
+						# age = 34
+						# trait = skilled_tactician
+					# }
 				# }
 				# new_character = {
+					# add_trait = varangian
+					# set_character_flag = is_chosen_varangian_leader
 					# d_varangian_guard = {
 						# grant_title = PREV
 					# }
@@ -1641,6 +1661,9 @@ decisions = {
 				# }
 			# }
 
+			# hidden_tooltip = {
+				# princely_elective_german_elector_setup_effect = yes
+			# }
 			# any_demesne_title = {
 				# limit = {
 					# OR = {
@@ -1675,9 +1698,9 @@ decisions = {
 				# trigger = {
 					# is_alternate_start = no
 				# }
-				# NOT = { has_global_flag = charlemagne_hre }
-				# e_hre = {
-					# is_titular = yes
+				# NOR = { 
+					# has_global_flag = charlemagne_hre 
+					# is_title_active = e_hre 
 				# }
 			# }
 			# NOT = { has_global_flag = rome_restored }
@@ -1792,6 +1815,18 @@ decisions = {
 				# limit = { has_nickname = no }
 				# give_nickname = nick_the_great
 			# }
+			# #Create Electors, depending on capital location:
+			# princely_elective_apply_elector_setup_effect = yes
+			# primary_title = {
+				# show_scope_change = no
+				# e_hre = {
+					# show_scope_change = no
+					# grant_title = ROOT
+					# copy_title_laws = PREV
+					# set_coa = PREV
+					# add_law = succ_hre_elective
+				# }
+			# }
 			# any_demesne_title = {
 				# limit = { tier = KING }
 				# de_jure_liege = e_hre
@@ -1804,13 +1839,6 @@ decisions = {
 							# de_jure_liege = e_hre
 						# }
 					# }
-				# }
-			# }
-			# primary_title = {
-				# e_hre = {
-					# grant_title = ROOT
-					# copy_title_laws = PREV
-					# set_coa = PREV
 				# }
 			# }
 			# any_demesne_title = {
@@ -1965,7 +1993,9 @@ decisions = {
 				# }
 			# }
 			# e_byzantium = {
+				# show_scope_change = no
 				# holder_scope = {
+					# show_scope_change = no
 					# opinion = {
 						# who = ROOT
 						# modifier = opinion_unhappy
@@ -2551,39 +2581,46 @@ decisions = {
 		ai_check_interval = 12
 		
 		potential = {
-			# Warcraft
-			can_be_feudal_trigger = yes
-			is_government_potential = feudal_government
-			
 			is_playable = yes
 			is_tribal = yes
 			independent = yes
 		}
 		allow = {
 			war = no
-			custom_tooltip = {
-				text = TT_NOT_UNREFORMED_PAGAN
-				hidden_tooltip = {
-					OR = {
-						# Warcraft
-						is_reformed_religion_trigger = yes
+			
+			# Warcraft
+			OR = {
+				can_be_feudal_trigger = yes
+				government = tribal_monarchy_government
+			}
+			OR = {
+				can_be_feudal_trigger = yes
+				AND = {
+					TECH_CASTLE_CONSTRUCTION = 4
+					TECH_LEGALISM = 4
+				}
+				trigger_if = {
+					limit = { creatable_religious_head_trigger = yes }
+					custom_tooltip = {
+						text = created_religious_head_tooltip
+						religion_head = { character = yes }
+					}
+				}
+			}
+			# custom_tooltip = {
+				# text = TT_NOT_UNREFORMED_PAGAN
+				# hidden_tooltip = {
+					# OR = {
 						# NOT = { religion_group = pagan_group }
-					}
-				}
-			}
+						# is_reformed_religion = yes
+					# }
+				# }
+			# }
+			
 			primary_title = { has_law = tribal_organization_4 }
-			capital_holding = {
-				OR = {
-					AND = {
-						holding_type = tribal
-
-						# Warcraft
-						has_building = wc_chieftan4
-						# has_building = tb_hillfort_4
-					}
-					holding_type = castle
-				}
-			}
+			
+			# Warcraft
+			reformed_castle_capital_trigger = yes
 		}
 		
 		effect = {
@@ -2691,26 +2728,42 @@ decisions = {
 		ai_check_interval = 12
 		
 		potential = {
-			# Warcraft
-			can_be_feudal_trigger = yes
-			is_government_potential = feudal_government
-
 			is_ruler = yes
 			is_tribal = yes
 			independent = no
 		}
 		allow = {
 			war = no
-			custom_tooltip = {
-				text = TT_NOT_UNREFORMED_PAGAN
-				hidden_tooltip = {
-					OR = {
-						# Warcraft
-						is_reformed_religion_trigger = yes
-						# NOT = { religion_group = pagan_group }
+			
+			# Warcraft
+			OR = {
+				can_be_feudal_trigger = yes
+				government = tribal_monarchy_government
+			}
+			OR = {
+				can_be_feudal_trigger = yes
+				AND = {
+					TECH_CASTLE_CONSTRUCTION = 4
+					TECH_LEGALISM = 4
+				}
+				trigger_if = {
+					limit = { creatable_religious_head_trigger = yes }
+					custom_tooltip = {
+						text = created_religious_head_tooltip
+						religion_head = { character = yes }
 					}
 				}
 			}
+			# custom_tooltip = {
+				# text = TT_NOT_UNREFORMED_PAGAN
+				# hidden_tooltip = {
+					# OR = {
+						# NOT = { religion_group = pagan_group }
+						# is_reformed_religion = yes
+					# }
+				# }
+			# }
+			
 			liege = {
 				OR = {
 					is_feudal = yes
@@ -2730,34 +2783,9 @@ decisions = {
 					}
 				}
 			}
-			OR = {
-				capital_holding = {
-					OR = {
-						AND = {
-							holding_type = tribal
-
-							# Warcraft
-							has_building = wc_chieftan4
-							# has_building = tb_hillfort_4
-						}
-						holding_type = castle
-					}
-				}
-				AND = {
-					NOT = { tier = BARON }
-					capital_scope = {
-						any_province_holding = {
-							holding_type = castle
-							holder_scope = {
-								OR = {
-									character = ROOT
-									is_liege_or_above = ROOT
-								}
-							}
-						}
-					}
-				}
-			}
+			
+			# Warcraft
+			reformed_castle_capital_trigger = yes
 		}
 		
 		effect = {
@@ -2942,32 +2970,40 @@ decisions = {
 			war = no
 			is_female = no
 			higher_tier_than = COUNT
-			custom_tooltip = {
-				text = TT_NOT_UNREFORMED_PAGAN
-				hidden_tooltip = {
-					OR = {
-						# Warcraft
-						is_reformed_religion_trigger = yes
-						# NOT = { religion_group = pagan_group }
+			
+			# Warcraft
+			OR = {
+				can_be_feudal_trigger = yes
+				AND = {
+					TECH_CASTLE_CONSTRUCTION = 4
+					TECH_LEGALISM = 4
+				}
+				trigger_if = {
+					limit = { creatable_religious_head_trigger = yes }
+					custom_tooltip = {
+						text = created_religious_head_tooltip
+						religion_head = { character = yes }
 					}
 				}
 			}
+			# custom_tooltip = {
+				# text = TT_NOT_UNREFORMED_PAGAN
+				# hidden_tooltip = {
+					# OR = {
+						# # Warcraft
+						# is_reformed_religion_trigger = yes
+						# # NOT = { religion_group = pagan_group }
+					# }
+				# }
+			# }
+			
 			primary_title = { has_law = tribal_organization_4 }
 			capital_scope = {
 				port = yes
 			}
-			capital_holding = {
-				OR = {
-					AND = {
-						holding_type = tribal
-
-						# Warcraft
-						has_building = wc_tribe4
-						# has_building = tb_market_town_4
-					}
-					holding_type = city
-				}
-			}
+			
+			# Warcraft
+			reformed_city_capital_trigger = yes
 		}
 		
 		effect = {
@@ -3012,61 +3048,7 @@ decisions = {
 										tier = baron
 										holding_type = tribal
 									}
-									convert_to = CITY
-									refill_holding_levy = yes
-									location = { #Clear Tribal Great Pillars
-										clr_province_flag = flag_great_pillar_norse
-										clr_province_flag = flag_great_pillar_tengri
-										clr_province_flag = flag_great_pillar_slavic
-										clr_province_flag = flag_great_pillar_baltic
-										clr_province_flag = flag_great_pillar_finnish
-										clr_province_flag = flag_great_pillar_west_african
-										clr_province_flag = flag_great_pillar_aztec
-										clr_province_flag = flag_great_pillar_bon
-										clr_province_flag = flag_great_pillar_zun
-										clr_province_flag = flag_great_pillar_hellenic
-									}
-									
-									if = {
-										limit = {
-											dejure_liege_title = {
-												holder = PREVPREV
-												location = {
-													num_of_empty_holdings = 2
-												}
-												NOT = {
-													any_direct_de_jure_vassal_title = {
-														holding_type = castle
-													}
-												}
-											}
-										}
-										location = {
-											build_holding = {
-												type = castle
-											}
-										}
-									}
-									if = {
-										limit = {
-											dejure_liege_title = {
-												holder = PREVPREV
-												location = {
-													num_of_empty_holdings = 2
-												}
-												NOT = {
-													any_direct_de_jure_vassal_title = {
-														holding_type = temple
-													}
-												}
-											}
-										}
-										location = {
-											build_holding = {
-												type = temple
-											}
-										}
-									}
+									convert_tribal_to_city_effect = yes
 								}
 							}
 						}
@@ -3080,61 +3062,7 @@ decisions = {
 						tier = baron
 						holding_type = tribal
 					}
-					convert_to = CITY
-					refill_holding_levy = yes
-					location = { #Clear Tribal Great Pillars
-						clr_province_flag = flag_great_pillar_norse
-						clr_province_flag = flag_great_pillar_tengri
-						clr_province_flag = flag_great_pillar_slavic
-						clr_province_flag = flag_great_pillar_baltic
-						clr_province_flag = flag_great_pillar_finnish
-						clr_province_flag = flag_great_pillar_west_african
-						clr_province_flag = flag_great_pillar_aztec
-						clr_province_flag = flag_great_pillar_bon
-						clr_province_flag = flag_great_pillar_zun
-						clr_province_flag = flag_great_pillar_hellenic
-					}
-					
-					if = {
-						limit = {
-							dejure_liege_title = {
-								holder = ROOT
-								location = {
-									num_of_empty_holdings = 2
-								}
-								NOT = {
-									any_direct_de_jure_vassal_title = {
-										holding_type = castle
-									}
-								}
-							}
-						}
-						location = {
-							build_holding = {
-								type = castle
-							}
-						}
-					}
-					if = {
-						limit = {
-							dejure_liege_title = {
-								holder = ROOT
-								location = {
-									num_of_empty_holdings = 2
-								}
-								NOT = {
-									any_direct_de_jure_vassal_title = {
-										holding_type = temple
-									}
-								}
-							}
-						}
-						location = {
-							build_holding  ={
-								type = temple
-							}
-						}
-					}
+					convert_tribal_to_city_effect = yes
 				}
 			}
 			

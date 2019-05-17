@@ -120,7 +120,7 @@ narrative_event = {
 
 	option = {
 		name = EVTOPTB_WCDRU_300
-
+		
 		set_character_flag = supported_worgen_summoning_flag
 		
 		event_target:target_mage = { letter_event = { id = WCDRU.310 days = 3 } }
@@ -228,6 +228,13 @@ narrative_event = {
 	is_triggered_only = yes
 
 	major = yes
+	major_trigger = {
+		OR = {
+			ai = no
+			has_character_flag = supported_worgen_summoning_flag
+		}
+	}
+	show_root = yes
 	
 	immediate = {
 		save_event_target_as = target_mage
@@ -307,6 +314,7 @@ narrative_event = {
 
 		if = {
 			limit = { has_character_flag = supported_worgen_summoning_flag }
+			clr_character_flag = supported_worgen_summoning_flag
 			prestige = -500
 		}
 	}
@@ -412,9 +420,6 @@ character_event = {
 			age = 30
 			trait = worgen
 		}
-		new_character = {
-			character_event = { id = WCRAC.10 }
-		}
 		create_random_soldier = {
 			random_traits = yes
 			dynasty = none
@@ -423,9 +428,6 @@ character_event = {
 			female = no
 			age = 25
 			trait = worgen
-		}
-		new_character = {
-			character_event = { id = WCRAC.10 }
 		}
 		spawn_unit = {
 			province = event_target:target_province
@@ -894,6 +896,68 @@ character_event = {
 		tooltip = {
 			if = { limit = { trait = worgen } add_trait = worgen }
 			if = { limit = { trait = mindless_worgen } add_trait = mindless_worgen }
+		}
+	}
+}
+
+# Elven Immortality
+# Delayer event
+province_event = {
+	id = WCDRU.5500
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
+		d_kaldorei_religion = {
+			holder_scope = {
+				narrative_event = { id = WCDRU.5501 }
+			}
+		}
+	}
+}
+
+narrative_event = {
+	id = WCDRU.5501
+	title = EVTTITLE_WCDRU_5501
+	desc = EVTDESC_WCDRU_5501
+	picture = GFX_evt_burning_world_tree
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+	
+	major = yes
+	major_trigger = {
+		ai = no
+	}
+	show_root = yes
+
+	option = {
+		trigger = { evil_true_religion_trigger = yes }
+		name = FOOLS
+	}
+	option = {
+		trigger = {
+			NOT = {
+				evil_true_religion_trigger = yes
+			}
+			trait = creature_night_elf
+		}
+		name = EVTOPTA_WCDRU_5501_elf
+	}
+	option = {
+		trigger = {
+			NOT = {
+				evil_true_religion_trigger = yes
+				trait = creature_night_elf
+			}
+		}
+		name = EVTOPTA_WCDRU_5501_nonelf
+	}
+	
+	after = {
+		custom_tooltip = {
+			text = night_elves_lost_immortality_tooltip
 		}
 	}
 }
