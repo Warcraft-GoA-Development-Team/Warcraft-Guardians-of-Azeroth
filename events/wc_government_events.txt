@@ -108,7 +108,7 @@ character_event = {
 	is_triggered_only = yes
 	hide_window = yes
 	
-	# only_rulers = yes
+	only_rulers = yes
 
 	trigger = {
 		dark_public_religion_trigger = yes
@@ -155,10 +155,57 @@ character_event = {
 	}
 }
 
-### Starts patrician election every 10 years ###
-# Starts election in 1 year, sends notification to patricians
+### Election timers ###
+# on_startup
+# Ping to capital_scope in case doge is custom character
 character_event = {
-	id = WCGOV.7990
+	id = WCGOV.7980
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	only_playable = yes
+	is_patrician = yes
+	
+	trigger = {
+		is_save_game = no
+		
+		is_merchant_republic = yes
+		
+		NOT = { has_character_flag = upcoming_elections_flag }
+	}
+	
+	immediate = {
+		capital_scope = { province_event = { id = WCGOV.7985 days = 1 } }
+	}
+}
+# Elections in 12 year
+province_event = {
+	id = WCGOV.7985
+	
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		holder_scope = {
+			if = {
+				limit = {
+					is_merchant_republic = yes
+					NOT = { has_character_flag = upcoming_elections_flag }
+				}
+				log = "WCGOV.7985 fired for [Root.GetBestName]"
+				
+				set_character_flag = upcoming_elections_flag
+				character_event = { id = WCGOV.7990 years = 11 }
+			}
+		}
+	}
+}
+
+# on_new_holder on_new_holder_inheritance on_new_holder_usurpation
+# Elections in 12 year
+character_event = {
+	id = WCGOV.7986
 	
 	is_triggered_only = yes
 	hide_window = yes
@@ -168,20 +215,37 @@ character_event = {
 	
 	trigger = {
 		is_merchant_republic = yes
-		ruled_years = 8
 		
-		primary_title = { NOT = { has_title_flag = upcoming_elections_flag } }
+		NOT = { has_character_flag = upcoming_elections_flag }
 	}
 	
 	immediate = {
-		log = "WCGOV.7995 fired for [Root.GetBestName]"
-		primary_title = {
-			set_title_flag = upcoming_elections_flag
-			
-			save_event_target_as = target_republic
-		}
+		log = "WCGOV.7986 fired for [Root.GetBestName]"
 		
-		capital_scope = { province_event = { id = WCGOV.7995 days = 365 } }
+		set_character_flag = upcoming_elections_flag
+		character_event = { id = WCGOV.7990 years = 11 }
+	}
+}
+
+# Elections in 1 year: sends notification to patricians
+character_event = {
+	id = WCGOV.7990
+	
+	is_triggered_only = yes
+	hide_window = yes
+
+	trigger = {
+		is_merchant_republic = yes
+	}
+	
+	fail_trigger_effect = {
+		clr_character_flag = upcoming_elections_flag
+	}
+	
+	immediate = {
+		primary_title = { save_event_target_as = target_republic }
+		
+		character_event = { id = WCGOV.8000 years = 1 }
 		
 		# Notifications
 		character_event = { id = WCGOV.7992 }
@@ -208,27 +272,6 @@ character_event = {
 		name = INTERESTING
 	}
 }
-# Starts elections, delayer event
-province_event = {
-	id = WCGOV.7995
-	
-	is_triggered_only = yes
-	hide_window = yes
-	
-	immediate = {
-		if = {
-			limit = {
-				event_target:target_republic = {
-					is_merchant_republic = yes
-					ruled_years = 8
-				}
-			}
-			event_target:target_republic = { holder_scope = { character_event = { id = WCGOV.8000 } } }
-		}
-		
-		event_target:target_republic = { clr_title_flag = upcoming_elections_flag }
-	}
-}
 # Starts elections, delayed event
 character_event = {
 	id = WCGOV.8000
@@ -238,12 +281,17 @@ character_event = {
 	
 	trigger = {
 		is_merchant_republic = yes
-		ruled_years = 9
 	}
 	
+	fail_trigger_effect = {
+		clr_character_flag = upcoming_elections_flag
+	}
+
 	immediate = {
 		log = "WCGOV.8000 fired for [Root.GetBestName]"
 		primary_title = { save_event_target_as = target_republic }
+		
+		clr_character_flag = upcoming_elections_flag
 		
 		add_trait = secret_patrician
 		any_vassal = {
