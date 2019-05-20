@@ -1,1 +1,0 @@
-# *	Use only Microsoft Excel 2016 when editing provinceDef.xls
