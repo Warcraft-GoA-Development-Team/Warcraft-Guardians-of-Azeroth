@@ -1,0 +1,1317 @@
+#############################################
+#
+# Court Maintenance Events
+#
+# 61001-61999
+#
+#############################################
+#Written by Linnéa Thimrén
+
+namespace = LT
+
+#Skill boost
+character_event = {
+    id = LT.61001
+    hide_window = yes
+    
+    is_triggered_only = yes
+
+    trigger = {
+    	ai = no 
+    	any_courtier = { #Mediocre!!
+    		is_adult = yes
+    		is_landed = no
+        	prisoner = no
+        	stewardship < 10
+        	stewardship = 4
+    		diplomacy < 10
+    		diplomacy = 4
+    		martial < 10
+    		martial = 4
+    		intrigue < 10
+    		intrigue = 4
+    		learning < 10
+    		learning = 4
+    	}
+    }
+
+    immediate = {
+    	random = {
+    		chance = 75
+    		break = yes
+    	}
+    	random_courtier = {
+			limit = {
+				is_adult = yes
+				is_landed = no
+				prisoner = no
+				stewardship < 10
+	    		stewardship = 4
+	    		diplomacy < 10
+	    		diplomacy = 4
+	    		martial < 10
+	    		martial = 4
+	    		intrigue < 10
+	    		intrigue = 4
+	    		learning < 10
+	    		learning = 4
+			}
+			save_event_target_as = courtier
+		}
+		random_list = {
+			75 = {
+				modifier = { #I already have courtiers with cool skills
+					factor = 0.5
+					any_courtier = {
+						is_adult = yes
+						is_landed = no
+						prisoner = no
+						count = 2
+			    		OR = {
+			    			stewardship = 10
+			    			diplomacy = 10
+			    			martial = 10
+			    			intrigue = 10
+			    			learning = 10
+			    		}
+					}
+				}
+				event_target:courtier = {
+					random_list = {
+						10 = {
+							trigger = {
+								stewardship < 8
+							}
+							change_stewardship = 7
+						}
+						10 = {
+							trigger = {
+								diplomacy < 8
+							}
+							change_diplomacy = 7
+						}
+						10 = {
+							trigger = {
+								martial < 8
+							}
+							change_martial = 7
+						}
+						10 = {
+							trigger = {
+								intrigue < 8
+							}
+							change_intrigue = 7
+						}
+						10 = {
+							trigger = {
+								learning < 8
+							}
+							change_learning = 7
+						}
+					}
+				}
+			}
+			25 = {
+				modifier = { #I already have stupid courtiers
+					factor = 0.5
+					any_courtier = {
+						is_landed = no
+						prisoner = no
+						count = 2
+			    		OR = {
+			    			stewardship < 2
+			    			diplomacy < 2
+			    			martial < 2
+			    			intrigue < 2
+			    			learning < 2
+			    		}
+					}
+				}
+				if = { #Try for higher stats first
+					limit = {
+						OR = {
+			    			stewardship = 7
+			    			diplomacy = 7
+			    			martial = 7
+			    			intrigue = 7
+			    			learning = 7
+			    		}
+					}
+					event_target:courtier = {
+						random_list = {
+							10 = {
+								trigger = {
+									stewardship = 7
+								}
+								change_stewardship = -6
+							}
+							10 = {
+								trigger = {
+									diplomacy = 7
+								}
+								change_diplomacy = -6
+							}
+							10 = {
+								trigger = {
+									martial = 7
+								}
+								change_martial = -6
+							}
+							10 = {
+								trigger = {
+									intrigue = 7
+								}
+								change_intrigue = -6
+							}
+							10 = {
+								trigger = {
+									learning = 7
+								}
+								change_learning = -6
+							}
+						}
+					}
+				}
+				else = { #fallback
+					event_target:courtier = {
+						random_list = {
+							10 = {
+								trigger = {
+									stewardship = 4
+								}
+								change_stewardship = -4
+							}
+							10 = {
+								trigger = {
+									diplomacy = 4
+								}
+								change_diplomacy = -4
+							}
+							10 = {
+								trigger = {
+									martial = 4
+								}
+								change_martial = -4
+							}
+							10 = {
+								trigger = {
+									intrigue = 4
+								}
+								change_intrigue = -4
+							}
+							10 = {
+								trigger = {
+									learning = 4
+								}
+								change_learning = -4
+							}
+						}
+					}
+				}
+			}
+		}
+    }
+}
+
+#Relationships
+character_event = {
+    id = LT.61002
+    hide_window = yes
+    
+    is_triggered_only = yes
+
+    trigger = {
+    	ai = no 
+    	any_courtier = {
+    		is_landed = no
+    		prisoner = no
+    		is_adult = yes
+    		count = 2
+    		AND = {
+    			has_lover = no
+    			NOT = {
+    				any_rival = {
+        				always = yes
+        			}
+    			}
+    			NOT = {
+    				any_friend = {
+        				always = yes
+        			}
+    			}
+    		}
+    	}
+    }
+
+    immediate = {
+    	random = {
+    		chance = 75
+    		modifier = {
+				factor = 0.5
+				any_courtier = {
+		    		is_landed = no
+		    		prisoner = no
+		    		is_adult = yes
+		    		count = 4 #More courtiers that are lonely
+		    		AND = {
+		    			has_lover = no
+		    			NOT = {
+		    				any_rival = {
+		        				always = yes
+		        			}
+		    			}
+		    			NOT = {
+		    				any_friend = {
+		        				always = yes
+		        			}
+		    			}
+		    		}
+		    	}
+			}
+    		break = yes
+    	}
+    	random_courtier = {
+    		limit = {
+    			is_landed = no
+	    		prisoner = no
+	    		is_adult = yes
+	    		AND = {
+        			has_lover = no
+        			NOT = {
+        				any_rival = {
+	        				always = yes
+	        			}
+        			}
+        			NOT = {
+        				any_friend = {
+	        				always = yes
+	        			}
+        			}
+        		}
+    		}
+    		save_event_target_as = courtier_1
+    	}
+    	random_courtier = {
+    		limit = {
+    			NOT = { CHARACTER = event_target:courtier_1 }
+    			is_landed = no
+	    		prisoner = no
+                is_adult = yes
+	    		AND = {
+        			has_lover = no
+        			NOT = {
+        				any_rival = {
+	        				always = yes
+	        			}
+        			}
+        			NOT = {
+        				any_friend = {
+	        				always = yes
+	        			}
+        			}
+        		}
+    		}
+    		save_event_target_as = courtier_2
+    	}
+    	event_target:courtier_1 = {
+    		random_list = {
+	    		40 = {
+	    			trigger = {
+	    				NOT = { is_lover = event_target:courtier_2 }
+						NOT = { is_friend = event_target:courtier_2 }
+						NOT = { opinion = { who = event_target:courtier_2 value = 5 } }
+	    			}
+	    			add_lover = event_target:courtier_2
+	    		}
+	    		10 = {
+	    			modifier = {
+	    				factor = 2
+	    				opinion = { who = event_target:courtier_2 value = 5 }
+	    			}
+	    			modifier = {
+	    				factor = 2
+	    				opinion = { who = event_target:courtier_2 value = 15 }
+	    			}
+	    			add_friend = event_target:courtier_2
+	    		}
+	    		10 = {
+	    			modifier = {
+	    				factor = 2
+	    				NOT = { opinion = { who = event_target:courtier_2 value = 5 } }
+	    			}
+	    			modifier = {
+	    				factor = 2
+	    				NOT = { opinion = { who = event_target:courtier_2 value = -15 } }
+	    			}
+	    			add_rival = event_target:courtier_2
+	    		}
+	    	}
+    	}
+    }
+}
+
+
+#To add random modifiers
+character_event = {
+    id = LT.61003
+    hide_window = yes
+    
+    is_triggered_only = yes
+
+    trigger = {
+    	ai = no 
+    	any_courtier = {
+    		is_landed = no
+	    	prisoner = no
+	    	is_adult = yes
+    	}
+    }
+
+    weight_multiplier = {
+        factor = 1
+    }
+
+    immediate = {
+    	random = {
+    		chance = 70
+    		break = yes
+    	}
+    	random_courtier = {
+    		limit = {
+    			is_landed = no
+	    		prisoner = no
+	    		is_adult = yes
+    		}
+	    	give_random_character_modifier_effect = yes
+	    }
+    }
+}
+
+#Add random nickname
+character_event = {
+    id = LT.61004
+    hide_window = yes
+    
+    is_triggered_only = yes
+
+    trigger = {
+    	ai = no
+    	any_courtier = {
+    		is_landed = no
+	    	prisoner = no
+	    	has_nickname = no
+	    	is_adult = yes
+    	}
+    }
+
+    immediate = {
+    	random = {
+    		chance = 90
+    		break = yes
+    	}
+    	random_courtier = {
+    		limit = {
+    			is_landed = no
+	    		prisoner = no
+	    		has_nickname = no
+	    		is_adult = yes
+    		}
+    		assign_random_nickname_effect = yes
+    	}
+    }
+}
+
+
+#Decide a nickname
+character_event = {
+    id = LT.61006
+    title = EVT_TITLE_LT_61006
+    desc = {
+    	text = EVTDESC2_LT_61006
+    	trigger = {
+    		event_target:courtier = { learning = 10 }
+    	}
+    }
+    desc = {
+    	text = EVTDESC3_LT_61006
+    	trigger = {
+    		event_target:courtier = { martial = 10 }
+    	}
+    }
+    desc = {
+    	text = EVTDESC4_LT_61006
+    	trigger = {
+    		event_target:courtier = { diplomacy = 10 }
+    	}
+    }
+    desc = {
+    	text = EVTDESC5_LT_61006
+    	trigger = {
+    		event_target:courtier = { stewardship = 10 }
+    	}
+    }
+    desc = {
+    	text = EVTDESC6_LT_61006
+    	trigger = {
+    		event_target:courtier = { intrigue = 10 }
+    	}
+    }
+    desc = EVTDESC1_LT_61006
+    picture = GFX_evt_courtiers_talking
+    border = GFX_event_normal_frame_diplomacy
+    
+    is_triggered_only = yes
+
+    trigger = {
+    	ai = no
+    	any_courtier = {
+    		is_landed = no
+	    	prisoner = no
+	    	has_nickname = no
+	    	is_adult = yes
+    	}
+    }
+
+    immediate = {
+    	any_courtier = {
+    		limit = {
+    			is_landed = no
+	    		prisoner = no
+	    		has_nickname = no
+	    		is_adult = yes
+    		}
+    		score_value = { 
+            	value = 10
+            	interesting_courtier_selection_score = yes
+            }
+            save_event_target_as = courtier
+    	}
+    	random_list = {
+    		10 = {
+    			set_character_flag = nick_1_1 #nick_the_loyal
+    		}
+    		10 = {
+    			set_character_flag = nick_1_2 #nick_the_festive
+    		}
+    		10 = {
+    			set_character_flag = nick_1_3 #nick_the_fairest_of_location
+    		} #nick_the_strongest_of_location
+    	}
+    	random_list = {
+    		10 = {
+    			set_character_flag = nick_2_1 #nick_the_dove
+    		}
+    		10 = {
+    			trigger = {
+    				is_female = yes
+    			}
+    			set_character_flag = nick_2_2 #nick_the_fair
+    		}
+    		10 = {
+    			trigger = {
+    				is_female = no
+    			}
+    			set_character_flag = nick_2_3 #nick_the_handsome
+    		} #nick_tiny
+    	}
+    	random_list = {
+    		10 = {
+    			set_character_flag = nick_3_1 #nick_the_mule
+    		}
+    		10 = {
+    			set_character_flag = nick_3_2 #nick_the_pest
+    		}
+    		10 = {
+    			set_character_flag = nick_3_3 #nick_the_burden
+    		} #nick_the_snake
+    	}
+    }
+
+    option = { #Fancy nickname
+        name = EVTOPTA_LT_61006
+    	if = {
+        	limit = {
+        		has_character_flag = nick_1_1
+        	}
+        	event_target:courtier = {
+        		give_nickname = nick_the_loyal
+        	}
+        }
+        else_if = {
+        	limit = {
+        		has_character_flag = nick_1_2
+        	}
+        	event_target:courtier = {
+        		give_nickname = nick_the_festive
+        	}
+        }
+        else_if = {
+        	limit = {
+        		has_character_flag = nick_1_3
+        	}
+        	event_target:courtier = {
+        		give_nickname = nick_the_fairest_of_location
+        	}
+        }
+        else = {
+        	event_target:courtier = {
+        		give_nickname = nick_the_strongest_of_location
+        	}
+        }
+        event_target:courtier = {
+        	show_scope_change = no
+        	opinion = {
+				modifier = opinion_happy_with_nickname
+				who = ROOT
+			}
+        }
+        prestige = -50
+        ai_chance = {
+            factor = 1
+	            additive_opinion_modifier = { # Adds the opinion from 'ROOT' to 'who' multiplied by factor to the score.
+				who = event_target:courtier
+				factor = 0.5
+				
+				opinion = { who = event_target:courtier value = 0 }
+				always = yes
+			}
+        }
+    }
+
+    option = { #Random nickname
+        name = EVTOPTB_LT_61006
+    	if = {
+        	limit = {
+        		has_character_flag = nick_2_1
+        	}
+        	event_target:courtier = {
+        		give_nickname = nick_the_dove
+        	}
+        }
+        else_if = {
+        	limit = {
+        		has_character_flag = nick_2_2
+        	}
+        	event_target:courtier = {
+        		give_nickname = nick_the_fair
+        	}
+        }
+        else_if = {
+        	limit = {
+        		has_character_flag = nick_2_3
+        	}
+        	event_target:courtier = {
+        		give_nickname = nick_the_handsome
+        	}
+        }
+        else = {
+			event_target:courtier = {
+        		give_nickname = nick_tiny
+        	}
+        }
+        ai_chance = {
+            factor = 1
+            modifier = {
+            	factor = 0.5
+            	trait = arbitrary
+            }
+        }
+    }
+
+    option = { #Mean nickname
+        name = EVTOPTC_LT_61006
+    	if = {
+        	limit = {
+        		has_character_flag = nick_3_1
+        	}
+        	event_target:courtier = {
+        		give_nickname = nick_the_mule
+        	}
+        }
+        else_if = {
+        	limit = {
+        		has_character_flag = nick_3_2
+        	}
+        	event_target:courtier = {
+        		give_nickname = nick_the_pest
+        	}
+        }
+        else_if = {
+        	limit = {
+        		has_character_flag = nick_3_3
+        	}
+        	event_target:courtier = {
+        		give_nickname = nick_the_burden
+        	}
+        }
+        else = {
+        	event_target:courtier = {
+        		give_nickname = nick_the_snake
+        	}
+        }
+        event_target:courtier = {
+        	show_scope_change = no
+        	opinion = {
+				modifier = opinion_dislikes_nickname
+				who = ROOT
+			}
+        }
+        ai_chance = {
+            factor = 1
+	            additive_opinion_modifier = { # Adds the opinion from 'ROOT' to 'who' multiplied by factor to the score.
+				who = event_target:courtier
+				factor = -0.5
+				
+				opinion = { who = event_target:courtier value = 0 }
+				always = yes
+			}
+        }
+    }
+
+    option = { #nah
+    	name = EVTOPTD_LT_61006
+    }
+
+    after = {
+    	clear_flags_with_prefix = nick_
+    }
+}
+
+
+#Great exodus event (your court is BIG, let's shrink it a bit) (triggered from a decision)
+character_event = {
+    id = LT.61008
+    title = EVT_TITLE_LT_61008
+    desc = EVTDESC_LT_61008
+    picture = GFX_evt_courtiers_talking
+    border = GFX_event_normal_frame_diplomacy
+
+    is_triggered_only = yes
+	
+	only_playable = yes
+
+    trigger = {
+        has_game_rule = {
+            name = court_limit_rule
+            value = on
+        }
+    }
+
+    immediate = {
+    	random_courtier = {
+    		limit = {
+	    		prisoner = no
+	    		is_adult = yes
+	    		is_landed = no
+	    		important_character_to_root_trigger = no
+	    		trigger_if = {
+		    		limit = { is_married = yes }
+	    			any_spouse = { is_landed = no }
+		    	}
+		    	trigger_if = {
+		    		limit = { any_child = { always = yes } }
+		    		any_child = { 
+		    			NOR = {
+		    				is_child_of = root
+		    				important_character_to_root_trigger = yes
+		    			}
+		    		}
+		    	}
+    		}
+    		preferred_limit = {
+	    		has_nickname = no
+	    		is_unimportant_trigger = yes
+    		}
+    		save_event_target_as = courtier_1
+    	}
+    	random_courtier = {
+    		limit = {
+	    		prisoner = no
+	    		is_adult = yes
+	    		is_landed = no
+	    		important_character_to_root_trigger = no
+	    		trigger_if = {
+	    			limit = { is_married = yes }
+	    			any_spouse = { is_landed = no }
+		    	}
+		    	trigger_if = {
+		    		limit = { any_child = { always = yes } }
+		    		any_child = { 
+		    			NOR = {
+		    				is_child_of = root
+		    				important_character_to_root_trigger = yes
+		    			}
+		    		}
+		    	}
+	    		NOT = { event_target:courtier_1 = { CHARACTER = PREV } }
+    		}
+    		preferred_limit = {
+	    		has_nickname = no
+	    		is_unimportant_trigger = yes
+    		}
+    		save_event_target_as = courtier_2
+    	}
+    	random_courtier = {
+    		limit = {
+	    		prisoner = no
+	    		is_adult = yes
+	    		is_landed = no
+	    		important_character_to_root_trigger = no
+	    		trigger_if = {
+	    			limit = { is_married = yes }
+	    			any_spouse = { is_landed = no }
+		    	}
+		    	trigger_if = {
+		    		limit = { any_child = { always = yes } }
+		    		any_child = { 
+		    			NOR = {
+		    				is_child_of = root
+		    				important_character_to_root_trigger = yes
+		    			}
+		    		}
+		    	}
+	    		NOR = {
+	    			event_target:courtier_1 = { CHARACTER = PREV }
+	    			event_target:courtier_2 = { CHARACTER = PREV }
+	    		}
+    		}
+    		preferred_limit = {
+	    		has_nickname = no
+	    		is_unimportant_trigger = yes
+    		}
+    		save_event_target_as = courtier_3
+    	}
+    	#Do I have even more courtiers that I can get rid off? Two optional ones
+    	if = { 
+    		limit = {
+    			free_court_slots < -1
+    			any_courtier = {
+		    		prisoner = no
+			    	is_adult = yes
+			    	is_landed = no
+			    	important_character_to_root_trigger = no
+			    	trigger_if = {
+		    			limit = { is_married = yes }
+		    			any_spouse = { is_landed = no }
+			    	}
+			    	trigger_if = {
+			    		limit = { any_child = { always = yes } }
+			    		any_child = { 
+			    			NOR = {
+			    				is_child_of = root
+			    				important_character_to_root_trigger = yes
+			    			}
+			    		}
+			    	}
+			    	is_unimportant_trigger = yes
+			    	NOR = {
+			    		event_target:courtier_1 = { CHARACTER = PREV }
+	    				event_target:courtier_2 = { CHARACTER = PREV }
+	    				event_target:courtier_3 = { CHARACTER = PREV }
+			    	}
+		    	}
+    		}
+    		random_courtier = {
+    			limit = {
+	    			prisoner = no
+		    		is_adult = yes
+		    		is_landed = no
+		    		important_character_to_root_trigger = no
+		    		trigger_if = {
+		    			limit = { is_married = yes }
+		    			any_spouse = { is_landed = no }
+			    	}
+			    	trigger_if = {
+			    		limit = { any_child = { always = yes } }
+			    		any_child = { 
+			    			NOR = {
+			    				is_child_of = root
+			    				important_character_to_root_trigger = yes
+			    			}
+			    		}
+			    	}
+		    		is_unimportant_trigger = yes
+		    		NOR = {
+		    			event_target:courtier_1 = { CHARACTER = PREV }
+		    			event_target:courtier_2 = { CHARACTER = PREV }
+		    			event_target:courtier_3 = { CHARACTER = PREV }
+		    		}
+	    		}
+	    		save_event_target_as = courtier_4
+    		}
+    	}
+    	if = {
+    		limit = {
+    			free_court_slots < -2
+    			any_courtier = {
+		    		prisoner = no
+			    	is_adult = yes
+			    	is_landed = no
+			    	important_character_to_root_trigger = no
+			    	trigger_if = {
+		    			limit = { is_married = yes }
+		    			any_spouse = { is_landed = no }
+			    	}
+			    	trigger_if = {
+			    		limit = { any_child = { always = yes } }
+			    		any_child = { 
+			    			NOR = {
+			    				is_child_of = root
+			    				important_character_to_root_trigger = yes
+			    			}
+			    		}
+			    	}
+			    	is_unimportant_trigger = yes
+			    	NOR = {
+			    		event_target:courtier_1 = { CHARACTER = PREV }
+	    				event_target:courtier_2 = { CHARACTER = PREV }
+	    				event_target:courtier_3 = { CHARACTER = PREV }
+	    				event_target:courtier_4 = { CHARACTER = PREV }
+			    	}
+		    	}
+    		}
+    		random_courtier = {
+    			limit = {
+	    			prisoner = no
+		    		is_adult = yes
+		    		is_landed = no
+		    		important_character_to_root_trigger = no
+		    		trigger_if = {
+		    			limit = { is_married = yes }
+		    			any_spouse = { is_landed = no }
+			    	}
+			    	trigger_if = {
+			    		limit = { any_child = { always = yes } }
+			    		any_child = { 
+			    			NOR = {
+			    				is_child_of = root
+			    				important_character_to_root_trigger = yes
+			    			}
+			    		}
+			    	}
+		    		is_unimportant_trigger = yes
+		    		NOR = {
+		    			event_target:courtier_1 = { CHARACTER = PREV }
+		    			event_target:courtier_2 = { CHARACTER = PREV }
+		    			event_target:courtier_3 = { CHARACTER = PREV }
+		    			event_target:courtier_4 = { CHARACTER = PREV }
+		    		}
+	    		}
+	    		save_event_target_as = courtier_5
+    		}
+    	}
+    }
+
+    option = {
+        name = EVTOPTA_LT_61008
+        scaled_wealth = {
+            value = -0.02
+            min = -5
+            max = -45
+        }
+        event_target:courtier_1 = {
+        	courtiers_leaving_effect = yes
+        	#Family?
+    		if = {
+    			limit = {
+    				is_married = yes
+    			}
+    			random_spouse = {
+    				limit = {
+    					host = { character = ROOT }
+    					is_landed = no
+    				}
+    				courtiers_leaving_effect = yes
+    			}
+    		}
+    		if ={
+    			limit = {
+    				any_child = {
+    					host = { character = ROOT }
+    					is_landed = no
+    				}
+    			}
+    			any_child = {
+    				limit = {
+    					host = { character = ROOT }
+    					is_landed = no
+    				}
+    				courtiers_leaving_effect = yes
+    			}
+    		}
+        }
+
+		event_target:courtier_2 = {
+			courtiers_leaving_effect = yes
+			#Family?
+    		if = {
+    			limit = {
+    				is_married = yes
+    			}
+    			random_spouse = {
+    				limit = {
+    					host = { character = ROOT }
+    					is_landed = no
+    				}
+    				courtiers_leaving_effect = yes
+    			}
+    		}
+    		if ={
+    			limit = {
+    				any_child = {
+    					host = { character = ROOT }
+    					is_landed = no
+    				}
+    			}
+    			any_child = {
+    				limit = {
+    					host = { character = ROOT }
+    					is_landed = no
+    				}
+    				courtiers_leaving_effect = yes
+    			}
+    		}
+		}
+        event_target:courtier_3 = {
+        	courtiers_leaving_effect = yes
+        	#Family?
+    		if = {
+    			limit = {
+    				is_married = yes
+    			}
+    			random_spouse = {
+    				limit = {
+    					host = { character = ROOT }
+    					is_landed = no
+    				}
+    				courtiers_leaving_effect = yes
+    			}
+    		}
+    		if ={
+    			limit = {
+    				any_child = {
+    					host = { character = ROOT }
+    					is_landed = no
+    				}
+    			}
+    			any_child = {
+    				limit = {
+    					host = { character = ROOT }
+    					is_landed = no
+    				}
+    				courtiers_leaving_effect = yes
+    			}
+    		}
+        }
+        if = {
+        	limit = {
+        		event_target:courtier_4 = { always = yes }
+        	}
+        	event_target:courtier_4 = {
+	        	courtiers_leaving_effect = yes
+	        	#Family?
+	    		if = {
+	    			limit = {
+	    				is_married = yes
+	    			}
+	    			random_spouse = {
+	    				limit = {
+	    					host = { character = ROOT }
+	    					is_landed = no
+	    				}
+	    				courtiers_leaving_effect = yes
+	    			}
+	    		}
+	    		if ={
+	    			limit = {
+	    				any_child = {
+	    					host = { character = ROOT }
+	    					is_landed = no
+	    				}
+	    			}
+	    			any_child = {
+	    				limit = {
+	    					host = { character = ROOT }
+	    					is_landed = no
+	    				}
+	    				courtiers_leaving_effect = yes
+	    			}
+	    		}
+	        }
+        }
+        if = {
+        	limit = {
+        		event_target:courtier_5 = { always = yes }
+        	}
+        	event_target:courtier_5 = {
+	        	courtiers_leaving_effect = yes
+	        	#Family?
+	    		if = {
+	    			limit = {
+	    				is_married = yes
+	    			}
+	    			random_spouse = {
+	    				limit = {
+	    					host = { character = ROOT }
+	    					is_landed = no
+	    				}
+	    				courtiers_leaving_effect = yes
+	    			}
+	    		}
+	    		if ={
+	    			limit = {
+	    				any_child = {
+	    					host = { character = ROOT }
+	    					is_landed = no
+	    				}
+	    			}
+	    			any_child = {
+	    				limit = {
+	    					host = { character = ROOT }
+	    					is_landed = no
+	    				}
+	    				courtiers_leaving_effect = yes
+	    			}
+	    		}
+	        }
+        }
+        ai_chance = {
+            factor = 1
+        }
+    }
+
+    option = { #Nah, stay!
+        name = EVTOPTB_LT_61008
+    }
+    after = {
+        clr_character_flag = started_court_exodus
+    }
+}
+
+### By Milla
+### Courtiers praise your hospitality (Fired from yearly pulse random)
+character_event = {
+    id = LT.10103
+    picture = GFX_evt_state_diplomacy
+    border = GFX_event_normal_frame_diplomacy
+    is_triggered_only = yes
+
+    capable_only = yes
+    only_rulers = yes
+    prisoner = no
+    min_age = 16
+
+    desc = {
+        text = EVTDESC_LT_10103_A
+        trigger = { in_seclusion = no }
+    }
+    desc = {
+        text = EVTDESC_LT_10103_B
+        trigger = { in_seclusion = no }
+    }
+    desc = {
+        text = EVTDESC_LT_10103_C
+        trigger = { in_seclusion = yes }
+    }
+
+    trigger = {
+        has_game_rule = {
+            name = court_limit_rule
+            value = on
+        }
+        court_is_max_crowded_trigger = yes
+        OR = { #only independent rulers or players
+            independent = yes
+            ai = no
+        }
+        NOR = {
+            has_character_modifier = naive_host
+            has_character_modifier = generous_host
+            has_character_modifier = calculating_host
+        }
+        any_courtier = {
+            OR = {
+                is_inaccessible_or_incapable_trigger = no
+                AND = {
+                    ROOT = { in_seclusion = yes }
+                    prisoner = no
+                    is_incapable = no
+                }
+            }
+            is_adult = yes
+        }
+    }
+
+    immediate = {
+        any_courtier = {
+            limit = {
+                OR = {
+                    is_inaccessible_or_incapable_trigger = no
+                    AND = {
+                        ROOT = { in_seclusion = yes }
+                        prisoner = no
+                        is_incapable = no
+                    }
+                }
+                is_adult = yes
+            }
+            score_value = { 
+                value = 10
+                prev_likes_this_score = yes
+            }
+            score_value = { 
+                value = 10
+                interesting_courtier_selection_score = yes
+            }
+            save_event_target_as = upbeat_courtier
+        }
+    }
+
+    ### Various ways to be seen as naive (only one of these 5 should be visible at any given time)...
+    option = {      
+        name = EVTOPTA_LT_10103
+        add_character_modifier = {
+            modifier = naive_host
+            years = 15
+        }
+        tooltip_info = trusting
+        trigger = { trait = trusting }
+    }
+    option = {      
+        name = EVTOPTA_LT_10103
+        add_character_modifier = {
+            modifier = naive_host
+            years = 15
+        }
+        tooltip_info = imbecile
+        trigger = {
+            trait = imbecile
+            NOT = { trait = trusting }
+        }
+    }
+    option = {      
+        name = EVTOPTA_LT_10103
+        add_character_modifier = {
+            modifier = naive_host
+            years = 15
+        }
+        tooltip_info = slow
+        trigger = {
+            trait = slow
+            NOR = {
+                trait = trusting
+                trait = imbecile
+            }
+        }
+    }
+    option = {      
+        name = EVTOPTA_LT_10103
+        add_character_modifier = {
+            modifier = naive_host
+            years = 15
+        }
+        tooltip_info = dull
+        trigger = {
+            trait = dull
+            NOR = {
+                trait = trusting
+                trait = imbecile
+                trait = slow
+            }
+        }
+    }
+    option = {      
+        name = EVTOPTA_LT_10103
+        add_character_modifier = {
+            modifier = naive_host
+            years = 15
+        }
+        tooltip_info = lunatic
+        trigger = {
+            trait = lunatic
+            NOR = {
+                trait = dull
+                trait = trusting
+                trait = imbecile
+                trait = slow
+            }
+        }
+    }
+    ### Intrigue option
+    option = {      
+        name = EVTOPTB_LT_10103
+        add_character_modifier = {
+            modifier = calculating_host
+            years = 15
+        }
+        tooltip_info_custom = EVTOPTC_LT_20410_TT
+        trigger = {
+            intrigue = 15
+            OR = {
+                trait = deceitful
+                trait = paranoid
+                trait = elusive_shadow
+                has_lifestyle_intrigue_trigger = yes
+            }
+        }
+    }
+
+    ### Regular "yes"s
+    option = {      
+        name = EVTOPTC_LT_10103 # I just enjoy your company!
+        add_character_modifier = {
+            modifier = generous_host
+            years = 15
+        }
+        if = {
+            limit = { trait = greedy }
+            remove_trait = greedy
+        }
+        else_if = {
+            limit = { NOT = { trait = charitable } }
+            add_trait = charitable
+        }
+        trigger = {
+            NOT = { trait = cruel }
+        }
+    }
+    option = {      
+        name = EVTOPTC_LT_10103_cruel # It means more resources
+        add_character_modifier = {
+            modifier = ruthless_host
+            years = 15
+        }
+        
+        tooltip_info = cruel
+
+        trigger = {
+            trait = cruel
+        }
+    }
+    option = {      
+        name = {
+            text = EVTOPTD_LT_10103_A # You're all important to me
+            trigger = { family_of_root_trigger = no }
+        }
+        name = {
+            text = EVTOPTD_LT_10103_B # You're all important to me
+            trigger = { family_of_root_trigger = yes }
+        }
+
+        prestige = 150
+        piety = 15
+
+        if = {
+            limit = { trait = envious }
+            remove_trait = envious
+        }
+        else_if = {
+            limit = { trait = cruel }
+            remove_trait = cruel
+        }
+        else_if = {
+            limit = { NOT = { trait = kind } }
+            add_trait = kind
+        }
+    }
+}   
