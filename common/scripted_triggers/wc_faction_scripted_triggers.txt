@@ -95,6 +95,24 @@ is_member_of_alliance_faction_trigger = {
 		}
 	}
 }
+# Enought opinion to join faction
+has_opinion_to_join_prev_faction_leader_trigger = {
+	# Players need more opinion
+	trigger_if = {
+		limit = { ai = no }
+		trigger_if = {	# Less opinion required if there's ongoing invasion
+			limit = { ongoing_invasion_trigger = yes }
+			reverse_opinion = { who = PREV value = 25 }
+		}
+		trigger_else = {
+			reverse_opinion = { who = PREV value = 60 }
+		}
+	}
+	trigger_else = {
+		has_good_opinion_with_prev_faction_leader_trigger = yes
+	}
+}
+# Enought opinion to stay in faction
 has_good_opinion_with_prev_faction_leader_trigger = {
 	NOR = {
 		evil_public_religion_trigger = yes
@@ -107,24 +125,24 @@ has_good_opinion_with_prev_faction_leader_trigger = {
 		religion = cult_of_the_candle
 		religion = primitive_shamanism
 	}
-	OR = {
-		opinion = { who = PREV value = 15 }
-		AND = {
-			NOR = {
+	trigger_if = {
+		limit = { ongoing_invasion_trigger = yes }
+		opinion = { who = PREV value = -50 }
+	}
+	trigger_else_if = {
+		limit = {
+			OR = {
 				trait = stubborn
 				trait = envious
 				trait = ambitious
 				trait = proud
 				trait = greedy
 			}
-			opinion = { who = PREV value = -10 }
 		}
-		hidden_tooltip = {
-			AND = {
-				ongoing_invasion_trigger = yes
-				opinion = { who = PREV value = -50 }
-			}
-		}
+		opinion = { who = PREV value = 0 }
+	}
+	trigger_else = {
+		opinion = { who = PREV value = -20 }
 	}
 }
 is_in_political_faction_trigger = {
