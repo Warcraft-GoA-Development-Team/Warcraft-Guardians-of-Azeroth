@@ -9,7 +9,7 @@ province_event = {
 
 	immediate = {
 		# Exodus of the Horde
-		province_event = { id = WCTHW.99 }
+		province_event = { id = WCTHW.99 days = 3 }
 
 		# Terror of the Tides (the naga)
 		holder_scope = { narrative_event = { id = WCVOD.700 days = 10 } }
@@ -32,233 +32,67 @@ province_event = {
 	hide_window = yes
 
 	trigger = {
-		NOT = { has_global_flag = horde_was_reborned_flag }
+		NOT = { has_global_flag = exodus_horde_happened_flag }
 
 		e_horde = { has_holder = no }
 	}
 
 	immediate = {
-		set_global_flag = horde_was_reborned_flag
+		set_global_flag = exodus_horde_happened_flag
 
-		### Chooses a new Warchief of the Horde
-		# Claimants have the highest priority
-		if = {
+		# Selects a new warchief
+		random_character = {
 			limit = {
-				e_horde = {
-					any_claimant = {
-						is_untouchable_trigger = no
+				is_untouchable_trigger = no
 
-						is_alive = yes
-						is_adult = yes
-						is_incapable = no
-						prisoner = no
-						is_inaccessible_trigger = no
-						is_consort = no
-						
-						OR = {
-							is_ruler = no
-							is_feudal = yes
-							is_tribal = yes
-						}
+				is_alive = yes
+				is_adult = yes
+				is_incapable = no
+				prisoner = no
+				is_inaccessible_trigger = no
+				is_consort = no
 
-						trait = creature_orc
-						religion_group = shamanism_group
-						culture_group = orc_group
-
-						is_in_political_faction_trigger = no
-					}
+				OR = {
+					is_ruler = no
+					is_feudal = yes
+					is_tribal = yes
 				}
+
+				NOT = { has_character_flag = do_not_disturb }
+				NOT = { has_character_flag = exodus_horde_declined_flag }
+
+				trait = creature_orc
+				religion_group = shamanism_group
+				culture_group = orc_group
+
+				is_in_political_faction_trigger = no
+				location = { region = world_eastern_kingdoms }
 			}
-			random_character = {
-				limit = {
-					is_untouchable_trigger = no
-
-					is_alive = yes
-					is_adult = yes
-					is_incapable = no
-					prisoner = no
-					is_inaccessible_trigger = no
-					is_consort = no
-					
-					OR = {
-						is_ruler = no
-						is_feudal = yes
-						is_tribal = yes
-					}
-
-					trait = creature_orc
-					religion_group = shamanism_group
-					culture_group = orc_group
-
-					has_claim = e_horde
-					is_in_political_faction_trigger = no
-				}
-				narrative_event = { id = WCTHW.100 }
+			preferred_limit = {
+				has_character_flag = is_thrall
 			}
+			preferred_limit = {
+				ai = no
+			}
+			preferred_limit = {
+				has_claim = e_horde
+			}
+			preferred_limit = {
+				prestige = 1000
+			}
+			preferred_limit = {
+				prestige = 750
+			}
+			preferred_limit = {
+				prestige = 500
+			}
+			preferred_limit = {
+				prestige = 250
+			}
+			narrative_event = { id = WCTHW.100 }
 			break = yes
 		}
-		# Thrall have a more higher priority
-		if = {
-			limit = {
-				any_character = {
-					is_untouchable_trigger = no
-
-					is_alive = yes
-					is_adult = yes
-					is_incapable = no
-					prisoner = no
-					is_inaccessible_trigger = no
-					is_consort = no
-					
-					OR = {
-						is_ruler = no
-						is_feudal = yes
-						is_tribal = yes
-					}
-
-					trait = creature_orc
-					religion_group = shamanism_group
-					culture_group = orc_group
-
-					has_character_flag = is_thrall
-					is_in_political_faction_trigger = no
-				}
-			}
-			random_character = {
-				limit = {
-					is_untouchable_trigger = no
-
-					is_alive = yes
-					is_adult = yes
-					is_incapable = no
-					prisoner = no
-					is_inaccessible_trigger = no
-					is_consort = no
-					
-					OR = {
-						is_ruler = no
-						is_feudal = yes
-						is_tribal = yes
-					}
-
-					trait = creature_orc
-					religion_group = shamanism_group
-					culture_group = orc_group
-
-					has_character_flag = is_thrall
-					is_in_political_faction_trigger = no
-				}
-				narrative_event = { id = WCTHW.100 }
-			}
-			break = yes
-		}
-		# Prestigious characters have a more higher priority
-		if = {
-			limit = {
-				any_character = {
-					is_untouchable_trigger = no
-
-					is_alive = yes
-					is_adult = yes
-					is_incapable = no
-					prisoner = no
-					is_inaccessible_trigger = no
-					is_consort = no
-					
-					OR = {
-						is_ruler = no
-						is_feudal = yes
-						is_tribal = yes
-					}
-
-					trait = creature_orc
-					religion_group = shamanism_group
-					culture_group = orc_group
-
-					prestige = 500
-					is_in_political_faction_trigger = no
-				}
-			}
-			random_character = {
-				limit = {
-					is_untouchable_trigger = no
-
-					is_alive = yes
-					is_adult = yes
-					is_incapable = no
-					prisoner = no
-					is_inaccessible_trigger = no
-					is_consort = no
-					
-					OR = {
-						is_ruler = no
-						is_feudal = yes
-						is_tribal = yes
-					}
-
-					trait = creature_orc
-					religion_group = shamanism_group
-					culture_group = orc_group
-
-					prestige = 500
-					is_in_political_faction_trigger = no
-				}
-				narrative_event = { id = WCTHW.100 }
-			}
-			break = yes
-		}
-		# Any orc professing shamanism
-		if = {
-			limit = {
-				any_character = {
-					is_untouchable_trigger = no
-
-					is_alive = yes
-					is_adult = yes
-					is_incapable = no
-					prisoner = no
-					is_inaccessible_trigger = no
-					is_consort = no
-					
-					OR = {
-						is_ruler = no
-						is_feudal = yes
-						is_tribal = yes
-					}
-
-					trait = creature_orc
-					religion_group = shamanism_group
-					culture_group = orc_group
-
-					is_in_political_faction_trigger = no
-				}
-			}
-			random_character = {
-				limit = {
-					is_untouchable_trigger = no
-
-					is_alive = yes
-					is_adult = yes
-					is_incapable = no
-					prisoner = no
-					is_inaccessible_trigger = no
-					is_consort = no
-					
-					OR = {
-						is_ruler = no
-						is_feudal = yes
-						is_tribal = yes
-					}
-
-					trait = creature_orc
-					religion_group = shamanism_group
-					culture_group = orc_group
-
-					is_in_political_faction_trigger = no
-				}
-				narrative_event = { id = WCTHW.100 }
-			}
-		}
+		clr_global_flag = exodus_horde_happened_flag
 	}
 }
 # Main event
@@ -295,7 +129,7 @@ narrative_event = {
 				random_independent_ruler = {
 					limit = {
 						is_untouchable_trigger = no
-						
+
 						lower_real_tier_than = EMPEROR
 
 						NOT = { has_character_flag = invitation_to_sail_is_sent_flag }
@@ -305,6 +139,9 @@ narrative_event = {
 						culture_group = orc_group
 
 						is_in_political_faction_trigger = no
+					}
+					preferred_limit = {
+						ai = no
 					}
 					set_character_flag = invitation_to_sail_is_sent_flag
 
@@ -319,7 +156,10 @@ narrative_event = {
 	option = {
 		name = EVTOPTB_WCTHW_100
 
-		clr_global_flag = horde_was_reborned_flag
+		clr_global_flag = exodus_horde_happened_flag
+		# If player declines, tries to find another warchief
+		set_character_flag = exodus_horde_declined_flag
+		73 = { province_event = { id = WCTHW.99 } }
 
 		custom_tooltip = {
 			text = stops_the_event_chain
@@ -407,9 +247,9 @@ narrative_event = {
 					is_untouchable_trigger = no
 					can_rule_peacefully_trigger = yes
 					evil_public_religion_trigger = no
-					
+
 					culture_group = troll_group
-					
+
 					NOT = { tier = EMPEROR }
 					has_landed_title = d_darkspear
 				}
@@ -485,7 +325,7 @@ narrative_event = {
 	border = GFX_event_narrative_frame_war
 
 	is_triggered_only = yes
-	
+
 	trigger = {
 		3625 = {
 			holder_scope = {
@@ -493,9 +333,9 @@ narrative_event = {
 					is_untouchable_trigger = no
 					can_rule_peacefully_trigger = yes
 					evil_public_religion_trigger = no
-					
+
 					culture_group = troll_group
-					
+
 					NOT = { tier = EMPEROR }
 					has_landed_title = d_darkspear
 				}
@@ -763,7 +603,7 @@ narrative_event = {
 			}
 		}
 		narrative_event = { id = WCPLF.100 }			# Foundation of the Horde (faction)
-		
+
 		# Trolls
 		event_target:target_troll_primary_title = {
 			if = {
@@ -917,161 +757,67 @@ province_event = {
 	hide_window = yes
 
 	trigger = {
-		NOT = { has_global_flag = foundation_of_theramore_flag }
+		NOT = { has_global_flag = foundation_theramore_happened_flag }
 	}
 
 	immediate = {
-		set_global_flag = foundation_of_theramore_flag
+		set_global_flag = foundation_theramore_happened_flag
 
-		### Chooses a leader of Theramore
-		# Jaina have the highest priority
-		if = {
+		# Selects a leader of Theramore
+		random_character = {
 			limit = {
-				c_48081 = {
-					is_untouchable_trigger = no
+				is_untouchable_trigger = no
 
-					is_alive = yes
-					is_adult = yes
-					is_incapable = no
-					prisoner = no
-					is_inaccessible_trigger = no
-					is_consort = no
-					
-					OR = {
-						is_ruler = no
-						is_feudal = yes
-						is_tribal = yes
-					}
+				is_alive = yes
+				is_adult = yes
+				is_incapable = no
+				prisoner = no
+				is_inaccessible_trigger = no
+				is_consort = no
 
-					trait = creature_human
-					OR = {
-						religion_group = light_group
-						religion_group = secular_group
-						religion_group = arcane_group
-						religion = tidemother
-					}
-
-					has_character_flag = is_jaina
+				OR = {
+					is_ruler = no
+					is_feudal = yes
+					is_tribal = yes
 				}
+
+				NOT = { has_character_flag = do_not_disturb }
+				NOT = { has_character_flag = foundation_theramore_declined_flag }
+
+				OR = {
+					religion_group = light_group
+					religion_group = secular_group
+					religion_group = arcane_group
+					religion = tidemother
+				}
+
+				location = { region = world_eastern_kingdoms }
 			}
-			c_48081 = { narrative_event = { id = WCTHW.150 } }
+			preferred_limit = {
+				has_character_flag = is_jaina
+			}
+			preferred_limit = {
+				ai = no
+			}
+			preferred_limit = {
+				trait = kind
+			}
+			preferred_limit = {
+				prestige = 1000
+			}
+			preferred_limit = {
+				prestige = 750
+			}
+			preferred_limit = {
+				prestige = 500
+			}
+			preferred_limit = {
+				prestige = 250
+			}
+			narrative_event = { id = WCTHW.150 }
 			break = yes
 		}
-		# Kind prestigious humans have a more higher priority
-		if = {
-			limit = {
-				any_character = {
-					is_untouchable_trigger = no
-
-					is_alive = yes
-					is_adult = yes
-					is_incapable = no
-					prisoner = no
-					is_inaccessible_trigger = no
-					is_consort = no
-					
-					OR = {
-						is_ruler = no
-						is_feudal = yes
-						is_tribal = yes
-					}
-
-					trait = creature_human
-					OR = {
-						religion_group = light_group
-						religion_group = secular_group
-						religion_group = arcane_group
-						religion = tidemother
-					}
-					trait = kind
-				}
-			}
-			random_character = {
-				limit = {
-					is_untouchable_trigger = no
-
-					is_alive = yes
-					is_adult = yes
-					is_incapable = no
-					prisoner = no
-					is_inaccessible_trigger = no
-					is_consort = no
-					
-					OR = {
-						is_ruler = no
-						is_feudal = yes
-						is_tribal = yes
-					}
-
-					trait = creature_human
-					OR = {
-						religion_group = light_group
-						religion_group = secular_group
-						religion_group = arcane_group
-						religion = tidemother
-					}
-					trait = kind
-				}
-				narrative_event = { id = WCTHW.150 }
-			}
-			break = yes
-		}
-		# Any kind character
-		if = {
-			limit = {
-				any_character = {
-					is_untouchable_trigger = no
-
-					is_alive = yes
-					is_adult = yes
-					is_incapable = no
-					prisoner = no
-					is_inaccessible_trigger = no
-					is_consort = no
-					
-					OR = {
-						is_ruler = no
-						is_feudal = yes
-						is_tribal = yes
-					}
-
-					OR = {
-						religion_group = light_group
-						religion_group = secular_group
-						religion_group = arcane_group
-						religion = tidemother
-					}
-					trait = kind
-				}
-			}
-			random_character = {
-				limit = {
-					is_untouchable_trigger = no
-
-					is_alive = yes
-					is_adult = yes
-					is_incapable = no
-					prisoner = no
-					is_inaccessible_trigger = no
-					is_consort = no
-					
-					OR = {
-						is_ruler = no
-						is_feudal = yes
-						is_tribal = yes
-					}
-
-					OR = {
-						religion_group = light_group
-						religion_group = secular_group
-						religion_group = arcane_group
-						religion = tidemother
-					}
-					trait = kind
-				}
-				narrative_event = { id = WCTHW.150 }
-			}
-		}
+		clr_global_flag = foundation_theramore_happened_flag
 	}
 }
 # Main event
@@ -1107,7 +853,10 @@ narrative_event = {
 	option = {
 		name = EVTOPTB_WCTHW_150
 
-		clr_global_flag = foundation_of_theramore_flag
+		clr_global_flag = foundation_theramore_happened_flag
+		# If player declines, tries to find another leader
+		set_character_flag = foundation_theramore_declined_flag
+		73 = { province_event = { id = WCTHW.145 } }
 
 		ai_chance = {
 			factor = 0
@@ -1256,12 +1005,24 @@ character_event = {
 
 	is_triggered_only = yes
 	hide_window = yes
-	
+
 	only_playable = yes
 
 	trigger = {
 		evil_public_religion_trigger = yes
-		FROM = { has_building = tp_sunwell }
+		FROM = {
+			location = {
+				wonder = {
+					has_wonder = wonder_sunwell
+					NOR = {
+						has_wonder_flag = wonder_lightwell_flag
+						has_wonder_flag = wonder_deathwell_flag
+						has_wonder_flag = wonder_felwell_flag
+						has_wonder_flag = wonder_voidwell_flag
+					}
+				}
+			}
+		}
 	}
 
 	immediate = {
@@ -1304,23 +1065,23 @@ narrative_event = {
 	immediate = {
 		ROOT = {
 			save_event_target_as = target_religion
-			
+
 			trigger_switch = {
 				on_trigger = religion
 				orcish_fel = { add_felwell_effect = yes }
 				burning_legion_religion = { add_felwell_effect = yes }
-				death_god = { b_sunwell = { add_deathwell_effect = yes } }
+				death_god = { add_deathwell_effect = yes }
 				old_gods_worship = { add_voidwell_effect = yes }
 			}
 		}
 		73 = { province_event = { id = WCTHW.1009 days = 60 } }
 	}
-	
+
 	option = {	# Fools!
 		trigger = { evil_true_religion_trigger = yes }
 		name = FOOLS
 	}
-	
+
 	option = {	# Excellent!
 		trigger = {
 			evil_true_religion_trigger = no
@@ -1342,7 +1103,7 @@ narrative_event = {
 		}
 		name = ALAS
 	}
-	
+
 	option = {
 		trigger = {
 			evil_true_religion_trigger = no
@@ -1366,6 +1127,10 @@ province_event = {
 
 	is_triggered_only = yes
 	hide_window = yes
+	
+	trigger = {
+		NOT = { has_global_flag = blood_elves_happened_flag }
+	}
 
 	immediate = {
 		# High King of Quel'Thalas
@@ -1397,9 +1162,9 @@ province_event = {
 			break = yes
 		}
 		# Top liege of the Sunwell
-		b_sunwell = {
-			holder_scope = {
-				top_liege = {
+		394 = {
+			wonder = {
+				wonder_owner = {
 					if = {
 						limit = {
 							trait = creature_high_elf
@@ -1420,6 +1185,10 @@ narrative_event = {
 	border = GFX_event_narrative_frame_diplomacy
 
 	is_triggered_only = yes
+	
+	immediate = {
+		set_global_flag = blood_elves_happened_flag
+	}
 
 	option = {
 		name = EVTOPTA_WCTHW_1010
@@ -1458,7 +1227,7 @@ narrative_event = {
 			}
 		}
 		name = EVTOPTA_WCTHW_1010
-		
+
 		become_blood_elf_effect = yes
 
 		ai_chance = {
@@ -1545,14 +1314,14 @@ character_event = {
 	border = GFX_event_normal_frame_religion
 
 	is_triggered_only = yes
-	
+
 	only_capable = yes
 	only_playable = yes
 
 	trigger = {
 		is_incapable = no
 		is_playable = yes
-		
+
 		is_alive = yes
 		is_dying = no
 
@@ -1567,11 +1336,25 @@ character_event = {
 			has_character_flag = consuming_void_magic_flag
 		}
 
-		b_sunwell = { has_building = tp_sunwellcorrupted }
+		394 = {
+			wonder = {
+				has_wonder_flag = wonder_deathwell_flag
+			}
+		}
+
 		# Independent elves outside Quel'thalas don't feel magical addiction
 		OR = {
 			location = { region = world_eastern_kingdoms_quelthalas }
-			b_sunwell = { same_realm = ROOT }
+			394 = {
+				wonder = {
+					wonder_owner = {
+						OR = {
+							character = ROOT
+							same_realm = ROOT
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -2052,9 +1835,14 @@ province_event = {
 	hide_window = yes
 
 	immediate = {
-		if = {
-			limit = { has_global_flag = sunwell_is_being_restored_flag }
-			b_sunwell = { holder_scope = { top_liege = { narrative_event = { id = WCTHW.1106 } } } }
+		event_target:target_sunwell = {
+			wonder_owner = {
+				# character_event = { id = WCTHW.1101 }
+				if = {
+					limit = { has_global_flag = sunwell_is_being_restored_flag }
+					narrative_event = { id = WCTHW.1106 }
+				}
+			}
 		}
 	}
 }
@@ -2078,6 +1866,10 @@ narrative_event = {
 		name = EVTOPTA_WCTHW_1106
 
 		if = {
+			limit = { religion_group = void_group }
+			if = { limit = { has_secret_religion = yes } clear_secret_religion = yes }
+		}
+		else_if = {
 			limit = { secret_religion_group = void_group }
 			convert_to_secret_religion = yes
 		}
@@ -2113,6 +1905,10 @@ narrative_event = {
 		name = EVTOPTB_WCTHW_1106
 
 		if = {
+			limit = { religion_group = fel_group }
+			if = { limit = { has_secret_religion = yes } clear_secret_religion = yes }
+		}
+		else_if = {
 			limit = { secret_religion_group = fel_group }
 			convert_to_secret_religion = yes
 		}
@@ -2139,6 +1935,7 @@ narrative_event = {
 		}
 	}
 	option = {
+		trigger = { evil_public_religion_trigger = no }
 		name = EVTOPTC_WCTHW_1106
 
 		hidden_effect = { 73 = { province_event = { id = WCTHW.1110 days = 15 } } }
@@ -2156,14 +1953,12 @@ province_event = {
 	hide_window = yes
 
 	immediate = {
-		b_sunwell = {
-			holder_scope = {
-				top_liege = {
-					character_event = { id = WCTHW.1101 }
-					if = {
-						limit = { has_global_flag = sunwell_is_being_restored_flag }
-						narrative_event = { id = WCTHW.1111 }
-					}
+		event_target:target_sunwell = {
+			wonder_owner = {
+				character_event = { id = WCTHW.1101 }
+				if = {
+					limit = { has_global_flag = sunwell_is_being_restored_flag }
+					narrative_event = { id = WCTHW.1111 }
 				}
 			}
 		}
@@ -2193,14 +1988,12 @@ province_event = {
 	hide_window = yes
 
 	immediate = {
-		b_sunwell = {
-			holder_scope = {
-				top_liege = {
-					character_event = { id = WCTHW.1101 }
-					if = {
-						limit = { has_global_flag = sunwell_is_being_restored_flag }
-						narrative_event = { id = WCTHW.1116 }
-					}
+		event_target:target_sunwell = {
+			wonder_owner = {
+				character_event = { id = WCTHW.1101 }
+				if = {
+					limit = { has_global_flag = sunwell_is_being_restored_flag }
+					narrative_event = { id = WCTHW.1116 }
 				}
 			}
 		}
@@ -2274,14 +2067,12 @@ province_event = {
 	hide_window = yes
 
 	immediate = {
-		b_sunwell = {
-			holder_scope = {
-				top_liege = {
-					character_event = { id = WCTHW.1101 }
-					if = {
-						limit = { has_global_flag = sunwell_is_being_restored_flag }
-						narrative_event = { id = WCTHW.1121 }
-					}
+		event_target:target_sunwell = {
+			wonder_owner = {
+				character_event = { id = WCTHW.1101 }
+				if = {
+					limit = { has_global_flag = sunwell_is_being_restored_flag }
+					narrative_event = { id = WCTHW.1121 }
 				}
 			}
 		}
@@ -2321,14 +2112,12 @@ province_event = {
 	hide_window = yes
 
 	immediate = {
-		b_sunwell = {
-			holder_scope = {
-				top_liege = {
-					character_event = { id = WCTHW.1101 }
-					if = {
-						limit = { has_global_flag = sunwell_is_being_restored_flag }
-						narrative_event = { id = WCTHW.1126 }
-					}
+		event_target:target_sunwell = {
+			wonder_owner = {
+				character_event = { id = WCTHW.1101 }
+				if = {
+					limit = { has_global_flag = sunwell_is_being_restored_flag }
+					narrative_event = { id = WCTHW.1126 }
 				}
 			}
 		}
@@ -2341,10 +2130,11 @@ narrative_event = {
 	title = EVTTITLE_WCTHW_1126
 	desc = {
 		trigger = {
-			b_sunwell = {
-				OR = {
-					has_building = tp_sunwell
-					has_building = tp_sunwell_light
+			event_target:target_sunwell = {
+				NOR = {
+					has_wonder_flag = wonder_deathwell_flag
+					has_wonder_flag = wonder_felwell_flag
+					has_wonder_flag = wonder_voidwell_flag
 				}
 			}
 		}
@@ -2352,12 +2142,12 @@ narrative_event = {
 		picture = GFX_evt_sunwell
 	}
 	desc = {
-		trigger = { b_sunwell = { has_building = tp_voidwell } }
+		trigger = { event_target:target_sunwell = { has_wonder_flag = wonder_voidwell_flag } }
 		text = EVTDESC_WCTHW_1126_void
 		picture = GFX_evt_corrupted_sunwell_scourge
 	}
 	desc = {
-		trigger = { b_sunwell = { has_building = tp_felwell } }
+		trigger = { event_target:target_sunwell = { has_wonder_flag = wonder_felwell_flag } }
 		text = EVTDESC_WCTHW_1126_fel
 		picture = GFX_evt_corrupted_sunwell_fel
 	}
@@ -2368,7 +2158,7 @@ narrative_event = {
 
 	immediate = {
 		save_event_target_as = target_religion
-		
+
 		if = {
 			limit = {
 				NOR = {
@@ -2388,12 +2178,12 @@ narrative_event = {
 			}
 		}
 	}
-	
+
 	option = {	# Fools!
 		trigger = { evil_true_religion_trigger = yes }
 		name = FOOLS
 	}
-	
+
 	option = {	# Excellent!
 		trigger = {
 			evil_true_religion_trigger = no
@@ -2402,7 +2192,7 @@ narrative_event = {
 				true_religion_associated_with_sunwell_trigger = yes
 			}
 		}
-		text = EXCELLENT
+		name = EXCELLENT
 	}
 
 	option = {	# Alas!
@@ -2415,7 +2205,7 @@ narrative_event = {
 		}
 		name = ALAS
 	}
-	
+
 	option = {
 		trigger = {
 			evil_true_religion_trigger = no
@@ -2423,7 +2213,7 @@ narrative_event = {
 		}
 		name = I_SEE
 	}
-	
+
 	after = {
 		if = {
 			limit = { character = ROOT }
@@ -2443,16 +2233,18 @@ narrative_event = {
 	border = GFX_event_narrative_frame_war
 
 	is_triggered_only = yes
+	hide_from = yes
 
 	trigger = {
 		is_incapable = no
 		prisoner = no
-		
+
 		e_scourge = { has_holder = yes }
 	}
 
 	immediate = {
 		save_event_target_as = target_champion
+		
 		# If you don't have realm that you can get via this event chain...
 		if = {
 			limit = { NOT = { event_target:target_realm = { always = yes } } }
@@ -2492,11 +2284,12 @@ narrative_event = {
 	border = GFX_event_narrative_frame_war
 
 	is_triggered_only = yes
+	hide_from = yes
 
 	trigger = {
 		is_incapable = no
 		prisoner = no
-		
+
 		e_scourge = { has_holder = yes }
 	}
 
@@ -2536,76 +2329,60 @@ narrative_event = {
 	border = GFX_event_narrative_frame_war
 
 	is_triggered_only = yes
+	hide_from = yes
 
 	trigger = {
 		is_incapable = no
 		prisoner = no
-		
+
 		e_scourge = { has_holder = yes }
+		top_liege = {
+			any_realm_province = {
+				religion_group = light_group
+				culture_group = human_group
+
+				NOT = { has_province_modifier = undead_province }
+				region = world_eastern_kingdoms_lordaeron
+				holder_scope = { NOT = { character = PREVPREV } }
+			}
+		}
+	}
+
+	fail_trigger_effect = {
+		# Just skip this event if it can't be fired
+		narrative_event = { id = WCTHW.2015 days = 1 }
 	}
 
 	immediate = {
-		c_stratholme = {
-			location = {
-				if = {
-					limit = {
-						NOT = { has_province_modifier = undead_province }
-						religion_group = light_group
-					}
-					save_event_target_as = target_province
-					break = yes
-				}
-			}
-		}
-		if = {
-			limit = {
-				any_realm_province = {
-					religion_group = light_group
-					NOT = { has_province_modifier = undead_province }
-					has_disease = yes
-				}
-			}
+		# Selects a province for culling
+		top_liege = {
 			random_realm_province = {
 				limit = {
 					religion_group = light_group
+					culture_group = human_group
+
 					NOT = { has_province_modifier = undead_province }
-					has_disease = yes
+					region = world_eastern_kingdoms_lordaeron
+					holder_scope = { NOT = { character = PREVPREV } }
+				}
+				preferred_limit = {
+					province_id = 324	# Stratholme
+				}
+				preferred_limit = {
+					disease = plague_of_undeath
+				}
+				preferred_limit = {
+					num_of_settlements = 5
+				}
+				preferred_limit = {
+					num_of_settlements = 4
+				}
+				preferred_limit = {
+					num_of_settlements = 3
 				}
 				save_event_target_as = target_province
-				break = yes
-			}
-		}
-		if = {
-			limit = {
-				any_province = {
-					religion_group = light_group
-					NOT = { has_province_modifier = undead_province }
-					has_disease = yes
-				}
-			}
-			random_province = {
-				limit = {
-					religion_group = light_group
-					NOT = { has_province_modifier = undead_province }
-					has_disease = yes
-				}
-				save_event_target_as = target_province
-				break = yes
-			}
-		}
-		if = {
-			limit = {
-				any_province = {
-					religion_group = light_group
-					NOT = { has_province_modifier = undead_province }
-				}
-			}
-			random_province = {
-				limit = {
-					religion_group = light_group
-					NOT = { has_province_modifier = undead_province }
-				}
-				save_event_target_as = target_province
+				
+				# spawn_disease = plague_of_undeath		# Spawn a big epidemic, it's not what we need.
 			}
 		}
 	}
@@ -2625,18 +2402,7 @@ narrative_event = {
 		}
 
 		event_target:target_province = {
-			hidden_effect = {
-				set_variable = { which = prosperity_value value = 0 }
-				remove_province_modifier = prosperity_modifier_1
-				remove_province_modifier = prosperity_modifier_2
-				remove_province_modifier = prosperity_modifier_3
-				remove_province_modifier = depopulated_1
-				remove_province_modifier = depopulated_2
-			}
-			if = {
-				limit = { NOT = { has_province_modifier = depopulated_3 } }
-				add_province_modifier = { name = depopulated_3 duration = -1 }
-			}
+			add_max_depopulation_effect = yes
 		}
 
 		event_target:target_province = {
@@ -2645,7 +2411,8 @@ narrative_event = {
 				any_province_character = {
 					limit = {
 						NOT = { character = ROOT }
-						NOT = { has_minor_title = title_commander }
+
+						in_command = no
 					}
 					random = {
 						chance = 75
@@ -2728,7 +2495,7 @@ narrative_event = {
 	trigger = {
 		is_incapable = no
 		prisoner = no
-		
+
 		e_scourge = { has_holder = yes }
 	}
 
@@ -2797,7 +2564,7 @@ narrative_event = {
 	trigger = {
 		is_incapable = no
 		prisoner = no
-		
+
 		e_scourge = { has_holder = yes }
 	}
 
@@ -2943,7 +2710,7 @@ character_event = {
 			limit = {
 				is_incapable = no
 				prisoner = no
-				
+
 				e_scourge = { has_holder = yes }
 				OR = {
 					location = { region = world_northrend }
@@ -3007,7 +2774,7 @@ character_event = {
 			limit = {
 				is_incapable = no
 				prisoner = no
-				
+
 				e_scourge = { has_holder = yes }
 				OR = {
 					location = { region = world_northrend }
@@ -3050,7 +2817,7 @@ character_event = {
 			limit = {
 				is_incapable = no
 				prisoner = no
-				
+
 				e_scourge = { has_holder = yes }
 				OR = {
 					location = { region = world_northrend }
@@ -3076,7 +2843,7 @@ narrative_event = {
 	trigger = {
 		is_incapable = no
 		prisoner = no
-		
+
 		e_scourge = { has_holder = yes }
 	}
 
@@ -3114,7 +2881,7 @@ narrative_event = {
 		if = {
 			limit = {
 				is_incapable = no
-				
+
 				e_scourge = { has_holder = yes }
 			}
 			hidden_effect = { narrative_event = { id = WCTHW.2055 days = 10 } }
@@ -3151,7 +2918,7 @@ narrative_event = {
 
 	trigger = {
 		is_incapable = no
-		
+
 		e_scourge = { has_holder = yes }
 	}
 
@@ -3160,6 +2927,8 @@ narrative_event = {
 	}
 
 	immediate = {
+		clr_character_flag = do_not_disturb
+		
 		imprison = no
 		if = {
 			limit = {

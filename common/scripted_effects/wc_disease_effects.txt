@@ -1,0 +1,109 @@
+add_plague_of_undead_symptom_effect = {
+	random_list = {
+		10 = {
+			modifier = {
+				factor = 0
+				trait = cramps
+			}
+			character_event = { id = RIP.5006 }
+		}
+		10 = {
+			modifier = {
+				factor = 0
+				trait = cough
+			}
+			character_event = { id = RIP.5000 }
+		}
+		10 = {
+			modifier = {
+				factor = 0
+				trait = fatigue
+			}
+			character_event = { id = RIP.5009 }
+		}
+	}
+}
+add_corrupted_blood_symptom_effect = {
+	if = {
+		limit = {
+			# Warcraft
+			can_get_sick_trigger = yes
+		}
+		random_list = {
+			10 = {
+				modifier = {
+					factor = 0
+					trait = rash
+				}
+				character_event = { id = RIP.5007 }
+			}
+			10 = {
+				modifier = {
+					factor = 0
+					trait = fever
+				}
+				character_event = { id = RIP.5001 }
+			}
+			10 = {
+				modifier = {
+					factor = 0
+					trait = headache
+				}
+				character_event = { id = RIP.5004 }
+			}
+		}
+	}
+}
+
+give_plague_of_undeath_effect = {
+	if = {
+		limit = {
+			NOT = {
+				has_character_flag = developing_illness
+				has_character_flag = disease_not_serious
+			}
+		}
+		set_character_flag = got_plague_of_undeath
+		set_character_flag = developing_illness
+		hidden_tooltip = { character_event = { id = WCPOD.5012 days = 5 random = 5 } }
+	}
+}
+get_corrupted_blood_effect = {		# Not check conditions
+	if = {
+		limit = {
+			NOR = {
+				has_character_flag = developing_illness
+				has_character_flag = disease_not_serious
+			}
+		}
+		set_character_flag = got_corrupted_blood
+		set_character_flag = developing_illness
+	}
+	if = {
+		limit = { has_character_flag = got_corrupted_blood  }
+		hidden_tooltip = { character_event = { id = WCSYM.5011 days = 2 random = 2 } }
+	}
+}
+give_corrupted_blood_effect = {		# Check conditions
+	if = {
+		limit = {
+			# Warcraft
+			can_get_sick_trigger = yes
+
+			NOT = { trait = corrupted_blood }
+		}
+
+		if = {
+			limit = {
+				has_dlc = "Reapers"
+				NOT = { has_character_flag = developing_illness }
+				NOT = { has_character_flag = disease_not_serious }
+			}
+			get_corrupted_blood_effect = yes
+		}
+		if = {
+			limit = { NOT = { has_dlc = "Reapers" } }
+			add_trait = corrupted_blood
+		}
+	}
+}
