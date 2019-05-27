@@ -6,23 +6,23 @@ long_character_event = {
 	desc = EVTDESC_WCVRK_10
 	picture = GFX_evt_kvaldir
 	border = GFX_event_long_frame_war
-	
+
 	is_triggered_only = yes
-	
+
 	only_playable = yes
 
 	trigger = {
 		is_untouchable_trigger = no
 		can_rule_peacefully_trigger = yes
-		
+
 		is_alive = yes
 		is_dying = no
-		
+
 		NOT = { religion = helya }
 		capital_scope = { region = world_northrend }
 		any_demesne_province = { port = yes }
 	}
-	
+
 	weight_multiplier = {
 		days = 1
 	}
@@ -66,7 +66,7 @@ long_character_event = {
 			character_event = { id = HL.100 }
 		}
 	}
-	
+
 	option = {
 		name = ALAS
 	}
@@ -76,10 +76,11 @@ long_character_event = {
 # Waycrest's spouse is sick - begin the Incursion
 character_event = {
 	id = WCVRK.100
-	
+
 	is_triggered_only = yes
-	only_playable = yes
 	hide_window = yes
+
+	only_playable = yes
 
 	trigger = {
 		is_untouchable_trigger = no
@@ -90,7 +91,7 @@ character_event = {
 		is_incapable = no
 		prisoner = no
 		is_inaccessible_trigger = no
-    
+
 		OR = {
 			is_feudal = yes
 			is_tribal = yes
@@ -98,16 +99,16 @@ character_event = {
 
 		NOT = { has_global_flag = heartsbane_coven_event_flag }
 		NOT = { has_character_flag = heartsbane_coven_declined_flag }
-    
+
 		can_be_undead_trigger = yes
 		dark_public_religion_trigger = no
 		dark_true_religion_trigger = no
-		
+
 		trigger_if = {
 			limit = { is_female = no }
 			character_disease_trigger = yes
 		}
-    
+
 		spouse = {
 			is_untouchable_trigger = no
 
@@ -117,23 +118,23 @@ character_event = {
 			is_incapable = no
 			prisoner = no
 			is_inaccessible_trigger = no
-        
+
 			OR = {
 				is_feudal = yes
 				is_tribal = yes
 				is_ruler = no
 			}
-        
+
 			can_be_undead_trigger = yes
 			dark_public_religion_trigger = no
 			dark_true_religion_trigger = no
-        
+
 			trigger_if = {
 				limit = { is_female = no }
 				character_disease_trigger = yes
 			}
 		}
-		
+
 		OR = {
 			has_landed_title = d_drustwar
 			spouse = {
@@ -141,9 +142,11 @@ character_event = {
 			}
 		}
 	}
-	
+
 	immediate = {
 		set_global_flag = heartsbane_coven_event_flag
+		set_global_flag = drustvar_crisis_ongoing_flag	# Blocks summon_gorak_tul
+		
 		if = {
 			limit = { is_female = no }
 			save_event_target_as = target_mothers_spouse
@@ -160,7 +163,7 @@ character_event = {
 				save_event_target_as = target_mother
 			}
 		}
-		
+
 		event_target:target_mother = { narrative_event = { id = WCVRK.110 } }
 	}
 }
@@ -172,98 +175,45 @@ narrative_event = {
 	desc = EVTDESC_WCVRK_110
 	picture = GFX_evt_drustvar
 	border = GFX_event_narrative_frame_intrigue
-	
+
 	is_triggered_only = yes
-	
+
 	immediate = {
 		log = "WCVRK.110 fired for [Root.GetBestName]"
-		if = {
-			limit = {
-				any_child = {
-					is_adult = yes
-					is_incapable = no
-					prisoner = no
-					is_inaccessible_trigger = no
-            
-					is_ruler = no	# ...since she's gonna become head of holy order
-					is_dark_being_trigger = no
-					dark_public_religion_trigger = no
-					dark_true_religion_trigger = no
-				}
-			}
-			random_child = {
-				limit = {
-					is_adult = yes
-					is_incapable = no
-					prisoner = no
-					is_inaccessible_trigger = no
-            
-					is_ruler = no	# ...since she's gonna become head of holy order
-					is_dark_being_trigger = no
-					dark_public_religion_trigger = no
-					dark_true_religion_trigger = no
-				}
-				save_event_target_as = target_ooe_founder
-				add_trait = zealous
-			}
-		}
-		else = {
-			create_character = {
-				random_traits = yes
-				dynasty = none
-				religion = tidemother
-				culture = tirassian
-				female = yes
-				age = 26
-				attributes = {
-					martial = 7
-				}
-				trait = creature_human
-				trait = brilliant_strategist
-				trait = class_paladin_7
-				trait = zealous
-			}
-			new_character = {
-				save_event_target_as = target_ooe_founder
-			}
-		}
+		
+		# Moved to WCVRK.119
 	}
 
 	# Not even death will do us part
 	option = {
 		name = EVTOPTA_WCVRK_110
+		
 		event_target:target_mother = {
-			set_graphical_culture = human_undead
-			add_trait_undead_effect = yes
-			remove_trait = creature_human
-			add_trait = creature_banshee
+			remove_racial_traits_effect = yes
+			# set_graphical_culture = human_undead	# Who said they're humans? :3
+			add_trait_undead_effect = yes			# This effect sets portrait
+			add_trait = creature_banshee			# Doubtful, creature_banshee isn't used because there's ton of bugs
 			religion = throssian
 		}
 		event_target:target_mothers_spouse = {
-			set_graphical_culture = human_undead
+			# set_graphical_culture = human_undead
 			add_trait_undead_effect = yes
 			religion = throssian
 			narrative_event = { id = WCVRK.111 }
 		}
-		event_target:target_ooe_founder = { 
-			narrative_event = { id = WCVRK.120 days = 1 } 
-		}
+		
 		if = {
 			limit = { event_target:target_mother = { is_landed = yes } }
 			event_target:target_mother = {
 				save_event_target_as = target_unit_owner
-				capital_scope = {
-					save_event_target_as = target_unit_province
-				}
+				capital_scope = { save_event_target_as = target_unit_province }
 			}
 		}
 		else_if = {
 			limit = { event_target:target_mothers_spouse = { is_landed = yes } }
 			event_target:target_mothers_spouse = {
 				save_event_target_as = target_unit_owner
-				capital_scope = {
-					save_event_target_as = target_unit_province
-				}
+				capital_scope = { save_event_target_as = target_unit_province }
 			}
 		}
 		if = {
@@ -285,53 +235,41 @@ narrative_event = {
 				maintenance = no
 			}
 		}
+		
+		# Independence?
 		if = {
-			limit = {
-				event_target:target_mother = {
-					de_facto_liege = event_target:target_mothers_spouse
-				}
-			}
-			event_target:target_mothers_spouse = {
-				set_defacto_liege = THIS
-			}
+			limit = { event_target:target_mother = { de_facto_liege = event_target:target_mothers_spouse } }
+			event_target:target_mothers_spouse = { set_defacto_liege = THIS }
 		}
 		else_if = {
-			limit = {
-				event_target:target_mothers_spouse = {
-					de_facto_liege = event_target:target_mother
-				}
-			}
-			event_target:target_mother = {
-				set_defacto_liege = THIS
-			}
+			limit = { event_target:target_mothers_spouse = { de_facto_liege = event_target:target_mother } }
+			event_target:target_mother = { set_defacto_liege = THIS }
 		}
 		else = {
-			event_target:target_mother = {
-				set_defacto_liege = THIS
-			}
-			event_target:target_mothers_spouse = {
-				set_defacto_liege = THIS
-			}
+			event_target:target_mother = { set_defacto_liege = THIS }
+			event_target:target_mothers_spouse = { set_defacto_liege = THIS }
 		}
-			
+
+		# The Order of Embers
+		73 = { province_event = { id = WCVRK.119 days = 7 } }
+
 		ai_chance = {
 			factor = 1
 		}
 	}
-		
+
 	# I refuse
 	option = {
 		name = EVTOPTB_WCVRK_110
-		clr_global_flag = heartsbane_coven_event_flag
+
 		set_character_flag = heartsbane_coven_declined_flag
+
 		custom_tooltip = {
 			text = stops_the_event_chain
+			clr_global_flag = heartsbane_coven_event_flag
+			clr_global_flag = drustvar_crisis_ongoing_flag	# Blocks summon_gorak_tul
 		}
-		new_character = {
-			effect = {
-				death = { death_reason = death_missing }
-			}
-		}
+
 		ai_chance = {
 			factor = 0
 		}
@@ -347,42 +285,95 @@ narrative_event = {
 	border = GFX_event_narrative_frame_intrigue
 
 	is_triggered_only = yes
-	
+
 	immediate = {
 		log = "WCTHW.111 fired for [Root.GetBestName]"
 	}
-	
+
 	option = {
 		name = EVTOPTA_WCVRK_111
 	}
 }
 
+# The Order of Embers
+# Delayer event		# This event helps to fire WCVRK.120 in case of character's death
+province_event = {
+	id = WCVRK.119
 
-#The Order of Embers
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		if = {
+			limit = {
+				event_target:target_mother = {
+					any_child = { ooe_founder_triggers = yes }	# Used a few times, so I created scripted trigger
+				}
+			}
+			event_target:target_mother = {
+				random_child = {
+					limit = { ooe_founder_triggers = yes }
+					save_event_target_as = target_ooe_founder
+				}
+			}
+		}
+		# Fallback
+		else = {
+			create_character = {
+				random_traits = yes
+				dynasty = none
+				religion = tidemother
+				culture = tirassian
+				female = yes
+				age = 26
+				attributes = {
+					martial = 7
+				}
+				trait = creature_human
+				trait = brilliant_strategist
+				trait = class_paladin_7
+				trait = zealous
+			}
+			new_character = {
+				save_event_target_as = target_ooe_founder	# Saves new target
+			}
+		}
+		event_target:target_ooe_founder = { narrative_event = { id = WCVRK.120 } }	# Creates the Order
+	}
+}
+# Delayed event
 narrative_event = {
 	id = WCVRK.120
 	title = EVTTITLE_WCVRK_120
 	desc = EVTDESC_WCVRK_120
 	picture = GFX_evt_drustvar
 	border = GFX_event_narrative_frame_war
-	
+
 	major = yes
-	major_triggger = {
+	major_trigger = {
 		ai = no
 	}
-	
+	show_root = yes
+
 	is_triggered_only = yes
-	
+
 	immediate = {
 		log = "WCTHW.120 fired for [Root.GetBestName]"
+		
+		clr_global_flag = drustvar_crisis_ongoing_flag
+
+		religion = tidemother	# This's tidemother's order
+		clear_secret_religion = yes
+		add_trait = zealous
+
 		activate_title = { title = d_order_of_embers status = yes }
 		d_order_of_embers = { grant_title = event_target:target_ooe_founder }
 		if = {
 			limit = {
 				k_kul_tiras = {
 					holder_scope = {
-						religion = tidemother
 						is_dark_being_trigger = no
+						religion = tidemother
 					}
 				}
 			}
@@ -392,7 +383,7 @@ narrative_event = {
 			modifier = religious_order_formed
 			years = 10
 		}
-		event_target:target_ooe_founder = { 
+		event_target:target_ooe_founder = {
 			wealth = 500
 		}
 		3537 = {
@@ -425,22 +416,20 @@ narrative_event = {
 							character = event_target:target_mothers_spouse
 						}
 					}
-					event_target:target_ooe_founder = {
-						unsafe_war = {
-							target = PREV
-							casus_belli = religious
-							thirdparty_title = PREVPREV
-						}
+					reverse_unsafe_war = {
+						target = event_target:target_ooe_founder
+						casus_belli = religious
+						thirdparty_title = PREV
 					}
 				}
 			}
 		}
 	}
-	
+
 	option = {
-		trigger = { 
+		trigger = {
 			true_religion = throssian
-		} 
+		}
 		name = EVTOPTA_WCVRK_120
 	}
 	option = {
@@ -460,17 +449,19 @@ narrative_event = {
 	desc = EVTDESC_WCVRK_130
 	picture = GFX_evt_drustvar
 	border = GFX_event_narrative_frame_intrigue
-	
+
 	is_triggered_only = yes
-	
+
 	major = yes
-	major_triggger = {
+	major_trigger = {
 		ai = no
 	}
-	
+
 	immediate = {
 		log = "WCTHW.130 fired for [Root.GetBestName]"
+		
 		set_global_flag = drust_incursion_happened
+		
 		create_character = {
 			name = Gorak
 			dynasty = 70201
@@ -487,69 +478,81 @@ narrative_event = {
 		}
 		new_character = {
 			save_event_target_as = target_gorak_tul
-			effect = {
-				set_graphical_culture = vrykul_undead
-			}
+			# Used in scripted effects
+			save_event_target_as = target_settler
+
+			# effect = {
+				# set_graphical_culture = vrykul_undead		# Nani is that? There must be no effect!
+			# }
+			
+			set_graphical_culture = vrykul_undead
 			create_bloodline = {
 				type = gorak_tul
 				has_dlc = "Holy Fury"
 			}
-		}
-		activate_title = { title = k_drustvar status = yes }
-		k_drustvar = { grant_title = event_target:target_gorak_tul }
-		c_fates_end = { grant_title = event_target:target_gorak_tul }
-		event_target:target_gorak_tul = { 
+			
+			c_fates_end = {
+				# event_target:target_settler and its people settle here	# without gameover if current ruler is player
+				settle_as_target_settler_effect = yes
+			}
+			
+			clear_settler_flag_effect = yes
+			
+			activate_title = { title = k_drustvar status = yes }
+			k_drustvar = { grant_title = event_target:target_gorak_tul }
+			
 			wealth = 1000
 			set_government_type = tribal_monarchy_government
-		}
-		3553 = {
-			ROOT = {
-				spawn_unit = {
-					owner = event_target:target_gorak_tul
-					province = PREV
-					home = PREV
-					troops = {
-						archers = { 2000 2000 }
-						light_infantry = { 3000 3000 }
-						heavy_infantry = { 3750 3750 }
-						light_cavalry = { 500 500 }
-						knights = { 750 750 }
-					}
-					cannot_inherit = no
-					attrition = 1.0
-					reinforces = yes
-					maintenance = no
+			
+			spawn_unit = {
+				owner = event_target:target_gorak_tul
+				province = 3553
+				home = 3553
+				troops = {
+					archers = { 2000 2000 }
+					light_infantry = { 3000 3000 }
+					heavy_infantry = { 3750 3750 }
+					light_cavalry = { 500 500 }
+					knights = { 750 750 }
 				}
-				spawn_fleet = {
-					province = closest # closest sea zone
-					owner = event_target:target_gorak_tul
-					disband_on_peace = yes
-					troops = {
-						galleys = { 100 100 }
-					}
+				cannot_inherit = no
+				attrition = 1.0
+				reinforces = yes
+				maintenance = no
+			}
+			spawn_fleet = {
+				province = closest # closest sea zone
+				owner = event_target:target_gorak_tul
+				disband_on_peace = yes
+				troops = {
+					galleys = { 100 100 }
 				}
 			}
 		}
-		# make the person that fired the decison a vassal of Gorak Tul
+		# Make the person that fired the decison a vassal of Gorak Tul
 		event_target:target_summoner_of_gorak = {
 			set_defacto_liege = event_target:target_gorak_tul
 		}
 		# Declares war against Kul Tiras (wip)
 		k_kul_tiras = {
 			holder_scope = {
-                event_target:target_gorak_tul = {
-                    unsafe_war = {
-                        target = PREV
+				if = {
+					limit = {
+						dark_public_religion_trigger = no
+					}
+					reverse_unsafe_war = {
+                        target = event_target:target_gorak_tul
                         casus_belli = invasion
-                        thirdparty_title = PREVPREV
+                        thirdparty_title = PREV
                     }
-                }
+				}
             }
         }
+		
 		# The Thornspeakers take action
-		narrative_event = { id = WCVRK.150 days = 7 } 
-	}		
-	
+		73 = { province_event = { id = WCVRK.149 days = 7 } }
+	}
+
 	option = {
 		name = EVTOPTA_WCVRK_130
 	}
@@ -559,85 +562,70 @@ narrative_event = {
 narrative_event = {
 	id = WCVRK.140
 	title = "EVTTITLE_WCVRK_140"
-	desc = "EVTDESC_WCVRK_140"
-
-	major = yes
-	major_triggger = {
-		ai = no
+	desc = {
+		trigger = { NOT = { religion = throssian } }
+		text = EVTDESC_WCVRK_140
 	}
-	
-	religion = throssian
-	
+	desc = {
+		trigger = { religion = throssian }
+		text = EVTDESC_WCVRK_141
+	}
 	picture = "GFX_evt_boralus_siege"
 	border = "GFX_event_narrative_frame_war"
-	
+
 	is_triggered_only = yes
 	
-	trigger = {
-		NOT = { has_global_flag = drust_sack_boralus }
-		OR = {
-			has_landed_title = k_drustvar	
-			liege = { has_landed_title = k_drustvar }
-			top_liege = { has_landed_title = k_drustvar }
-		}
-		FROM = { title = b_boralus }
-		NOT = {
-			FROM = {
-				owner = {
-					OR = {
-						has_landed_title = k_drustvar
-						liege = { has_landed_title = k_drustvar }
-						top_liege = { has_landed_title = k_drustvar }
-					}
-				}
-			}
-		}		
-	}
-	
+	major = yes
 	major_trigger = {
-		NOT = {
-			has_landed_title = k_drustvar
-			liege = { has_landed_title = k_drustvar }
-			top_liege = { has_landed_title = k_drustvar }
+		ai = no
+	}
+	show_root = yes
+	hide_from = yes
+	
+	religion = throssian
+
+	trigger = {
+		has_global_flag = drust_incursion_happened
+		NOT = { has_global_flag = drust_sack_boralus }
+		
+		religion = throssian
+		
+		FROM = {
+			title = b_boralus
+			location = {
+				NOT = { has_province_modifier = undead_province }	# I think it is not necessary to explain why I added these ones
+				dark_public_religion_trigger = no
+				culture_group = human_group
+			}
 		}
 	}
-	
+
 	immediate = {
 		set_global_flag = drust_sack_boralus
-		any_player = {
-			limit = {
-				OR = {
-					has_landed_title = k_drustvar
-					liege = { has_landed_title = k_drustvar }
-					top_liege = { has_landed_title = k_drustvar }
-				}
-			}
-			narrative_event = { id = WCVRK.141 }
-		}
-		3526 = {
-			add_max_depopulation_effect = yes
-		}
+		
+		FROM = {
+			location = {
+				add_max_depopulation_effect = yes
+				hidden_effect = {
+					any_province_character = {
+						limit = {
+							NOT = { character = ROOT }
 
-		3526 = {
-			hidden_effect = {
-				any_province_character = {
-					limit = {
-						NOT = { character = ROOT }
-						
-						in_command = no
-					}
-					random = {
-						chance = 75
-						death = {
-							death_reason = death_battle
-							killer = ROOT
+							in_command = no
+						}
+						random = {
+							chance = 75
+							death = {
+								death_reason = death_battle
+								killer = ROOT
+							}
 						}
 					}
 				}
 			}
 		}
 	}
-	
+
 	option = {
 		name = "EVTOPTA_WCVRK_140"
 		trigger = { NOT = { religion = throssian } }
@@ -645,60 +633,39 @@ narrative_event = {
 	option = {
 		name = "EVTOPTB_WCVRK_140"
 		trigger = { religion = throssian }
-	}
-}
-
-# The Fall of Boralus - Drust side
-narrative_event = {
-	id = WCVRK.141
-	title = "EVTTITLE_WCVRK_141"
-	desc = "EVTDESC_WCVRK_141"
-	picture = "GFX_evt_boralus_siege"
-	border = "GFX_event_narrative_frame_war"
-	
-	is_triggered_only = yes
-	
-	hide_from = yes
-	
-	option = {
-		name = "EVTOPTA_WCVRK_141"
+		
 		prestige = 100
 	}
 }
 
-#The Thornspeakers
-narrative_event = {
-	id = WCVRK.150
-	title = EVTTITLE_WCVRK_150
-	desc = EVTDESC_WCVRK_150
-	picture = GFX_evt_drustvar
-	border = GFX_event_narrative_frame_war
-	
-	major = yes
-	major_triggger = {
-		ai = no
-	}
+# The Thornspeakers
+# Delayer event		# This event helps to fire WCVRK.150 in case of character's death
+province_event = {
+	id = WCVRK.149
 	
 	is_triggered_only = yes
+	hide_window = yes
 	
 	immediate = {
 		if = {
 			limit = {
 				c_430000 = {	# Ulfar
-					is_untouchable_trigger = no
-					
-					ai = yes
 					is_alive = yes
+					is_dying = no
 					is_adult = yes
-					
+					is_incapable = no
+					prisoner = no
+					is_inaccessible_trigger = no
+
+					is_ruler = no	# ...since he's gonna become head of holy order
+					is_dark_being_trigger = no
 					religion = old_ways
 					true_religion = old_ways
 				}
 			}
-			c_430000 = { 
-				save_event_target_as = target_thornspeakers_founder 
-			}
+			c_430000 = { save_event_target_as = target_thornspeakers_founder }
 		}
+		# Fallback
 		else = {
 			create_character = {
 				random_traits = yes
@@ -718,17 +685,39 @@ narrative_event = {
 				save_event_target_as = target_thornspeakers_founder
 			}
 		}
+		event_target:target_thornspeakers_founder = { narrative_event = { id = WCVRK.150 } }
+	}
+}
+narrative_event = {
+	id = WCVRK.150
+	title = EVTTITLE_WCVRK_150
+	desc = EVTDESC_WCVRK_150
+	picture = GFX_evt_drustvar
+	border = GFX_event_narrative_frame_war
+
+	major = yes
+	major_trigger = {
+		ai = no
+	}
+	show_root = yes
+	hide_from = yes
+
+	is_triggered_only = yes
+
+	immediate = {
+		# Moved to WCVRK.149
+		
 		activate_title = { title = d_thornspeakers status = yes }
 		d_thornspeakers = { grant_title = event_target:target_thornspeakers_founder }
 		religion_authority = {
 			modifier = religious_order_formed
 			years = 10
 		}
-		event_target:target_thornspeakers_founder = { 
+		event_target:target_thornspeakers_founder = {
 			wealth = 500
 		}
 	}
-	
+
 	option = {
 		trigger = {
 			NOT = {
@@ -738,9 +727,9 @@ narrative_event = {
 		name = EVTOPTA_WCVRK_150
 	}
 	option = {
-		trigger = { 
+		trigger = {
 			true_religion = throssian
-		} 
+		}
 		name = EVTOPTB_WCVRK_150
 	}
 }
