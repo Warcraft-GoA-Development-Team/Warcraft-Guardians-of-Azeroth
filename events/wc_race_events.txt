@@ -190,8 +190,52 @@ character_event = {
 
 	immediate = {
 		# log = "WCRAC.10 fired for [Root.GetBestName]"
+		true_father_even_if_dead = { save_event_target_as = target_father }
+		mother_even_if_dead = { save_event_target_as = target_mother }
 		
 		set_character_flag = no_show_what_become_flag		# Cancel show_close_people_what_this_become_effect if character spawned as undead, demon, void being
+		
+		# Halfbreed child was born, picks graphical culture
+		if = {
+			limit = {
+				NOT = {
+					has_game_rule = {
+						name = halfbreed_race
+						value = random
+					}
+				}
+				NOT = { age = 0 }
+				event_target:target_father = { always = yes }
+				event_target:target_mother = { always = yes }
+				event_target:target_father = { event_target:target_mother = { has_prev_race_trigger = no } }
+			}
+			if = {
+				limit = {
+					has_game_rule = {
+						name = halfbreed_race
+						value = father
+					}
+				}
+				event_target:target_father = { ROOT = { set_prev_gfx_effect = yes } }
+			}
+			else_if = {
+				limit = {
+					has_game_rule = {
+						name = halfbreed_race
+						value = mother
+					}
+				}
+				event_target:target_mother = { ROOT = { set_prev_gfx_effect = yes } }
+			}
+			# If child has mother's dynasty, picks mother's graphical culture
+			else_if = {
+				limit = { dynasty = event_target:target_father }
+				event_target:target_father = { ROOT = { set_prev_gfx_effect = yes } }
+			}
+			else = {
+				event_target:target_mother = { ROOT = { set_prev_gfx_effect = yes } }
+			}
+		}
 		
 		# Add new races always at the end
 		if = {
@@ -552,8 +596,13 @@ character_event = {
 			gfx_culture_scope = { save_event_target_as = target_gfx_culture }
 			log = "(IMPORTANT) [This.GetBestName] couldn't get race trait. GFX culture is [target_gfx_culture.GetName]."
 			death = { death_reason = death_missing }
+			break = yes
 		}
 		
+		# Adds blood trait
+		add_blood_trait_effect = yes
+		
+		# Changes gender
 		if = {
 			limit = {
 				is_female = yes
@@ -569,31 +618,25 @@ character_event = {
 			set_gender = female
 		}
 		
+		# Adds undead trait
 		if = {
 			limit = {
-				is_alive = yes
-				is_dying = no
-			}
-			# Adds undead trait
-			if = {
-				limit = {
-					NOT = { trait = being_undead }
-					
-					OR = {
-						has_undead_gfx_trigger = yes
-						AND = {
-							can_be_undead_trigger = yes
-							location = { has_province_modifier = undead_province }
-							liege = { trait = being_undead }
-						}
+				NOT = { trait = being_undead }
+				
+				OR = {
+					has_undead_gfx_trigger = yes
+					AND = {
+						can_be_undead_trigger = yes
+						location = { has_province_modifier = undead_province }
+						liege = { trait = being_undead }
 					}
 				}
-				save_event_target_as = target_necromancer
-				character_event = { id = WCPOD.5013 }
 			}
-			# Adds default traits when new character spawns
-			add_default_traits = yes
+			save_event_target_as = target_necromancer
+			character_event = { id = WCPOD.5013 }
 		}
+		# Adds default traits when new character spawns
+		add_default_traits = yes
 		
 		clr_character_flag = no_show_what_become_flag			# Works only during this event
 	}
