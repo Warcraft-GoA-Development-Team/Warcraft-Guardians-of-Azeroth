@@ -279,6 +279,27 @@ character_event = {
     }
 }
 
+# Handles setting desc of upgrades using dynamic loc keys (Root.Religion.GetRandomGodName)
+# Otherwise, it changes month to month 
+# (Fired from on_wonder_upgrade_finish)
+# ROOT = owner
+# FROM = upgrade
+# FROMFROM = wonder
+# FROMFROMFROM = province (location of wonder)
+character_event = {
+    id = LT.10003
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        if = {
+            limit = { FROM = { has_wonder_upgrade = upgrade_statue_god } }
+        }
+        FROM = { set_description = upgrade_statue_god_desc }
+    }
+}
+
+# Adding the historical flag to wonders and setting Hagia Sophia cult flag.
+# (Fired from on_startup)
 character_event = {
 	id = LT.32000
 	is_triggered_only = yes
@@ -291,6 +312,19 @@ character_event = {
 	immediate = {
 		any_wonder = {
 			set_wonder_flag = historical
+
+            if = {
+                limit = { has_wonder = wonder_cathedral_hagia_sophia }
+                if = {
+                    limit = { start_date > 1261.7.24 }
+                    set_wonder_flag = Hagia_Sophia_orthodox_cult
+                }
+                else_if = {
+                    limit = { start_date > 1204.5.15 }
+                    set_wonder_flag = Hagia_Sophia_catholic_cult
+                }
+                else = { set_wonder_flag = Hagia_Sophia_orthodox_cult }
+            }
 		}
 	}
 }
