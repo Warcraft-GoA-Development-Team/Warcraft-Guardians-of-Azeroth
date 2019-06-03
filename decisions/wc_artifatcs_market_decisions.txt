@@ -306,7 +306,7 @@ targetted_decisions = {
 		ai = no
 
 		filter = self
-		is_high_prio = yes
+		#is_high_prio = yes
 
 		potential = {
 			has_character_flag = market_open
@@ -363,18 +363,14 @@ targetted_decisions = {
 
 					has_artifact_flag = can_be_upgrated
 					NOT = {
-						has_artifact_flag = improved_artifact
+						has_artifact_flag = improved_artifact #damaged
 					}
 					trigger_if = {
-						limit = {
-							artifact_type = cloak_blue
-						}
+						limit = {	artifact_type = cloak_blue	}
 						artifact_owner = { is_member_of_alliance_faction_trigger = yes }
 					}
 					trigger_if = {
-						limit = {
-							artifact_type = cloak_red
-						}
+						limit = {	artifact_type = cloak_red	}
 						artifact_owner = { is_member_of_horde_faction_trigger = yes }
 					}
 				}
@@ -389,50 +385,7 @@ targetted_decisions = {
 					has_artifact_flag = can_be_upgrated
 				}
 				
-				trigger_if = {
-					limit = {
-						has_artifact_flag = expensive
-					}
-					
-					trigger_if = {
-						limit = { quality == 1 }
-						artifact_owner = { wealth = 500 }
-					}
-					trigger_if = {
-						limit = { quality == 2 }
-						artifact_owner = { wealth = 1000 }
-					}
-					trigger_if = {
-						limit = { quality == 3 }
-						artifact_owner = { wealth = 2500 }
-					}
-					trigger_if = {
-						limit = { quality == 4 }
-						artifact_owner = { wealth = 5000 }
-					}
-				}
-				trigger_if = {
-					limit = {
-						NOT = { has_artifact_flag = expensive }
-					}
-					
-					trigger_if = {
-						limit = { quality == 1 }
-						artifact_owner = { wealth = 250 }
-					}
-					trigger_if = {
-						limit = { quality == 2 }
-						artifact_owner = { wealth = 500 }
-					}
-					trigger_if = {
-						limit = { quality == 3 }
-						artifact_owner = { wealth = 1250 }
-					}
-					trigger_if = {
-						limit = { quality == 4 }
-						artifact_owner = { wealth = 2500 }
-					}
-				}
+				artifact_owner = { wealth = local_third_party_score }
 
 				is_artifact_active = yes
 				OR = {
@@ -443,27 +396,30 @@ targetted_decisions = {
 		}
 
 		third_party_score = {
-			factor = -125
+			#Base
+			factor = 125
+
+			#Artifact
 			additive_modifier = {
-				value = -125
+				value = 125
 				FROMFROM = {
 					quality >= 1
 				}
 			}
 			additive_modifier = {
-				value = -250
+				value = 250
 				FROMFROM = {
 					quality >= 2
 				}
 			}
 			additive_modifier = {
-				value = -750
+				value = 750
 				FROMFROM = {
 					quality >= 3
 				}
 			}
 			additive_modifier = {
-				value = -1250
+				value = 1250
 				FROMFROM = {
 					quality >= 4
 				}
@@ -474,94 +430,64 @@ targetted_decisions = {
 					has_artifact_flag = expensive
 				}
 			}
-			# modifier = { # don't work
-				# factor = 1.1
-				# ROOT_FROM = {
-					# diplomacy < 8
-				# }
-			# }
-			# modifier = {
-				# factor = 1.1
-				# FROM = {
-					# stewardship < 8
-				# }
-			# }
-			# modifier = {
-				# factor = 1.1
-				# ROOT_FROM = {
-					# diplomacy < 4
-				# }
-			# }
-			# modifier = {
-				# factor = 1.1
-				# FROM = {
-					# stewardship < 4
-				# }
-			# }
-			# modifier = { 
-				# factor = 0.95
-				# FROMFROM = {
-					# artifact_owner = {
-						# diplomacy = 12
-					# }
-				# }
-			# }
-			# modifier = {
-				# factor = 0.95
-				# FROMFROM = {
-					# artifact_owner = {
-						# stewardship = 12
-					# }
-				# }
-			# }
-			# modifier = {
-				# factor = 0.95
-				# FROMFROM = {
-					# artifact_owner = {
-						# diplomacy = 16
-					# }
-				# }
-			# }
-			# modifier = {
-				# factor = 0.95
-				# FROMFROM = {
-					# artifact_owner = {
-						# stewardship = 16
-					# }
-				# }
-			# }
-			# modifier = {
-				# factor = 0.95
-				# FROMFROM = {
-					# artifact_owner = {
-						# diplomacy = 20
-					# }
-				# }
-			# }
-			# modifier = {
-				# factor = 0.95
-				# FROMFROM = {
-					# artifact_owner = {
-						# stewardship = 20
-					# }
-				# }
-			# }
-			# modifier = {
-				# factor = 0.95
-				# FROMFROM = {
-					# artifact_owner = {
-						# diplomacy = 24
-					# }
-				# }
-			# }
-			# modifier = {
-				# factor = 0.95
-				# FROMFROM = {
-					# artifact_owner = {
-						# stewardship = 24
-					# }
-				# }
-			# }
+
+			#Character
+			modifier = {
+				factor = 1.1
+				FROM = {	diplomacy < 8		}
+			}
+			modifier = {
+				factor = 1.1
+				FROM = {	stewardship < 8		}
+			}
+			modifier = {
+				factor = 1.25
+				FROM = {	diplomacy < 4		}
+			}
+			modifier = {
+				factor = 1.25
+				FROM = {	stewardship < 4		}
+			}
+			modifier = {
+				factor = 1.5
+				FROM = {	diplomacy < 1		}
+			}
+			modifier = {
+				factor = 1.5
+				FROM = {	stewardship < 1		}
+			}
+			modifier = { 
+				factor = 0.95
+				FROM = {	diplomacy = 12		}
+			}
+			modifier = {
+				factor = 0.95
+				FROM = {	stewardship = 12	}
+			}
+			modifier = {
+				factor = 0.95
+				FROM = {	diplomacy = 16		}
+			}
+			modifier = {
+				factor = 0.95
+				FROM = {	stewardship = 16	}
+			}
+			modifier = {
+				factor = 0.95
+				FROM = {	diplomacy = 20		}
+			}
+			modifier = {
+				factor = 0.95
+				FROM = {	stewardship = 20	}
+			}
+			modifier = {
+				factor = 0.95
+				FROM = {	diplomacy = 24		}
+			}
+			modifier = {
+				factor = 0.95
+				FROM = {	stewardship = 24	}
+			}
 		}
 
 		effect = {
@@ -587,7 +513,7 @@ targetted_decisions = {
 					limit = { FROMFROM = { quality == 4 } }
 					set_character_flag = improved_artifact_4
 				}
-				
+
 				FROMFROM = {
 					trigger_switch = {
 						on_trigger = has_artifact_flag
@@ -609,10 +535,10 @@ targetted_decisions = {
 					}
 				}
 
-				character_event = { id = WCAE.2 }
+				character_event = { id = WCAE.1 days = 60 random = 60 }
 			}
 		}
-	
+
 		revoke_allowed = {
 			always = no
 		}
@@ -629,6 +555,14 @@ targetted_decisions = {
 			modifier = {
 				factor = 0.25
 				trait = greedy
+			}
+			modifier = {
+				factor = 1.5
+				trait = proud
+			}
+			modifier = {
+				factor = 2
+				trait = ambitious
 			}
 		}
 	}
@@ -808,20 +742,8 @@ targetted_decisions = {
 				wealth > 0
 			}
 			modifier = {
-				factor = 0.1
-				wealth > -100
-			}
-			modifier = {
-				factor = 0.25
-				wealth > -250
-			}
-			modifier = {
-				factor = 0.5
-				wealth > -500
-			}
-			modifier = {
 				factor = 0.75
-				wealth > -750
+				wealth > -100
 			}
 			modifier = {
 				factor = 0
@@ -898,7 +820,7 @@ targetted_decisions = {
 					set_character_flag = opened_lootbox_4
 				}
 
-				character_event = { id = WCTC.2 }
+				lootbox_open_effect = yes
 			}
 		}
 		
