@@ -1,15 +1,44 @@
 evil_elective = {
-
-	elector_vote_strength = {
-		days = 1
+	elector_vote_strength = { 
+		days = 5 # 1 elector = 5 votes.
+		
+		# Current ruler
+		additive_modifier = { #Current ruler's word is worth more than anybody else's by far.
+			value = 195
+			localisation_key = tooltip_vote_strength_dark_will
+			FROMFROM = { 
+				holder_scope = { character = ROOT }
+			}
+		}
+		
+		# Powerful vassal
+		additive_modifier = { # Powerful vassals play big role in elections
+			value = 95
+			localisation_key = tooltip_vote_strength_powerful_vassal
+			vassal_of = FROMFROM
+			NOT = {
+				FROMFROM = {
+					holder_scope = { character = ROOT }
+				}
+			}
+			is_powerful_vassal = yes
+		}
+		
+		# Realm size
+		vote_strength_realm_size_score = yes
+		
+		# Attributes
+		vote_strength_martial_score = yes
+		vote_strength_intrigue_score = yes
+		vote_strength_combat_rating_score = yes
 	}
 
 	elector_selection = {
-		days = -5 		#If below 0, ROOT is not valid to be an Elector.
+		days = -15 		#If below 0, ROOT is not valid to be an Elector.
 		additive_modifier = {	# Only evil guys can vote
-			value = -14
-			NOR = {
-				AND = {
+			value = 10
+			trigger_if = {
+				limit = {
 					FROMFROM = {
 						holder_scope = {
 							OR = {
@@ -18,9 +47,11 @@ evil_elective = {
 							}
 						}
 					}
-					religion = burning_legion_religion
 				}
-				AND = {
+				ROOT = { religion = burning_legion_religion }
+			}
+			trigger_else_if = {
+				limit = {
 					FROMFROM = {
 						holder_scope = {
 							OR = {
@@ -29,29 +60,24 @@ evil_elective = {
 							}
 						}
 					}
+				}
+				ROOT = {
 					OR = {
 						religion = death_god
-						AND = {
-							has_global_flag = the_scourge_is_under_the_legion_control_flag
+						trigger_if = {
+							limit = { has_global_flag = the_scourge_is_under_the_legion_control_flag }
 							religion = burning_legion_religion
 						}
 					}
 				}
-				AND = {
-					FROMFROM = {
-						holder_scope = {
-							OR = {
-								government = black_pact_government
-								religion = old_gods_worship
-							}
-						}
-					}
-					religion = old_gods_worship
-				}
+			}
+			trigger_else = {
+				ROOT = { religion = old_gods_worship }
 			}
 		}
+		
 		additive_modifier = { #Current ruler is always an elector.
-			value = 15
+			value = 25
 			FROMFROM = { #Either title is higher than Duke-tier, or must be primary.
 				OR = {
 					higher_tier_than = DUKE
@@ -257,6 +283,18 @@ evil_elective = {
 		#The Seven Sins/Virtues
 		voting_personal_trait_score = yes
 		voting_special_trait_score = yes
+		
+		# Artefacts
+		additive_modifier = { # Death God worshippers prefer the chosen one, the one who holds Frostmourne
+			value = 50
+			localisation_key = tooltip_elector_vote_frostmourne
+			religion = death_god
+			FROM = {
+				religion = death_god
+				
+				has_artifact = frostmourne
+			}
+		}
 
 		##########################   Ruler's traits   ##########################
 		voting_current_ruler_score = yes
@@ -271,47 +309,61 @@ evil_elective = {
 	#ROOT = Current Title holder, FROM = Candidate, FROMFROM = Title, FROMFROMFROM = Null
 	candidate_trigger = {
 		NOT = { character = FROM } #Not the current ruler.
-		OR = {
-			AND = {
-				OR = {
-					government = legion_government
-					religion = burning_legion_religion
-				}
-				FROM = {
-					religion = burning_legion_religion
-					true_religion = burning_legion_religion
-				}
-			}
-			AND = {
-				OR = {
-					government = scourge_government
-					religion = death_god
-				}
-				FROM = {
+		trigger_if = {
+			limit = {
+				ROOT = {
 					OR = {
-						AND = {
-							religion = death_god
-							true_religion = death_god
-						}
-						AND = {
-							has_global_flag = the_scourge_is_under_the_legion_control_flag
-							religion = burning_legion_religion
-							true_religion = burning_legion_religion
-						}
+						government = legion_government
+						religion = burning_legion_religion
 					}
 				}
 			}
-			AND = {
-				OR = {
-					government = black_pact_government
-					religion = old_gods_worship
+			FROM = {
+				religion = burning_legion_religion
+				true_religion = burning_legion_religion
+			}
+		}
+		trigger_else_if = {
+			limit = {
+				ROOT = {
+					OR = {
+						government = scourge_government
+						religion = death_god
+					}
 				}
-				FROM = {
-					religion = old_gods_worship
-					true_religion = old_gods_worship
+			}
+			FROM = {
+				OR = {
+					AND = {
+						religion = death_god
+						true_religion = death_god
+					}
+					trigger_if = {
+						limit = { has_global_flag = the_scourge_is_under_the_legion_control_flag }
+						religion = burning_legion_religion
+						true_religion = burning_legion_religion
+					}
 				}
 			}
 		}
+		trigger_else_if = {
+			limit = {
+				ROOT = {
+					OR = {
+						government = black_pact_government
+						religion = old_gods_worship
+					}
+				}
+			}
+			FROM = {
+				religion = old_gods_worship
+				true_religion = old_gods_worship
+			}
+		}
+		trigger_else = {
+			ROOT = { is_close_relative = FROM }
+		}
+		
 		FROM = { #Either the candidate is in the realm, or is landless, or the title is independent, or the realm of the title does NOT have protected inheritance.
 			OR = {
 				any_liege = {
