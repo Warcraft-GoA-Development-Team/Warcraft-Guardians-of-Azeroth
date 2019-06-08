@@ -703,7 +703,20 @@ lose_corporeal_body_effect = {
 	add_trait = lost_corporeal_body
 	hidden_effect = { character_event = { id = WCUND.900 days = 182 random = 182 } }
 }
-suggest_fel_source_effect = {
+drain_fel_source_effect = {
+	if = {
+		limit = {
+			liege = { religion_group = fel_group }
+		}
+		if = { limit = { has_secret_religion = yes } clear_secret_religion = yes }
+		religion = liege
+	}
+	else = {
+		set_character_flag = consuming_fel_magic_flag
+	}
+	
+	add_15_fel_corruption_effect = yes
+	
 	if = {
 		limit = { is_ruler = yes }
 		hidden_effect = {
@@ -713,10 +726,13 @@ suggest_fel_source_effect = {
 						ai = no
 						NOT = { has_character_flag = ai_refused_dark_magic_flag }
 					}
+					is_unimportant_trigger = no
+					prisoner = no
 
 					is_susceptible_to_fel_corruption_trigger = yes
 					is_high_elf_trigger = yes
 					NOR = {
+						religion_group = fel_group
 						true_religion_group = fel_group
 						has_character_flag = consuming_fel_magic_flag
 					}
@@ -726,7 +742,20 @@ suggest_fel_source_effect = {
 		}
 	}
 }
-suggest_void_source_effect = {
+drain_void_source_effect = {
+	if = {
+		limit = {
+			liege = { religion_group = void_group }
+		}
+		if = { limit = { has_secret_religion = yes } clear_secret_religion = yes }
+		religion = liege
+	}
+	else = {
+		set_character_flag = consuming_void_magic_flag
+	}
+	
+	add_15_void_corruption_effect = yes
+	
 	if = {
 		limit = { is_ruler = yes }
 		hidden_effect = {
@@ -736,10 +765,13 @@ suggest_void_source_effect = {
 						ai = no
 						NOT = { has_character_flag = ai_refused_dark_magic_flag }
 					}
+					prisoner = no
+					is_unimportant_trigger = no
 
 					is_susceptible_to_void_corruption_trigger = yes
 					is_high_elf_trigger = yes
 					NOR = {
+						religion_group = void_group
 						true_religion_group = void_group
 						has_character_flag = consuming_void_magic_flag
 					}
@@ -907,19 +939,19 @@ drink_demon_blood_effect = {
 				if = { limit = { has_secret_religion = yes } clear_secret_religion = yes }
 				religion = burning_legion_religion
 			}
-			else = {
-				if = {
-					limit = {
-						OR = {
-							is_ruler = no
-							independent = no
-						}
-						liege = { OR = { religion = orcish_fel religion = burning_legion_religion } }
+			else_if = {
+				limit = {
+					OR = {
+						is_ruler = no
+						independent = no
 					}
-					if = { limit = { has_secret_religion = yes } clear_secret_religion = yes }
-					liege = { ROOT = { religion = PREV } }
+					liege = { OR = { religion = orcish_fel religion = burning_legion_religion } }
 				}
-				else = { set_secret_religion = burning_legion_religion }
+				if = { limit = { has_secret_religion = yes } clear_secret_religion = yes }
+				liege = { ROOT = { religion = PREV } }
+			}
+			else = {
+				set_secret_religion = burning_legion_religion
 			}
 		}
 		if = {
@@ -929,6 +961,7 @@ drink_demon_blood_effect = {
 				hidden_effect = {
 					any_courtier_or_vassal = {
 						limit = {
+							is_unimportant_trigger = no
 							prisoner = no
 
 							NOT = { has_character_modifier = drank_demon_blood }
