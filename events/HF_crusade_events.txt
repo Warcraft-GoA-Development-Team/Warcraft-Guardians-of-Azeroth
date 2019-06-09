@@ -1,4 +1,5 @@
 namespace = HF
+namespace = HFP
 
 # Written by Joachim
 # HF.49000 - HF.49199
@@ -2464,6 +2465,60 @@ character_event = {
             1 = {
                 character_event = { id = HF.49120 days = 1 random = 15 }
             }
+        }
+    }
+}
+
+# Crusade NAP dealing...
+character_event = {
+    id = HFP.49122
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        is_alive = yes
+        any_crusade_participant = {
+            crusade_target_char = {
+                has_non_aggression_pact_with = PREV
+            }
+        }
+    }
+
+    immediate = {
+        any_crusade_participant = {
+            limit = {
+                crusade_target_char = {
+                    has_non_aggression_pact_with = PREV
+                }
+            }
+            character_event = { id = HFP.49123 }
+            #log = "[This.GetTitledFirstName] has a NAP with [crusade_target_char.GetTitledFirstName] - sending event to them"
+        }
+    }
+}
+
+# Sent from event above...
+character_event = {
+    id = HFP.49123
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        is_alive = yes
+        crusade_target_char = {
+            has_non_aggression_pact_with = PREV
+        }
+    }
+
+    immediate = {
+        crusade_target_char = { save_event_target_as = sad_nap_target }
+
+        reverse_opinion = {
+            who = event_target:sad_nap_target
+            modifier = broken_non_aggression_pact
+        }
+        prestige = -200
+        add_character_modifier = {
+            name = broken_non_aggression_pact_char_modifier
+            years = 10
         }
     }
 }

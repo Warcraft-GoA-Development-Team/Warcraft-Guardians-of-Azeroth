@@ -1559,6 +1559,7 @@
 		# prestige = 50
 		# piety = 100
 		# FROM = {
+			# location = { clr_province_flag = flag_great_pillar_norse_irminsul } #Will permanently deactivate the building.
 			# owner = {
 				# religion_authority = {
 					# modifier = irminsul_destroyed
@@ -1574,6 +1575,10 @@
 							# religion = norse_pagan
 							# religion = norse_pagan_reformed
 						# }
+					# }
+					# add_character_modifier = { #Prevents rebuilding one immediately after.
+						# name = recently_destroyed_great_pillar_cooldown
+						# years = 30
 					# }
 					# opinion = {
 						# who = ROOT
@@ -2199,7 +2204,9 @@
 	# is_triggered_only = yes
 	
 	# immediate = {
-		# death_natural_effect = yes
+		# death = {
+			# death_reason = death_natural
+		# }
 	# }
 # }
 
@@ -2541,7 +2548,7 @@
 	# }
 
 	# immediate = {
-		# random_courtier = {
+		# any_courtier = {
 			# limit = {
 				# is_councillor = yes
 				# NOT = { any_child = { character =  ROOT } }
@@ -2553,6 +2560,10 @@
 					# trait = diligent
 				# }
 			# }
+			# score_value = { #Prioritizes selecting an interesting courtier...
+	            # value = 10
+	            # interesting_courtier_selection_score = yes
+	        # }
 			# set_character_flag = meddling_mother_conflict
 			# character_event = { id = CM.1171 }
 		# }
@@ -2829,7 +2840,7 @@
 			# liege = { character = ROOT }
 			# OR = {
 				# trait = humble
-				# trait = fair
+				# has_fair_trait_trigger = yes
 				# trait = slow
 				# trait = dull
 				# trait = stressed
@@ -2866,7 +2877,7 @@
 				# liege = { character = ROOT }
 				# OR = {
 					# trait = humble
-					# trait = fair
+					# has_fair_trait_trigger = yes
 					# trait = slow
 					# trait = dull
 					# trait = stressed
@@ -3409,6 +3420,7 @@
 # # Coronation to Emperor  #
 # ##########################
 
+# Warcraft
 # # Coronation of Charlemagne
 # narrative_event = {
 	# id = CM.1500
@@ -3450,6 +3462,15 @@
 	
 	# immediate = {
 		# set_character_flag = charlemagne_coronation
+		# if = {
+			# limit = {
+				# has_character_flag = is_charlemagne
+			# }
+			# religion_head = { 
+				# save_event_target_as = coronation_priest
+				# ROOT = { save_persistent_event_target = { name = coronation_priest scope = PREV } } 
+			# }
+		# }
 	# }
 	
 	# option = {
@@ -3463,6 +3484,13 @@
 				# }
 				# liege = { character = ROOT }
 			# }
+		# }
+		# if = {
+			# limit = {
+				# has_character_flag = is_charlemagne
+			# }
+			# add_trait = crowned_by_pope
+			# add_artifact = crown_hre
 		# }
 		# if = {
 			# limit = {

@@ -28,14 +28,14 @@ total_invasion = {
 			OR = {
 				AND = {
 					wealth = 250
-					prestige = 750
-					piety = 500
+					prestige = 2000
+					piety = 1000
 				}
 
 				# Exception
 				custom_tooltip = {
 					text = war_fires_by_event_tooltip
-					hidden_tooltip = { FROM = { has_character_flag = total_invasion_exception_flag } }
+					hidden_tooltip = { FROM = { has_character_flag = event_war_exception_flag } }
 				}
 			}
 			OR = {
@@ -51,7 +51,7 @@ total_invasion = {
 				# Exception
 				custom_tooltip = {
 					text = war_fires_by_event_tooltip
-					hidden_tooltip = { FROM = { has_character_flag = total_invasion_exception_flag } }
+					hidden_tooltip = { FROM = { has_character_flag = event_war_exception_flag } }
 				}
 			}
 		}
@@ -85,7 +85,7 @@ total_invasion = {
 			FROM = { num_of_count_titles_in_realm = 10 }
 
 			# Exceptions
-			FROM = { has_character_flag = total_invasion_exception_flag }
+			FROM = { has_character_flag = event_war_exception_flag }
 		}
 
 		# Shares the border
@@ -95,7 +95,7 @@ total_invasion = {
 			# Exception
 			custom_tooltip = {
 				text = war_fires_by_event_tooltip
-				hidden_tooltip = { FROM = { has_character_flag = total_invasion_exception_flag } }
+				hidden_tooltip = { FROM = { has_character_flag = event_war_exception_flag } }
 			}
 			ROOT = {
 				OR = {
@@ -121,20 +121,22 @@ total_invasion = {
 	}
 
 	on_add = {
+		hidden_tooltip = { fire_haruspicy_event_effect = yes }
+		
 		if = {
-			limit = { FROM = { NOT = { has_character_flag = total_invasion_exception_flag } } }
+			limit = { FROM = { NOT = { has_character_flag = event_war_exception_flag } } }
 			ROOT = {
 				wealth = -250
-				prestige = -750
-				piety = -500
+				prestige = -2000
+				piety = -1000
 			}
 		}
 		
 		hidden_tooltip = {
 			FROM = {
 				if = {
-					limit = { has_character_flag = total_invasion_exception_flag }
-					clr_character_flag = total_invasion_exception_flag
+					limit = { has_character_flag = event_war_exception_flag }
+					clr_character_flag = event_war_exception_flag
 				}
 			}
 		}
@@ -143,8 +145,8 @@ total_invasion = {
 	on_invalidation = {
 		ROOT = {
 			wealth = 250
-			prestige = 750
-			piety = 500
+			prestige = 2000
+			piety = 1000
 		}
 	}
 
@@ -221,7 +223,7 @@ total_invasion = {
 					any_realm_lord = {
 						any_demesne_title = {
 							limit = {
-								can_be_conquered_trigger = yes
+								title_can_be_conquered_trigger = yes
 								lower_tier_than = DUKE
 							}
 							ROOT = { grant_title_no_opinion = { target = PREV type = invasion } }
@@ -229,7 +231,7 @@ total_invasion = {
 					}
 					any_demesne_title = {
 						limit = {
-							can_be_conquered_trigger = yes
+							title_can_be_conquered_trigger = yes
 							lower_tier_than = DUKE
 						}
 						ROOT = { grant_title_no_opinion = { target = PREV type = invasion } }
@@ -380,6 +382,10 @@ stop_invader = {
 			independent = yes
 		}
 	}
+	
+	on_add = {
+		hidden_tooltip = { fire_haruspicy_event_effect = yes }
+	}
 
 	on_success = {
 		ROOT = {
@@ -475,10 +481,15 @@ scourge_subjugation = {
 			OR = {
 				AND = {
 					wealth = 250
-					prestige = 750
-					piety = 500
+					prestige = 1250
+					piety = 625
 				}
-				FROM = { any_realm_province = { has_disease = yes } }
+				
+				# Exception
+				custom_tooltip = {
+					text = war_fires_by_event_tooltip
+					hidden_tooltip = { FROM = { has_character_flag = event_war_exception_flag } }
+				}
 			}
 		}
 	}
@@ -523,10 +534,12 @@ scourge_subjugation = {
 			# can_be_undead_trigger = yes		# Can declare war only against those who can be turned into undead
 		}
 
-		# Shares the border or HAS DISEASE
+		# Shares the border
 		OR = {
 			FROM = { shares_realm_border_with = ROOT }
-			FROM = { any_realm_province = { has_disease = yes } }
+			
+			# Exceptions
+			FROM = { has_character_flag = event_war_exception_flag }
 		}
 	}
 
@@ -544,13 +557,24 @@ scourge_subjugation = {
 	}
 	
 	on_add = {
+		hidden_tooltip = { fire_haruspicy_event_effect = yes }
+		
 		if = {
-			limit = { FROM = { NOT = { any_realm_province = { has_disease = yes } } } }
+			limit = { FROM = { NOT = { has_character_flag = event_war_exception_flag } } }
 			ROOT = {
 				show_scope_change = no
 				wealth = -250
-				prestige = -750
-				piety = -500
+				prestige = -1250
+				piety = -625
+			}
+		}
+		
+		hidden_tooltip = {
+			FROM = {
+				if = {
+					limit = { has_character_flag = event_war_exception_flag }
+					clr_character_flag = event_war_exception_flag
+				}
 			}
 		}
 	}
@@ -559,8 +583,8 @@ scourge_subjugation = {
 		ROOT = {
 			show_scope_change = no
 			wealth = 250
-			prestige = 750
-			piety = 500
+			prestige = 1250
+			piety = 625
 		}
 	}
 
@@ -634,14 +658,13 @@ scourge_subjugation = {
 						any_realm_lord = {
 							any_demesne_title = {
 								limit = {
-									can_be_conquered_trigger = yes
+									title_can_be_conquered_trigger = yes
 
 									tier = COUNT
 									location = {
 										OR = {
 											religion = ROOT
 											has_province_modifier = undead_province
-											has_disease = yes
 										}
 									}
 								}
@@ -788,14 +811,16 @@ common_invasion = {
 
 	can_use_gui = {
 		ROOT = {
-			prestige = 500
+			prestige = 1000
 			piety = 500
 		}
 	}
 
 	on_add = {
+		hidden_tooltip = { fire_haruspicy_event_effect = yes }
+		
 		ROOT = {
-			prestige = -500
+			prestige = -1000
 			piety = -500
 		}
 	}
@@ -876,7 +901,7 @@ common_invasion = {
 
 	on_invalidation = {
 		ROOT = {
-			prestige = 500
+			prestige = 1000
 			piety = 500
 		}
 	}
@@ -1066,15 +1091,17 @@ purge_lands = {
 
 	can_use_gui = {
 		ROOT = {
-			prestige = 500
-			piety = 250
+			prestige = 750
+			piety = 375
 		}
 	}
 
 	on_add = {
+		hidden_tooltip = { fire_haruspicy_event_effect = yes }
+		
 		ROOT = {
-			prestige = -500
-			piety = -250
+			prestige = -750
+			piety = -375
 		}
 	}
 
@@ -1091,11 +1118,13 @@ purge_lands = {
 			can_rule_peacefully_trigger = yes 	# These have another CB
 		}
 		ROOT = {
-			FROM = {
-				OR = {
-					can_rule_peacefully_trigger = no
-					is_unholy_creature_to_prev_trigger = yes
+			OR = {
+				AND = {
+					evil_public_religion_trigger = no
+					
+					FROM = { can_rule_peacefully_trigger = no }
 				}
+				FROM = { is_unholy_creature_to_prev_trigger = yes }
 			}
 		}
 	}
@@ -1170,8 +1199,8 @@ purge_lands = {
 
 	on_invalidation = {
 		ROOT = {
-			prestige = 500
-			piety = 250
+			prestige = 750
+			piety = 375
 		}
 	}
 
@@ -1378,6 +1407,10 @@ change_religion_cb = {
 		FROM = {
 			NOT = { religion_group = ROOT }
 		}
+	}
+	
+	on_add = {
+		hidden_tooltip = { fire_haruspicy_event_effect = yes }
 	}
 
 	on_invalidation = {

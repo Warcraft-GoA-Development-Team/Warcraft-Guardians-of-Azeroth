@@ -20,10 +20,7 @@ decisions = {
 				trait = creature_wraith
 				trait = creature_banshee
 			}
-			OR = {
-				has_assigned_minor_title = title_court_physician
-				NOT = { has_dlc = "Reapers" }
-			}
+			job_spiritual = { always = yes }
 		}
 		allow = {
 			prisoner = no
@@ -39,29 +36,17 @@ decisions = {
 				}
 			}
 			
-			conditional_tooltip = {
-				trigger = { NOT = { has_dlc = "Reapers" } }
-				any_courtier_or_vassal = { 
-					is_necromancer_class_trigger = yes
-					opinion = { who = ROOT value = 25 }
-				}
+			scaled_wealth = { value = 0.5 min = 25 }
+			
+			job_spiritual = {
+				is_necromancer_class_trigger = yes
 			}
 		}
 		effect = {
-			random_courtier_or_vassal = {
+			scaled_wealth = { value = -0.5 min = -25 }
+			
+			job_spiritual = {
 				show_scope_change = no
-				limit = {
-					is_adult = yes
-					OR = {
-						has_minor_title = title_court_physician
-						AND = {
-							NOT = { has_dlc = "Reapers" }
-							is_necromancer_class_trigger = yes
-							opinion = { who = ROOT value = 25 }
-						}
-					}
-					liege = { character = ROOT }
-				}
 				custom_tooltip = {
 					text = sew_new_part_of_body_tooltip
 					hidden_tooltip = {
@@ -94,15 +79,18 @@ decisions = {
 
 			can_be_undead_trigger = yes
 			NOT = { trait = being_undead }
-			NOT = { trait = being_demon }
 			
 			is_necromancer_class_trigger = yes
-			age = 50
-			trait = cynical
+			age = 45
 			OR = {
-				trait = ambitious
-				trait = diligent
-				age = 70
+				dark_public_religion_trigger = yes
+				trait = cynical
+			}
+			OR = {
+				trait = ambitious		# ...has more plans
+				trait = diligent		# ...wants to do more
+				trait = craven		# ...is afraid of death
+				age = 60
 			}
 		}
 
@@ -148,7 +136,6 @@ decisions = {
 
 			is_humanoid_trigger = yes
 			trait = being_undead
-			NOT = { trait = being_demon }
 			NOR = {
 				trait = creature_wraith
 				trait = creature_banshee
@@ -159,14 +146,6 @@ decisions = {
 			OR = {
 				is_death_knight_class_trigger = yes
 				is_necromancer_class_trigger = yes
-			}
-			
-			OR = {
-				trait = lunatic
-				AND = {
-					true_religion = death_god
-					trait = zealous
-				}
 			}
 		}
 
@@ -215,8 +194,30 @@ decisions = {
 			war = no
 			
 			realm_size = 10
+			ruled_years = 5
 		}
 		effect = {
+			if = {
+				limit = { ai = no }
+				change_infamy = {
+					value = 40
+					localisation = "Started Plague"
+				}
+			}
+			else_if = {
+				limit = { NOT = { infamy = 40 } }
+				change_infamy = {
+					value = 40
+					localisation = "Started Plague"
+				}
+			}
+			else_if = {
+				limit = { NOT = { infamy = 50 } }
+				change_infamy = {
+					value = 30
+					localisation = "Started Plague"
+				}
+			}
 			if = {
 				limit = { NOT = { has_global_flag = humans_susceptible_to_plague } }
 				custom_tooltip = {
@@ -254,19 +255,32 @@ decisions = {
 			war = no
 			
 			OR = {
-				AND = {
-					has_dlc = "Mystics"
-					any_society_member = {
-						society_member_of = cult_of_the_damned
-						is_society_grandmaster = yes
-						society_influence >= 15
-					}
-				}
-				year = 603
+				ruled_years = 12
 				has_character_flag = debug_mode_flag
 			}
 		}
 		effect = {
+			if = {
+				limit = { ai = no }
+				change_infamy = {
+					value = 40
+					localisation = "Started Plague"
+				}
+			}
+			else_if = {
+				limit = { NOT = { infamy = 40 } }
+				change_infamy = {
+					value = 40
+					localisation = "Started Plague"
+				}
+			}
+			else_if = {
+				limit = { NOT = { infamy = 50 } }
+				change_infamy = {
+					value = 30
+					localisation = "Started Plague"
+				}
+			}
 			set_global_flag = plague_of_lordaeron_triggered_flag
 		}
 		ai_will_do = {
@@ -351,12 +365,12 @@ targetted_decisions = {
 		potential = {
 			is_adult = yes
 			prisoner = yes
-
-			is_humanoid_trigger = yes
-			is_dark_being_trigger = no
 		}
 		
 		allow = {
+			is_dark_being_trigger = no
+			is_humanoid_trigger = yes
+			
 			NOT = { diplomatic_immunity = yes }
 		}
 		
