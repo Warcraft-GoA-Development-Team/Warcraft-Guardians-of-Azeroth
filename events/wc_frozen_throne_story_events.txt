@@ -203,7 +203,7 @@ narrative_event = {
 					is_primary_holder_title = yes
 				}
 				holder_scope = { 
-					narrative_event = { id = WCTFT.111 } 
+					narrative_event = { id = WCTFT.111 days = 7 } 
 				}
 			}
 		}
@@ -254,7 +254,157 @@ narrative_event = {
 	}
 }
 
-# Resistance Calia Path: The Order of the Silver Hand rejoins the kingdom
+# Resistance Calia Path: The Silver Hand's Loyalties
+narrative_event = {
+	id = WCTFT.111
+	title = EVTTITLE_WCTFT_111
+	desc = EVTDESC_WCTFT_111
+	picture = GFX_evt_paladin_human
+	border = GFX_event_narrative_frame_diplomacy
+
+	is_triggered_only = yes
+	
+	show_root = yes
+	
+	trigger = {
+		NOT = { 
+			has_game_rule = {
+				name = frozen_throne_story
+				value = off
+			}
+		}
+	}
+	
+	option = { #We stand with Lordaeron
+		# Raymond George's faction in Tyr's Hand secedes from the Silver Hand (creates d_argent_dawn)
+		# The Highlord
+		if = {
+			limit = {
+				c_60625 = {		# Raymond
+					ai = yes
+
+					is_alive = yes
+
+					religion = holy_light
+					culture = lordaeronian
+				}
+			}
+			c_60625 = { save_event_target_as = target_argent_highlord }
+		}
+		else = {
+			create_character = {
+				female = no
+				dynasty = none
+				culture = lordaeronian religion = holy_light
+				trait=brilliant_strategist
+				trait=creature_human
+				trait=class_paladin_7
+				trait=wroth trait=zealous
+				age = 50
+			}
+			new_character = { save_event_target_as = target_argent_highlord }
+		}
+		event_target:target_argent_highlord = {
+			religion = holy_light
+			clear_secret_religion = yes
+			activate_title = { title = d_argent_dawn status = yes }
+			d_argent_dawn = { grant_title = PREV }
+			religion_authority = {
+				modifier = religious_order_formed
+				years = 10
+			}
+			set_defacto_liege = THIS
+			wealth = 500
+		}
+		
+		# Transfer eastern Silver Hand provinces to Argent Dawn
+		d_order_of_the_silver_hand = { 
+			holder_scope = { 
+				any_vassal = { 
+					if = {
+						limit = {
+							de_jure_liege_or_above = k_stratholme
+						} 
+					}
+				} 
+				set_defacto_liege = d_argent_dawn
+			} 
+		}
+		
+		# Make the Silver Hand vassal of Lordaeron
+		d_order_of_the_silver_hand = {
+			set_defacto_liege = k_lordaeron
+		}
+		
+		# Notify the world of the split
+		event_target:target_argent_highlord = {
+			narrative_event = { id = WCTFT.112 }
+		}
+		
+		#Calia is pleased
+		#opinion modifier goes here
+		
+		name = EVTOPTA_WCTFT_111
+		
+		ai_chance = {
+			factor = 1
+		}
+	}
+	
+	option = { #The Order stands alone
+		#Calia is outraged
+		#opinion modifier goes here
+		
+		name = EVTOPTB_WCTFT_111
+		
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+
+
+# Resistance Calia Path: The Argent Dawn is formed
+narrative_event = {
+	id = WCTFT.112
+	title = EVTTITLE_WCTFT_112
+	desc = EVTDESC_WCTFT_112
+	picture = GFX_evt_paladin_human
+	border = GFX_event_narrative_frame_diplomacy
+
+	is_triggered_only = yes
+	
+	major = yes
+	major_trigger = {
+		ai = no
+	}
+	show_root = yes
+	
+	trigger = {
+		NOT = { 
+			has_game_rule = {
+				name = frozen_throne_story
+				value = off
+			}
+		}
+	}
+	
+	option = { #Most unfortunate
+		trigger = {
+			religion = holy_light
+		}
+		name = EVTOPTA_WCTFT_112
+	}
+	
+	option = { #Fools
+		trigger = {
+			NOT = {
+				religion = holy_light
+			}
+		}
+		name = EVTOPTB_WCTFT_112
+	}
+}
 
 # Resistance Garithos Path: Garithos claims the throne
 narrative_event = {
@@ -347,7 +497,7 @@ narrative_event = {
 
 # Resistance Garithos Path: The Abbendis Schism
 
-# Resistance Garithos Path: The Scarlet Crusade asks to rejoin the kingdom
+# Resistance Garithos Path: Raymond's Response
 
 # Forsaken Path: Sylvanas victorious
 
@@ -355,8 +505,14 @@ narrative_event = {
 
 # Forsaken Path: Blood and Silver
 
-# Forsaken Path: Send an envoy to the Horde?
+# Forsaken Path: Induction into the Horde
 
 ### Old Hatreds ###
 
-### Thalassian Regency ###
+### War of the Frozen Throne ###
+
+# Illidari Victory: Containment
+
+# Illidari Victory: The Prince's Return
+
+# Illidari Defeat: Cleanup
