@@ -968,39 +968,26 @@ character_event = { # success
 
 	is_triggered_only = yes
 
+	after = {
+		set_variable = { which = artifact_market_cost_variable value = 0 }
+	}
+
 	option = { # Ok
 		name = EVTOPTA_WCMEME_ok
-
-		ROOT = {
-			show_scope_change = no
-			trigger_switch = {
-				on_trigger = has_flag
-				bought_artifact_top_hat			= {	if = {
-														limit = {
-															OR = {
-																culture = gilnean
-																culture = tirassian
-																culture_group = goblin_group
-															}
-														}
-														wealth = -62.5
-													}
-													else = {
-														wealth = -625
-													}					}
-				bought_artifact_rogue_dagger	= {		wealth = -125	}				
-				bought_artifact_copper_ring		= {		wealth = -250	}
-				bought_artifact_amulet			= {		wealth = -250	}
-				bought_artifact_ruler_crown		= {		wealth = -500	}
-				bought_artifact_cloak			= {		wealth = -62.5	}
-			}
-		}
+		
+		wealth = artifact_market_cost_variable
 		
 		if = {
 			limit = {
 				has_character_flag = bought_artifact_is_fake
 			}
 			character_event = { id = WCAE.102 days = 240 random = 240 }
+		}
+		else_if = {
+			limit = {
+				has_character_flag = bought_artifact_difficult_to_find
+			}
+			character_event = { id = WCAE.103 days = 120 random = 60 }
 		}
 		else = {
 			character_event = { id = WCAE.103 days = 240 random = 120 }
@@ -1011,7 +998,6 @@ character_event = { # success
 		prestige = -5
 		
 		clr_character_flag = bought_thing_recently
-		clear_flags_with_prefix = improved_artifact_
 		clear_flags_with_prefix = bought_from_
 		clear_flags_with_prefix = bought_artifact_
 	}
@@ -1032,7 +1018,6 @@ character_event = { # failure
 
 		prestige = -25
 		clr_character_flag = bought_thing_recently
-		clear_flags_with_prefix = improved_artifact_
 		clear_flags_with_prefix = bought_from_
 		clear_flags_with_prefix = bought_artifact_
 	}
@@ -1052,7 +1037,6 @@ character_event = { # critical failure
 
 		prestige = -50
 		clr_character_flag = bought_thing_recently
-		clear_flags_with_prefix = improved_artifact_
 		clear_flags_with_prefix = bought_from_
 		clear_flags_with_prefix = bought_artifact_
 	}
@@ -1084,7 +1068,6 @@ character_event = { # craft done
 		}
 
 		clr_character_flag = bought_thing_recently
-		clear_flags_with_prefix = improved_artifact_
 		clear_flags_with_prefix = bought_from_
 		clear_flags_with_prefix = bought_artifact_
 	}
@@ -1100,21 +1083,124 @@ character_event = { # Rly wanna?
 	border = GFX_event_normal_frame_economy
 
 	is_triggered_only = yes
+	hide_from = yes
+	hide_new = yes
 
-	option = { # Send servant
-		name = EVTOPTA_WCAE_11
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = { stewardship = 12 }
+				create_artifact_craftsman_effect = yes
+				new_character = { save_event_target_as = target_local_candidate_craftsman }
+			}
+			else = {
+				random_courtier_or_vassal = {
+					limit = { char_can_buy_artifacts_no_flag_trigger = yes }
+					preferred_limit = { has_job_title = job_treasurer }
+					preferred_limit = { stewardship = 20 }
+					preferred_limit = { stewardship = 16 }
+					preferred_limit = { stewardship = 12 }
+					save_event_target_as = target_my_little_artifacts_finding_slave_candidate
+				}
+			}
+			if = {
+				limit = {
+					any_realm_wonder_upgrade = {
+						limit = {
+							has_wonder_upgrade = upgrade_armory
+							is_active = yes
+						}
+					}
+				}
+				create_artifact_craftsman_effect = yes
+				new_character = { save_event_target_as = target_armory_candidate_craftsman }
+			}
+		}
+	}
+
+	after = {
+		hidden_effect = {
+			if = {
+				limit = { has_character_flag = hired_local_craftsman_flag }
+				clr_character_flag = hired_local_craftsman_flag
+				event_target:target_armory_candidate_craftsman = { leave_court_and_die_effect = yes }
+			}
+			else_if = {
+				limit = { has_character_flag = hired_armory_craftsman_flag }
+				clr_character_flag = hired_armory_craftsman_flag
+				event_target:target_local_candidate_craftsman = { leave_court_and_die_effect = yes }
+			}
+			else = {
+				event_target:target_armory_candidate_craftsman = { leave_court_and_die_effect = yes }
+				event_target:target_local_candidate_craftsman = { leave_court_and_die_effect = yes }
+			}
+		}
+	}
+
+	option = { # I know local one
+		name = EVTOPTA_WCAE_01
+		tooltip_info = stewardship
 
 		trigger = {
-			char_can_buy_artifacts_no_flag_potential_trigger = yes
+			stewardship = 12
+			char_can_buy_artifacts_no_flag_trigger = yes
 		}
 
-		wealth = -25
+		set_character_flag = hired_local_craftsman_flag
+		event_target:target_local_candidate_craftsman = {
+			show_scope_change = no
+			move_character = ROOT
+		}
+
+		character_event = { id = WCAE.100 days = 7 random = 7 }
+	}
+
+	option = { # Send сourtier
+		name = EVTOPTA_WCAE_02
+
+		trigger = {
+			stewardship < 12
+			char_can_buy_artifacts_no_flag_trigger = yes
+			
+			NOT = {
+				any_realm_wonder_upgrade = {
+					limit = {
+						has_wonder_upgrade = upgrade_armory
+						is_active = yes
+					}
+					always = yes
+				}
+			}
+		}
 
 		random_buy_artifact_effect = yes
 	}
-	
+
+	option = { # Send some servants
+		name = EVTOPTA_WCAE_03
+
+		trigger = {
+			stewardship < 12
+			char_can_buy_artifacts_no_flag_trigger = yes
+			
+			NOT = {
+				any_realm_wonder_upgrade = {
+					limit = {
+						has_wonder_upgrade = upgrade_armory
+						is_active = yes
+					}
+					always = yes
+				}
+			}
+		}
+
+		wealth = -100
+
+		random_buy_artifact_effect = yes
+	}
+
 	option = { # Do it yourself
-		name = EVTOPTA_WCAE_9
+		name = EVTOPTA_WCAE_04
 
 		trigger = {
 			intrigue < 12
@@ -1125,7 +1211,25 @@ character_event = { # Rly wanna?
 			char_can_buy_artifacts_no_flag_trigger = yes
 		}
 
-		prestige = -50
+		if = {
+			limit = { tier = emperor }
+			prestige = -250
+		}
+		else_if = {
+			limit = { tier = king }
+			prestige = -100
+		}
+		else_if = {
+			limit = { tier = duke }
+			prestige = -50
+		}
+		else_if = {
+			limit = { tier = count }
+			prestige = -25
+		}
+		else = {
+			prestige = -10
+		}
 
 		random = {
 			chance = 10
@@ -1137,7 +1241,7 @@ character_event = { # Rly wanna?
 	}
 
 	option = { # Do it yourself, but incognito
-		name = EVTOPTA_WCAE_10
+		name = EVTOPTA_WCAE_05
 		tooltip_info = intrigue
 
 		trigger = {
@@ -1149,16 +1253,45 @@ character_event = { # Rly wanna?
 			char_can_buy_artifacts_no_flag_trigger = yes
 		}
 
+		random = {
+			chance = 25
+
+			add_trait = diligent
+		}
+
 		character_event = { id = WCAE.100 days = 28 random = 14 }
+	}
+	
+	option = { # I know one in the armory
+		name = EVTOPTA_WCAE_06
+		tooltip_info = EVTOPTC_MNM_9115_TT
+
+		trigger = {
+			char_can_buy_artifacts_no_flag_trigger = yes
+			#any_realm_wonder = {
+			#	limit = {
+			#		has_wonder_upgrade = upgrade_armory
+			#		is_active = yes
+			#	}
+			#	#always = yes
+			#}
+		}
+
+		set_character_flag = hired_armory_craftsman_flag
+		event_target:target_local_candidate_craftsman = { show_portrait = yes }
+
+		character_event = { id = WCAE.100 days = 14 random = 7 }
 	}
 
 	option = { # Nope
 		name = EVT_OPTD_MNM_9310
-		
-		clr_character_flag = bought_thing_recently
-		clear_flags_with_prefix = improved_artifact_
-		clear_flags_with_prefix = bought_from_
-		clear_flags_with_prefix = bought_artifact_
+
+		hidden_effect = {
+			set_variable = { which = artifact_market_cost_variable value = 0 }
+			clr_character_flag = bought_thing_recently
+			clear_flags_with_prefix = bought_from_
+			clear_flags_with_prefix = bought_artifact_
+		}
 	}
 }
 
