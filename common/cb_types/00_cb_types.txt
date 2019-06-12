@@ -536,25 +536,27 @@ other_claim = {
             limit = {
                 has_character_flag = is_garithos
                 ROOT = { has_character_flag = is_calia }
-				#handle balnazzar here
                 start_date = 605.6.6
+				has_global_flag = plaguelands_civil_war_ongoing
             }
             save_event_target_as = target_garithos
             ROOT = { save_event_target_as = target_calia }
+			FROM = { 
+				if = {
+					limit = {
+						trait = being_demon
+					}
+					death = { death_reason = death_twisting_nether } 
+				}
+				else_if = {
+					limit = {
+						trait = being_undead
+					}
+					death = { death_reason = death_battle }
+				}
+			}
         
             narrative_event = { id = WCTFT.110 }
-        }
-		
-        if = {
-            limit = {
-                has_character_flag = is_sylvanas
-                ROOT = { has_character_flag = is_sylvanas }
-				#handle balnazzar here
-                start_date = 605.6.6
-            }
-            save_event_target_as = target_sylvanas
-        
-            narrative_event = { id = WCTFT.130 }
         }
 	}
 
@@ -3327,6 +3329,36 @@ invasion = {
 				landless_pope_effect = yes
 			}
 		}
+	}
+	
+	#Warcraft
+	on_success_posttitle = {
+		if = {
+			limit = {
+				ROOT = { has_character_flag = is_sylvanas }
+				start_date = 605.6.6
+				has_global_flag = plaguelands_civil_war_ongoing
+			}
+			ROOT = { save_event_target_as = target_sylvanas }
+			FROM = { 
+				if = {
+					limit = {
+						trait = being_demon
+					}
+					death = { death_reason = death_twisting_nether } 
+				}
+				else_if = {
+					limit = {
+						NOT = {
+							trait = being_undead
+						}
+					}
+					death = { death_reason = death_battle } 
+				}
+			}
+
+			ROOT = { narrative_event = { id = WCTFT.130 } }
+        }
 	}
 
 	on_fail = {
