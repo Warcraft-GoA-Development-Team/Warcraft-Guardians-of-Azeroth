@@ -290,19 +290,26 @@ character_event = {
 	immediate = {
 		log = "WCGOV.8000 fired for [Root.GetBestName]"
 		primary_title = { save_event_target_as = target_republic }
+		capital_scope = { county = { save_event_target_as = target_city } }
 		
 		clr_character_flag = upcoming_elections_flag
 		
 		add_trait = secret_patrician
 		any_vassal = {
-			limit = { is_patrician = yes }
-			add_trait = secret_patrician
+			if = {								# Keep patricians as patricians in inter-election period
+				limit = { is_patrician = yes }
+				add_trait = secret_patrician
+			}
+			else_if = {							# Mark vassals of previous doge
+				limit = { primary_title = { NOT = { de_jure_liege = event_target:target_city } } }
+				set_character_flag = prev_doge_vassal_flag
+			}
 		}
 		
 		hold_election = yes
 		
 		remove_trait = secret_patrician
-		
+
 		event_target:target_republic = { holder_scope = { save_event_target_as = target_new_doge } }
 		
 		if = {
@@ -319,8 +326,19 @@ character_event = {
 		event_target:target_new_doge = {
 			remove_trait = secret_patrician
 			any_vassal = {
-				limit = { trait = secret_patrician }
-				remove_trait = secret_patrician
+				if = {
+					limit = { trait = secret_patrician }
+					add_trait = secret_patrician
+				}
+				else_if = {
+					limit = { has_character_flag = prev_doge_vassal_flag }
+					clr_character_flag = prev_doge_vassal_flag
+					
+					if = {
+						limit = { lower_tier_than = ROOT }
+						set_defacto_liege = ROOT
+					}
+				}
 			}
 		}
 		
