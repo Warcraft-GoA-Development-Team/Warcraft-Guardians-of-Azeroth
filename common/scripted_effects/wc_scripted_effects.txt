@@ -539,15 +539,15 @@ show_close_people_what_this_become_effect = {
 				num_of_friends = 1
 				num_of_lovers = 1
 				has_children = yes
-				father = { always = yes }
-				mother = { always = yes }
+				father = { character = yes }
+				mother = { character = yes }
 				is_ruler = yes
 				has_job_title = yes
 				has_minor_title = yes
 			}
 			OR = {
 				NOT = { has_character_flag = show_what_become_cooldown_flag }
-				had_character_flag = { flag = show_what_become_cooldown_flag days = 30 }
+				had_character_flag = { flag = show_what_become_cooldown_flag days = 365 }
 			}
 		}
 		set_character_flag = show_what_become_cooldown_flag
@@ -555,14 +555,16 @@ show_close_people_what_this_become_effect = {
 			limit = {
 				NOT = { character = event_target:target_necromancer }	# This character turned THIS, so it already know
 			}
-			character_event = { id = WCDAC.150 days = 5 }
+			set_notification_type_of_prev_effect = yes
+			character_event = { id = WCDAC.150 }
 		}
 		any_friend = {
 			limit = {
 				NOT = { character = event_target:target_necromancer }	# This character turned THIS, so it already know
 				NOT = { is_married = PREV }
 			}
-			character_event = { id = WCDAC.150 days = 5 }
+			set_notification_type_of_prev_effect = yes
+			character_event = { id = WCDAC.150 }
 		}
 		any_lover = {
 			limit = {
@@ -570,7 +572,8 @@ show_close_people_what_this_become_effect = {
 				NOT = { is_married = PREV }
 				NOT = { is_friend = PREV }
 			}
-			character_event = { id = WCDAC.150 days = 5 }
+			set_notification_type_of_prev_effect = yes
+			character_event = { id = WCDAC.150 }
 		}
 		any_close_relative = {
 			limit = {
@@ -579,7 +582,8 @@ show_close_people_what_this_become_effect = {
 				NOT = { is_friend = PREV }
 				NOT = { is_lover = PREV }
 			}
-			character_event = { id = WCDAC.150 days = 5 }
+			set_notification_type_of_prev_effect = yes
+			character_event = { id = WCDAC.150 }
 		}
 		if = {		# ...liege is almost your family
 			limit = {
@@ -598,8 +602,31 @@ show_close_people_what_this_become_effect = {
 					NOT = { is_close_relative = PREV }
 				}
 			}
-			liege = { character_event = { id = WCDAC.150 days = 5 } }
+			liege = {
+				set_notification_type_of_prev_effect = yes
+				character_event = { id = WCDAC.150 }
+			}
 		}
+	}
+	clear_flags_with_prefix = show_notification_
+}
+# Copy notification type of PREV
+set_notification_type_of_prev_effect = {
+	if = {
+		limit = { PREV = { has_character_flag = show_notification_undead_flag } }
+		set_character_flag = show_notification_undead_flag
+	}
+	else_if = {
+		limit = { PREV = { has_character_flag = show_notification_demon_flag } }
+		set_character_flag = show_notification_demon_flag
+	}
+	else_if = {
+		limit = { PREV = { has_character_flag = show_notification_void_flag } }
+		set_character_flag = show_notification_void_flag
+	}
+	else_if = {
+		limit = { PREV = { has_character_flag = show_notification_worgen_flag } }
+		set_character_flag = show_notification_worgen_flag
 	}
 }
 
@@ -653,6 +680,7 @@ become_intelligent_worget_effect = {
 	add_trait = worgen
 	hidden_effect = {
 		# Notifies your family/spouse/friends/lovers
+		set_character_flag = show_notification_worgen_flag	# Type of notification
 		show_close_people_what_this_become_effect = yes
 	}
 }
@@ -663,6 +691,7 @@ become_mindless_worgen_effect = {
 		character_event = { id = WCDRU.1000 days = 60 }			# Mindless worgen events
 
 		# Notifies your family/spouse/friends/lovers
+		set_character_flag = show_notification_worgen_flag	# Type of notification
 		show_close_people_what_this_become_effect = yes
 	}
 }
@@ -1307,87 +1336,6 @@ remove_3_mind_control_power_effect = {
 	character_event = { id = WCUND.1107 days = 1 }		# Decreases power of mind control
 }
 
-set_undead_gfx_effect = {
-	if = {
-		limit = { has_undead_gfx_trigger = no }	# If you add new undead gfx, don't forget to add your gfx in this trigger
-		if = {
-			limit = { has_human_gfx_trigger = yes }
-			set_graphical_culture = human_undead
-		}
-		else_if = {
-			limit = {
-				OR = {
-					graphical_culture = murlocgfx
-					graphical_culture = murlocundeadgfx
-				}
-			}
-			set_graphical_culture = murloc_undead
-		}
-		else_if = {
-			limit = {
-				OR = {
-					graphical_culture = quilboargfx
-					graphical_culture = quilboarundeadgfx
-				}
-			}
-			set_graphical_culture = quilboar_undead
-		}
-		else_if = {
-			limit = { graphical_culture = vrykulgfx }
-			set_graphical_culture = vrykul_undead
-		}
-		else_if = {
-			limit = {
-				OR = {
-					graphical_culture = gnollgfx
-					graphical_culture = gnollundeadgfx
-				}
-			}
-			set_graphical_culture = gnoll_undead
-		}
-		# You're too ugly, sorry
-		# else = {
-			# set_graphical_culture = ghoul
-		# }
-	}
-}
-add_trait_undead_effect = {
-	# Undead children shall not pass
-	if = {
-		limit = { is_adult = no }
-		death = { death_reason = death_poor_health }
-	}
-	else = {
-		if = {
-			limit = { NOT = { trait = being_undead } }
-			add_trait = being_undead
-		}
-		# If you has secret religion, you reveal yourself
-		if = {
-			limit = { has_secret_religion = yes }
-			convert_to_secret_religion = yes
-		}
-
-		# Removes drunkard, diseases, negative genetic and weight
-		clean_dark_beings_effect = yes
-
-		set_undead_gfx_effect = yes
-
-		hidden_effect = {
-			if = {
-				limit = { has_character_flag = being_raised_flag }
-				clr_character_flag = being_raised_flag
-			}
-
-			# Pregnant shall not pass
-			cancel_pregnancy_effect = yes
-
-			# Notifies your family/spouse/friends/lovers
-			show_close_people_what_this_become_effect = yes
-		}
-	}
-}
-
 free_from_lich_king_effect = {
 	if = {
 		limit = {
@@ -1531,7 +1479,29 @@ cancel_pregnancy_effect = {
 		limit = {
 			is_pregnant = yes
 		}
-		if = { limit = { trait = hard_pregnancy } remove_trait = hard_pregnancy }
+		hidden_effect = {
+			remove_trait = pregnancy_finishing
+			remove_trait = in_hiding
+			remove_trait = travelling
+			remove_character_modifier = mother_praying_health
+			remove_character_modifier = mother_resting_health
+			remove_character_modifier = mother_partying_health
+			clr_character_flag = mother_asked_retirement 
+			clr_character_flag = flag_mother_dark_rest
+			clr_character_flag = mother_gossip_listening #Safety check, they should already have been removed
+			clr_character_flag = mother_gossip_talking
+			clr_character_flag = mother_gossip_trusting
+			clr_character_flag = mother_gossip_plotting
+			clr_character_flag = mother_gossip_envious
+			clr_character_flag = mother_gossip_shy
+			clr_character_flag = mother_gossip_learning
+			clr_character_flag = mother_gossip_content
+			clr_character_flag = mother_gossip_gluttonous
+			remove_trait = hard_pregnancy
+
+			character_event = { id = HFP.20597 days = 35 } #Clears persistent Physician targets. They are still on on_birth since post-partum complications may require their services.
+		}
+		
 		if = { limit = { trait = pregnant } remove_trait = pregnant }
 		cancel_pregnancy = yes
 	}
@@ -2023,7 +1993,7 @@ upgrade_province_as_target_settler_effect = {
 settle_as_target_settler_effect = {
 	if = {
 		limit = { holder_scope = { NOT = { character = event_target:target_settler } } }
-		
+
 		location = {
 			show_scope_change = no
 			
