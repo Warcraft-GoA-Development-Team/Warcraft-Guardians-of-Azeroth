@@ -18,8 +18,10 @@ narrative_event = {
 	is_triggered_only = yes
 
 	major = yes
-
-	hide_from = yes
+	major_trigger = {
+		ai = no
+	}
+	show_root = yes
 	hide_new = yes
 
 	immediate = {
@@ -165,17 +167,12 @@ character_event = {
 	is_triggered_only = yes
 	hide_window = yes
 
-	only_rulers = yes
+	ai = no
 
 	trigger = {
-		is_alive = yes
-		is_dying = no
-
 		NOT = { has_global_flag = dark_portal_was_opened_flag }
 		NOT = { has_global_flag = orcish_invasion_flag }
 		year = 583
-		religion = holy_light
-		controls_religion = yes
 	}
 
 	immediate = {
@@ -623,7 +620,10 @@ narrative_event = {
 	is_triggered_only = yes
 
 	major = yes
-
+	major_trigger = {
+		ai = no
+	}
+	show_root = yes
 	hide_from = yes
 
 	immediate = {
@@ -651,13 +651,8 @@ narrative_event = {
 		73 = { province_event = { id = WCDAC.4999 days = 30 } }
 		# Starts "The Reawakening of C'thun" event chain
 		73 = { province_event = { id = WCVOD.1000 years = 25 } }
-		d_frostwolf = {
-			owner = {
-				narrative_event = {
-					id = WCFW.1
-				}
-			}
-		}
+		# Exodus of the Frostwolf
+		73 = { province_event = { id = WCFW.101 days = 3 } }
 	}
 
 	option = {
@@ -720,6 +715,22 @@ narrative_event = {
 		name = EVTOPTC_WCFTW_100
 		trigger = {
 			has_character_flag = is_medivh
+		}
+	}
+}
+
+# Delayer event of WCFTW.100
+province_event = {
+	id = WCFTW.105
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
+		e_horde = {
+			holder_scope={
+				narrative_event = { id = WCFTW.100 }
+			}
 		}
 	}
 }
@@ -915,15 +926,21 @@ character_event = {
 			}
 			character_event = { id = WCFTW.1007 }
 		}
+		# Kills Medivh
 		if = {
 			limit = {
 				ai = yes
-				top_liege = { ai = yes }
-			}
-			top_liege = {
-				ROOT = {
-					death = { death_reason = death_execution killer = PREV }
+				OR = {
+					independent = yes
+					top_liege = { ai = yes }
 				}
+			}
+			if = {
+				limit = { independent = yes }
+				death = { death_reason = death_execution }
+			}
+			else = {
+				top_liege = { ROOT = { death = { death_reason = death_execution killer = PREV } } }
 			}
 		}
 	}
@@ -1039,7 +1056,10 @@ narrative_event = {
 	}
 
 	major = yes
-
+	major_trigger = {
+		ai = no
+	}
+	show_root = yes
 	hide_from = yes
 	
 	immediate = {

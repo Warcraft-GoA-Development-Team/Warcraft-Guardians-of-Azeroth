@@ -135,9 +135,7 @@ character_event = {
 		name = {
 			text = EVTOPTA_7001_B
 			trigger = {
-				NOT = {
-					has_character_flag = being_recruited_by_the_bacchants
-				}
+				has_character_flag = being_recruited_by_the_bacchants
 			}
 		}
 		
@@ -151,6 +149,7 @@ character_event = {
 				trait = bad_priest_tengri
 				trait = bad_priest_zoroastrian
 				trait = bad_priest_aztec
+				trait = possessed
 			}
 		}
 
@@ -177,6 +176,10 @@ character_event = {
 			modifier = {
 				factor = 1.5
 				trait = trusting
+			}
+			modifier = {
+				factor = 50 #likely if "possessed"
+				has_opinion_modifier = { who = event_target:satanists_recruiter modifier = opinion_loyal_servant }
 			}
 			modifier = {
 				factor = 1.5
@@ -584,6 +587,7 @@ character_event = {
 				trait = bad_priest_tengri
 				trait = bad_priest_zoroastrian
 				trait = bad_priest_aztec
+				trait = possessed
 			}
 		}
 		
@@ -4842,6 +4846,10 @@ character_event = {
 							}
 							modifier = {
 								trait = cancer
+								
+								# Warcraft
+								NOT = { trait = corrupted_blood }
+								
 								NOT = { trait = has_measles }
 								NOT = { trait = flu }
 								NOT = { trait = food_poisoning }
@@ -5134,6 +5142,14 @@ character_event = {
 				remove_character_modifier = phantom_pain
 			}
 		}
+		
+		# Warcraft
+		if = {
+			limit = { has_character_flag = removing_corrupted_blood }
+			remove_trait = corrupted_blood
+			set_character_flag = immune_corrupted_blood
+		}
+		
 		if = {
 			limit = { has_character_flag = removing_flu }
 			remove_trait = flu
@@ -5230,6 +5246,10 @@ character_event = {
 		clr_character_flag = removed_one_handed
 		clr_character_flag = removed_one_legged
 		clr_character_flag = removed_disfigured
+		
+		# Warcraft
+		clr_character_flag = removing_corrupted_blood
+		
 		clr_character_flag = removing_flu
 		clr_character_flag = removing_measles
 		clr_character_flag = removing_food_poisoning
@@ -6144,13 +6164,14 @@ character_event = {
 				}
 				random_list = {
 					10 = { give_pneumonic_effect = yes }
-
+					10 = { give_syphilitic_effect = yes }
+					10 = { give_has_tuberculosis_effect = yes }
+					
 					# Warcraft
-					# 10 = { give_syphilitic_effect = yes }
-					# 10 = { give_has_tuberculosis_effect = yes }
 					# 10 = { give_has_small_pox_effect = yes }
 					# 10 = { give_has_measles_effect = yes }
-					# 10 = { give_has_typhoid_fever_effect = yes }
+					
+					10 = { give_has_typhoid_fever_effect = yes }
 
 					10 = { 
 						modifier = { factor = 0 NOT = { has_dlc = "Reapers" } }
@@ -6189,9 +6210,10 @@ character_event = {
 				}				
 				random_list = {
 					# Warcraft
+					10 = { give_corrupted_blood_effect = yes }
 					# 10 = { give_has_bubonic_plague_effect = yes }
 
-					10 = { 
+					10 = {
 						modifier = { factor = 0 NOT = { has_dlc = "Reapers" } }
 						give_rabies_effect = yes 
 					}
@@ -6263,6 +6285,9 @@ character_event = {
 			if = {
 				limit = {
 					OR = {
+						# Warcraft
+						trait = corrupted_blood
+						
 						trait = pneumonic
 						trait = has_tuberculosis
 						trait = has_typhoid_fever
@@ -6805,6 +6830,24 @@ long_character_event = { #reaction
 	border = GFX_event_long_frame_intrigue
 
 	is_triggered_only = yes
+
+	immediate = {
+		if = {
+			limit = {
+				FROM = {
+					is_alive = yes
+				}
+			}
+			FROM = {
+				save_event_target_as = satanist
+			}
+		}
+		else = {
+			FROMFROM = {
+				save_event_target_as = satanist
+			}
+		}
+	}
 
 	option = {
 		name = MNM.7506.a

@@ -470,7 +470,59 @@ character_event = {
 	}
 }
 
-# Closes the Dark Portal
+### Closes the Dark Portal ###
+# on_siege_over_winner
+character_event = {
+	id = WCSDW.245
+	
+	is_triggered_only = yes
+	hide_window = yes
+
+	only_playable = yes
+	
+	trigger = {
+		FROM = {
+			tier = BARON
+			is_capital = yes
+
+			location = {
+				has_province_modifier = dark_portal_is_open_2
+			}
+			holder_scope = {
+				top_liege = {
+					any_current_enemy = { character = ROOT }
+				}
+			}
+		}
+	}
+	
+	immediate = {
+		narrative_event = { id = WCSDW.250 }
+	}
+}
+# on_new_holder, on_new_holder_inheritance, on_new_holder_usurpation
+character_event = {
+	id = WCSDW.246
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	only_playable = yes
+	
+	trigger = {
+		FROM = {
+			tier = COUNT
+
+			location = {
+				has_province_modifier = dark_portal_is_open_2
+			}
+		}
+	}
+	
+	immediate = {
+		narrative_event = { id = WCSDW.250 }
+	}
+}
 narrative_event = {
 	id = WCSDW.250
 	title = EVTTITLE_WCSDW_250
@@ -480,8 +532,10 @@ narrative_event = {
 	is_triggered_only = yes
 
 	major = yes
-
-	only_playable = yes
+	major_trigger = {
+		ai = no
+	}
+	show_root = yes
 
 	trigger = {
 		NOR = {
@@ -493,21 +547,15 @@ narrative_event = {
 			has_landed_title = e_horde
 			top_liege = { has_landed_title = e_horde }
 		}
-
-		FROM = {
-			OR = {
-				title = b_darkhollow
-				title = c_dark_portal
-			}
-		}
-		73 = { has_province_modifier = dark_portal_is_open_2 }
 	}
 
 	immediate = {
 		log = "WCSDW.250 fired for [Root.GetBestName]"
-		73 = {
-			remove_province_modifier = dark_portal_is_open_2
-			add_province_modifier = { name = dark_portal_is_open_1 duration = -1 }
+		FROM = {
+			location = {
+				remove_province_modifier = dark_portal_is_open_2
+				add_province_modifier = { name = dark_portal_is_open_1 duration = -1 }
+			}
 		}
 	}
 
@@ -628,6 +676,10 @@ narrative_event = {
 	is_triggered_only = yes
 	
 	major = yes
+	major_trigger = {
+		ai = no
+	}
+	show_root = yes
 
 	immediate = {
 		if = {
@@ -643,6 +695,7 @@ narrative_event = {
 		}
 		set_global_flag = fel_death_knight_flag
 		create_character = {
+			dynasty = actually_culture
 			religion = orcish_fel
 			culture = stormreaver
 			female = no

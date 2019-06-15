@@ -19,7 +19,6 @@ plague_of_undeath = {
 			limit = {
 				e_scourge = { has_holder = yes }
 
-				can_get_sick_trigger = yes
 				NOR = {
 					in_command = yes	# I want to give commanders a chance
 					has_character_flag = immune_plague_of_undeath
@@ -51,7 +50,10 @@ plague_of_undeath = {
 						factor = 5000
 						is_unimportant_trigger = yes
 					}
-					#clr_character_flag = got_plague_of_undeath #clear out other diseases
+
+					# clr_character_flag = got_plague_of_undeath #clear out other diseases
+					clr_character_flag = got_corrupted_blood
+
 					clr_character_flag = got_bubonic_plague
 					clr_character_flag = got_aztec_disease
 					clr_character_flag = got_smallpox
@@ -68,10 +70,9 @@ plague_of_undeath = {
 					clr_character_flag = got_dysentery
 					clr_character_flag = got_food_poisoning
 					clr_character_flag = disease_not_serious
+					clr_character_flag = developing_illness
 
-					set_character_flag = got_plague_of_undeath
-					set_character_flag = developing_illness
-					character_event = { id = WCPOD.5012 }
+					give_plague_of_undeath_effect = yes
 				}
 				10 = { # Nothing happens
 				}
@@ -79,13 +80,14 @@ plague_of_undeath = {
 		}
 	}
 	on_province_infection = {
+		province_event = { id = RIP.11703 } #prosperity ended by epidemic
 		if = {
 			limit = {
 				e_scourge = { has_holder = yes }
 
 				is_susceptible_to_plague_province_trigger = yes
 			}
-			province_event = { id = WCPOD.10000 days = 15 }
+			province_event = { id = WCPOD.10000 days = 10 random = 20 }
 		}
 		if = {
 			limit = {
@@ -116,13 +118,13 @@ plague_of_undeath = {
 		}
 	}
 	always_get_message = yes
-	color = { 255 0 0 }
+	color = { 0 153 0 }
 	major = yes
-	
+
 	timeperiod = {	# The Plague of Northrend
 		start_date = 300.1.1
 		end_date = 800.1.1
-		
+
 		months = 0
 
 		outbreak_chance = 1
@@ -130,7 +132,7 @@ plague_of_undeath = {
 		can_outbreak = {
 			has_global_flag = plague_of_northrend_triggered_flag
 		}
-		
+
 		spread_through_water = no
 
 		max_total_provinces = 60
@@ -149,7 +151,7 @@ plague_of_undeath = {
 	timeperiod = {	# The Plague of Lordaeron
 		start_date = 300.1.1
 		end_date = 800.1.1
-		
+
 		months = 0
 
 		outbreak_chance = 1
@@ -157,7 +159,7 @@ plague_of_undeath = {
 		can_outbreak = {
 			has_global_flag = plague_of_lordaeron_triggered_flag
 		}
-		
+
 		spread_through_water = no
 
 		max_total_provinces = 60
@@ -184,7 +186,7 @@ plague_of_undeath = {
 	timeperiod = {	# The Plague of Azeroth
 		start_date = 300.1.1
 		end_date = 800.1.1
-		
+
 		months = 0
 
 		outbreak_chance = 1
@@ -192,9 +194,9 @@ plague_of_undeath = {
 		can_outbreak = {
 			always = no
 		}
-		
+
 		spread_through_water = no
-		
+
 		max_total_provinces = 60
 		min_nb_province = 5		# ignored if 0
 		max_nb_province = 10	# ignored if 0
@@ -207,11 +209,200 @@ plague_of_undeath = {
 				37
 			}
 			excluded_regions = {
-				world_eastern_kingdoms_lordaeron 
+				world_eastern_kingdoms_lordaeron
 				world_eastern_kingdoms_khaz_modan
 			}
 		}
 	}
 
 	disease_gfx = disease_gfx_bubonic_plague
+}
+
+# Hakkar's Plague
+corrupted_blood_epidemic = {	# Pretty deadly disease
+	rip = yes
+	contagiousness = 0.3
+	outbreak_chance = 0.008
+	effect = {
+		local_tax_modifier = -0.5
+		supply_limit = -3
+		max_attrition = 0.05
+	}
+	yearly_province_pulse = {
+		random_list = {
+			92 = {
+				hospital_level_score = yes
+			}
+			8 = {
+				increase_depopulation_effect = yes
+			}
+		}
+	}
+	icon = 5
+	tooltip = CORRUPTED_BLOOD_INFO
+	months = 24
+	trait = corrupted_blood
+	character_infection_chances = {
+		months = 3
+	}
+	on_character_infection = {
+		if = {
+			limit = {
+				# Warcraft
+				can_get_sick_trigger = yes
+
+				NOR = {
+					has_character_flag = immune_corrupted_blood
+					trait = corrupted_blood
+
+					# Warcraft
+					developing_disease_trigger = yes
+				}
+			}
+			random_list = {
+				10 = { # Get the disease
+					modifier = {
+						factor = 0
+						has_character_modifier = in_seclusion
+					}
+					modifier = {
+						factor = 0.1
+						AND = {
+							is_nomadic = yes
+							NOT = { is_unimportant_trigger = yes }
+						}
+					}
+					modifier = {
+						factor = 0.5
+						AND = {
+							is_tribal = yes
+							NOT = { is_unimportant_trigger = yes }
+						}
+					}
+					modifier = {
+						factor = 50
+						is_unimportant_trigger = yes
+					}
+					clr_character_flag = disease_not_serious
+					clr_character_flag = developing_illness
+					
+					get_corrupted_blood_effect = yes
+				}
+				90 = { # Nothing happens
+				}
+			}
+		}
+	}
+	on_province_infection = {
+		province_event = {
+			id = RIP.11703 #prosperity ended by epidemic
+		}
+	}
+	always_get_message = no
+	color = { 255 0 0 }
+
+	timeperiod = { # Minor Outbreak
+		start_date = 300.1.1
+		end_date = 1000.1.1
+
+		outbreak_chance = 0.006
+
+		can_outbreak = {
+			NOT = {
+				has_game_rule = {
+					name = minor_epidemics
+					value = fewer
+				}
+			}
+		}
+
+		max_total_provinces = 10
+
+		spread_through_water = no
+
+		min_nb_province = 1	# ignored if 0
+		max_nb_province = 2	# ignored if 0
+
+		one_only = no
+	}
+
+	timeperiod = { # Normal Outbreak
+		start_date = 300.1.1
+		end_date = 1000.1.1
+
+		outbreak_chance = 0.004
+
+		max_total_provinces = 40
+
+		min_nb_province = 1	# ignored if 0
+		max_nb_province = 2	# ignored if 0
+
+		one_only = no
+	}
+
+	timeperiod = { # 'More' Normal Outbreak
+		start_date = 300.1.1
+		end_date = 1000.1.1
+
+		outbreak_chance = 0.003
+
+		can_outbreak = {
+			has_game_rule = {
+				name = minor_epidemics
+				value = more
+			}
+		}
+
+		max_total_provinces = 40
+
+		min_nb_province = 1	# ignored if 0
+		max_nb_province = 2	# ignored if 0
+
+		one_only = no
+	}
+
+	timeperiod = { # Major Outbreak
+		start_date = 300.1.1
+		end_date = 1000.1.1
+
+		outbreak_chance = 0.001
+
+		can_outbreak = {
+			NOT = {
+				has_game_rule = {
+					name = minor_epidemics
+					value = fewer
+				}
+			}
+		}
+
+		max_total_provinces = 90
+
+		min_nb_province = 2	# ignored if 0
+		max_nb_province = 8	# ignored if 0
+
+		one_only = no
+	}
+
+	timeperiod = { # 'More' Major Outbreak
+		start_date = 300.1.1
+		end_date = 1000.1.1
+
+		outbreak_chance = 0.001
+
+		can_outbreak = {
+			has_game_rule = {
+				name = minor_epidemics
+				value = more
+			}
+		}
+
+		max_total_provinces = 90
+
+		min_nb_province = 2	# ignored if 0
+		max_nb_province = 8	# ignored if 0
+
+		one_only = no
+	}
+	disease_gfx = disease_gfx_measles
 }
