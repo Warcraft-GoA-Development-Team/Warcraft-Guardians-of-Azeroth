@@ -326,6 +326,10 @@ character_event = {
 			limit = { potential_race_annihilan_trigger = yes }
 			add_trait = creature_annihilan
 			add_trait_demon_effect = yes
+			if = {
+				limit = { culture = shivarra }
+				culture = annihilan 
+			}
 		}
 		else_if = {
 			limit = { potential_race_nathrezim_trigger = yes }
@@ -372,6 +376,10 @@ character_event = {
 			limit = { potential_race_shivarra_trigger = yes }
 			add_trait = creature_shivarra
 			add_trait_demon_effect = yes
+			if = {
+				limit = { culture = annihilan }
+				culture = shivarra 
+			}
 		}
 		else_if = {
 			limit = { potential_race_moarg_trigger = yes }
@@ -551,7 +559,17 @@ character_event = {
 		else = {
 			gfx_culture_scope = { save_event_target_as = target_gfx_culture }
 			log = "(IMPORTANT) [This.GetBestName] couldn't get race trait. GFX culture is [target_gfx_culture.GetName]."
-			death = { death_reason = death_missing }
+			clear_event_target = target_gfx_culture
+			if = {
+				limit = { has_character_flag = last_race_try_flag }
+				death = { death_reason = death_missing }
+				break = yes
+			}
+			set_character_flag = last_race_try_flag
+			
+			dynasty_head = { ROOT = { set_prev_gfx_effect = yes } }
+			repeat_event = { id = WCRAC.10 }
+			break = yes
 		}
 		
 		if = {
