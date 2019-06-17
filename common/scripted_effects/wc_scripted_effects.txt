@@ -1157,10 +1157,10 @@ spawn_small_horde_troops_effect = {
 	}
 	spawn_fleet = {
 		province = closest
-		owner = ROOT
+		owner = THIS
 		earmark = horde_forces
 		troops = {
-			galleys = { 75 75 }
+			galleys = { 50 50 }
 		}
 	}
 }
@@ -1316,10 +1316,10 @@ spawn_colonial_troops_effect = {
 	}
 	spawn_fleet = {
 		province = closest # closest sea zone
-		owner = ROOT
-		disband_on_peace = yes
+		owner = THIS
+		cannot_inherit = no
 		troops = {
-			galleys = { 50 50 }
+			galleys = { 65 65 }
 		}
 	}
 }
@@ -1576,11 +1576,7 @@ find_right_spouse_effect = {
 			ai = yes
 			can_marry = yes
 			can_marry_trigger = yes
-			NOT = {
-				any_dynasty_member = {
-					ai = no
-				}
-			}
+			host = { ai = yes }
 		}
 		character_event = { id = WCCLN.130 }		# Finds right spouse
 	}
@@ -2090,33 +2086,33 @@ give_old_titles_to_liege_effect = {
 				is_ruler = yes
 				independent = no
 			}
-		}
-		liege = { save_event_target_as = target_liege }
-		any_vassal = {
-			limit = { dejure_liege_title = { NOT = { has_title_flag = new_title_flag } } }
-			set_defacto_liege = event_target:target_liege
-		}
-		any_demesne_title = {
-			limit = {
-				lower_tier_than = DUKE
-				NOT = { has_title_flag = new_title_flag }
-				trigger_if = {
-					limit = { tier = BARON }
-					county = { NOT = { has_title_flag = new_title_flag } }
+			liege = { save_event_target_as = target_liege }
+			any_vassal = {
+				limit = { dejure_liege_title = { NOT = { has_title_flag = new_title_flag } } }
+				set_defacto_liege = event_target:target_liege
+			}
+			any_demesne_title = {
+				limit = {
+					lower_tier_than = DUKE
+					NOT = { has_title_flag = new_title_flag }
+					trigger_if = {
+						limit = { tier = BARON }
+						county = { NOT = { has_title_flag = new_title_flag } }
+					}
+				}
+				grant_title_no_opinion = event_target:target_liege
+				if = {
+					limit = { tier = COUNT }
+					location = {
+						culture = event_target:target_liege
+						religion = event_target:target_liege
+					}
 				}
 			}
-			grant_title_no_opinion = event_target:target_liege
-			if = {
-				limit = { tier = COUNT }
-				location = {
-					culture = event_target:target_liege
-					religion = event_target:target_liege
-				}
-			}
+			clear_event_target = target_liege
+			
+			set_defacto_liege = THIS
 		}
-		clear_event_target = target_liege
-		
-		set_defacto_liege = THIS
 	}
 }
 # Declares war against player
