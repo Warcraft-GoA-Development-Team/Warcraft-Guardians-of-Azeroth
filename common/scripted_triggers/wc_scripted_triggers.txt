@@ -136,26 +136,38 @@ can_switch_religion_trigger = {
 	}
 }
 # TITLE CAN'T BE CONQUERED IF IT'S NOT TRUE
-title_can_be_conquered_trigger = {
-	controls_religion = no
+title_can_be_lost_trigger = {
+	OR = {
+		has_holder = no
+		holder_scope = { is_untouchable_trigger = no }
+	}
+	trigger_if = {
+		limit = {
+			controls_religion = yes
+		}
+		OR = {
+			has_holder = no
+			holder_scope = { is_secular_ruler_trigger = yes }
+		}
+	}
+	trigger_else = {
+		controls_religion = no
+	}
 	mercenary = no
 	holy_order = no
-	is_landless_type_title = no
 	clan = no
 	NOT = { holding_type = family_palace }
-	title_can_be_lost_trigger = yes
+	invader_title_trigger = no
+	dragonflight_title_trigger = no
+	faction_title_trigger = no
 }
-# TITLES ARE IN DANGER, SO MANY CBS CAN'T BE USED AGAINST THIS CHARACTER
+# TITLES ARE IN DANGER, SO MANY ACTIONS CAN'T BE USED AGAINST THIS CHARACTER
 character_can_lose_title_trigger = {
 	is_untouchable_trigger = no
 
 	has_invader_title_trigger = no
 	has_dragonflight_title_trigger = no
-}
-# TITLES ARE IN DANGER, SO MANY CBS CAN'T BE USED
-title_can_be_lost_trigger = {
-	invader_title_trigger = no
-	dragonflight_title_trigger = no
+	has_faction_title_trigger = no
 }
 # CAN'T GET SICK IF IT'S NOT TRUE
 # Associated with text_effect_can_not_get_diseases
@@ -438,8 +450,21 @@ can_gain_lose_weight_trigger = {
 can_be_drunkard_trigger = {
 	is_untouchable_trigger = no
 
-	is_humanoid_trigger = yes
 	is_dark_being_trigger = no
+	is_humanoid_trigger = yes
+	is_uncursed_titanforged_trigger = no
+	evil_public_religion_trigger = no
+	
+	has_invader_title_trigger = no
+}
+# Can't do party if it's not true
+can_do_party = {
+	is_untouchable_trigger = no
+	
+	is_humanoid_trigger = yes
+	is_uncursed_titanforged_trigger = no
+	evil_public_religion_trigger = no
+	
 	has_invader_title_trigger = no
 }
 can_be_sacrificed_trigger = {
@@ -629,29 +654,34 @@ can_be_feudal_trigger = {
 	}
 }
 is_humanoid_trigger = {
-	custom_tooltip = { text = is_humanoid_trigger_tooltip }
-	hidden_tooltip = {
-		# NOT = { trait = being_demon }
-		OR = {
-			is_small_humanoid_trigger = yes
-			is_medium_humanoid_trigger = yes
-			is_large_humanoid_trigger = yes
+	custom_tooltip = {
+		text = is_humanoid_trigger_tooltip
+		hidden_tooltip = {
+			# NOT = { trait = being_demon }
+			OR = {
+				is_small_humanoid_trigger = yes
+				is_medium_humanoid_trigger = yes
+				is_large_humanoid_trigger = yes
+			}
 		}
 	}
 }
 
 # Only humanoids made of meat
 is_small_humanoid_trigger = {
-	OR = {
-		trait = creature_murloc
-		trait = creature_kobold
-		trait = creature_dwarf
-		trait = creature_gnome
-		trait = creature_goblin
-		trait = creature_pygmy
-		trait = creature_gorloc
-		trait = creature_wolvar
-		trait = creature_vulpera
+	custom_tooltip = {
+		text = is_small_humanoid_tooltip
+		OR = {
+			trait = creature_murloc
+			trait = creature_kobold
+			trait = creature_dwarf
+			trait = creature_gnome
+			trait = creature_goblin
+			trait = creature_pygmy
+			trait = creature_gorloc
+			trait = creature_wolvar
+			trait = creature_vulpera
+		}
 	}
 }
 # Only humanoids made of meat
@@ -1041,6 +1071,7 @@ potential_race_lich_trigger = {
 # Demons
 potential_race_annihilan_trigger = {
 	graphical_culture = annihilangfx
+	is_female = no
 	NOT = { trait = creature_annihilan }
 }
 potential_race_nathrezim_trigger = {
@@ -1074,7 +1105,8 @@ potential_race_sayaadi_trigger = {
 	NOT = { trait = creature_sayaadi }
 }
 potential_race_shivarra_trigger = {
-	graphical_culture = shivarragfx
+	graphical_culture = annihilangfx
+	is_female = yes
 	NOT = { trait = creature_shivarra }
 }
 potential_race_moarg_trigger = {
@@ -1852,6 +1884,17 @@ has_common_dark_cult_prerequisites = {
 	has_invader_title_trigger = no
 
 	is_adult = yes
+	
+	OR = {
+		AND = {
+			OR = {
+				is_tribal = no
+				government = tribal_monarchy_government
+			}
+			is_nomadic = no
+		}
+		evil_true_religion_trigger = yes
+	}
 
 	is_humanoid_trigger = yes
 	OR = {
@@ -1864,13 +1907,6 @@ has_common_dark_cult_prerequisites = {
 }
 has_cult_of_the_damned_prerequisites = {
 	has_common_dark_cult_prerequisites = yes
-	OR = {
-		OR = {
-			is_feudal = yes
-			government = tribal_monarchy_government
-		}
-		true_religion = death_god
-	}
 	NOR = {
 		true_religion = orcish_fel
 		true_religion = burning_legion_religion
@@ -1879,14 +1915,6 @@ has_cult_of_the_damned_prerequisites = {
 }
 has_shadow_council_prerequisites = {
 	has_common_dark_cult_prerequisites = yes
-	OR = {
-		OR = {
-			is_feudal = yes
-			government = tribal_monarchy_government
-		}
-		true_religion = orcish_fel
-		true_religion = burning_legion_religion
-	}
 	NOR = {
 		true_religion = death_god
 		true_religion = old_gods_worship
@@ -1894,14 +1922,6 @@ has_shadow_council_prerequisites = {
 }
 has_twilights_hammer_cult_prerequisites = {
 	has_common_dark_cult_prerequisites = yes
-	OR = {
-		OR = {
-			is_feudal = yes
-			government = tribal_monarchy_government
-		}
-		true_religion_group = void_group
-		true_religion = forsaken_cult
-	}
 	NOR = {
 		true_religion = death_god
 		true_religion = orcish_fel
@@ -2058,7 +2078,6 @@ has_demon_gfx_trigger = {
 		graphical_culture = nathrezimgfx
 		graphical_culture = eredruingfx
 		graphical_culture = nathrezimgfx
-		graphical_culture = shivarragfx
 		graphical_culture = moarggfx
 		graphical_culture = observergfx
 		graphical_culture = sargerasgfx
@@ -2069,7 +2088,6 @@ has_demon_gfx_trigger = {
 }
 has_human_gfx_trigger = {
 	OR = {
-		graphical_culture = westerngfx
 		graphical_culture = humanwhitegfx
 		graphical_culture = gilneasgfx
 		graphical_culture = dalarangfx
@@ -2300,45 +2318,44 @@ can_use_total_invasion_cb_trigger = {
 
 # Used in conditions of powerful magical spells
 has_access_to_powerful_source_of_magic_trigger = {
+	OR = {
+		has_wonder = wonder_sunwell
+		b_violet_citadel = {
+			show_scope_change = no
+			
+			has_access_to_this_source_trigger = yes
+		}
+		b_nexus = {
+			show_scope_change = no
+			
+			has_access_to_this_source_trigger = yes
+		}
+		b_nordrassil = {
+			show_scope_change = no
+			
+			has_access_to_this_source_trigger = yes
+		}
+		b_karazhan = {
+			show_scope_change = no
+			
+			has_access_to_this_source_trigger = yes
+		}
+	}
+}
+has_access_to_this_source_trigger = {
 	custom_tooltip = {
-		text = has_access_to_powerful_source_of_magic_tooltip
+		text = has_access_to_this_source_tooltip
 		hidden_tooltip = {
 			OR = {
-				has_wonder = wonder_sunwell
-				b_violet_citadel = {
+				controlled_by = PREV
+				holder_scope = {
 					OR = {
-						controlled_by = PREV
-						holder_scope = {
-							OR = {
-								character = PREVPREV
-								is_liege_or_above = PREVPREV
-							}
-						}
-					}
-				}
-				b_nexus = {
-					OR = {
-						controlled_by = PREV
-						holder_scope = {
-							OR = {
-								character = PREVPREV
-								is_liege_or_above = PREVPREV
-							}
-						}
-					}
-				}
-				b_nordrassil = {
-					OR = {
-						controlled_by = PREV
-						holder_scope = {
-							OR = {
-								character = PREVPREV
-								is_liege_or_above = PREVPREV
-							}
-						}
+						character = PREVPREV
+						is_liege_or_above = PREVPREV
 					}
 				}
 			}
+			location = { has_province_modifier = ley_line }
 		}
 	}
 }
@@ -2904,6 +2921,12 @@ is_elf_trigger = {
 		is_high_elf_trigger = yes
 		trait = creature_night_elf
 		trait = creature_highborne
+	}
+}
+is_aqir_trigger = {
+	OR = {
+		trait = creature_nerubian
+		trait = creature_qiraji
 	}
 }
 

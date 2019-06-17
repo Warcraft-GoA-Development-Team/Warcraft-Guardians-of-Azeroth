@@ -6,18 +6,14 @@ republic_governments = {
 		title_prefix = "city_"
 		
 		potential = {
-			always = no
-			
 			is_secular_ruler_trigger = yes
 			has_invader_title_trigger = no
-			OR = {
-				is_patrician = yes
-				religion = cult_of_wealth
-				higher_real_tier_than = DUKE
-			}
 
 			#is_female = no
 			OR = {
+				# Warcraft
+				trait = secret_patrician
+				
 				AND = {
 					is_patrician = yes
 					OR = {
@@ -76,10 +72,10 @@ republic_governments = {
 		
 		# Other governments and tiers
 		accepts_liege_governments = { # Accepts other republics
+			# merchant_republic_government
 			republic_government
-		}
-		accepts_liege_governments_culture = {
 			technocracy_government
+			magocracy_government
 			weak_technocracy_government
 		}
 		free_revoke_on_governments_religion = { # Tribal vassals of other religions can have their titles revoked for free
@@ -94,17 +90,17 @@ republic_governments = {
 		can_grant_kingdoms_and_empires_to_other_government = yes
 		
 		# Other laws
-		merchant_republic = yes
-		have_gender_laws = no
 		allows_matrilineal_marriage = no
+		have_gender_laws = no
 		landed_inheritance = no
+		merchant_republic = yes
 		uses_bride_price = yes
-		
-		capital_move_delay = 600
 		
 		## Modifiers
 		court_size_modifier = 5
 		court_size_maintenance_cost_modifier = -0.05
+		
+		capital_move_delay = 600
 	}
 	republic_government = {
 		color = { 209 125 130 }
@@ -142,7 +138,9 @@ republic_governments = {
 		# Other governments and tiers
 		accepts_liege_governments = { # Accepts other republics
 			merchant_republic_government
+			# republic_government
 			technocracy_government
+			magocracy_government
 			weak_technocracy_government
 		}
 		free_revoke_on_governments_religion = { # Tribal vassals of other religions can have their titles revoked for free
@@ -156,7 +154,9 @@ republic_governments = {
 		
 		## Modifiers
 		court_size_modifier = 5
-	}	
+		
+		capital_move_delay = 600
+	}
 	technocracy_government = {
 		color = { 153 0 153 }
 		
@@ -169,7 +169,10 @@ republic_governments = {
 			is_secular_ruler_trigger = yes
 			has_invader_title_trigger = no
 
-			religion = rationalism
+			OR = {
+				religion_group = secular_group
+				culture_group = gnome_group
+			}
 
 			OR = {
 				AND = {
@@ -229,12 +232,15 @@ republic_governments = {
 		can_build_tribal = no
 		
 		# Other governments and tiers
-		accepts_liege_governments = { # Accepts other republics
-			weak_technocracy_government
-		}
-		accepts_liege_governments_culture = {
-			republic_government
+		accepts_liege_governments = {	# Accepts republics and theocracies
 			merchant_republic_government
+			republic_government
+			# technocracy_government
+			magocracy_government
+			weak_technocracy_government
+			
+			theocracy_government
+			dragon_government
 		}
 		free_revoke_on_governments_religion = { # Tribal vassals of other religions can have their titles revoked for free
 			tribal_government
@@ -254,10 +260,136 @@ republic_governments = {
 		landed_inheritance = no
 		uses_bride_price = yes
 		
-		capital_move_delay = 600
-		
 		## Modifiers
 		court_size_modifier = 5
 		court_size_maintenance_cost_modifier = -0.05
+		
+		capital_move_delay = 600
+	}
+	magocracy_government = {
+		color = { 204 0 204 }
+
+		frame_suffix = "_magocracy"
+		title_prefix = "magocracy_"
+
+		potential = {
+			is_secular_ruler_trigger = yes
+			has_invader_title_trigger = no
+			has_active_faction_title_trigger = no
+			holy_order = no
+
+			OR = {
+				religion_group = arcane_group
+				culture = dalaranian
+			}
+			NOT = {
+				religion_group = secular_group
+			}
+
+			# Theocracies
+			NOT = { is_government_potential = dragon_government }
+		}
+
+		# Holdings rules
+		preferred_holdings = { TEMPLE }
+		allowed_holdings = {
+			TEMPLE
+			CASTLE
+			FORT
+			HOSPITAL
+		}
+		allowed_holdings_culture = { # Will not get the wrong government type penalty for tribes of the same culture
+			TRIBAL
+		}
+		can_build_tribal = no
+
+		# Other governments and tiers
+		accepts_liege_governments = { # Accepts feudals and republics
+			feudal_government
+			legion_government
+			scourge_government
+			black_pact_government
+			order_government
+			society_government
+			faction_government
+			
+			merchant_republic_government
+			republic_government
+			technocracy_government
+			# magocracy_government
+			weak_technocracy_government
+		}
+		free_revoke_on_governments_religion = { # Tribal vassals of other religions can have their titles revoked for free
+			tribal_government
+			legion_government
+			scourge_government
+			black_pact_government
+		}
+		can_imprison_without_reason = no
+		can_revoke_without_reason = no
+		
+		## Modifiers
+		court_size_modifier = 5
+		
+		capital_move_delay = 600
+	}
+	weak_technocracy_government = {
+		color = { 153 0 153 }
+
+		frame_suffix = "_technocracy"
+		title_prefix = "technocracy_"
+
+		potential = {
+			is_secular_ruler_trigger = yes
+			has_invader_title_trigger = no
+			has_active_faction_title_trigger = no
+			holy_order = no
+
+			religion_group = secular_group
+
+			# Republics
+			NOT = { is_government_potential = technocracy_government }
+
+			# Theocracies
+			NOT = { is_government_potential = dragon_government }
+		}
+
+		# Holdings rules
+		preferred_holdings = { TEMPLE }
+		allowed_holdings = {
+			TEMPLE
+			CASTLE
+			FORT
+			HOSPITAL
+		}
+		allowed_holdings_culture = { # Will not get the wrong government type penalty for tribes of the same culture
+			TRIBAL
+		}
+		can_build_tribal = no
+
+		# Other governments and tiers
+		accepts_liege_governments = {	# Accepts republics and theocracies
+			merchant_republic_government
+			republic_government
+			technocracy_government
+			magocracy_government
+			# weak_technocracy_government
+			
+			theocracy_government
+			dragon_government
+		}
+		free_revoke_on_governments_religion = { # Tribal vassals of other religions can have their titles revoked for free
+			tribal_government
+			legion_government
+			scourge_government
+			black_pact_government
+		}
+		can_imprison_without_reason = no
+		can_revoke_without_reason = no
+		
+		## Modifiers
+		court_size_modifier = 5
+		
+		capital_move_delay = 600
 	}
 }

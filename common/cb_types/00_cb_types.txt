@@ -6130,37 +6130,38 @@ new_crusade = {
 			set_character_flag = achievement_pagan_fury
 		}
 
-		# Chance to start a Shepherd's Crusade
-		random = {
-			chance = 15
-			if = {
-				limit = {
-					has_game_rule = {
-						name = shepherds_crusade
-						value = on
-					}
-					ROOT = {
-						religion = catholic
-					}
-				}
-				set_global_flag = catholic_shepherds_crusade
-			}
-			else_if = {
-				limit = {
-					has_game_rule = {
-						name = shepherds_crusade
-						value = on
-					}
-					ROOT = {
-						religion = fraticelli
-					}
-				}
-				set_global_flag = fraticelli_shepherds_crusade
-			}
-			ROOT = {
-				character_event = { id = HFP.42300 days = 3}
-			}
-		}
+		# Warcraft
+		# # Chance to start a Shepherd's Crusade
+		# random = {
+			# chance = 15
+			# if = {
+				# limit = {
+					# has_game_rule = {
+						# name = shepherds_crusade
+						# value = on
+					# }
+					# ROOT = {
+						# religion = catholic
+					# }
+				# }
+				# set_global_flag = catholic_shepherds_crusade
+			# }
+			# else_if = {
+				# limit = {
+					# has_game_rule = {
+						# name = shepherds_crusade
+						# value = on
+					# }
+					# ROOT = {
+						# religion = fraticelli
+					# }
+				# }
+				# set_global_flag = fraticelli_shepherds_crusade
+			# }
+			# ROOT = {
+				# character_event = { id = HFP.42300 days = 3}
+			# }
+		# }
 	}
 
 	attacker_ai_victory_worth = {
@@ -6429,11 +6430,14 @@ religious = {
 	}
 
 	on_success_title = {
-		if = { # Standard Holy War behaviour for Non-Muslims and Muslims fighting other Muslims
+		# Warcraft
+		if = { # Aggressive Holy War behaviour if defender or attacker is aggressive
 			show_scope_change = no
 			limit = {
-				# Warcraft
-				always = yes
+				OR = {
+					ROOT = { is_aggressive_religion_trigger = yes }
+					FROM = { is_aggressive_religion_trigger = yes }
+				}
 			}
 			custom_tooltip = {
 				text = religious_cb_succ_tip
@@ -6443,6 +6447,21 @@ religious = {
 							title = PREV
 							enemy = FROM
 							same_religion = yes # Only vassalize rulers of my religion
+							is_religious = yes
+							type = holy_war
+						}
+					}
+				}
+			}
+		}
+		else = { # Otherwise, preserve vassals
+			custom_tooltip = {
+				text = religious_cb_succ_muslim_tip
+				hidden_tooltip = {
+					ROOT = {
+						vassalize_or_take_under_title = {
+							title = PREV
+							enemy = FROM
 							is_religious = yes
 							type = holy_war
 						}
@@ -12278,9 +12297,11 @@ pagan_county_conquest = {
 				# Warcraft
 				ROOT = {
 					OR = {
+						evil_public_religion_trigger = yes
 						religion = water_deities
 						religion_group = vrykul_religion_group
 						culture = pirate_culture
+						culture_group = murloc_group
 						culture_group = naga_group
 					}
 				}
