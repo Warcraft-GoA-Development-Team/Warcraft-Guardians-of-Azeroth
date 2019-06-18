@@ -1072,10 +1072,6 @@ convert_to_target_undead_province_effect = {
 	culture = event_target:target_province_holder
 	religion = event_target:target_province_holder
 }
-make_uncolonized_ruler_effect = {
-	add_trait = uncolonized_trait
-	set_government_type = uncolonized_government
-}
 spawn_horde_troops_effect = {
 	spawn_small_horde_troops_effect = yes
 	if = {
@@ -1112,15 +1108,15 @@ spawn_horde_troops_effect = {
 # DON'T USE it outside of spawn_horde_troops_effect
 spawn_small_horde_troops_effect = {
 	spawn_unit = {
-		owner = ROOT
+		owner = THIS
 		province = 73
 		home = 73
 		troops = {
-			archers = { 1000 1000 }
-			light_infantry = { 1500 1500 }
-			heavy_infantry = { 2000 2000 }
-			light_cavalry = { 375 375 }
-			knights = { 125 125 }
+			archers = { 500 500 }
+			light_infantry = { 750 750 }
+			heavy_infantry = { 1000 1000 }
+			light_cavalry = { 200 200 }
+			knights = { 50 50 }
 		}
 		attrition = 0
 		maintenance = no
@@ -1128,10 +1124,10 @@ spawn_small_horde_troops_effect = {
 	}
 	spawn_fleet = {
 		province = closest
-		owner = ROOT
+		owner = THIS
 		earmark = horde_forces
 		troops = {
-			galleys = { 75 75 }
+			galleys = { 50 50 }
 		}
 	}
 }
@@ -1264,6 +1260,33 @@ spawn_small_scourge_troops_effect = {
 		owner = THIS
 		troops = {
 			galleys = { 75 75 }
+		}
+	}
+}
+
+spawn_colonial_troops_effect = {
+	spawn_unit = {
+		owner = THIS
+		province = capital_scope
+		home = capital_scope
+		troops = {
+			archers = { 800 800 }
+			light_infantry = { 1200 1200 }
+			heavy_infantry = { 1500 1500 }
+			light_cavalry = { 200 200 }
+			knights = { 300 300 }
+		}
+		cannot_inherit = no
+		attrition = 1.0
+		reinforces = yes
+		maintenance = no
+	}
+	spawn_fleet = {
+		province = closest # closest sea zone
+		owner = THIS
+		cannot_inherit = no
+		troops = {
+			galleys = { 65 65 }
 		}
 	}
 }
@@ -1520,11 +1543,7 @@ find_right_spouse_effect = {
 			ai = yes
 			can_marry = yes
 			can_marry_trigger = yes
-			NOT = {
-				any_dynasty_member = {
-					ai = no
-				}
-			}
+			host = { ai = yes }
 		}
 		character_event = { id = WCCLN.130 }		# Finds right spouse
 	}
@@ -2034,33 +2053,33 @@ give_old_titles_to_liege_effect = {
 				is_ruler = yes
 				independent = no
 			}
-		}
-		liege = { save_event_target_as = target_liege }
-		any_vassal = {
-			limit = { dejure_liege_title = { NOT = { has_title_flag = new_title_flag } } }
-			set_defacto_liege = event_target:target_liege
-		}
-		any_demesne_title = {
-			limit = {
-				lower_tier_than = DUKE
-				NOT = { has_title_flag = new_title_flag }
-				trigger_if = {
-					limit = { tier = BARON }
-					county = { NOT = { has_title_flag = new_title_flag } }
+			liege = { save_event_target_as = target_liege }
+			any_vassal = {
+				limit = { dejure_liege_title = { NOT = { has_title_flag = new_title_flag } } }
+				set_defacto_liege = event_target:target_liege
+			}
+			any_demesne_title = {
+				limit = {
+					lower_tier_than = DUKE
+					NOT = { has_title_flag = new_title_flag }
+					trigger_if = {
+						limit = { tier = BARON }
+						county = { NOT = { has_title_flag = new_title_flag } }
+					}
+				}
+				grant_title_no_opinion = event_target:target_liege
+				if = {
+					limit = { tier = COUNT }
+					location = {
+						culture = event_target:target_liege
+						religion = event_target:target_liege
+					}
 				}
 			}
-			grant_title_no_opinion = event_target:target_liege
-			if = {
-				limit = { tier = COUNT }
-				location = {
-					culture = event_target:target_liege
-					religion = event_target:target_liege
-				}
-			}
+			clear_event_target = target_liege
+			
+			set_defacto_liege = THIS
 		}
-		clear_event_target = target_liege
-		
-		set_defacto_liege = THIS
 	}
 }
 # Declares war against player
@@ -2132,5 +2151,248 @@ add_inflow_of_the_void_effect = {
 		text = add_inflow_of_the_void_tooltip		# To make tooltip shorter
 		hidden_effect = { remove_character_modifier = inflow_of_the_void }
 		add_character_modifier = { name = inflow_of_the_void duration = 1825 }
+	}
+}
+
+add_blood_trait_effect = {
+	if = {
+		limit = {
+			event_target:target_father = { always = yes }
+			event_target:target_mother = { always = yes }
+		}
+		if = {
+			limit = {
+				event_target:target_father = {
+					event_target:target_mother = {
+						OR = {
+							has_prev_race_trigger = no
+							has_prev_blood_trigger = yes
+						}
+					}
+				}
+			}
+			if = {
+				limit = {
+					NOT = { trait = creature_human }
+					OR = {
+						event_target:target_father = { trait = creature_human }
+						event_target:target_mother = { trait = creature_human }
+						AND = {
+							event_target:target_father = { trait = blood_human }
+							event_target:target_mother = { trait = blood_human }
+						}
+					}
+				}
+				add_trait = blood_human
+			}
+			else_if = {
+				limit = {
+					NOT = { is_orc_trigger = yes }
+					OR = {
+						event_target:target_father = { is_orc_trigger = yes }
+						event_target:target_mother = { is_orc_trigger = yes }
+						AND = {
+							event_target:target_father = { trait = blood_orc }
+							event_target:target_mother = { trait = blood_orc }
+						}
+					}
+				}
+				add_trait = blood_orc
+			}
+			else_if = {
+				limit = {
+					NOT = { trait = creature_ogre }
+					OR = {
+						event_target:target_father = { trait = creature_ogre }
+						event_target:target_mother = { trait = creature_ogre }
+						AND = {
+							event_target:target_father = { trait = blood_ogre }
+							event_target:target_mother = { trait = blood_ogre }
+						}
+					}
+				}
+				add_trait = blood_ogre
+
+				# Orc-ogre hybrids look like brown orcs
+				if = {
+					limit = {
+						OR = {
+							graphical_culture = orcgfx
+							graphical_culture = orcgraygfx
+						}
+					}
+					set_graphical_culture = maghar
+				}
+			}
+			else_if = {
+				limit = {
+					NOT = { is_high_elf_trigger = yes }
+					OR = {
+						event_target:target_father = { is_high_elf_trigger = yes }
+						event_target:target_mother = { is_high_elf_trigger = yes }
+						AND = {
+							event_target:target_father = { trait = blood_high_elf }
+							event_target:target_mother = { trait = blood_high_elf }
+						}
+					}
+				}
+				add_trait = blood_high_elf
+			}
+			else_if = {
+				limit = {
+					NOT = { is_eredar_trigger = yes }
+					OR = {
+						event_target:target_father = { is_eredar_trigger = yes }
+						event_target:target_mother = { is_eredar_trigger = yes }
+						AND = {
+							event_target:target_father = { trait = blood_draenei }
+							event_target:target_mother = { trait = blood_draenei }
+						}
+					}
+				}
+				add_trait = blood_draenei
+			}
+			else_if = {
+				limit = {
+					NOT = { trait = creature_vrykul }
+					OR = {
+						event_target:target_father = { trait = creature_vrykul }
+						event_target:target_mother = { trait = creature_vrykul }
+						AND = {
+							event_target:target_father = { trait = blood_vrykul }
+							event_target:target_mother = { trait = blood_vrykul }
+						}
+					}
+				}
+				add_trait = blood_vrykul
+			}
+			else_if = {
+				limit = {
+					NOT = { trait = creature_magnataur }
+					OR = {
+						event_target:target_father = { trait = creature_magnataur }
+						event_target:target_mother = { trait = creature_magnataur }
+						AND = {
+							event_target:target_father = { trait = blood_magnataur }
+							event_target:target_mother = { trait = blood_magnataur }
+						}
+					}
+				}
+				add_trait = blood_magnataur
+			}
+			else_if = {
+				limit = {
+					NOT = { trait = creature_taunka }
+					OR = {
+						event_target:target_father = { trait = creature_taunka }
+						event_target:target_mother = { trait = creature_taunka }
+						AND = {
+							event_target:target_father = { trait = blood_taunka }
+							event_target:target_mother = { trait = blood_taunka }
+						}
+					}
+				}
+				add_trait = blood_taunka
+			}
+			else_if = {
+				limit = {
+					NOT = { trait = creature_night_elf }
+					OR = {
+						event_target:target_father = { trait = creature_night_elf }
+						event_target:target_mother = { trait = creature_night_elf }
+						AND = {
+							event_target:target_father = { trait = blood_night_elf }
+							event_target:target_mother = { trait = blood_night_elf }
+						}
+					}
+				}
+				add_trait = blood_night_elf
+			}
+			else_if = {
+				limit = {
+					NOT = { trait = creature_tauren }
+					OR = {
+						event_target:target_father = { trait = creature_tauren }
+						event_target:target_mother = { trait = creature_tauren }
+						AND = {
+							event_target:target_father = { trait = blood_tauren }
+							event_target:target_mother = { trait = blood_tauren }
+						}
+					}
+				}
+				add_trait = blood_tauren
+			}
+			else_if = {
+				limit = {
+					NOT = { trait = creature_centaur }
+					OR = {
+						event_target:target_father = { trait = creature_centaur }
+						event_target:target_mother = { trait = creature_centaur }
+						AND = {
+							event_target:target_father = { trait = blood_centaur }
+							event_target:target_mother = { trait = blood_centaur }
+						}
+					}
+				}
+				add_trait = blood_centaur
+			}
+			else_if = {
+				limit = {
+					NOT = { trait = creature_frostnymph }
+					OR = {
+						event_target:target_father = { trait = creature_frostnymph }
+						event_target:target_mother = { trait = creature_frostnymph }
+						AND = {
+							event_target:target_father = { trait = blood_frostnymph }
+							event_target:target_mother = { trait = blood_frostnymph }
+						}
+					}
+				}
+				add_trait = blood_frostnymph
+			}
+			else_if = {
+				limit = {
+					NOT = { trait = creature_highborne }
+					OR = {
+						event_target:target_father = { trait = creature_highborne }
+						event_target:target_mother = { trait = creature_highborne }
+						AND = {
+							event_target:target_father = { trait = blood_highborne }
+							event_target:target_mother = { trait = blood_highborne }
+						}
+					}
+				}
+				add_trait = blood_highborne
+			}
+		}
+	}
+	# Mok'nathal has ogre blood even without parents
+	else_if = {
+		limit = {
+			is_orc_trigger = yes
+			culture = moknathal
+		}
+		add_trait = blood_ogre
+
+		# Orc-ogre hybrids look like brown orcs
+		if = {
+			limit = {
+				OR = {
+					graphical_culture = orcgfx
+					graphical_culture = orcgraygfx
+				}
+			}
+			set_graphical_culture = maghar
+		}
+	}
+	else_if = {
+		limit = {
+			trait = creature_human
+			culture = tirassian
+		}
+		random = {
+			chance = 5
+			add_trait = blood_vrykul
+		}
 	}
 }
