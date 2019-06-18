@@ -70,7 +70,7 @@ total_invasion_cb_rev_effect = {
 				}
 				give_to_claimant_effect = yes
 			}
-			
+
 			# Stops invasions
 			if = {
 				limit = {
@@ -98,7 +98,7 @@ total_invasion_cb_rev_effect = {
 			}
 		}
 	}
-	
+
 	# Just for sure
 	hidden_effect = {
 		any_demesne_title = {
@@ -114,46 +114,65 @@ total_invasion_cb_rev_effect = {
 		}
 		death = { death_reason = death_battle }
 	}
-	
+
 }
 
 # Effects to give county to claimant. If there's no claimant, creates it
 give_to_claimant_effect = {
-	save_event_target_as = target_title
-	location = { save_event_target_as = target_location }
 	if = {
 		limit = {
 			kingdom = { NOT = { title = k_black_morass } }	# Lands around the portal always go away to defender
-			OR = {
+		}
+		save_event_target_as = target_title
+		location = { save_event_target_as = target_location }
+
+		# Kingdom
+		if = {
+			limit = {
 				kingdom = {
 					OR = {
 						has_holder_claimant_trigger = yes
 						has_landless_claimant_trigger = yes
 					}
 				}
-				has_spawned_claimant_trigger = yes
+			}
+			kingdom = {
+				save_event_target_as = target_new_realm
+				
+				if = {
+					limit = {
+						has_holder_claimant_trigger = yes
+					}
+					give_to_holder_claimant_effect = yes
+				}
+				else = {
+					limit = {
+						has_landless_claimant_trigger = yes
+					}
+					give_to_landless_claimant_effect = yes
+				}
 			}
 		}
-		# King
-		kingdom = {
-			save_event_target_as = target_new_realm
-			
-			if = {
-				limit = {
-					NOT = { title = k_black_morass }	# Lands around the portal always go away to defender
-					has_holder_claimant_trigger = yes
+		# Duchy
+		else_if = {
+			limit = {
+				OR = {
+					dejure_liege_title = { has_holder_claimant_trigger = yes }
+					has_spawned_claimant_trigger = yes
 				}
-				give_to_holder_claimant_effect = yes
 			}
-			else_if = {
-				limit = {
-					NOT = { title = k_black_morass }	# Lands around the portal always go away to defender
-					has_landless_claimant_trigger = yes
+			dejure_liege_title = {
+				save_event_target_as = target_new_realm
+				
+				if = {
+					limit = {
+						has_holder_claimant_trigger = yes
+					}
+					give_to_holder_claimant_effect = yes
 				}
-				give_to_landless_claimant_effect = yes
-			}
-			else = {
-				give_to_spawned_claimant_effect = yes
+				else = {
+					give_to_spawned_claimant_effect = yes
+				}
 			}
 		}
 	}
@@ -223,7 +242,7 @@ give_to_landless_claimant_effect = {
 				is_crusade = yes # Even if the title holder is not participating in the war, gain holdings occupied by all Crusade participants
 				type = invasion
 			}
-			
+
 			event_target:target_new_realm = {
 				if = {
 					limit = {
@@ -242,7 +261,7 @@ give_to_landless_claimant_effect = {
 				}
 				set_government_type = feudal_government
 			}
-			
+
 			spawn_unit = {
 				owner = event_target:target_new_ruler
 				province = event_target:target_location
@@ -288,7 +307,11 @@ give_to_spawned_claimant_effect = {
 				limit = {
 					evil_public_religion_trigger = yes
 				}
-				religion = forsaken_cult
+				random_list = {
+					10 = { religion = shadowlander }
+					10 = { religion = voidfarer }
+					10 = { religion = forsaken_cult }
+				}
 			}
 
 			grant_title_no_opinion = { target = event_target:target_title type = claim }
@@ -298,7 +321,7 @@ give_to_spawned_claimant_effect = {
 				is_crusade = yes # Even if the title holder is not participating in the war, gain holdings occupied by all Crusade participants
 				type = invasion
 			}
-			
+
 			event_target:target_new_realm = {
 				if = {
 					limit = {
@@ -317,7 +340,7 @@ give_to_spawned_claimant_effect = {
 				}
 				set_government_type = feudal_government
 			}
-			
+
 			spawn_unit = {
 				owner = event_target:target_new_ruler
 				province = event_target:target_location
