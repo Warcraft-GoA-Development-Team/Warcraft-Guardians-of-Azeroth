@@ -135,6 +135,7 @@ narrative_event = {
 
 					can_resettle_trigger = yes
 					is_in_political_faction_trigger = no
+					location = { region = world_eastern_kingdoms }
 				}
 				preferred_limit = {
 					ai = no
@@ -144,6 +145,7 @@ narrative_event = {
 				primary_title = { save_event_target_as = target_clan }
 				letter_event = { id = WCTHW.105 days = 3 }
 			}
+			
 			73 = { province_event = { id = WCTHW.109 days = 10 } }
 		}
 	}
@@ -552,27 +554,10 @@ narrative_event = {
 		clear_settler_flag_effect = yes
 		
 		# Spawns army for start
-		capital_scope = {
-			ROOT = {
-				spawn_unit = {
-					owner = ROOT
-					province = PREV
-					home = PREV
-					troops = {
-						archers = { 600 600 }
-						light_infantry = { 900 900 }
-						heavy_infantry = { 1125 1125 }
-						light_cavalry = { 150 150 }
-						knights = { 225 225 }
-					}
-					cannot_inherit = no
-					attrition = 1.0
-					reinforces = yes
-					maintenance = no
-				}
-			}
-		}
+		spawn_colonial_troops_effect = yes
+		
 		narrative_event = { id = WCPLF.100 }			# Foundation of the Horde (faction)
+		e_horde = { set_preferred_capital = 3043 }	# Orgrimmar
 		
 		# Grant titles to trolls
 		event_target:target_trolls = {
@@ -605,6 +590,9 @@ narrative_event = {
 					}
 		
 					clear_settler_flag_effect = yes
+					
+					# Spawns army for start
+					spawn_colonial_troops_effect = yes
 					
 					create_character = {
 						female = yes
@@ -691,6 +679,9 @@ narrative_event = {
 						}
 						set_defacto_vassal = PREV
 					}
+					
+					# Spawns army for start
+					spawn_colonial_troops_effect = yes
 				}
 			}
 		}
@@ -762,12 +753,8 @@ province_event = {
 				NOT = { has_character_flag = do_not_disturb }
 				NOT = { has_character_flag = foundation_theramore_declined_flag }
 
-				OR = {
-					religion_group = light_group
-					religion_group = secular_group
-					religion_group = arcane_group
-					religion = tidemother
-				}
+				has_alliance_religion_trigger = yes
+				has_alliance_culture_trigger = yes
 				
 				can_resettle_trigger = yes
 				location = { region = world_eastern_kingdoms }
@@ -828,7 +815,36 @@ narrative_event = {
 		remove_trait_silently_cruel_effect = yes
 		remove_trait_envious_effect = yes
 
-		hidden_effect = { 73 = { province_event = { id = WCTHW.154 days = 30 } } }
+		hidden_effect = {
+			random_playable_ruler = {
+				limit = {
+					is_untouchable_trigger = no
+					is_inaccessible_trigger = no
+					
+					independent = no
+
+					NOT = { has_character_flag = invitation_to_sail_is_sent_flag }
+
+					OR = {
+						has_alliance_religion_trigger = yes
+						has_alliance_culture_trigger = yes
+					}
+
+					can_resettle_trigger = yes
+					location = { region = world_eastern_kingdoms }
+				}
+				preferred_limit = {
+					ai = no
+				}
+				
+				set_character_flag = invitation_to_sail_is_sent_flag
+
+				primary_title = { save_event_target_as = target_refugees }
+				letter_event = { id = WCTHW.151 days = 3 }
+			}
+			
+			73 = { province_event = { id = WCTHW.154 days = 30 } }
+		}
 	}
 
 	# This is madness!
@@ -846,6 +862,54 @@ narrative_event = {
 		ai_chance = {
 			factor = 0
 		}
+	}
+}
+# Do you want to sail to Kalimdor with FROM?
+letter_event = {
+	id = WCTHW.151
+	desc = EVTDESC_WCTHW_105
+	border = GFX_event_letter_frame_diplomacy
+
+	is_triggered_only = yes
+	
+	immediate = {
+		# add_trait = travelling
+	}
+
+	option = {
+		name = ACCEPT
+
+		FROM = { letter_event = { id = WCTHW.152 } }
+		hidden_effect = {
+			primary_title = {
+				set_title_flag = refugees_sailed_to_kalimdor_flag
+			}
+		}
+	}
+	option = {
+		name = DECLINE
+		
+		# remove_trait = travelling
+
+		ai_chance = {
+			factor = 0
+		}
+	}
+	
+	after = {
+		clr_character_flag = invitation_to_sail_is_sent_flag
+	}
+}
+# FROM want to sail to Kalimdor with you
+letter_event = {
+	id = WCTHW.152
+	desc = EVTDESC_WCTHW_106
+	border = GFX_event_letter_frame_diplomacy
+
+	is_triggered_only = yes
+
+	option = {
+		name = EXCELLENT
 	}
 }
 # End of voyage
@@ -928,10 +992,6 @@ narrative_event = {
 			# event_target:target_settler and its people settle here
 			settle_as_target_settler_effect = yes
 		}
-		c_fray = {
-			# event_target:target_settler and its people settle here
-			settle_as_target_settler_effect = yes
-		}
 		
 		# If you're not independent ruler, gives old titles to liege
 		give_old_titles_to_liege_effect = yes
@@ -943,31 +1003,36 @@ narrative_event = {
 		
 		clear_settler_flag_effect = yes
 		
-		capital_scope = {
-			ROOT = {
-				spawn_unit = {
-					owner = ROOT
-					province = PREV
-					home = PREV
-					troops = {
-						archers = { 600 600 }
-						light_infantry = { 900 900 }
-						heavy_infantry = { 1125 1125 }
-						light_cavalry = { 150 150 }
-						knights = { 225 225 }
+		# Spawns army for start
+		spawn_colonial_troops_effect = yes
+		
+		# Grant titles to refugees
+		event_target:target_refugees = {
+			if = {
+				limit = { has_title_flag = refugees_sailed_to_kalimdor_flag }
+				clr_title_flag = refugees_sailed_to_kalimdor_flag
+				
+				holder_scope = {
+					# Used in scripted effects
+					save_event_target_as = target_settler
+					
+					c_fray = {
+						# event_target:target_settler and its people settle here
+						settle_as_target_settler_effect = yes
 					}
-					cannot_inherit = no
-					attrition = 1.0
-					reinforces = yes
-					maintenance = no
-				}
-				spawn_fleet = {
-					province = closest # closest sea zone
-					owner = ROOT
-					disband_on_peace = yes
-					troops = {
-						galleys = { 100 100 }
+					
+					# If you're not independent ruler, gives old titles to liege
+					give_old_titles_to_liege_effect = yes
+					
+					c_fray = {
+						# Declares war against player
+						target_settler_declare_war_effect = yes
 					}
+					
+					clear_settler_flag_effect = yes
+					
+					# Spawns army for start
+					spawn_colonial_troops_effect = yes
 				}
 			}
 		}
@@ -2581,25 +2646,6 @@ narrative_event = {
 	}
 
 	immediate = {
-		if = {
-			limit = { is_ruler = yes }
-			spawn_unit = {
-				owner = ROOT
-				leader = ROOT
-				province = 802			# Menethil Shore
-				home = 802				# Menethil Shore
-				troops = {
-					archers = { 325 325 }
-					light_infantry = { 400 400 }
-					heavy_infantry = { 600 600 }
-					light_cavalry = { 100 100 }
-					knights = { 75 75 }
-				}
-				attrition = 0
-				maintenance_multiplier = 0
-				reinforces = no
-			}
-		}
 		hidden_effect = {
 			e_scourge = { holder_scope = { narrative_event = { id = WCTHW.2021 } } }
 			any_close_relative = { character_event = { id = WCTHW.2030 } }
@@ -2725,10 +2771,6 @@ character_event = {
 				prisoner = no
 				
 				e_scourge = { has_holder = yes }
-				OR = {
-					location = { region = world_northrend }
-					ai = yes
-				}
 			}
 			narrative_event = { id = WCTHW.2036 }
 			break = yes
@@ -2746,6 +2788,7 @@ narrative_event = {
 
 	is_triggered_only = yes
 
+	# Burn the ships!
 	option = {
 		name = EVTOPTA_WCTHW_2036
 
@@ -2759,20 +2802,34 @@ narrative_event = {
 			}
 			add_trait = deceitful
 		}
+		
+		hidden_effect = { character_event = { id = WCTHW.2040 days = 2 } }
 	}
 
+	# Let them run!
 	option = {
 		name = EVTOPTB_WCTHW_2036
 
 		prestige = -100
+		
+		hidden_effect = { character_event = { id = WCTHW.2040 days = 2 } }
 
 		ai_chance = {
 			factor = 0
 		}
 	}
-
-	after = {
-		hidden_effect = { character_event = { id = WCTHW.2040 days = 2 } }
+	
+	# Sail back home
+	option = {
+		name = EVTOPTC_WCTHW_2036
+		
+		prestige = -50
+		
+		hidden_effect = { character_event = { id = WCTHW.2025 days = 15 } }
+		
+		ai_chance = {
+			factor = 0
+		}
 	}
 }
 # Rumors about a powerful artifact: сheck event
@@ -2789,10 +2846,6 @@ character_event = {
 				prisoner = no
 				
 				e_scourge = { has_holder = yes }
-				OR = {
-					location = { region = world_northrend }
-					ai = yes
-				}
 			}
 			narrative_event = { id = WCTHW.2041 }
 			break = yes
@@ -2832,10 +2885,6 @@ character_event = {
 				prisoner = no
 				
 				e_scourge = { has_holder = yes }
-				OR = {
-					location = { region = world_northrend }
-					ai = yes
-				}
 			}
 			narrative_event = { id = WCTHW.2046 }
 			break = yes
