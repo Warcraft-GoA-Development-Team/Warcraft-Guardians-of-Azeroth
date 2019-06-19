@@ -6,9 +6,11 @@ character_event = {
 
 	min_age = 100
 	
+	hide_window = yes
+	
 	trigger = {
 		age = 100
-		is_fully_immortal_trigger = no
+		is_completely_immortal_trigger = no
 		# Add here new races whose lifespan is less than 10000 years
 		OR = {
 			# Races
@@ -131,9 +133,7 @@ character_event = {
 		}
 	}
 	
-	option = {
-		name = ALAS
-		
+	immediate = {
 		if = {
 			limit = {
 				OR = {
@@ -190,6 +190,61 @@ character_event = {
 
 	immediate = {
 		# log = "WCRAC.10 fired for [Root.GetBestName]"
+		true_father_even_if_dead = { save_event_target_as = target_father }
+		mother_even_if_dead = { save_event_target_as = target_mother }
+		
+		set_character_flag = no_show_what_become_flag		# Cancel show_close_people_what_this_become_effect if character spawned as undead, demon, void being
+		
+		# Halfbreed child was born, picks graphical culture
+		if = {
+			limit = {
+				NOT = {
+					has_game_rule = {
+						name = halfbreed_race
+						value = random
+					}
+				}
+				
+				NOT = { age = 1 }
+				event_target:target_father = { always = yes }
+				event_target:target_mother = { always = yes }
+				event_target:target_father = { event_target:target_mother = { has_prev_race_trigger = no } }
+			}
+			if = {
+				limit = {
+					has_game_rule = {
+						name = halfbreed_race
+						value = father
+					}
+				}
+				log = "[Root.GetBestName] picks father's race because of Father rule"
+				
+				event_target:target_father = { ROOT = { set_prev_gfx_effect = yes } }
+			}
+			else_if = {
+				limit = {
+					has_game_rule = {
+						name = halfbreed_race
+						value = mother
+					}
+				}
+				log = "[Root.GetBestName] picks mother's race because of Mother rule"
+				
+				event_target:target_mother = { ROOT = { set_prev_gfx_effect = yes } }
+			}
+			# If child has mother's dynasty, picks mother's graphical culture
+			else_if = {
+				limit = { dynasty = event_target:target_father }
+				log = "[Root.GetBestName] picks father's race because of Dynasty rule"
+				
+				event_target:target_father = { ROOT = { set_prev_gfx_effect = yes } }
+			}
+			else = {
+				log = "[Root.GetBestName] picks mother's race because of Dynasty rule"
+				
+				event_target:target_mother = { ROOT = { set_prev_gfx_effect = yes } }
+			}
+		}
 		
 		# Add new races always at the end
 		if = {
@@ -198,43 +253,22 @@ character_event = {
 		}
 		else_if = {
 			limit = { potential_race_orc_trigger = yes }
-			if = {
-				limit = {
-					OR = {
-						has_global_flag = dark_portal_was_opened_flag
-						start_date = 603.1.1
-						start_date = 583.1.1
-					}
-				}
-				add_trait = creature_orc
-			}
-			else = { death = { death_reason = death_missing } }
+			add_trait = creature_orc
 		}
 		else_if = {
 			limit = { potential_race_ogre_trigger = yes }
+			add_trait = creature_ogre
 			if = {
-				limit = {
-					OR = {
-						has_global_flag = dark_portal_was_opened_flag
-						start_date = 603.1.1
-						start_date = 583.1.1
-					}
-				}
-				add_trait = creature_ogre
-				if = {
-					limit =  { graphical_culture = twoheadedogregfx }
+				limit =  { graphical_culture = twoheadedogregfx }
+				add_trait = twoheaded
+			}
+			else = {
+				random = {
+					chance = 10
 					add_trait = twoheaded
-				}
-				else = {
-					random = {
-						chance = 10
-						add_trait = twoheaded
-						set_graphical_culture = twoheadedogre
-					}
+					set_graphical_culture = twoheadedogre
 				}
 			}
-			else = { death = { death_reason = death_missing } }
-
 		}
 		else_if = {
 			limit = { potential_race_troll_trigger = yes }
@@ -300,31 +334,11 @@ character_event = {
 		}
 		else_if = {
 			limit = { potential_race_draenei_trigger = yes }
-			if = {
-				limit = {
-					OR = {
-						has_global_flag = dark_portal_was_opened_flag
-						start_date = 603.1.1
-						start_date = 583.1.1
-					}
-				}
-				add_trait = creature_draenei
-			}
-			else = { death = { death_reason = death_missing } }
+			add_trait = creature_draenei
 		}
 		else_if = {
 			limit = { potential_race_arakkoa_corrupted_trigger = yes }
-			if = {
-				limit = {
-					OR = {
-						has_global_flag = dark_portal_was_opened_flag
-						start_date = 603.1.1
-						start_date = 583.1.1
-					}
-				}
-				add_trait = creature_arakkoa_corrupted
-			}
-			else = { death = { death_reason = death_missing } }
+			add_trait = creature_arakkoa_corrupted
 		}
 		# else_if = {
 			# limit = { potential_race_ghoul_trigger = yes }
@@ -364,29 +378,24 @@ character_event = {
 		else_if = {
 			limit = { potential_race_annihilan_trigger = yes }
 			add_trait = creature_annihilan
-			if = {
-				limit = { is_female = yes }
-				set_gender = male
-			}
 			add_trait_demon_effect = yes
+			if = {
+				limit = { culture = shivarra }
+				culture = annihilan 
+			}
 		}
 		else_if = {
 			limit = { potential_race_nathrezim_trigger = yes }
 			add_trait = creature_nathrezim
-			if = {
-				limit = { is_female = yes }
-				set_gender = male
-			}
 			add_trait_demon_effect = yes
-			culture = nathrezim
+			if = {
+				limit = { culture = sayaadi }
+				culture = nathrezim
+			}
 		}
 		else_if = {
 			limit = { potential_race_eredruin_trigger = yes }
 			add_trait = creature_eredruin
-			if = {
-				limit = { is_female = yes }
-				set_gender = male
-			}
 			add_trait_demon_effect = yes
 		}
 		else_if = {
@@ -400,10 +409,6 @@ character_event = {
 		else_if = {
 			limit = { potential_race_satyr_trigger = yes }
 			add_trait = creature_satyr
-			if = {
-				limit = { is_female = yes }
-				set_gender = male
-			}
 			add_trait_demon_effect = yes
 		}
 		else_if = {
@@ -415,28 +420,23 @@ character_event = {
 			limit = { potential_race_sayaadi_trigger = yes }
 			add_trait = creature_sayaadi
 			add_trait_demon_effect = yes
-			culture = sayaadi
 			if = {
-				limit = { is_female = no }
-				set_gender = female
+				limit = { culture = nathrezim }
+				culture = sayaadi 
 			}
 		}
 		else_if = {
 			limit = { potential_race_shivarra_trigger = yes }
 			add_trait = creature_shivarra
-			if = {
-				limit = { is_female = no }
-				set_gender = female
-			}
 			add_trait_demon_effect = yes
+			if = {
+				limit = { culture = annihilan }
+				culture = shivarra 
+			}
 		}
 		else_if = {
 			limit = { potential_race_moarg_trigger = yes }
 			add_trait = creature_moarg
-			if = {
-				limit = { is_female = yes }
-				set_gender = male
-			}
 			add_trait_demon_effect = yes
 		}
 		else_if = {
@@ -459,10 +459,6 @@ character_event = {
 		else_if = {
 			limit = { potential_race_flamewaker_trigger = yes }
 			add_trait = creature_flamewaker
-			if = {
-				limit = { is_female = yes }
-				set_gender = male
-			}
 		}
 		else_if = {
 			limit = { potential_race_water_elemental_trigger = yes }
@@ -526,10 +522,6 @@ character_event = {
 		else_if = {
 			limit = { potential_race_harpy_trigger = yes }
 			add_trait = creature_harpy
-			if = {
-				limit = { is_female = no }
-				set_gender = female
-			}
 		}
 		else_if = {
 			limit = { potential_race_mechagnome_trigger = yes }
@@ -620,34 +612,59 @@ character_event = {
 		else = {
 			gfx_culture_scope = { save_event_target_as = target_gfx_culture }
 			log = "(IMPORTANT) [This.GetBestName] couldn't get race trait. GFX culture is [target_gfx_culture.GetName]."
-			death = { death_reason = death_missing }
+			clear_event_target = target_gfx_culture
+			if = {
+				limit = { has_character_flag = last_race_try_flag }
+				death = { death_reason = death_missing }
+				break = yes
+			}
+			set_character_flag = last_race_try_flag
+			
+			dynasty_head = { ROOT = { set_prev_gfx_effect = yes } }
+			repeat_event = { id = WCRAC.10 }
+			break = yes
 		}
 		
+		# Adds blood trait
+		add_blood_trait_effect = yes
+		
+		# Changes gender
 		if = {
 			limit = {
-				is_alive = yes
-				is_dying = no
+				is_female = yes
+				is_only_male_race_trigger = yes
 			}
-			# Adds undead trait
-			if = {
-				limit = {
-					NOT = { trait = being_undead }
-					
-					OR = {
-						has_undead_gfx_trigger = yes
-						AND = {
-							can_be_undead_trigger = yes
-							location = { has_province_modifier = undead_province }
-							liege = { trait = being_undead }
-						}
+			set_gender = male
+		}
+		else_if = {
+			limit = {
+				is_female = no
+				is_only_female_race_trigger = yes
+			}
+			set_gender = female
+		}
+		
+		# Adds undead trait
+		if = {
+			limit = {
+				NOT = { trait = being_undead }
+				
+				OR = {
+					has_undead_gfx_trigger = yes
+					AND = {
+						can_be_undead_trigger = yes
+						location = { has_province_modifier = undead_province }
+						liege = { trait = being_undead }
 					}
 				}
-				save_event_target_as = target_necromancer
-				character_event = { id = WCPOD.5013 }
 			}
-			# Adds default traits when new character spawns
-			add_default_traits = yes
+			save_event_target_as = target_necromancer
+			character_event = { id = WCPOD.5013 }
 		}
+		# Adds default traits when new character spawns
+		add_default_traits = yes
+		
+		clr_character_flag = no_show_what_become_flag			# Works only during this event
 	}
 }
 

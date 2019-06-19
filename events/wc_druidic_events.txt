@@ -120,7 +120,7 @@ narrative_event = {
 
 	option = {
 		name = EVTOPTB_WCDRU_300
-
+		
 		set_character_flag = supported_worgen_summoning_flag
 
 		event_target:target_mage = { letter_event = { id = WCDRU.310 days = 3 } }
@@ -228,7 +228,14 @@ narrative_event = {
 	is_triggered_only = yes
 
 	major = yes
-
+	major_trigger = {
+		OR = {
+			ai = no
+			has_character_flag = supported_worgen_summoning_flag
+		}
+	}
+	show_root = yes
+	
 	immediate = {
 		save_event_target_as = target_mage
 		if = {
@@ -246,7 +253,7 @@ narrative_event = {
 			dynasty = 100000
 			religion = wolf_cult_religion
 			culture = night_elf
-			age = 12000
+			age = 300
 			attributes = {
 				martial=6 diplomacy=4 stewardship=4 intrigue=6 learning=5
 			}
@@ -307,6 +314,7 @@ narrative_event = {
 
 		if = {
 			limit = { has_character_flag = supported_worgen_summoning_flag }
+			clr_character_flag = supported_worgen_summoning_flag
 			prestige = -500
 		}
 	}
@@ -833,21 +841,30 @@ character_event = {
 					holder_scope = {
 						character_event = { id = WCDRU.5005 }
 						any_liege = {
+							limit = { NOT = { character = PREV } }
 							character_event = { id = WCDRU.5005 }
 						}
 					}
 				}
-			}
-			holder_scope = {
-				any_courtier = {
+				holder_scope = {
 					if = {
 						limit = {
 							at_location = ROOT
 							is_susceptible_to_worgen_curse_character_trigger = yes
 						}
 						random = {
-							chance = 20
-							become_mindless_worgen_effect = yes
+							chance = 25
+							character_event = { id = WCDRU.5013 }
+						}
+					}
+					any_courtier = {
+						limit = {
+							at_location = ROOT
+							is_susceptible_to_worgen_curse_character_trigger = yes
+						}
+						random = {
+							chance = 25
+							character_event = { id = WCDRU.5013 }
 						}
 					}
 				}
@@ -855,7 +872,7 @@ character_event = {
 		}
 	}
 }
-# Notification
+# Notification about worgens in province
 character_event = {
 	id = WCDRU.5005
 	desc = EVTDESC_WCDRU_5005
@@ -875,7 +892,7 @@ character_event = {
 		}
 	}
 }
-# Notifies about turning into worgen
+# Worgen bites you
 character_event = {
 	id = WCDRU.5013
 	desc = EVTDESC_WCDRU_5013
@@ -887,9 +904,68 @@ character_event = {
 	option = {
 		name = RAWR
 
-		tooltip = {
-			if = { limit = { trait = worgen } add_trait = worgen }
-			if = { limit = { trait = mindless_worgen } add_trait = mindless_worgen }
+		become_mindless_worgen_effect = yes
+	}
+}
+
+# Elven Immortality
+# Delayer event
+province_event = {
+	id = WCDRU.5500
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
+		d_kaldorei_religion = {
+			holder_scope = {
+				narrative_event = { id = WCDRU.5501 }
+			}
+		}
+	}
+}
+
+narrative_event = {
+	id = WCDRU.5501
+	title = EVTTITLE_WCDRU_5501
+	desc = EVTDESC_WCDRU_5501
+	picture = GFX_evt_burning_world_tree
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+	
+	major = yes
+	major_trigger = {
+		ai = no
+	}
+	show_root = yes
+
+	option = {
+		trigger = { evil_true_religion_trigger = yes }
+		name = FOOLS
+	}
+	option = {
+		trigger = {
+			NOT = {
+				evil_true_religion_trigger = yes
+			}
+			trait = creature_night_elf
+		}
+		name = EVTOPTA_WCDRU_5501_elf
+	}
+	option = {
+		trigger = {
+			NOT = {
+				evil_true_religion_trigger = yes
+				trait = creature_night_elf
+			}
+		}
+		name = EVTOPTA_WCDRU_5501_nonelf
+	}
+	
+	after = {
+		custom_tooltip = {
+			text = night_elves_lost_immortality_tooltip
 		}
 	}
 }

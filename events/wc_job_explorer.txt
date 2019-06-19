@@ -15,10 +15,10 @@ namespace=WCJBE
 		# can_rule_peacefully_trigger = yes
 		
 		# OR = {
-			# is_feudal = yes
-			# is_republic = yes
+			# is_tribal = no
 			# government = tribal_monarchy_government
 		# }
+		# is_nomadic = no
 		
 		# NOT = { job_explorer = { always = yes } }
 		# higher_real_tier_than = DUKE
@@ -1528,85 +1528,3 @@ namespace=WCJBE
 		# name = ALAS
 	# }
 # }
-
-# Clean-up uncolonized_government title if province has been conquered
-character_event = {
-	id = WCJBE.99910
-
-	is_triggered_only = yes
-	hide_window = yes
-
-	trigger = {
-		FROMFROM = { trait = uncolonized_trait }
-		FROM = { tier = COUNT }
-	}
-
-	immediate = {
-		FROMFROM = { death = { death_reason = death_missing } }
-		FROM = {
-			location = {
-				log = "WCJBE.99910 fired for [This.GetName]"
-				remove_province_modifier = colony_1
-				remove_province_modifier = colony_2
-				remove_province_modifier = colony_3
-				remove_province_modifier = increased_colony_funding
-				capital_holding = {
-					if = {
-						limit = { holding_type = TRIBAL }
-						if = {
-							limit = {
-								ROOT = {
-									is_feudal = yes
-								}
-							}
-							convert_to = CASTLE
-						}
-						if = {
-							limit = {
-								ROOT = {
-									is_republic = yes
-									NOT = { government = technocracy_government }
-								}
-							}
-							convert_to = CITY
-						}
-						if = {
-							limit = {
-								ROOT = {
-									OR = {
-										is_theocracy = yes
-										government = technocracy_government
-									}
-								}
-							}
-							convert_to = TEMPLE
-						}
-					}
-				}
-				any_province_holding = {
-					grant_title_no_opinion = { target = ROOT }
-				}
-			}
-		}
-	}
-}
-
-# Clean-up after uncolonized_government inheritance
-character_event = {
-	id = WCJBE.99920
-
-	is_triggered_only = yes
-	hide_window = yes
-
-	trigger = {
-		FROMFROM = { trait = uncolonized_trait }
-	}
-
-	immediate = {
-		log = "WCJBE.99920 fired for [Root.GetBestName]"
-		
-		FROMFROM = { death = { death_reason = death_missing } }
-		add_trait = uncolonized_trait
-		set_government_type = uncolonized_government
-	}
-}

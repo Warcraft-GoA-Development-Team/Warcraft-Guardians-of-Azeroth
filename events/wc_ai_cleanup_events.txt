@@ -99,8 +99,12 @@ character_event = {
 		if = {
 			limit = { character = event_target:target_husband }
 			remove_spouse = event_target:target_wife
+			break_betrothal = event_target:target_wife
 		}
-		else = { remove_spouse = event_target:target_husband }
+		else = {
+			remove_spouse = event_target:target_husband
+			break_betrothal = event_target:target_husband
+		}
 		character_event = { id = WCCLN.102 }
 
 		if = {
@@ -237,9 +241,11 @@ character_event = {
 	trigger = {
 		ai = yes
 		can_marry = yes
+		can_marry_trigger = yes
 	}
 
 	immediate = {
+		# Finds/spawns spouse
 		if = {
 			limit = {
 				any_realm_character = {
@@ -248,8 +254,10 @@ character_event = {
 					prisoner = no
 					is_inaccessible_trigger = no
 
-					can_has_sexual_relation_with_prev = yes
 					is_marriage_adult = yes
+					can_marry = yes
+					can_marry_trigger = yes
+					has_prev_race_trigger = yes
 
 					NOT = { is_close_relative = ROOT }
 					is_consort = no
@@ -266,8 +274,10 @@ character_event = {
 					prisoner = no
 					is_inaccessible_trigger = no
 
-					can_has_sexual_relation_with_prev = yes
 					is_marriage_adult = yes
+					can_marry = yes
+					can_marry_trigger = yes
+					has_prev_race_trigger = yes
 
 					NOT = { is_close_relative = ROOT }
 					is_consort = no
@@ -276,21 +286,13 @@ character_event = {
 					is_opposite_sex = ROOT
 					is_pregnant = no
 				}
-				ROOT = {
-					if = {
-						limit = { is_female = no }
-						prev_add_spouse_this_effect = yes
-					}
-					else = {
-						prev_add_spouse_matrilineal_this_effect = yes
-					}
-				}
+				save_event_target_as = target_new_spouse
 			}
 		}
 		else = {
+			log = "[This.GetBestName] spawned a spouse"
 			if = {
 				limit = { is_female = no }
-				log = "[This.GetBestName] spawned a spouse"
 				create_character = {
 					female = yes
 					dynasty = actually_culture
@@ -303,22 +305,11 @@ character_event = {
 				new_character = {
 					set_prev_gfx_effect = yes
 					character_event = { id = WCRAC.10 }
-					ROOT = {
-						if = {
-							limit = { can_has_sexual_relation_with_prev = yes }
-							prev_add_spouse_this_effect = yes
-						}
-						else = {
-							log = "(IMPORTANT) [This.GetBestName] killed a spouse"
-							set_cannot_marry_flag_effect = yes
-							PREV = { death = { death_reason = death_murder_fall killer = ROOT } }
-						}
-					}
-					break = yes
+					
+					save_event_target_as = target_new_spouse
 				}
 			}
 			else = {
-				log = "[This.GetBestName] spawned a spouse"
 				create_character = {
 					dynasty = actually_culture
 					culture = ROOT religion = ROOT
@@ -330,18 +321,37 @@ character_event = {
 				new_character = {
 					set_prev_gfx_effect = yes
 					character_event = { id = WCRAC.10 }
-					ROOT = {
-						if = {
-							limit = { can_has_sexual_relation_with_prev = yes }
-							prev_add_spouse_matrilineal_this_effect = yes
+					
+					save_event_target_as = target_new_spouse
+				}
+			}
+		}
+		
+		event_target:target_new_spouse = {
+			ROOT = {
+				if = {
+					limit = { can_has_sexual_relation_with_prev = yes }
+					if = {
+						limit = {
+							OR = {
+								is_marriage_adult = no
+								event_target:target_new_spouse = { is_marriage_adult = no }
+							}
 						}
-						else = {
-							log = "(IMPORTANT) [This.GetBestName] killed a spouse"
-							set_cannot_marry_flag_effect = yes
-							PREV = { death = { death_reason = death_murder_fall killer = ROOT } }
-						}
+						prev_add_betrothal_this_effect = yes
 					}
-					break = yes
+					else_if = {
+						limit = { is_female = no }
+						prev_add_spouse_this_effect = yes
+					}
+					else = {
+						prev_add_spouse_matrilineal_this_effect = yes
+					}
+				}
+				else = {
+					log = "(IMPORTANT) [This.GetBestName] killed a spouse"
+					set_cannot_marry_flag_effect = yes
+					PREV = { death = { death_reason = death_murder_fall killer = ROOT } }
 				}
 			}
 		}
