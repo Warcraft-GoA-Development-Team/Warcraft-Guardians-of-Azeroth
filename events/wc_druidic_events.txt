@@ -6,7 +6,112 @@ namespace = WCDRU
 #####################################
 
 ### Fury of the Wolf ###
-# You got war troubles, help is needed, worgens seem legit
+### You got war troubles, help is needed, worgens seem legit
+# Picks characters
+character_event = {
+	id = WCDRU.299
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	only_playable = yes
+	min_age = 16
+	only_capable = yes
+	prisoner = no
+	only_independent = yes
+	
+	trigger = {
+		fury_of_wolf_human_trigger = yes
+		
+		NOT = { has_global_flag = ongoing_fury_of_wolf_chain_flag }
+		
+		is_primary_war_defender = yes
+	}
+	
+	weight_multiplier = {
+		days = 1
+		modifier = {
+			factor = 2
+			any_war = { war_score = -50 }
+		}
+		modifier = {
+			factor = 2
+			any_war = { war_score = -25 }
+		}
+	}
+	
+	immediate = {
+		save_event_target_as = target_liege
+		
+		set_global_flag = ongoing_fury_of_wolf_chain_flag
+		
+		# If you're mage, fires for you
+		if = {
+			limit = {
+				OR = {
+					is_mage_class_trigger = yes
+					is_shaman_class_trigger = yes
+					is_druid_class_trigger = yes
+					is_loa_priest_class_trigger = yes
+				}
+				is_5_6_magic_class_trigger = yes
+			}
+			save_event_target_as = target_mage
+		}
+		else_if = {
+			limit = {
+				any_courtier = {
+					fury_of_wolf_human_trigger = yes
+					
+					OR = {
+						is_mage_class_trigger = yes
+						is_shaman_class_trigger = yes
+						is_druid_class_trigger = yes
+						is_loa_priest_class_trigger = yes
+					}
+					is_5_6_magic_class_trigger = yes
+				}
+			}
+			random_courtier = {
+				limit = {
+					fury_of_wolf_human_trigger = yes
+					
+					OR = {
+						is_mage_class_trigger = yes
+						is_shaman_class_trigger = yes
+						is_druid_class_trigger = yes
+						is_loa_priest_class_trigger = yes
+					}
+					is_5_6_magic_class_trigger = yes
+				}
+				preferred_limit = {
+					trait = cynical
+				}
+				
+				save_event_target_as = target_mage
+			}
+		}
+		else = {
+			create_character = {
+				dynasty = none
+				religion = ROOT culture = dalaranian
+				age = 50
+				trait = class_mage_7
+				trait = cynical trait = erudite trait = quick trait = arbitrary
+				random_traits = yes
+			}
+			new_character = {
+				save_event_target_as = target_mage
+			}
+		}
+		
+		event_target:target_mage = { narrative_event = { id = WCDRU.300 } }
+		
+		# Cleanup
+		73 = { province_event = { id = WCDRU.340 days = 365 } }
+	}
+}
+# Starts story
 narrative_event = {
 	id = WCDRU.300
 	title = EVTTITLE_WCDRU_300
@@ -15,71 +120,6 @@ narrative_event = {
 	border = GFX_event_narrative_frame_war
 
 	is_triggered_only = yes
-
-	min_age = 16
-	only_capable = yes
-	prisoner = no
-
-	trigger = {
-		is_untouchable_trigger = no
-		can_rule_peacefully_trigger = yes
-		
-		is_alive = yes
-		is_dying = no
-		is_inaccessible_trigger = no
-
-		NOT = { has_global_flag = ongoing_fury_of_wolf_chain_flag }
-		
-		trait = creature_human
-		is_susceptible_to_worgen_curse_character_trigger = yes
-		top_liege = {
-			is_untouchable_trigger = no
-			can_rule_peacefully_trigger = yes
-			
-			trait = creature_human
-			is_susceptible_to_worgen_curse_character_trigger = yes
-		}
-		OR = {
-			is_mage_class_trigger = yes
-			is_shaman_class_trigger = yes
-			is_druid_class_trigger = yes
-			is_loa_priest_class_trigger = yes
-		}
-		is_5_6_magic_class_trigger = yes
-		
-		OR = {
-			is_primary_war_defender = yes
-			top_liege = { is_primary_war_defender = yes }
-		}
-	}
-
-	weight_multiplier = {
-		days = 1
-		modifier = {
-			factor = 2
-			OR = {
-				top_liege = { any_war = { war_score = -50 } }
-				any_war = { war_score = -50 }
-			}
-		}
-		modifier = {
-			factor = 2
-			OR = {
-				top_liege = { any_war = { war_score = -25 } }
-				any_war = { war_score = -25 }
-			}
-		}
-	}
-	
-	immediate = {
-		save_event_target_as = target_mage
-		top_liege = { save_event_target_as = target_liege }
-		
-		set_global_flag = ongoing_fury_of_wolf_chain_flag
-		
-		# Cleanup
-		province_event = { id = WCDRU.340 days = 365 }
-	}
 
 	option = {
 		trigger = { independent = no }
