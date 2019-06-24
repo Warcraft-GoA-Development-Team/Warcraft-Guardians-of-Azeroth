@@ -384,7 +384,7 @@ decisions = {
 	summon_the_burning_legion = {
 		is_high_prio = yes
 
-		ai_check_interval = 6
+		ai_check_interval = 12
 
 		only_playable = yes
 
@@ -399,6 +399,7 @@ decisions = {
 			prisoner = no
 			is_inaccessible_trigger = no
 
+			year = 603											# Let's say the Legion needs time to prepare
 			NOT = { e_burning_legion = { has_holder = yes } }
 			OR = {
 				true_religion = orcish_fel
@@ -412,27 +413,45 @@ decisions = {
 		}
 
 		allow = {
+			custom_tooltip = {
+				text = legion_cooldown_tooltip
+				hidden_tooltip = {
+					OR = {
+						NOT = { has_global_flag = legion_cooldown_flag }
+						had_global_flag = { flag = legion_cooldown_flag years = 25 }
+					}
+				}
+			}
+
 			OR = {
-				is_9_10_magic_class_trigger = yes
+				is_7_8_magic_class_trigger = yes
 				trigger_if = {
 					limit = { has_global_flag = the_scourge_is_under_the_legion_control_flag }
 					has_landed_title = e_scourge
 				}
 			}
 			OR = {
+				trigger_if = {
+					limit = {
+						ai = yes
+						NOT = { true_religion = death_god }
+					}
+					is_9_10_magic_class_trigger = yes
+				}
 				has_access_to_powerful_source_of_magic_trigger = yes
 				has_3_powerful_magical_artifact_trigger = yes
 			}
 		}
 
 		effect = {
+			clr_global_flag = legion_cooldown_flag
+
 			if = {
 				limit = { has_secret_religion = yes }
 				convert_to_secret_religion = yes
 			}
 			custom_tooltip = {
 				text = summon_the_burning_legion_tooltip
-				location = { save_event_target_as = target_summoning_location }
 				hidden_effect = { character_event = { id = WCFEL.1000 } }
 			}
 			# remove_5_mana_effect = yes
@@ -637,8 +656,8 @@ decisions = {
 			# is_incapable = no
 
 			OR = {
-				NOT = { has_global_flag = black_empire_was_created_flag }
-				had_global_flag = { flag = black_empire_was_created_flag years = 50 }
+				NOT = { has_global_flag = black_empire_cooldown_flag }
+				had_global_flag = { flag = black_empire_cooldown_flag years = 50 }
 			}
 
 			religion = old_gods_worship
@@ -666,10 +685,11 @@ decisions = {
 				custom_tooltip = {
 					text = gain_twilight_viceroy_bloodline_tt
 				}
+
 			}
 
-			clr_global_flag = black_empire_was_created_flag
-			set_global_flag = black_empire_was_created_flag
+			clr_global_flag = black_empire_cooldown_flag
+			set_global_flag = black_empire_cooldown_flag
 
 			73 = { province_event = { id = WCTHW.50 } } # When shit happens, Medivh tries to fix it
 
