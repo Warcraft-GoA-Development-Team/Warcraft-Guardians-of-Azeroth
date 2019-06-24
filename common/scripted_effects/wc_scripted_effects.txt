@@ -2079,7 +2079,7 @@ clear_settler_flag_effect = {
 	}
 }
 # If you're not independent ruler, gives old titles to liege
-give_old_titles_to_liege_effect = {
+give_old_titles_to_heir_effect = {
 	hidden_effect = {
 		if = {
 			limit = {
@@ -2087,9 +2087,46 @@ give_old_titles_to_liege_effect = {
 				independent = no
 			}
 			liege = { save_event_target_as = target_liege }
+			if = {
+				limit = {
+					any_dynasty_member = {
+						is_alive = yes
+						is_dying = no
+						
+						is_ruler = no
+						
+						religion = PREV
+						culture = PREV
+						
+						can_resettle_trigger = yes
+						same_sex = PREV
+						NOT = { is_primary_heir = PREV }
+					}
+				}
+				random_dynasty_member = {
+					limit = {
+						is_alive = yes
+						is_dying = no
+						
+						is_ruler = no
+						
+						religion = PREV
+						culture = PREV
+						
+						can_resettle_trigger = yes
+						same_sex = PREV
+						NOT = { is_primary_heir = PREV }
+					}
+					save_event_target_as = target_heir
+				}
+			}
+			else = {
+				liege = { save_event_target_as = target_heir }
+			}
+			
 			any_vassal = {
 				limit = { dejure_liege_title = { NOT = { has_title_flag = new_title_flag } } }
-				set_defacto_liege = event_target:target_liege
+				set_defacto_liege = event_target:target_heir
 			}
 			any_demesne_title = {
 				limit = {
@@ -2100,18 +2137,25 @@ give_old_titles_to_liege_effect = {
 						county = { NOT = { has_title_flag = new_title_flag } }
 					}
 				}
-				grant_title_no_opinion = event_target:target_liege
+				grant_title_no_opinion = event_target:target_heir
 				if = {
 					limit = { tier = COUNT }
 					location = {
-						culture = event_target:target_liege
-						religion = event_target:target_liege
+						culture = event_target:target_heir
+						religion = event_target:target_heir
 					}
 				}
 			}
-			clear_event_target = target_liege
-			
 			set_defacto_liege = THIS
+			event_target:target_heir = {
+				if = {
+					limit = { NOT = { character = event_target:target_liege } }
+					set_defacto_liege = event_target:target_liege
+				}
+			}
+			
+			clear_event_target = target_liege
+			clear_event_target = target_heir
 		}
 	}
 }
