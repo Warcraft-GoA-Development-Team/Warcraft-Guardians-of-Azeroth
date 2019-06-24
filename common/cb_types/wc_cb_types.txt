@@ -27,7 +27,6 @@ total_invasion = {
 			show_scope_change = no
 			OR = {
 				AND = {
-					wealth = 250
 					prestige = 2000
 					piety = 1000
 				}
@@ -129,7 +128,6 @@ total_invasion = {
 		if = {
 			limit = { FROM = { NOT = { has_character_flag = event_war_exception_flag } } }
 			ROOT = {
-				wealth = -250
 				prestige = -2000
 				piety = -1000
 			}
@@ -147,7 +145,6 @@ total_invasion = {
 	
 	on_invalidation = {
 		ROOT = {
-			wealth = 250
 			prestige = 2000
 			piety = 1000
 		}
@@ -480,7 +477,6 @@ scourge_subjugation = {
 			show_scope_change = no
 			OR = {
 				AND = {
-					wealth = 250
 					prestige = 1250
 					piety = 625
 				}
@@ -518,7 +514,10 @@ scourge_subjugation = {
 			is_landed = yes
 			# independent = yes
 			in_revolt = no
-			is_nomadic = no
+			OR = {
+				is_tribal = yes
+				is_feudal = yes
+			}
 			higher_tier_than = BARON
 
 			NOT = { is_offmap_governor = yes }
@@ -566,7 +565,6 @@ scourge_subjugation = {
 			limit = { FROM = { NOT = { has_character_flag = event_war_exception_flag } } }
 			ROOT = {
 				show_scope_change = no
-				wealth = -250
 				prestige = -1250
 				piety = -625
 			}
@@ -585,7 +583,6 @@ scourge_subjugation = {
 	on_invalidation = {
 		ROOT = {
 			show_scope_change = no
-			wealth = 250
 			prestige = 1250
 			piety = 625
 		}
@@ -786,11 +783,8 @@ scourge_subjugation = {
 			FROM = { is_forbidden_war_target_for_ai_root_trigger = yes }
 		}
 		modifier = {
-			factor = 0
-			NOR = {
-				year = 610
-				FROM = { capital_scope = { region = world_northrend } }		# Forbids to declare war on realms outside of Northrend before 610 year
-			}
+			factor = 0.1
+			FROM = { capital_scope = { NOT = { region = world_northrend } } }		# Prefer to conquer Northrend first
 		}
 	}
 }
@@ -1394,21 +1388,7 @@ change_religion_cb = {
 	sort_priority = 2000
 
 	can_use = {
-		ROOT = {
-			can_declare_wars_trigger = yes
-			FROM = {
-				can_declare_wars_trigger = yes
-				is_in_prev_faction = no
-			}
-		}
-
-		ROOT = {
-			controls_religion = yes
-			religion_group = elemental_lords_group
-		}
-		FROM = {
-			NOT = { religion_group = ROOT }
-		}
+		always = no	# Can only be initiated through special means
 	}
 
 	is_valid = {
