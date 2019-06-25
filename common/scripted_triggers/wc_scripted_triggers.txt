@@ -5,21 +5,48 @@ is_untouchable_trigger = {
 		trait = sleeping_trait
 	}
 }
-# FORBIDS GOOD AI TO ATTACK THEM
+
+# FORBIDS AI TO ATTACK THEM
 is_forbidden_war_target_for_ai_root_trigger = {
-	OR = {
-		AND = {
-			ROOT = { evil_public_religion_trigger = no }
-			OR = {
-				religion_group = dragon_religion_group
+	trigger_if = {	# Non-evil rulers don't attack dragons
+		limit = { ROOT = { evil_public_religion_trigger = no } }
+		religion_group = dragon_religion_group
+	}
+	trigger_if = {	# Dragons don't attack non-evil rulers
+		limit = { ROOT = { religion_group = dragon_religion_group } }
+		evil_public_religion_trigger = no
+	}
+}
+is_forbidden_kaldorei_target_for_ai_root_trigger = {
+	trigger_if = {
+		limit = {
+			ROOT = {
+				OR = {
+					primary_title = { title = e_kaldorei }
+					realm = { title = e_kaldorei }
+				}
 			}
 		}
-		AND = {
-			ROOT = { religion_group = dragon_religion_group }
-			evil_public_religion_trigger = no
+		empire = { NOT = { title = e_kaldorei } }
+	}
+}
+is_forbidden_alliance_target_for_ai_root_trigger = {
+	trigger_if = {
+		limit = {
+			ROOT = {
+				has_alliance_culture_trigger = yes
+				has_alliance_religion_trigger = yes
+			}
+		}
+		kingdom = {
+			OR = {
+				title = k_dalaran
+				title = k_gnomeregan
+			}
 		}
 	}
 }
+
 # YOU CAN'T RULE PEACEFULLY IF IT'S NOT TRUE
 can_rule_peacefully_trigger = {
 	custom_tooltip = {
