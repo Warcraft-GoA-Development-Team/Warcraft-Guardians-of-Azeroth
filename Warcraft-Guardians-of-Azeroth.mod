@@ -1,5 +1,5 @@
-name = "Warcraft: Guardians of Azeroth"
-path = "mod/Guardians of Azeroth"
+name = "Warcraft: GoA (Early)"
+path = "mod/Warcraft-Guardians-of-Azeroth"
 picture="GoA.jpg"
 
 user_dir = "Guardians of Azeroth"

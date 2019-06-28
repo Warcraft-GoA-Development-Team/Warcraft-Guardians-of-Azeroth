@@ -1363,7 +1363,7 @@ narrative_event = {
 			# limit = { has_secret_religion = yes }
 			# convert_to_secret_religion = yes
 		# }
-		# suggest_fel_source_effect = yes
+		# drain_fel_source_effect = yes
 	# }
 	# # Look into the Void!
 	# option = {
@@ -1374,7 +1374,7 @@ narrative_event = {
 			# limit = { has_secret_religion = yes }
 			# convert_to_secret_religion = yes
 		# }
-		# suggest_void_source_effect = yes
+		# drain_void_source_effect = yes
 	# }
 	# # They're not prepared!
 	# option = {
@@ -1557,29 +1557,6 @@ character_event = {
 		}
 		name = EVTOPTC_WCTHW_1050
 
-		liege = {
-			show_scope_change = no
-			if = {
-				limit = {
-					OR = {
-						religion_group = fel_group
-						religion_group = void_group
-					}
-				}
-				ROOT = {
-					show_scope_change = no
-					religion = PREV
-				}
-			}
-		}
-		if = {
-			limit = { liege = { has_character_flag = consuming_fel_magic_flag } }
-			set_character_flag = consuming_fel_magic_flag
-		}
-		if = {
-			limit = { liege = { has_character_flag = consuming_void_magic_flag } }
-			set_character_flag = consuming_void_magic_flag
-		}
 		if = {
 			limit = {
 				liege = {
@@ -1589,10 +1566,9 @@ character_event = {
 					}
 				}
 			}
-			add_15_fel_corruption_effect = yes
-			suggest_fel_source_effect = yes
+			drain_fel_source_effect = yes
 		}
-		if = {
+		else_if = {
 			limit = {
 				liege = {
 					OR = {
@@ -1601,8 +1577,7 @@ character_event = {
 					}
 				}
 			}
-			add_15_void_corruption_effect = yes
-			suggest_void_source_effect = yes
+			drain_void_source_effect = yes
 		}
 
 		ai_chance = {
@@ -1700,17 +1675,11 @@ long_character_event = {
 
 		if = {
 			limit = { has_character_flag = chose_fel_magic_flag }
-			clr_character_flag = chose_fel_magic_flag
-			set_character_flag = consuming_fel_magic_flag
-			add_15_fel_corruption_effect = yes
-			suggest_fel_source_effect = yes
+			drain_fel_source_effect = yes
 		}
-		if = {
+		else_if = {
 			limit = { has_character_flag = chose_void_magic_flag }
-			clr_character_flag = chose_void_magic_flag
-			set_character_flag = consuming_void_magic_flag
-			add_15_void_corruption_effect = yes
-			suggest_void_source_effect = yes
+			drain_void_source_effect = yes
 		}
 	}
 	# We will never sink so low!
@@ -1720,6 +1689,11 @@ long_character_event = {
 		ai_chance = {
 			factor = 0
 		}
+	}
+	
+	after = {
+		clr_character_flag = chose_fel_magic_flag
+		clr_character_flag = chose_void_magic_flag
 	}
 }
 # FROM has found way to satisfy hunger
@@ -1734,29 +1708,6 @@ letter_event = {
 	option = {
 		name = EVTOPTA_WCTHW_1060
 
-		liege = {
-			show_scope_change = no
-			if = {
-				limit = {
-					OR = {
-						religion_group = fel_group
-						religion_group = void_group
-					}
-				}
-				ROOT = {
-					show_scope_change = no
-					religion = PREV
-				}
-			}
-		}
-		if = {
-			limit = { liege = { has_character_flag = consuming_fel_magic_flag } }
-			set_character_flag = consuming_fel_magic_flag
-		}
-		if = {
-			limit = { liege = { has_character_flag = consuming_void_magic_flag } }
-			set_character_flag = consuming_void_magic_flag
-		}
 		if = {
 			limit = {
 				liege = {
@@ -1766,10 +1717,9 @@ letter_event = {
 					}
 				}
 			}
-			add_15_fel_corruption_effect = yes
-			suggest_fel_source_effect = yes
+			drain_fel_source_effect = yes
 		}
-		if = {
+		else_if = {
 			limit = {
 				liege = {
 					OR = {
@@ -1778,12 +1728,13 @@ letter_event = {
 					}
 				}
 			}
-			add_15_void_corruption_effect = yes
-			suggest_void_source_effect = yes
+			drain_void_source_effect = yes
 		}
 
 		ai_chance = {
-			factor = 90
+			factor = 50
+			
+			evil_ai_chance_score = yes
 		}
 	}
 	# We will never sink so low!
@@ -1791,23 +1742,12 @@ letter_event = {
 		name = EVTOPTB_WCTHW_1060
 
 		set_character_flag = ai_refused_dark_magic_flag
+		
 		reverse_opinion = { modifier = opinion_very_disappointed who = FROM years = 5 }
-		FROM = { letter_event = { id = WCTHW.1066 days = 1 random = 9 } }
+		FROM = { letter_event = { id = WCTHW.1066 days = 1 random = 29 } }
 
 		ai_chance = {
-			factor = 10
-			modifier = {
-				factor = 2
-				has_benevolent_trait_trigger = yes
-			}
-			modifier = {
-				factor = 2
-				has_pleasant_trait_trigger = yes
-			}
-			modifier = {
-				factor = 2
-				has_pious_trait_trigger = yes
-			}
+			factor = 50
 		}
 	}
 }
