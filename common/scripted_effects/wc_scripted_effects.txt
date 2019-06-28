@@ -848,78 +848,54 @@ destroy_xalatath_effect = {
 	}
 }
 prev_burn_evil_being_this_effect = {
-	custom_tooltip = {
-		text = burn_evil_being_effect_tooltip
-		hidden_tooltip = {
-			random_list = {
-				80 = {
-					death = { death_reason = death_execution_burning killer = PREV }
-					modifier = {
-						factor = 0.8
-						intrigue = 30
-					}
-					modifier = {
-						factor = 0.8
-						intrigue = 25
-					}
-					modifier = {
-						factor = 0.8
-						intrigue = 20
-					}
-					modifier = {
-						factor = 0.8
-						intrigue = 15
-					}
-					modifier = {
-						factor = 0.8
-						intrigue = 10
-					}
-					modifier = {
-						factor = 0.8
-						intrigue = 5
-					}
-					modifier = {
-						factor = 0.8
-						combat_rating = 80
-					}
-					modifier = {
-						factor = 0.8
-						combat_rating = 70
-					}
-					modifier = {
-						factor = 0.8
-						combat_rating = 60
-					}
-					modifier = {
-						factor = 0.8
-						combat_rating = 50
-					}
-					modifier = {
-						factor = 0.8
-						combat_rating = 40
-					}
-					modifier = {
-						factor = 0.8
-						combat_rating = 30
-					}
-					modifier = {
-						factor = 0.8
-						combat_rating = 20
-					}
-					modifier = {
-						factor = 0.8
-						combat_rating = 10
-					}
-				}
-				20 = {
-					banish = yes
-					modifier = {
-						factor = 0
-						PREV = { ai = yes }		# AI always kill
-					}
+	# If THIS is not ruler then execute
+	# If THIS and PREV are AI then execute
+	if = {
+		limit = {
+			OR = {
+				is_ruler = no
+				AND = {
+					ai = yes
+					PREV = { ai = yes }
 				}
 			}
 		}
+		custom_tooltip = {
+			text = burn_evil_being_effect_tooltip
+			hidden_tooltip = {
+				if = {
+					limit = { is_ruler = no }
+					random_list = {
+						80 = {
+							death = { death_reason = death_execution_burning killer = PREV }
+						}
+						20 = {
+							banish = yes
+							
+							is_good_intrigue_character_score = yes
+							
+							modifier = {
+								factor = 0
+								PREV = { ai = yes }		# AI always kill
+							}
+						}
+					}
+				}
+				else = {
+					any_demesne_title = {
+						limit = {
+							title_can_be_lost_trigger = yes
+							lower_tier_than = DUKE
+						}
+						grant_title_no_opinion = { target = PREVPREV type = claim }
+					}
+					death = { death_reason = death_execution_burning killer = PREV }
+				}
+			}
+		}
+	}
+	else = {
+		reverse_opinion = { modifier = opinion_accused_apostate who = PREV years = 20 }
 	}
 }
 drink_demon_blood_effect = {
