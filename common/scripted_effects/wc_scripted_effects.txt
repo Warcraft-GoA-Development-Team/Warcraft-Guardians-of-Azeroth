@@ -14,6 +14,9 @@ set_cannot_marry_flag_effect = {
 	}
 }
 remove_racial_traits_effect = {
+	# Fixes immortal age
+	rejuvenate_effect = yes
+	
 	# Add new races always at the end
 	# Humans
 	if = { limit = { trait = creature_human 				} remove_trait = creature_human 				}
@@ -2458,6 +2461,43 @@ add_blood_trait_effect = {
 		random = {
 			chance = 5
 			add_trait = blood_vrykul
+		}
+	}
+}
+
+# Fixes immortal age
+rejuvenate_effect = {
+	hidden_effect = {
+		if = {
+			limit = {
+				# immortal = yes
+				age = 40
+			}
+			log = "(IMMORTALITY) [This.GetBestName] is rejuvenated"
+
+			export_to_variable = { which = "myAge" value = age }
+			change_variable = { which = "myAge" value = -30 }
+			set_variable = { which = "myNegativeAge" which = "myAge" }
+			multiply_variable = { which = "myNegativeAge" value = -1 }
+			
+			add_age = "myNegativeAge"
+			
+			set_character_flag = rejuvenated_flag
+		}
+	}
+}
+add_age_back_effect = {
+	hidden_effect = {
+		if = {
+			limit = { has_character_flag = rejuvenated_flag }
+			log = "(IMMORTALITY) [This.GetBestName] gets age back"
+
+			clr_character_flag = rejuvenated_flag
+			
+			add_age = "myAge"
+			
+			set_variable = { which = "myAge" value = 0 }
+			set_variable = { which = "myNegativeAge" value = 0 }
 		}
 	}
 }
