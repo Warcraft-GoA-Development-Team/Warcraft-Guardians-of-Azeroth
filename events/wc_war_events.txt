@@ -244,111 +244,165 @@ character_event = {
 	}
 }
 
-# on_war_started
-# Invites neighbors to join war if character was attacked by evil guy
+### Stop Invader Coalition
+# Spawns coalition leader
 character_event = {
-	id = WCWAR.580
-
+	id = WCWAR.600
+	
 	is_triggered_only = yes
 	hide_window = yes
-
-	only_playable = yes
-
+	
+	ai = no
+	
 	trigger = {
-		ROOT = {
-			can_rule_peacefully_trigger = yes
-			evil_public_religion_trigger = no
+		OR = {
+			multiplayer = no
+			is_multiplayer_host_character = yes
 		}
-		FROM = {
-			OR = {
-				can_rule_peacefully_trigger = no
-				evil_public_religion_trigger = yes
+		
+		NOT = {
+			has_game_rule = {
+				name = stop_invader_coalition
+				value = off
 			}
 		}
 	}
-
+	
 	immediate = {
-		any_neighbor_independent_ruler = {						# Invites your independent neighbors...
-			limit = {
-				NOT = { character = ROOT }
-				NOT = { character = FROM }
-				NOT = { has_character_flag = invite_against_evil_flag }
+		capital_scope = { save_event_target_as = target_province }
+		
+		create_character = {
+			random_traits = yes
+			dynasty = none
+			religion = holy_light
+			culture = lordaeronian
+			female = no
+			age = 25
+			attributes = {
+				martial = 5
 			}
-			if = {
-				limit = {
-					NOT = { has_character_flag = invite_against_evil_flag }
-
-					can_join_war_against_evil_guy_trigger = yes
-					NOT = { is_allied_with = ROOT }
-					opinion = { who = ROOT value = 0 }
-				}
-				set_character_flag = invite_against_evil_flag
-				character_event = { id = WCWAR.600 days = 7 random = 90 }
+			trait = brilliant_strategist
+		}
+		new_character = {
+			save_event_target_as = target_coalition_leader
+			
+			diplomatic_immunity = yes
+			set_character_flag = special_marshal 				# Always allow to be in command
+			set_character_flag = coalition_leader_flag		# Used in CBs
+			set_character_flag = ai_flag_refuse_conversion
+			
+			create_title = {
+				tier = DUKE
+				landless = yes
+				temporary = yes
+				short_name = yes
+				culture = lordaeronian
+				name = "AZEROTH_COALITION"
+				ruler = "HIGHLORD_TITLE"
+				ruler_female = "HIGHLORD_FEM_TITLE"
+				holder = THIS
 			}
-			any_realm_lord = {									# ...and their vassals...
-				if = {
-					limit = {
-						NOT = { has_character_flag = invite_against_evil_flag }
-
-						can_join_war_against_evil_guy_trigger = yes
-						NOT = { is_allied_with = ROOT }
-						opinion = { who = ROOT value = 0 }
-					}
-					set_character_flag = invite_against_evil_flag
-					character_event = { id = WCWAR.600 days = 7 random = 90 }
-				}
-			}
-			if = {
-				limit = {
-					OR = {
-						FROM = { has_invader_title_trigger = yes }
-						FROM = {
-							independent = yes
-							realm_size = 50
-						}
-					}
-				}
-				any_neighbor_independent_ruler = {					# ...and neighbors of your neighbors if evil guy is VERY EVIL or STRONG...
-					limit = {
-						NOT = { character = ROOT }
-						NOT = { character = FROM }
-						NOT = { has_character_flag = invite_against_evil_flag }
-					}
-					if = {
-						limit = {
-							NOT = { has_character_flag = invite_against_evil_flag }
-
-							can_join_war_against_evil_guy_trigger = yes
-							NOT = { is_allied_with = ROOT }
-							opinion = { who = ROOT value = 0 }
-						}
-						set_character_flag = invite_against_evil_flag
-						character_event = { id = WCWAR.600 days = 7 random = 90 }
-					}
-					any_realm_lord = {							# ...and their vassals
-						if = {
-							limit = {
-								NOT = { has_character_flag = invite_against_evil_flag }
-
-								can_join_war_against_evil_guy_trigger = yes
-								NOT = { is_allied_with = ROOT }
-								opinion = { who = ROOT value = 0 }
-							}
-							set_character_flag = invite_against_evil_flag
-							character_event = { id = WCWAR.600 days = 7 random = 90 }
-						}
-					}
-				}
-			}
+			
+			# Picks war target
+			character_event = { id = WCWAR.610 }
 		}
 	}
 }
+# Picks war target
+character_event = {
+	id = WCWAR.610
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
+		# Tries to declare a war...
+		if = {
+			limit = {
+				any_independent_ruler = {
+					OR = {
+						ai = yes
+						has_game_rule = {
+							name = stop_invader_coalition
+							value = on
+						}
+					}
+					
+					event_target:target_coalition_leader = {
+						can_use_cb = {
+							target = PREV
+							casus_belli = stop_invader
+							only_check_triggers = yes
+						}
+					}
+				}
+			}
+			
+			# Let's give him gold, prestige and piety
+			wealth = 1000
+			prestige = 1000
+			piety = 500
+			
+			# Spawns a few commanders
+			spawn_fantastic_commander_effect = yes
+			spawn_great_commander_effect = yes
+			spawn_great_commander_effect = yes
+			spawn_good_commander_effect = yes
+			spawn_good_commander_effect = yes
+			
+			# Spawns army
+			spawn_coalition_troops_effect = yes
+			
+			random_independent_ruler = {
+				limit = {
+					OR = {
+						ai = yes
+						has_game_rule = {
+							name = stop_invader_coalition
+							value = on
+						}
+					}
+					
+					event_target:target_coalition_leader = {
+						can_use_cb = {
+							target = PREV
+							casus_belli = stop_invader
+							only_check_triggers = yes
+						}
+					}
+				}
+				save_event_target_as = target_invader
+				
+				reverse_unsafe_war = {
+					casus_belli = stop_invader
+					target = event_target:target_coalition_leader
+				}
+			}
+			
+			# Invites other rulers...
+			event_target:target_invader = {
+				any_neighbor_independent_ruler = {						# Invites independent neighbors...
+					invite_to_coalition_war_effect = yes
+					any_neighbor_independent_ruler = {						# ...and neighbors of independent neighbors...
+						invite_to_coalition_war_effect = yes
+					}
+				}
+			}
+		}
+		# There's no war target, so let him peacefully die
+		else = {
+			character_event = { id = HL.199 } # Cleanup
+			death = { death_reason = death_missing }
+		}
+	}
+}
+
 # Join war against evil guy?
 # FROM is defender
 # FROMFROM is evil guy (attacker)
 character_event = {
-	id = WCWAR.600
-	desc = EVTDESC_WCWAR_600
+	id = WCWAR.620
+	desc = EVTDESC_WCWAR_620
 	picture = GFX_evt_battle
 	border = GFX_event_normal_frame_war
 
@@ -359,21 +413,20 @@ character_event = {
 
 	trigger = {
 		can_join_war_against_evil_guy_trigger = yes
-		FROM = {
-			is_playable = yes
-
-			war_with = FROMFROM
-		}
+	}
+	
+	fail_trigger_effect = {
+		clr_character_flag = invite_against_evil_flag
 	}
 
 	# Join wars
 	option = {
 		name = EVTOPTA_WCWAR_600
 
-		join_defender_wars = FROM
+		join_attacker_wars = event_target:target_coalition_leader
 		prestige = 100
 		piety = 50
-		reverse_opinion = { modifier = opinion_very_grateful who = FROM years = 5 }
+		reverse_opinion = { modifier = opinion_very_grateful who = event_target:target_coalition_leader years = 5 }
 
 		ai_chance = {
 			factor = 20
@@ -403,15 +456,15 @@ character_event = {
 			}
 			modifier = {
 				factor = 1.67
-				opinion = { who = FROM value = 25 }
+				opinion = { who = event_target:target_coalition_leader value = 25 }
 			}
 			modifier = {
 				factor = 1.67
-				opinion = { who = FROM value = 50 }
+				opinion = { who = event_target:target_coalition_leader value = 50 }
 			}
 			modifier = {
 				factor = 1.67
-				FROMFROM = { has_invader_title_trigger = yes }
+				event_target:target_invader = { has_invader_title_trigger = yes }
 			}
 		}
 	}
