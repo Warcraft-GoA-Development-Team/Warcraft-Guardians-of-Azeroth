@@ -1,8 +1,12 @@
 society_decisions = { #only available to members of a society
 	request_to_rank_up_within_cenarion_circle = { #this is the new rank up decision if you want one, you do not need this if you use de default one
-
-		hide_in_decisions_list = yes # This is shown in the Society View
+		only_playable = yes
 		
+		hide_in_decisions_list = yes # This is shown in the Society View
+		# Warcraft
+		is_untouchable_trigger = no
+		
+		ai_check_interval = 24
 		potential = {
 			hidden_tooltip = {
 				society_rank <= 4 #is not max rank
@@ -90,7 +94,7 @@ society_decisions = { #only available to members of a society
 
 			custom_tooltip = {
 				text = must_be_allowed_to_rank_up_tooltip 
-				days_at_current_society_rank >= 1800 #IMPORTANT! Update tooltip.
+				days_at_current_society_rank >= 1095 #IMPORTANT! Update tooltip.
 			}
 
 			custom_tooltip = {
@@ -121,8 +125,18 @@ society_decisions = { #only available to members of a society
 			hidden_tooltip = {
 				save_event_target_as = rank_up_target #mark the character as the one ranking up
 				set_character_flag = has_sent_request_to_rank_up
-				character_event = { id = WCCC.10 days = 20 random = 10 } # sends hidden delayed event to self, which then sends request to Leader of the society
-				
+				if = {
+					limit = {
+						is_in_society = cenarion_circle
+					}
+					character_event = { id = WCCC.10 days = 20 random = 10 } # sends hidden delayed event to self, which then sends request to Leader of the society
+				}
+				if = {
+					limit = {
+						is_in_society = sisterhood_of_elune
+					}
+					character_event = { id = WCSE.10 days = 20 random = 10 } # sends hidden delayed event to self, which then sends request to Leader of the society
+				}
 			}
 		}
 
@@ -131,7 +145,19 @@ society_decisions = { #only available to members of a society
 		}
 		
 		ai_will_do = {
-			factor = 0.5
+			factor = 1
+
+			modifier = {
+				factor = 0.5 #Slow down
+			}
+			modifier = {
+				factor = 0.5
+				trait = content
+			}
+			modifier = {
+				factor = 2 
+				trait = ambitious
+			}
 		}
 	}
 }

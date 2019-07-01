@@ -59,7 +59,6 @@ character_event = {
 				limit = { is_female = yes }
 				save_event_target_as = target_wife
 			}
-			character_event = { id = WCRAC.10 }		# Adds race trait just for sure
 			FROM = {
 				if = {
 					limit = { is_female = no }
@@ -69,7 +68,6 @@ character_event = {
 					limit = { is_female = yes }
 					save_event_target_as = target_wife
 				}
-				character_event = { id = WCRAC.10 }		# Adds race trait just for sure
 				if = {
 					limit = { can_has_sexual_relation_with_prev = no }
 					character_event = { id = WCCLN.101 days = 1 }
@@ -101,8 +99,12 @@ character_event = {
 		if = {
 			limit = { character = event_target:target_husband }
 			remove_spouse = event_target:target_wife
+			break_betrothal = event_target:target_wife
 		}
-		else = { remove_spouse = event_target:target_husband }
+		else = {
+			remove_spouse = event_target:target_husband
+			break_betrothal = event_target:target_husband
+		}
 		character_event = { id = WCCLN.102 }
 
 		if = {
@@ -119,27 +121,15 @@ character_event = {
 				is_pregnant = yes 
 				father_of_unborn = { character = event_target:target_husband }
 			}
-			death = { death_reason = death_natural }
+			death = { death_reason = death_childbirth }
 			break = yes
 		}
 		if = {
-			limit = { can_marry_trigger = no }
+			limit = { require_cannot_marry_flag_trigger = yes }
 			set_cannot_marry_flag_effect = yes
 		}
 		else = {
-			if = {
-				limit = {
-					ai = yes
-					is_adult = yes
-					can_marry_trigger = yes
-					NOT = {
-						any_dynasty_member = {
-							ai = no
-						}
-					}
-				}
-				character_event = { id = WCCLN.130 }		# Finds right spouse
-			}
+			find_right_spouse_effect = yes
 		}
 	}
 }
@@ -248,9 +238,14 @@ character_event = {
 	is_triggered_only = yes
 	hide_window = yes
 
-	trigger = { ai = yes }
+	trigger = {
+		ai = yes
+		can_marry = yes
+		can_marry_trigger = yes
+	}
 
 	immediate = {
+		# Finds/spawns spouse
 		if = {
 			limit = {
 				any_realm_character = {
@@ -259,13 +254,17 @@ character_event = {
 					prisoner = no
 					is_inaccessible_trigger = no
 
-					can_has_sexual_relation_with_prev = yes
 					is_marriage_adult = yes
+					can_marry = yes
+					can_marry_trigger = yes
+					has_prev_race_trigger = yes
 
+					NOT = { is_close_relative = ROOT }
+					is_consort = no
+					is_lowborn = yes
+					is_married = no
 					is_opposite_sex = ROOT
 					is_pregnant = no
-					is_married = no
-					is_consort = no
 				}
 			}
 			random_realm_character = {
@@ -275,21 +274,25 @@ character_event = {
 					prisoner = no
 					is_inaccessible_trigger = no
 
-					can_has_sexual_relation_with_prev = yes
 					is_marriage_adult = yes
+					can_marry = yes
+					can_marry_trigger = yes
+					has_prev_race_trigger = yes
 
+					NOT = { is_close_relative = ROOT }
+					is_consort = no
+					is_lowborn = yes
+					is_married = no
 					is_opposite_sex = ROOT
 					is_pregnant = no
-					is_married = no
-					is_consort = no
 				}
-				ROOT = { prev_add_spouse_this_effect = yes }
+				save_event_target_as = target_new_spouse
 			}
 		}
 		else = {
+			log = "[This.GetBestName] spawned a spouse"
 			if = {
 				limit = { is_female = no }
-				log = "[This.GetBestName] spawned a spouse"
 				create_character = {
 					female = yes
 					dynasty = actually_culture
@@ -297,46 +300,58 @@ character_event = {
 					random_traits = yes
 					age = 17
 					flag = spawned_spouse_flag
+					flag = race_delay_flag
 				}
 				new_character = {
+					set_prev_gfx_effect = yes
 					character_event = { id = WCRAC.10 }
-					ROOT = {
-						if = {
-							limit = { can_has_sexual_relation_with_prev = yes }
-							prev_add_spouse_this_effect = yes
-						}
-						else = {
-							log = "[This.GetBestName] killed a spouse"
-							set_cannot_marry_flag_effect = yes
-							PREV = { death = { death_reason = death_natural } }
-						}
-					}
-					break = yes
+					
+					save_event_target_as = target_new_spouse
 				}
 			}
 			else = {
-				log = "[This.GetBestName] spawned a spouse"
 				create_character = {
 					dynasty = actually_culture
 					culture = ROOT religion = ROOT
 					random_traits = yes
 					age = 17
 					flag = spawned_spouse_flag
+					flag = race_delay_flag
 				}
 				new_character = {
+					set_prev_gfx_effect = yes
 					character_event = { id = WCRAC.10 }
-					ROOT = {
-						if = {
-							limit = { can_has_sexual_relation_with_prev = yes }
-							prev_add_spouse_this_effect = yes
+					
+					save_event_target_as = target_new_spouse
+				}
+			}
+		}
+		
+		event_target:target_new_spouse = {
+			ROOT = {
+				if = {
+					limit = { can_has_sexual_relation_with_prev = yes }
+					if = {
+						limit = {
+							OR = {
+								is_marriage_adult = no
+								event_target:target_new_spouse = { is_marriage_adult = no }
+							}
 						}
-						else = {
-							log = "[This.GetBestName] killed a spouse"
-							set_cannot_marry_flag_effect = yes
-							PREV = { death = { death_reason = death_natural } }
-						}
+						prev_add_betrothal_this_effect = yes
 					}
-					break = yes
+					else_if = {
+						limit = { is_female = no }
+						prev_add_spouse_this_effect = yes
+					}
+					else = {
+						prev_add_spouse_matrilineal_this_effect = yes
+					}
+				}
+				else = {
+					log = "(IMPORTANT) [This.GetBestName] killed a spouse"
+					set_cannot_marry_flag_effect = yes
+					PREV = { death = { death_reason = death_murder_fall killer = ROOT } }
 				}
 			}
 		}
@@ -352,23 +367,25 @@ character_event = {
 
 	immediate = {
 		# Adds race trait just for sure
-		character_event = { id = WCRAC.10 }
 		any_consort = {
-			character_event = { id = WCRAC.10 }
 			if = {
 				limit = { can_has_sexual_relation_with_prev = no }
 				remove_consort = PREV
+				opinion = { modifier = opinion_set_aside who = PREV }
 				PREV = {
 					if = {
 						limit = {
 							is_pregnant = yes
 							father_of_unborn = { character = PREV }
 						}
-						death = { death_reason = death_natural }
+						death = { death_reason = death_childbirth }
 					}
 					if = {
-						limit = { can_marry_trigger = no }
+						limit = { require_cannot_marry_flag_trigger = yes }
 						set_cannot_marry_flag_effect = yes
+					}
+					else = {
+						find_right_spouse_effect = yes
 					}
 				}
 				if = {
@@ -376,33 +393,38 @@ character_event = {
 						is_pregnant = yes
 						father_of_unborn = { character = PREV }
 					}
-					death = { death_reason = death_natural }
+					death = { death_reason = death_childbirth }
 				}
 				if = {
-					limit = { can_marry_trigger = no }
+					limit = { require_cannot_marry_flag_trigger = yes }
 					set_cannot_marry_flag_effect = yes
+				}
+				else = {
+					find_right_spouse_effect = yes
 				}
 			}
 		}
 		FROM = {
 			# Adds race trait just for sure
-			character_event = { id = WCRAC.10 }
 			any_consort = {
-				character_event = { id = WCRAC.10 }
 				if = {
 					limit = { can_has_sexual_relation_with_prev = no }
 					remove_consort = PREV
+					opinion = { modifier = opinion_set_aside who = PREV }
 					PREV = {
 						if = {
 							limit = {
 								is_pregnant = yes
 								father_of_unborn = { character = PREV }
 							}
-							death = { death_reason = death_natural }
+							death = { death_reason = death_childbirth }
 						}
 						if = {
-							limit = { can_marry_trigger = no }
+							limit = { require_cannot_marry_flag_trigger = yes }
 							set_cannot_marry_flag_effect = yes
+						}
+						else = {
+							find_right_spouse_effect = yes
 						}
 					}
 					if = {
@@ -410,14 +432,42 @@ character_event = {
 							is_pregnant = yes
 							father_of_unborn = { character = PREV }
 						}
-						death = { death_reason = death_natural }
+						death = { death_reason = death_childbirth }
 					}
 					if = {
-						limit = { can_marry_trigger = no }
+						limit = { require_cannot_marry_flag_trigger = yes }
 						set_cannot_marry_flag_effect = yes
+					}
+					else = {
+						find_right_spouse_effect = yes
 					}
 				}
 			}
 		}
+	}
+}
+
+# on_decade_pulse
+# Gives class trait to AI character
+character_event = {
+	id = WCCLN.300
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	ai = yes
+	min_age = 16
+	only_capable = yes
+	prisoner = no
+	
+	trigger = {
+		is_untouchable_trigger = no
+		
+		has_class_trait_trigger = no
+		united_class_trigger = yes
+	}
+	
+	immediate = {
+		ai_add_random_class_effect = yes
 	}
 }

@@ -3,13 +3,14 @@ character_event = {
 	id = WCRAC.1
 	desc = "EVTDESC_WCRAC_1"
 	picture = "GFX_evt_recovery"
-	
-	hide_window = yes
 
 	min_age = 100
 	
+	hide_window = yes
+	
 	trigger = {
-		is_fully_immortal_trigger = no
+		age = 100
+		is_completely_immortal_trigger = no
 		# Add here new races whose lifespan is less than 10000 years
 		OR = {
 			# Races
@@ -83,40 +84,36 @@ character_event = {
 		}
 		# Health modifiers
 		modifier = {
-			factor = 0.56
-			NOT = { health = 1 }
+			factor = 0.84
+			NOT = { health = 5 }
 		}
 		modifier = {
-			factor = 0.56
-			NOT = { health = 2 }
+			factor = 0.84
+			NOT = { health = 6 }
 		}
 		modifier = {
-			factor = 0.56
-			NOT = { health = 3 }
+			factor = 0.84
+			NOT = { health = 7 }
 		}
 		modifier = {
-			factor = 0.56
-			NOT = { health = 4 }
-		}
-		modifier = {
-			factor = 1.1
-			health = 5
+			factor = 0.84
+			NOT = { health = 8 }
 		}
 		modifier = {
 			factor = 1.1
-			health = 6
+			health = 10
 		}
 		modifier = {
 			factor = 1.1
-			health = 7
+			health = 11
 		}
 		modifier = {
 			factor = 1.1
-			health = 8
+			health = 12
 		}
 		modifier = {
-			factor = 0.1
-			has_disease = yes
+			factor = 1.1
+			health = 13
 		}
 		modifier = {
 			factor = 0.1
@@ -126,12 +123,55 @@ character_event = {
 			factor = 0.1
 			trait = infirm
 		}
+		modifier = {
+			factor = 0.1
+			is_ill = yes
+		}
+		modifier = {
+			factor = 0.1
+			has_injury_trigger = yes
+		}
 	}
+	
 	immediate = {
-		death = { death_reason = death_natural }
+		if = {
+			limit = {
+				OR = {
+					is_ill = yes
+					has_injury_trigger = yes
+				}
+			}
+			death = { death_reason = death_trait }
+		}
+		else = {
+			death_natural_effect = yes
+		}
 	}
 }
 
+# on_employer_change
+character_event = {
+	id = WCRAC.5
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	trigger = {
+		is_alive = yes
+		is_dying = no
+		
+		FROM = { character = no }
+		NOT = { has_character_flag = race_delay_flag }
+		
+		has_race_trait_trigger = no
+	}
+	
+	immediate = {
+		log = "WCRAC.5 fired for [Root.GetBestName]"
+		
+		character_event = { id = WCRAC.10 }
+	}
+}
 # Adds race traits
 # Fired by decision, on_birth, on_new_holder, on_new_holder_inheritance, on_new_holder_usurpation
 character_event = {
@@ -144,11 +184,67 @@ character_event = {
 		is_alive = yes
 		is_dying = no
 		
-		potential_race_trigger = yes
+		# potential_race_trigger = yes
+		has_race_trait_trigger = no
 	}
 
 	immediate = {
 		# log = "WCRAC.10 fired for [Root.GetBestName]"
+		true_father_even_if_dead = { save_event_target_as = target_father }
+		mother_even_if_dead = { save_event_target_as = target_mother }
+		
+		set_character_flag = no_show_what_become_flag		# Cancel show_close_people_what_this_become_effect if character spawned as undead, demon, void being
+		
+		# Halfbreed child was born, picks graphical culture
+		if = {
+			limit = {
+				NOT = {
+					has_game_rule = {
+						name = halfbreed_race
+						value = random
+					}
+				}
+				
+				NOT = { age = 1 }
+				event_target:target_father = { always = yes }
+				event_target:target_mother = { always = yes }
+				event_target:target_father = { event_target:target_mother = { has_prev_race_trigger = no } }
+			}
+			if = {
+				limit = {
+					has_game_rule = {
+						name = halfbreed_race
+						value = father
+					}
+				}
+				log = "[Root.GetBestName] picks father's race because of Father rule"
+				
+				event_target:target_father = { ROOT = { set_prev_gfx_effect = yes } }
+			}
+			else_if = {
+				limit = {
+					has_game_rule = {
+						name = halfbreed_race
+						value = mother
+					}
+				}
+				log = "[Root.GetBestName] picks mother's race because of Mother rule"
+				
+				event_target:target_mother = { ROOT = { set_prev_gfx_effect = yes } }
+			}
+			# If child has mother's dynasty, picks mother's graphical culture
+			else_if = {
+				limit = { dynasty = event_target:target_father }
+				log = "[Root.GetBestName] picks father's race because of Dynasty rule"
+				
+				event_target:target_father = { ROOT = { set_prev_gfx_effect = yes } }
+			}
+			else = {
+				log = "[Root.GetBestName] picks mother's race because of Dynasty rule"
+				
+				event_target:target_mother = { ROOT = { set_prev_gfx_effect = yes } }
+			}
+		}
 		
 		# Add new races always at the end
 		if = {
@@ -157,37 +253,22 @@ character_event = {
 		}
 		else_if = {
 			limit = { potential_race_orc_trigger = yes }
-			if = {
-				limit = {
-					OR = {
-						has_global_flag = dark_portal_was_opened_flag
-						start_date = 603.1.1
-						start_date = 583.1.1
-					}
-				}
-				add_trait = creature_orc
-			}
-			else = { death = { death_reason = death_missing } }
+			add_trait = creature_orc
 		}
 		else_if = {
 			limit = { potential_race_ogre_trigger = yes }
+			add_trait = creature_ogre
 			if = {
-				limit = {
-					OR = {
-						has_global_flag = dark_portal_was_opened_flag
-						start_date = 603.1.1
-						start_date = 583.1.1
-					}
-				}
-				add_trait = creature_ogre
+				limit =  { graphical_culture = twoheadedogregfx }
+				add_trait = twoheaded
+			}
+			else = {
 				random = {
-					chance = 15
+					chance = 10
 					add_trait = twoheaded
 					set_graphical_culture = twoheadedogre
 				}
 			}
-			else = { death = { death_reason = death_missing } }
-
 		}
 		else_if = {
 			limit = { potential_race_troll_trigger = yes }
@@ -237,7 +318,7 @@ character_event = {
 					potential_race_infinite_dragon_trigger = yes
 				}
 			}
-			character_event = { id = WCRAC.150 }
+			character_event = { id = WCDRA.150 }
 		}
 		else_if = {
 			limit = { potential_race_goblin_trigger = yes }
@@ -253,42 +334,22 @@ character_event = {
 		}
 		else_if = {
 			limit = { potential_race_draenei_trigger = yes }
-			if = {
-				limit = {
-					OR = {
-						has_global_flag = dark_portal_was_opened_flag
-						start_date = 603.1.1
-						start_date = 583.1.1
-					}
-				}
-				add_trait = creature_draenei
-			}
-			else = { death = { death_reason = death_missing } }
+			add_trait = creature_draenei
 		}
 		else_if = {
 			limit = { potential_race_arakkoa_corrupted_trigger = yes }
-			if = {
-				limit = {
-					OR = {
-						has_global_flag = dark_portal_was_opened_flag
-						start_date = 603.1.1
-						start_date = 583.1.1
-					}
-				}
-				add_trait = creature_arakkoa_corrupted
-			}
-			else = { death = { death_reason = death_missing } }
+			add_trait = creature_arakkoa_corrupted
 		}
-		else_if = {
-			limit = { potential_race_ghoul_trigger = yes }
-			add_trait = creature_ghoul
-			add_trait_undead_effect = yes
-		}
-		else_if = {
-			limit = { potential_race_skeleton_trigger = yes }
-			add_trait = creature_skeleton
-			add_trait_undead_effect = yes
-		}
+		# else_if = {
+			# limit = { potential_race_ghoul_trigger = yes }
+			# add_trait = creature_ghoul
+			# add_trait_undead_effect = yes
+		# }
+		# else_if = {
+			# limit = { potential_race_skeleton_trigger = yes }
+			# add_trait = creature_skeleton
+			# add_trait_undead_effect = yes
+		# }
 		else_if = {
 			limit = { potential_race_wraith_trigger = yes }
 			add_trait = creature_wraith
@@ -318,12 +379,19 @@ character_event = {
 			limit = { potential_race_annihilan_trigger = yes }
 			add_trait = creature_annihilan
 			add_trait_demon_effect = yes
+			if = {
+				limit = { culture = shivarra }
+				culture = annihilan 
+			}
 		}
 		else_if = {
 			limit = { potential_race_nathrezim_trigger = yes }
 			add_trait = creature_nathrezim
 			add_trait_demon_effect = yes
-			culture = nathrezim
+			if = {
+				limit = { culture = sayaadi }
+				culture = nathrezim
+			}
 		}
 		else_if = {
 			limit = { potential_race_eredruin_trigger = yes }
@@ -352,12 +420,19 @@ character_event = {
 			limit = { potential_race_sayaadi_trigger = yes }
 			add_trait = creature_sayaadi
 			add_trait_demon_effect = yes
-			culture = sayaadi
+			if = {
+				limit = { culture = nathrezim }
+				culture = sayaadi 
+			}
 		}
 		else_if = {
 			limit = { potential_race_shivarra_trigger = yes }
 			add_trait = creature_shivarra
 			add_trait_demon_effect = yes
+			if = {
+				limit = { culture = annihilan }
+				culture = shivarra 
+			}
 		}
 		else_if = {
 			limit = { potential_race_moarg_trigger = yes }
@@ -515,281 +590,81 @@ character_event = {
 			limit = { potential_race_sethrak_trigger = yes }
 			add_trait = creature_sethrak
 		}
+		else_if = {
+			limit = { potential_race_protector_trigger = yes }
+			add_trait = creature_protector 
+		}
+		else_if = {
+			limit = { potential_race_ancient_war_trigger = yes }
+			add_trait = creature_ancient_war
+			culture = protector
+		}
+		else_if = {
+			limit = { potential_race_ancient_lore_trigger = yes }
+			add_trait = creature_ancient_lore
+			culture = protector
+		}
+		else_if = {
+			limit = { potential_race_ancient_wind_trigger = yes }
+			add_trait = creature_ancient_wind
+			culture = protector
+		}
 		else = {
-			death = { death_reason = death_missing }
-		}
-		if = {
-			limit = {
-				can_be_undead_trigger = yes
-				location = { has_province_modifier = undead_province }
-				liege = { trait = undead }
-			}
-			# Adds undead trait
+			gfx_culture_scope = { save_event_target_as = target_gfx_culture }
+			log = "(IMPORTANT) [This.GetBestName] couldn't get race trait. GFX culture is [target_gfx_culture.GetName]."
+			clear_event_target = target_gfx_culture
 			if = {
-				limit = { NOT = { trait = undead } }
-				save_event_target_as = target_necromancer
-				character_event = { id = WCPOD.5013 }
+				limit = { has_character_flag = last_race_try_flag }
+				death = { death_reason = death_missing }
+				break = yes
 			}
+			set_character_flag = last_race_try_flag
+			
+			dynasty_head = { ROOT = { set_prev_gfx_effect = yes } }
+			repeat_event = { id = WCRAC.10 }
+			break = yes
 		}
-	}
-}
-
-# Dragon ages
-character_event = {
-	id = WCRAC.150
-	desc = {
-		trigger = {
-			NOT = { age = 1 }
-			is_whelp_trigger = no
-			is_drake_trigger = no
-			is_dragon_trigger = no
-			is_wyrm_trigger = no
-		}
-		text = EVTDESC_WCRAC_150_whelp
-	}
-	desc = {
-		trigger = {
-			age = 1
-			NOT = { age = 100 }
-			is_drake_trigger = no
-			is_dragon_trigger = no
-			is_wyrm_trigger = no
-		}
-		text = EVTDESC_WCRAC_150_drake
-	}
-	desc = {
-		trigger = {
-			age = 100
-			NOT = { age = 500 }
-			is_dragon_trigger = no
-			is_wyrm_trigger = no
-		}
-		text = EVTDESC_WCRAC_150_dragon
-	}
-	desc = {
-		trigger = {
-			age = 500
-			is_wyrm_trigger = no
-		}
-		text = EVTDESC_WCRAC_150_wyrm
-	}
-	picture = GFX_evt_dragons_egg
-
-	is_triggered_only = yes
-
-	trigger = {
-		is_alive = yes
-		is_dying = no
 		
-		has_dragon_gfx_trigger = yes
-		OR = {
-			AND = {
-				NOT = { age = 1 }
-				is_whelp_trigger = no
-				is_drake_trigger = no
-				is_dragon_trigger = no
-				is_wyrm_trigger = no
-			}
-			AND = {
-				age = 1
-				NOT = { age = 100 }
-				is_drake_trigger = no
-				is_dragon_trigger = no
-				is_wyrm_trigger = no
-			}
-			AND = {
-				age = 100
-				NOT = { age = 500 }
-				is_dragon_trigger = no
-				is_wyrm_trigger = no
-			}
-			AND = {
-				age = 500
-				is_wyrm_trigger = no
-			}
-		}
-	}
-	option = {
-		name = RAWR
-
-		remove_racial_traits_effect = yes
+		# Adds blood trait
+		add_blood_trait_effect = yes
+		
+		# Changes gender
 		if = {
 			limit = {
-				NOT = { age = 1 }
-				is_whelp_trigger = no
-				is_drake_trigger = no
-				is_dragon_trigger = no
-				is_wyrm_trigger = no
+				is_female = yes
+				is_only_male_race_trigger = yes
 			}
-			if = {
-				limit = { graphical_culture = dragonredgfx }
-				add_trait = creature_red_whelp
-			}
-			if = {
-				limit = { graphical_culture = dragonbluegfx }
-				add_trait = creature_blue_whelp
-			}
-			if = {
-				limit = { graphical_culture = dragongreengfx }
-				add_trait = creature_green_whelp
-			}
-			if = {
-				limit = { graphical_culture = dragonblackgfx }
-				add_trait = creature_black_whelp
-			}
-			if = {
-				limit = { graphical_culture = dragonbronzegfx }
-				add_trait = creature_bronze_whelp
-			}
-			if = {
-				limit = { graphical_culture = dragoninfinitegfx }
-				add_trait = creature_infinite_whelp
-			}
-			# break = yes
+			set_gender = male
 		}
+		else_if = {
+			limit = {
+				is_female = no
+				is_only_female_race_trigger = yes
+			}
+			set_gender = female
+		}
+		
+		# Adds undead trait
 		if = {
 			limit = {
-				age = 1
-				NOT = { age = 100 }
-				is_drake_trigger = no
-				is_dragon_trigger = no
-				is_wyrm_trigger = no
-			}
-			if = {
-				limit = { graphical_culture = dragonredgfx }
-				add_trait = creature_red_drake
-			}
-			if = {
-				limit = { graphical_culture = dragonbluegfx }
-				add_trait = creature_blue_drake
-			}
-			if = {
-				limit = { graphical_culture = dragongreengfx }
-				add_trait = creature_green_drake
-			}
-			if = {
-				limit = { graphical_culture = dragonblackgfx }
-				add_trait = creature_black_drake
-			}
-			if = {
-				limit = { graphical_culture = dragonbronzegfx }
-				add_trait = creature_bronze_drake
-			}
-			if = {
-				limit = { graphical_culture = dragoninfinitegfx }
-				add_trait = creature_infinite_drake
-			}
-			# break = yes
-		}
-		if = {
-			limit = {
-				age = 100
-				NOT = { age = 500 }
-				is_dragon_trigger = no
-				is_wyrm_trigger = no
-			}
-			if = {
-				limit = { graphical_culture = dragonredgfx }
-				add_trait = creature_red_dragon
-			}
-			if = {
-				limit = { graphical_culture = dragonbluegfx }
-				add_trait = creature_blue_dragon
-			}
-			if = {
-				limit = { graphical_culture = dragongreengfx }
-				add_trait = creature_green_dragon
-			}
-			if = {
-				limit = { graphical_culture = dragonblackgfx }
-				add_trait = creature_black_dragon
-			}
-			if = {
-				limit = { graphical_culture = dragonbronzegfx }
-				add_trait = creature_bronze_dragon
-			}
-			if = {
-				limit = { graphical_culture = dragoninfinitegfx }
-				add_trait = creature_infinite_dragon
-			}
-			# break = yes
-		}
-		if = {
-			limit = {
-				age = 500
-				is_wyrm_trigger = no
-			}
-			if = {
-				limit = { graphical_culture = dragonredgfx }
-				add_trait = creature_red_wyrm
-			}
-			if = {
-				limit = { graphical_culture = dragonbluegfx }
-				add_trait = creature_blue_wyrm
-			}
-			if = {
-				limit = { graphical_culture = dragongreengfx }
-				add_trait = creature_green_wyrm
-			}
-			if = {
-				limit = { graphical_culture = dragonblackgfx }
-				add_trait = creature_black_wyrm
-			}
-			if = {
-				limit = { graphical_culture = dragonbronzegfx }
-				add_trait = creature_bronze_wyrm
-			}
-			if = {
-				limit = { graphical_culture = dragoninfinitegfx }
-				add_trait = creature_infinite_wyrm
-			}
-		}
-	}
-}
-
-# ROOT inherits FROMFROM's aspect trait
-character_event = {
-	id = WCRAC.160
-
-	is_triggered_only = yes
-	hide_window = yes
-
-	trigger = {
-		is_dragon_race_trigger = yes
-		OR = {
-			AND = {
-				religion = sect_of_the_dragons
-				FROMFROM = {
-					OR = {
-						trait = aspect_of_nature
-						trait = aspect_of_life
-						trait = aspect_of_magic
-						trait = aspect_of_time
+				NOT = { trait = being_undead }
+				
+				OR = {
+					has_undead_gfx_trigger = yes
+					AND = {
+						can_be_undead_trigger = yes
+						location = { has_province_modifier = undead_province }
+						liege = { trait = being_undead }
 					}
 				}
 			}
-			AND = {
-				religion = old_gods_worship
-				FROMFROM = { trait = aspect_of_death }
-			}
+			save_event_target_as = target_necromancer
+			character_event = { id = WCPOD.5013 }
 		}
-		higher_tier_than = FROMFROM
-		primary_title = { title = FROM }
-	}
-
-	immediate = {
-		log = "WCRAC.160 fired for [Root.GetBestName]"
-
-		FROMFROM = {
-			trigger_switch = {
-				on_trigger = trait
-				aspect_of_nature = { ROOT = { add_trait = aspect_of_nature } }
-				aspect_of_death = { ROOT = { add_trait = aspect_of_death } }
-				aspect_of_life = { ROOT = { add_trait = aspect_of_life } }
-				aspect_of_magic = { ROOT = { add_trait = aspect_of_magic } }
-				aspect_of_time = { ROOT = { add_trait = aspect_of_time } }
-			}
-		}
+		# Adds default traits when new character spawns
+		add_default_traits = yes
+		
+		clr_character_flag = no_show_what_become_flag			# Works only during this event
 	}
 }
 
@@ -814,5 +689,123 @@ character_event = {
 		remove_class_trait_effect = yes
 		character_event = { id = WCRAC.10 }
 		add_class_trait_effect = yes
+	}
+}
+#Adds Ancients seed
+character_event = {
+	id = WCRAC.300
+	desc = EVTDESC_WCRAC.300
+	
+	is_triggered_only = yes
+	
+	only_playable = yes
+	weight_multiplier = {
+		days = 1
+		modifier = {
+			factor = 3
+			NOT = { has_artifact = ancient_kernel }
+		}
+	}
+	
+	is_adult = yes
+	
+	trigger = {
+		plant_race = yes
+	}
+	
+	immediate = {	
+		
+	}
+	
+	option = {
+		name = EVTOPTA_WCRAC.300
+		add_artifact = ancient_kernel
+	}
+}
+# New ancient born
+character_event = {
+	id = WCRAC.310
+	desc = EVTDESC_WCRAC.310
+	is_triggered_only = yes
+	
+	only_playable = yes
+	is_adult = yes
+	
+	trigger = {
+		plant_race = yes
+		has_artifact = ancient_kernel
+	}
+	
+	immediate = {
+		destroy_artifact = ancient_kernel
+		create_character = {
+			dynasty = ROOT
+			religion = ROOT
+			culture = ROOT
+			female = 50
+			age = 0
+		}
+		new_character = {
+			if = {
+				limit = {
+					ROOT = {
+						is_female = yes
+					}
+				}
+				set_mother = ROOT
+			}
+			if = {
+				limit = {
+					ROOT = {
+						is_female = no
+					}
+				}
+				set_father = ROOT
+			}
+			if = {
+				limit = {
+					ROOT = {
+						graphical_culture = ancientwargfx
+					}
+				}
+				set_graphical_culture = ancient_war
+			}
+			if = {
+				limit = {
+					ROOT = {
+						graphical_culture = ancientloregfx
+					}
+				}
+				set_graphical_culture = ancient_lore
+			}
+			if = {
+				limit = {
+					ROOT = {
+						graphical_culture = ancientwindgfx
+					}
+				}
+				set_graphical_culture = ancient_wind
+			}
+		}
+	}
+	
+	option = {
+		name = EVTOPTA_WCRAC.310
+	}
+}
+# Destory Ancients seed after death
+character_event = {
+	id = WCRAC.320
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	trigger = {
+		has_artifact = ancient_kernel
+		plant_race = yes
+	}
+
+	immediate = {
+		destroy_artifact = ancient_kernel
 	}
 }

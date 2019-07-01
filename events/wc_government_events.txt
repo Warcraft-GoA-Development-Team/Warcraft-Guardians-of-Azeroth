@@ -1,6 +1,13 @@
 namespace = WCGOV
 
-# Changes laws and removes titles
+# These events make governments work properly
+# If you want to change laws after change of government, the only way out will...
+# ...be religion-based government that changes both government and laws...
+# ...on_character_convert_religion and on_new_holder
+# Be carefull because they can be CPU heavy
+
+### on_character_convert_religion ###
+# Adds status_of_magic_3 and fires "good" councilors and commanders if you have evil religion
 character_event = {
 	id = WCGOV.1000
 
@@ -11,35 +18,362 @@ character_event = {
 
 	trigger = {
 		dark_public_religion_trigger = yes
+		FROM = { dark_public_religion_trigger = no }
 	}
 
 	immediate = {
 		log = "WCGOV.1000 fired for [Root.GetBestName]"
 
+		any_demesne_title = {
+			limit = { prevs_title_can_has_laws_trigger = yes }
+			if = {
+				limit = {
+					# is_law_allowed = status_of_magic_3
+					is_law_potential = status_of_magic_3
+					NOT = { has_law = status_of_magic_3 }
+				}
+				add_law = { law = status_of_magic_3 cooldown = no opinion_effect = no }
+			}
+		}
 		if = {
-			limit = { is_ruler = yes }
-			any_demesne_title = {
-				if = {
+			limit = { evil_public_religion_trigger = yes }
+			if = {
+				limit = { is_ruler = yes }
+				any_courtier_or_vassal = {
 					limit = {
-						is_law_potential = status_of_magic_3
-						NOT = { has_law = status_of_magic_3 }
+						NOT = { religion = ROOT }
+						
+						OR = {
+							has_job_title = yes
+							has_minor_title = yes
+						}
 					}
-					add_law = { law = status_of_magic_3 cooldown = no opinion_effect = no }
+					leave_council_position_effect = yes
+					remove_title = title_commander
+					remove_title = title_teacher
 				}
 			}
 			if = {
-				limit = { evil_public_religion_trigger = yes }
-				any_courtier_or_vassal = {
-					limit = { evil_public_religion_trigger = no }
-					leave_council_position_effect = yes
-					remove_title = title_commander
+				limit = {
+					liege = { NOT = { religion = ROOT } }
+					
+					OR = {
+						has_job_title = yes
+						has_minor_title = yes
+					}
+				}
+				leave_council_position_effect = yes
+				remove_title = title_commander
+				remove_title = title_teacher
+			}
+		}
+	}
+}
+# Clear evil laws if you're not evil anymore
+character_event = {
+	id = WCGOV.1010
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	only_rulers = yes
+	
+	trigger = {
+		evil_public_religion_trigger = no
+		FROM = { evil_public_religion_trigger = yes }
+	}
+	
+	immediate = {
+		log = "WCGOV.1010 fired for [Root.GetBestName]"
+		
+		any_demesne_title = {
+			limit = {
+				prevs_title_can_has_laws_trigger = yes
+				OR = {
+					has_law = succ_evil_elective
+					has_law = status_of_magic_3
+				}
+			}
+			clear_evil_laws_effect = yes
+		}
+		recalc_succession = yes
+	}
+}
+
+### on_new_holder on_new_holder_inheritance on_new_holder_usurpation ###
+# Adds status_of_magic_3
+character_event = {
+	id = WCGOV.6000
+
+	is_triggered_only = yes
+	hide_window = yes
+	
+	only_rulers = yes
+
+	trigger = {
+		dark_public_religion_trigger = yes
+		FROMFROM = { dark_public_religion_trigger = no }
+		FROM = {
+			prevs_title_can_has_laws_trigger = yes
+			is_law_potential = status_of_magic_3
+			NOT = { has_law = status_of_magic_3 }
+		}
+	}
+
+	immediate = {
+		log = "WCGOV.6000 fired for [Root.GetBestName]"
+
+		FROM = { add_law = { law = status_of_magic_3 cooldown = no opinion_effect = no } }
+	}
+}
+# Clear evil laws if you're not evil anymore
+character_event = {
+	id = WCGOV.6010
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	only_rulers = yes
+	
+	trigger = {
+		evil_public_religion_trigger = no
+		FROMFROM = { evil_public_religion_trigger = yes }
+		FROM = {
+			prevs_title_can_has_laws_trigger = yes
+			OR = {
+				has_law = succ_evil_elective
+				has_law = status_of_magic_3
+			}
+		}
+	}
+	
+	immediate = {
+		log = "WCGOV.6010 fired for [Root.GetBestName]"
+		
+		FROM = { clear_evil_laws_effect = yes }
+		recalc_succession = yes
+	}
+}
+
+### Election timers ###
+# on_startup
+# Ping to capital_scope in case doge is custom character
+character_event = {
+	id = WCGOV.7980
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	only_playable = yes
+	is_patrician = yes
+	
+	trigger = {
+		is_save_game = no
+		
+		is_merchant_republic = yes
+		
+		NOT = { has_character_flag = upcoming_elections_flag }
+	}
+	
+	immediate = {
+		capital_scope = { province_event = { id = WCGOV.7985 days = 1 } }
+	}
+}
+# Elections in 12 year
+province_event = {
+	id = WCGOV.7985
+	
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		holder_scope = {
+			if = {
+				limit = {
+					is_merchant_republic = yes
+					NOT = { has_character_flag = upcoming_elections_flag }
+				}
+				log = "WCGOV.7985 fired for [Root.GetBestName]"
+				
+				set_character_flag = upcoming_elections_flag
+				character_event = { id = WCGOV.7990 years = 11 }
+			}
+		}
+	}
+}
+
+# on_new_holder on_new_holder_inheritance on_new_holder_usurpation
+# Elections in 12 year
+character_event = {
+	id = WCGOV.7986
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	only_playable = yes
+	is_patrician = yes
+	
+	trigger = {
+		is_merchant_republic = yes
+		
+		NOT = { has_character_flag = upcoming_elections_flag }
+	}
+	
+	immediate = {
+		log = "WCGOV.7986 fired for [Root.GetBestName]"
+		
+		set_character_flag = upcoming_elections_flag
+		character_event = { id = WCGOV.7990 years = 11 }
+	}
+}
+
+# Elections in 1 year: sends notification to patricians
+character_event = {
+	id = WCGOV.7990
+	
+	is_triggered_only = yes
+	hide_window = yes
+
+	trigger = {
+		is_merchant_republic = yes
+	}
+	
+	fail_trigger_effect = {
+		clr_character_flag = upcoming_elections_flag
+	}
+	
+	immediate = {
+		primary_title = { save_event_target_as = target_republic }
+		
+		character_event = { id = WCGOV.8000 years = 1 }
+		
+		# Notifications
+		character_event = { id = WCGOV.7992 }
+		any_vassal = {
+			limit = {
+				NOT = { character = ROOT }
+				
+				is_patrician = yes
+			}
+			character_event = { id = WCGOV.7992 }
+		}
+	}
+}
+# Notification of upcoming elections
+character_event = {
+	id = WCGOV.7992
+	desc = EVTDESC_WCGOV_7992
+	picture = GFX_evt_doge_republic
+	border = GFX_event_normal_frame_economy
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = INTERESTING
+	}
+}
+# Starts elections, delayed event
+character_event = {
+	id = WCGOV.8000
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	trigger = {
+		is_merchant_republic = yes
+	}
+	
+	fail_trigger_effect = {
+		clr_character_flag = upcoming_elections_flag
+	}
+
+	immediate = {
+		log = "WCGOV.8000 fired for [Root.GetBestName]"
+		primary_title = { save_event_target_as = target_republic }
+		capital_scope = { county = { save_event_target_as = target_city } }
+		
+		clr_character_flag = upcoming_elections_flag
+		
+		add_trait = secret_patrician
+		any_vassal = {
+			if = {								# Keep patricians as patricians in inter-election period
+				limit = { is_patrician = yes }
+				add_trait = secret_patrician
+			}
+			else_if = {							# Mark vassals of previous doge
+				limit = { primary_title = { NOT = { de_jure_liege = event_target:target_city } } }
+				set_character_flag = prev_doge_vassal_flag
+			}
+		}
+		
+		hold_election = yes
+		
+		remove_trait = secret_patrician
+
+		event_target:target_republic = { holder_scope = { save_event_target_as = target_new_doge } }
+		
+		if = {
+			limit = { dynasty = event_target:target_new_doge }
+			event_target:target_new_doge = { wealth = ROOT }
+			clear_wealth = yes
+			any_artifact = {
+				transfer_artifact = { from = ROOT to = event_target:target_new_doge }
+			}
+			abdicate_to = event_target:target_new_doge
+			move_character = event_target:target_new_doge
+		}
+
+		event_target:target_new_doge = {
+			remove_trait = secret_patrician
+			any_vassal = {
+				if = {
+					limit = { trait = secret_patrician }
+					add_trait = secret_patrician
+				}
+				else_if = {
+					limit = { has_character_flag = prev_doge_vassal_flag }
+					clr_character_flag = prev_doge_vassal_flag
+					
+					if = {
+						limit = { lower_tier_than = ROOT }
+						set_defacto_liege = ROOT
+					}
 				}
 			}
 		}
-		if = {
-			limit = { liege = { evil_public_religion_trigger = no } }
-			leave_council_position_effect = yes
-			remove_title = title_commander
+		
+		recalc_succession = yes
+		
+		# Notifications
+		ROOT = { character_event = { id = WCGOV.8005 } }
+		event_target:target_new_doge = {
+			if = {
+				limit = { NOT = { character = ROOT } }
+				character_event = { id = WCGOV.8005 }
+			}
+			any_vassal = {
+				limit = {
+					NOT = { character = ROOT }
+					
+					is_patrician = yes
+				}
+				character_event = { id = WCGOV.8005 }
+			}
 		}
+	}
+}
+# Notification of held elections
+character_event = {
+	id = WCGOV.8005
+	desc = EVTDESC_WCGOV_8005
+	picture = GFX_evt_doge_republic
+	border = GFX_event_normal_frame_economy
+	
+	is_triggered_only = yes
+	
+	portrait = event_target:target_new_doge
+	
+	option = {
+		name = INTERESTING
 	}
 }

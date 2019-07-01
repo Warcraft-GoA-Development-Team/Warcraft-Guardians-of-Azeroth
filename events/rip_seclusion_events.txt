@@ -1429,13 +1429,30 @@ character_event = {
 character_event = {
 	id = RIP.12007
 	picture = GFX_evt_courtiers_talking
-	desc = EVTDESC_RIP_12007
 	border = GFX_event_normal_frame_intrigue
+
+	desc = {
+		text = EVTDESC_RIP_12007
+		trigger = {
+			NOT = { has_character_flag = seclusion_lazy_seduction_V2@event_target:target_courtier }
+		}
+	}
+	desc = {
+		text = EVTDESC_RIP_12007_sway_version
+		trigger = {
+			has_character_flag = seclusion_lazy_seduction_V2@event_target:target_courtier
+		}
+	}
 
 	is_triggered_only = yes
 
 	immediate = {
 		set_character_flag = seclusion_lazy_seduction
+		if = { # For Sway event-edge case...
+			limit = { has_character_flag = seclusion_lazy_seduction_V2@persistent_event_target:sway_target }
+			persistent_event_target:sway_target = { save_event_target_as = target_courtier }
+			break = yes
+		}
 		random_realm_character = {
 			limit = {
 				# Warcraft
@@ -1450,6 +1467,9 @@ character_event = {
 				is_consort = no
 				has_lover = no
 				can_marry = yes
+			}
+			preferred_limit = {
+				character = persistent_event_target:sway_target # For Sway events...
 			}
 			save_event_target_as = target_courtier
 		}
@@ -1576,10 +1596,18 @@ character_event = {
 character_event = {
 	id = RIP.12009
 	picture = GFX_evt_lovers
-	desc = EVTDESC_RIP_12009
 	border = GFX_event_normal_frame_intrigue
 
 	is_triggered_only = yes
+
+	desc = {
+		text = EVTDESC_RIP_12009
+		trigger = { NOT = { has_character_flag = seclusion_lazy_seduction_V2@event_target:target_courtier } }
+	}
+	desc = {
+		text = EVTDESC_RIP_12009_sway_version
+		trigger = { has_character_flag = seclusion_lazy_seduction_V2@event_target:target_courtier }
+	}
 
 	option = {
 		name = EVTOPTA_RIP_12009
@@ -1587,6 +1615,7 @@ character_event = {
 			# Warcraft
 			FROM = { add_lover_prev_effect = yes }
 		}
+		clr_character_flag = seclusion_lazy_seduction_V2@event_target:target_courtier
 	}
 }
 
@@ -3583,17 +3612,21 @@ narrative_event = {
 	immediate = {
 		set_character_flag = seclusion_events_on
 		
-		random_courtier = {
-				limit = {
-					is_adult = yes
-					prisoner = no
-					is_incapable = no
-					has_vice_trigger = yes
-					has_character_modifier = in_seclusion
-				}
-				save_event_target_as = bored_courtier_target
+		any_courtier = {
+			limit = {
+				is_adult = yes
+				prisoner = no
+				is_incapable = no
+				has_vice_trigger = yes
+				has_character_modifier = in_seclusion
 			}
-		random_courtier = {
+			score_value = { #Prioritizes selecting an interesting courtier...
+	            value = 10
+	            interesting_courtier_selection_score = yes
+	        }
+			save_event_target_as = bored_courtier_target
+		}
+		any_courtier = {
 			limit = {
 				is_close_relative = yes
 				is_adult = yes
@@ -3602,6 +3635,10 @@ narrative_event = {
 				is_pious_trigger = no
 				has_character_modifier = in_seclusion
 			}
+			score_value = { #Prioritizes selecting an interesting courtier...
+	            value = 10
+	            interesting_courtier_selection_score = yes
+	        }
 			save_event_target_as = bored_courtier_target
 		}
 		event_target:bored_courtier_target = {
@@ -3918,6 +3955,7 @@ character_event = {
 						duration = -1
 					}
 					set_character_flag = immune_bubonic_plague
+					set_character_flag = is_death
 					save_event_target_as = partying_stranger
 				}
 			}
@@ -3951,6 +3989,7 @@ character_event = {
 						duration = -1
 					}
 					set_character_flag = immune_bubonic_plague
+					set_character_flag = is_death
 					save_event_target_as = partying_stranger
 				}
 			}
@@ -5365,6 +5404,9 @@ character_event = {
 							any_courtier = {
 								has_character_modifier = in_seclusion
 								OR = {
+									# Warcraft
+									trait = corrupted_blood
+									
 									trait = has_tuberculosis
 									trait = has_typhoid_fever
 									trait = has_typhus
@@ -5384,6 +5426,9 @@ character_event = {
 						any_courtier = {
 							has_character_modifier = in_seclusion
 							OR = {
+								# Warcraft
+								has_character_flag = got_corrupted_blood
+								
 								has_character_flag = got_tuberculosis
 								has_character_flag = got_typhoid_fever
 								has_character_flag = got_typhus

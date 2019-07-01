@@ -139,12 +139,12 @@ character_event = {
 character_event = {
 	id = WCCOU.200
 	desc = {
-		trigger = { trait = undead }
+		trigger = { trait = being_undead }
 		text = EVTDESC_WCCOU_200_undead
 		picture = GFX_evt_cemetery
 	}
 	desc = {
-		trigger = { trait = demon }
+		trigger = { trait = being_demon }
 		text = EVTDESC_WCCOU_200_demon
 		picture = GFX_evt_fel_storm
 	}
@@ -154,16 +154,16 @@ character_event = {
 		picture = GFX_evt_mechagnome
 	}
 	desc = {
-		trigger = { has_character_flag = void_creature }
+		trigger = { trait = being_void }
 		text = EVTDESC_WCCOU_200_void
 		picture = GFX_evt_nraqi
 	}
 	desc = {
 		trigger = { 
 			NOR = {
-				trait = undead
-				trait = demon
-				has_character_flag = void_creature
+				trait = being_undead
+				trait = being_demon
+				trait = being_void
 			}
 		}
 		text = EVTDESC_WCCOU_200_other
@@ -186,15 +186,23 @@ character_event = {
 			can_marry_trigger = no
 			can_has_children_trigger = no
 		}
-		NOT = { num_of_dynasty_members = 8 }
+		OR = {
+			has_living_children = no
+			NOT = { num_of_children = 5 }
+		}
+		plant_race = no
 	}
 	
 	weight_multiplier = {
 		days = 1
 		
 		modifier = {
+			factor = 1.5
+			immortal = no
+		}
+		modifier = {
 			factor = 2
-			NOT = { num_of_dynasty_members = 4 }
+			has_living_children = no
 		}
 	}
 	
@@ -209,44 +217,37 @@ character_event = {
 				dynasty = none
 				culture = ROOT religion = ROOT
 				random_traits = yes
-				age = 40
+				age = 20
+				flag = race_delay_flag
 			}
 			new_character = {
 				save_event_target_as = target_new_member
 				if = {
-					limit = { ROOT = { trait = undead } }
-					character_event = { id = WCRAC.10 } 	# Adds race trait
-					if = {
-						limit = { can_be_undead_trigger = yes }
-						save_event_target_as = target_necromancer
-						character_event = { id = WCPOD.5013 }	# Turns into undead
-					}
-					break = yes
-				}
-				if = {
-					limit = { ROOT = { trait = demon } }
-					character_event = { id = WCRAC.10 } 	# Adds race trait
-					if = {
-						limit = { is_susceptible_to_fel_corruption_trigger = yes }
-						set_variable = { which = fel_corruption value = 100 }
-						character_event = { id = WCFEL.10 }
-					}
-					break = yes
-				}
-				if = {
-					limit = { ROOT = { is_uncursed_titanforged_trigger = yes } }
-					character_event = { id = WCRAC.10 } 	# Adds race trait
-					break = yes
-				}
-				if = {
-					limit = { ROOT = { has_character_flag = void_creature } }
+					limit = { ROOT = { trait = being_void } }
 					culture = nraqi
-					add_trait = creature_nraqi
-					add_trait_void_creature_effect = yes
 					set_graphical_culture = nraqi
-					break = yes
+					character_event = { id = WCRAC.10 } 	# Adds race trait
 				}
-				character_event = { id = WCRAC.10 } 	# Adds race trait
+				else = {
+					set_prev_gfx_effect = yes
+					character_event = { id = WCRAC.10 } 	# Adds race trait
+					if = {
+						limit = { ROOT = { trait = being_undead } }
+						if = {
+							limit = { can_be_undead_trigger = yes }
+							save_event_target_as = target_necromancer
+							character_event = { id = WCPOD.5013 }	# Turns into undead
+						}
+					}
+					else_if = {
+						limit = { ROOT = { trait = being_demon } }
+						if = {
+							limit = { is_susceptible_to_fel_corruption_trigger = yes }
+							set_variable = { which = fel_corruption value = 100 }
+							character_event = { id = WCFEL.10 }
+						}
+					}
+				}
 			}
 		}
 	}
@@ -256,7 +257,14 @@ character_event = {
 		
 		event_target:target_new_member = {
 			dynasty = ROOT
-			opinion = { modifier = opinion_loyal_servant who = ROOT }
+			if = {
+				limit  = { ROOT = { is_female = yes } }
+				set_mother = ROOT
+			}
+			else = {
+				set_father = ROOT
+			}
+			# opinion = { modifier = opinion_loyal_servant who = ROOT }
 		}
 	}
 	
@@ -279,16 +287,14 @@ character_event = {
 	only_playable = yes
 	
 	trigger = {
-		any_courtier = {
-			count = 50
-		}
+		has_full_court = yes
 	}
 	
 	immediate = {
 		log = "(IMPORTANT) Court of [Root.GetBestName] was purged"
 		any_courtier = {
 			limit = { is_unimportant_trigger = yes }
-			death = { death_reason = death_missing }
+			death = { death_reason = death_purged }
 		}
 	}
 }

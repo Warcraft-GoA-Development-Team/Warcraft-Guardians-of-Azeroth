@@ -2692,6 +2692,7 @@ character_event = {
 		# Warcraft
 		is_untouchable_trigger = no
 		can_rule_peacefully_trigger = yes
+		can_switch_religion_trigger = yes
 		
 		has_dlc = "Reapers"
 		higher_tier_than = BARON
@@ -2715,6 +2716,7 @@ character_event = {
 			# Warcraft
 			is_untouchable_trigger = no
 			can_rule_peacefully_trigger = yes
+			can_switch_religion_trigger = yes
 			
 			ai = yes
 			is_adult = yes
@@ -2764,6 +2766,7 @@ character_event = {
 				# Warcraft
 				is_untouchable_trigger = no
 				can_rule_peacefully_trigger = yes
+				can_switch_religion_trigger = yes
 				
 				ai = yes
 				is_adult = yes
@@ -4198,6 +4201,9 @@ character_event = { # Execution nicknames
 						}
 					}
 					15 = {
+						trigger = {
+							dark_public_religion_trigger = no
+						}
 						give_nickname = nick_son_of_evilgod
 						modifier = {
 							factor = 0
@@ -4249,9 +4255,18 @@ character_event = {
 
 	trigger = {
 		OR = {
-			any_lover = { is_alive = yes }
-			any_friend = { is_alive = yes }
-			any_rival = { is_alive = yes }
+			any_lover = {
+				is_alive = yes
+				NOT = { is_inaccessible_or_incapable_trigger = yes }
+			}
+			any_friend = {
+				is_alive = yes
+				NOT = { is_inaccessible_or_incapable_trigger = yes }
+			}
+			any_rival = {
+				is_alive = yes
+				NOT = { is_inaccessible_or_incapable_trigger = yes }
+			}
 		}
 		NOR = {
 			death_no_trace_trigger = yes
@@ -4265,25 +4280,34 @@ character_event = {
 		spouse = { save_event_target_as = rip_widow }
 
 		random_child = { 
-			limit = { is_adult = yes }
+			limit = {
+				is_adult = yes
+				NOT = { is_inaccessible_or_incapable_trigger = yes }
+			}
 			save_event_target_as = rip_child
 		}
 
 		#Lover event
 		random_lover = {
-			limit = { block_general_event_trigger = no NOT = { has_character_modifier = grief_timer } }
+			limit = {
+				NOT = { is_inaccessible_or_incapable_trigger = yes }
+				NOT = { has_character_modifier = grief_timer }
+			}
 			character_event = { id = RIP.29001 days = 20 } 
 		}
 
 		#Friend event
 		random_friend = {
-			limit = { block_general_event_trigger = no NOT = { has_character_modifier = grief_timer } }
+			limit = {
+				NOT = { is_inaccessible_or_incapable_trigger = yes }
+				NOT = { has_character_modifier = grief_timer }
+			}
 			save_event_target_as = rip_friend_1
 
 			ROOT = { 
 				random_friend = {
 					limit = { 
-						block_general_event_trigger = no 
+						NOT = { is_inaccessible_or_incapable_trigger = yes }
 						NOR = {
 							is_rival = event_target:rip_friend_1
 							character = event_target:rip_friend_1
@@ -4327,13 +4351,16 @@ character_event = {
 
 		#Rival event
 		random_rival = {
-			limit = { block_general_event_trigger = no NOT = { has_character_modifier = grief_timer } }
+			limit = {
+				NOT = { is_inaccessible_or_incapable_trigger = yes }
+				NOT = { has_character_modifier = grief_timer }
+			}
 			save_event_target_as = rip_enemy_1
 
 			liege = {
 				any_courtier = {
 					limit = { 
-						block_general_event_trigger = no 
+						NOT = { is_inaccessible_or_incapable_trigger = yes }
 						NOR = {
 							is_rival = event_target:rip_enemy_1
 							character = event_target:rip_enemy_1
@@ -4348,7 +4375,7 @@ character_event = {
 			ROOT = { 
 				random_rival = {
 					limit = { 
-						block_general_event_trigger = no 
+						NOT = { is_inaccessible_or_incapable_trigger = yes }
 						NOR = {
 							is_rival = event_target:rip_enemy_1
 							character = event_target:rip_enemy_1
@@ -4360,7 +4387,7 @@ character_event = {
 				}
 				random_child = {
 					limit = { 
-						block_general_event_trigger = no 
+						NOT = { is_inaccessible_or_incapable_trigger = yes }
 						NOR = {
 							is_rival = event_target:rip_enemy_1
 							character = event_target:rip_enemy_1
@@ -4372,7 +4399,7 @@ character_event = {
 				}
 				random_friend = {
 					limit = { 
-						block_general_event_trigger = no 
+						NOT = { is_inaccessible_or_incapable_trigger = yes }
 						NOR = {
 							is_rival = event_target:rip_enemy_1
 							character = event_target:rip_enemy_1
@@ -11048,7 +11075,10 @@ character_event = {
 							# martial = 5
 						# }
 					# }
-					# new_character = { save_event_target_as = death }
+					# new_character = {
+						# save_event_target_as = death
+						# set_character_flag = is_death
+					# }
 				# }
 				# 50 = {
 					# create_character = {
@@ -11068,7 +11098,10 @@ character_event = {
 							# martial = 5
 						# }
 					# }
-					# new_character = { save_event_target_as = death }
+					# new_character = {
+						# save_event_target_as = death
+						# set_character_flag = is_death
+					# }
 				# }
 			# }			
 		# }
@@ -12436,183 +12469,185 @@ character_event = {
 	#title = RIP.30301.title
 	
 	immediate = { 
-		if = {
-			limit = {
-				has_character_flag = immortal_rival_highlander
-			}
-			create_character = {
-				random_traits = no
-				name = "Ramirez"
-				dynasty = none
-				religion = catholic
-				culture = scottish
-				female = no
-				age = 1500
-				immortal_age = 40
-				attributes = {
-					martial = 12
-					diplomacy = 10
-					stewardship = 9
-					intrigue = 9
-					learning = 15
-				}
-				health = 6
-				fertility = 0.8
-				trait = skilled_tactician
-				trait = patient
-				trait = immortal
-				trait = just
-				trait = duelist
-				trait = cynical
-				historical = yes
-			}
-		}
-		if = {
-			limit = {
-				has_character_flag = immortal_rival_evildude
-			}
-			create_character = {
-				random_traits = no
-				name = "Uran"
-				dynasty = culture
-				religion = pagan
-				culture = random
-				female = no
-				age = 1800
-				immortal_age = 25
-				attributes = {
-					martial = 15
-					diplomacy = 5
-					stewardship = 4
-					intrigue = 6
-					learning = 8
-				}
-				health = 6
-				fertility = 0.8
-				trait = brilliant_strategist
-				trait = wroth
-				trait = immortal
-				trait = proud
-				trait = impaler
-				trait = cynical
-				trait = strong
-				trait = berserker
-				trait = envious
-				historical = yes
-			}
-			new_character = { add_scarred_high_effect = yes }
-		}
-		if = {
-			limit = {
-				has_character_flag = immortal_rival_goodguy
-			}
-			create_character = {
-				random_traits = no
-				name = "Arthur"
-				dynasty = none
-				religion = catholic
-				culture = breton
-				female = no
-				age = 950
-				immortal_age = 30
-				attributes = {
-					martial = 16
-					diplomacy = 12
-					stewardship = 15
-					intrigue = 8
-					learning = 14
-				}
-				health = 6
-				fertility = 0.8
-				trait = brilliant_strategist
-				trait = patient
-				trait = immortal
-				trait = just
-				trait = kind
-				trait = temperate
-				trait = chaste
-				trait = strategist
-				historical = yes
-			}
-		}
-		if = {
-			limit = {
-				has_character_flag = immortal_rival_shieldmaiden
-			}
-			create_character = {
-				random_traits = no
-				name = "Torhild"
-				dynasty = none
-				religion = norse_pagan
-				culture = norse
-				female = yes
-				age = 1300
-				immortal_age = 18
-				attributes = {
-					martial = 15
-					diplomacy = 8
-					stewardship = 8
-					intrigue = 10
-					learning = 12
-				}
-				health = 6
-				fertility = 0.8
-				trait = tough_soldier
-				trait = lustful
-				trait = immortal
-				trait = kind
-				trait = honest
-				trait = robust
-				trait = brave
-				trait = sea_queen
-				trait = hunter
-				historical = yes
-			}
-		}
-		if = {
-			limit = {
-				has_character_flag = immortal_rival_horse
-			}
-			create_character = {
-				random_traits = no
-				name = "Incitatus"
-				dynasty = none
-				religion = hellenic_pagan
-				culture = horse
-				female = no
-				age = 2200
-				immortal_age = 20
-				attributes = {
-					martial = 8
-					diplomacy = 18
-					stewardship = 12
-					intrigue = 18
-					learning = 16
-				}
-				health = 6
-				fertility = 0.8
-				trait = elusive_shadow
-				trait = genius
-				trait = fair
-				trait = patient
-				trait = immortal
-				trait = cruel
-				trait = wroth
-				trait = strong
-				trait = robust
-				trait = stubborn
-				trait = schemer
-				trait = cynical
-				trait = ares_own
-				trait = horse
-				historical = yes
-			}
-		}
-		new_character = {
-			add_rival = ROOT
-			diplomatic_immunity = yes
-			save_event_target_as = immortal_rival
-		}
+		# Warcraft
+		# if = {
+			# limit = {
+				# has_character_flag = immortal_rival_highlander
+			# }
+			# create_character = {
+				# random_traits = no
+				# name = "Ramirez"
+				# dynasty = none
+				# religion = catholic
+				# culture = scottish
+				# female = no
+				# age = 1500
+				# immortal_age = 40
+				# attributes = {
+					# martial = 12
+					# diplomacy = 10
+					# stewardship = 9
+					# intrigue = 9
+					# learning = 15
+				# }
+				# health = 6
+				# fertility = 0.8
+				# trait = skilled_tactician
+				# trait = patient
+				# trait = immortal
+				# trait = just
+				# trait = duelist
+				# trait = cynical
+				# historical = yes
+			# }
+		# }
+		# if = {
+			# limit = {
+				# has_character_flag = immortal_rival_evildude
+			# }
+			# create_character = {
+				# random_traits = no
+				# name = "Uran"
+				# dynasty = culture
+				# religion = pagan
+				# culture = random
+				# female = no
+				# age = 1800
+				# immortal_age = 25
+				# attributes = {
+					# martial = 15
+					# diplomacy = 5
+					# stewardship = 4
+					# intrigue = 6
+					# learning = 8
+				# }
+				# health = 6
+				# fertility = 0.8
+				# trait = brilliant_strategist
+				# trait = wroth
+				# trait = immortal
+				# trait = proud
+				# trait = impaler
+				# trait = cynical
+				# trait = strong
+				# trait = berserker
+				# trait = envious
+				# historical = yes
+			# }
+			# new_character = { add_scarred_high_effect = yes }
+		# }
+		# if = {
+			# limit = {
+				# has_character_flag = immortal_rival_goodguy
+			# }
+			# create_character = {
+				# random_traits = no
+				# name = "Arthur"
+				# dynasty = none
+				# religion = catholic
+				# culture = breton
+				# female = no
+				# age = 950
+				# immortal_age = 30
+				# attributes = {
+					# martial = 16
+					# diplomacy = 12
+					# stewardship = 15
+					# intrigue = 8
+					# learning = 14
+				# }
+				# health = 6
+				# fertility = 0.8
+				# trait = brilliant_strategist
+				# trait = patient
+				# trait = immortal
+				# trait = just
+				# trait = kind
+				# trait = temperate
+				# trait = chaste
+				# trait = strategist
+				# historical = yes
+			# }
+		# }
+		# if = {
+			# limit = {
+				# has_character_flag = immortal_rival_shieldmaiden
+			# }
+			# create_character = {
+				# random_traits = no
+				# name = "Torhild"
+				# dynasty = none
+				# religion = norse_pagan
+				# culture = norse
+				# female = yes
+				# age = 1300
+				# immortal_age = 18
+				# attributes = {
+					# martial = 15
+					# diplomacy = 8
+					# stewardship = 8
+					# intrigue = 10
+					# learning = 12
+				# }
+				# health = 6
+				# fertility = 0.8
+				# trait = tough_soldier
+				# trait = lustful
+				# trait = immortal
+				# trait = kind
+				# trait = honest
+				# trait = robust
+				# trait = brave
+				# trait = sea_queen
+				# trait = hunter
+				# historical = yes
+			# }
+		# }
+		# if = {
+			# limit = {
+				# has_character_flag = immortal_rival_horse
+			# }
+			# create_character = {
+				# random_traits = no
+				# name = "Incitatus"
+				# dynasty = none
+				# religion = hellenic_pagan
+				# culture = horse
+				# female = no
+				# age = 2200
+				# immortal_age = 20
+				# attributes = {
+					# martial = 8
+					# diplomacy = 18
+					# stewardship = 12
+					# intrigue = 18
+					# learning = 16
+				# }
+				# health = 6
+				# fertility = 0.8
+				# trait = elusive_shadow
+				# trait = genius
+				# trait = fair
+				# trait = patient
+				# trait = immortal
+				# trait = cruel
+				# trait = wroth
+				# trait = strong
+				# trait = robust
+				# trait = stubborn
+				# trait = schemer
+				# trait = cynical
+				# trait = ares_own
+				# trait = horse
+				# historical = yes
+			# }
+		# }
+		# new_character = {
+			# add_rival = ROOT
+			# diplomatic_immunity = yes
+			# save_event_target_as = immortal_rival
+		# }
+		
 		character_event = { id = RIP.30308 days = 1 } #clears flags in one spot, hidden event
 		hidden_effect = {
 			if = {

@@ -18,6 +18,7 @@ total_invasion = {
 	max_attacker_occupation_score = 60
 	capturing_attacker_is_complete_victory = no
 	capturing_defender_is_complete_victory = no
+	defender_unoccupied_warscore = yes
 	
 	sort_priority = 2500
 
@@ -26,24 +27,30 @@ total_invasion = {
 			show_scope_change = no
 			OR = {
 				AND = {
-					wealth = 250
-					prestige = 750
-					piety = 250
+					prestige = 2000
+					piety = 1000
 				}
 
 				# Exception
 				custom_tooltip = {
 					text = war_fires_by_event_tooltip
-					hidden_tooltip = { FROM = { has_character_flag = total_invasion_exception_flag } }
+					hidden_tooltip = { FROM = { has_character_flag = event_war_exception_flag } }
 				}
 			}
 			OR = {
-				NOT = { any_war = { using_cb = total_invasion } }
+				NOT = {
+					any_war = {
+						OR = {
+							using_cb = total_invasion
+							using_cb = stop_invader
+						}
+					}
+				}
 
 				# Exception
 				custom_tooltip = {
 					text = war_fires_by_event_tooltip
-					hidden_tooltip = { FROM = { has_character_flag = total_invasion_exception_flag } }
+					hidden_tooltip = { FROM = { has_character_flag = event_war_exception_flag } }
 				}
 			}
 		}
@@ -68,6 +75,10 @@ total_invasion = {
 		FROM = {
 			is_landed = yes
 			independent = yes
+			higher_tier_than = BARON
+			
+			# This CB can't be used against other Invaders, instead of it you have common_invasion
+			is_azeroth_invader_trigger = no
 		}
 
 		# Forbids AI to attack small realms
@@ -76,13 +87,7 @@ total_invasion = {
 			FROM = { num_of_count_titles_in_realm = 10 }
 
 			# Exceptions
-			FROM = { has_character_flag = total_invasion_exception_flag }
-			ROOT = {
-				OR = {
-					has_landed_title = e_burning_legion
-					has_landed_title = e_black_empire
-				}
-			}
+			FROM = { has_character_flag = event_war_exception_flag }
 		}
 
 		# Shares the border
@@ -92,7 +97,7 @@ total_invasion = {
 			# Exception
 			custom_tooltip = {
 				text = war_fires_by_event_tooltip
-				hidden_tooltip = { FROM = { has_character_flag = total_invasion_exception_flag } }
+				hidden_tooltip = { FROM = { has_character_flag = event_war_exception_flag } }
 			}
 			ROOT = {
 				OR = {
@@ -118,20 +123,21 @@ total_invasion = {
 	}
 
 	on_add = {
-		trigger_if = {
-			limit = { FROM = { NOT = { has_character_flag = total_invasion_exception_flag } } }
+		hidden_tooltip = { fire_haruspicy_event_effect = yes }
+		
+		if = {
+			limit = { FROM = { NOT = { has_character_flag = event_war_exception_flag } } }
 			ROOT = {
-				wealth = -250
-				prestige = -750
-				piety = -250
+				prestige = -2000
+				piety = -1000
 			}
 		}
 		
 		hidden_tooltip = {
 			FROM = {
 				if = {
-					limit = { has_character_flag = total_invasion_exception_flag }
-					clr_character_flag = total_invasion_exception_flag
+					limit = { has_character_flag = event_war_exception_flag }
+					clr_character_flag = event_war_exception_flag
 				}
 			}
 		}
@@ -139,9 +145,8 @@ total_invasion = {
 	
 	on_invalidation = {
 		ROOT = {
-			wealth = 250
-			prestige = 750
-			piety = 250
+			prestige = 2000
+			piety = 1000
 		}
 	}
 
@@ -218,7 +223,7 @@ total_invasion = {
 					any_realm_lord = {
 						any_demesne_title = {
 							limit = {
-								can_be_conquered_trigger = yes
+								title_can_be_lost_trigger = yes
 								lower_tier_than = DUKE
 							}
 							ROOT = { grant_title_no_opinion = { target = PREV type = invasion } }
@@ -226,7 +231,7 @@ total_invasion = {
 					}
 					any_demesne_title = {
 						limit = {
-							can_be_conquered_trigger = yes
+							title_can_be_lost_trigger = yes
 							lower_tier_than = DUKE
 						}
 						ROOT = { grant_title_no_opinion = { target = PREV type = invasion } }
@@ -318,6 +323,7 @@ stop_invader = {
 	max_attacker_occupation_score = 60
 	capturing_attacker_is_complete_victory = no
 	capturing_defender_is_complete_victory = no
+	defender_unoccupied_warscore = yes
 	
 	sort_priority = 2500
 
@@ -338,17 +344,21 @@ stop_invader = {
 			independent = yes
 			NOT = { same_realm = FROM }
 
-			can_use_total_invasion_cb_trigger = no
+			is_azeroth_invader_trigger = no
 		}
 		FROM = {
 			is_landed = yes
 			independent = yes
 			
-			OR = {
-				has_landed_title = e_scourge
-				can_use_total_invasion_cb_trigger = yes
+			is_azeroth_invader_trigger = yes
+			NOT = {
+				any_war = {
+					OR = {
+						using_cb = total_invasion
+						using_cb = stop_invader
+					}
+				}
 			}
-			NOT = { any_war = { using_cb = total_invasion } }
 		}
 
 		# Shares the border
@@ -369,6 +379,10 @@ stop_invader = {
 			independent = yes
 		}
 	}
+	
+	on_add = {
+		hidden_tooltip = { fire_haruspicy_event_effect = yes }
+	}
 
 	on_success = {
 		ROOT = {
@@ -385,6 +399,7 @@ stop_invader = {
 	on_reverse_demand = {
 		# Wealth, piety and prestige
 		ROOT = {
+			show_scope_change = no
 			prestige = -200
 			if = {
 				limit = { NOT = { religion = FROM } }
@@ -395,7 +410,8 @@ stop_invader = {
 			}
 		}
 		FROM = {
-			prestige = -200
+			show_scope_change = no
+			prestige = 200
 			if = {
 				limit = { NOT = { religion = ROOT } }
 				religion_authority = {
@@ -461,15 +477,15 @@ scourge_subjugation = {
 			show_scope_change = no
 			OR = {
 				AND = {
-					wealth = 250
-					prestige = 500
-					piety = 250
+					prestige = 1250
+					piety = 625
 				}
-				FROM = { any_realm_province = { has_disease = yes } }
-			}
-			OR = {
-				NOT = { any_war = { using_cb = scourge_subjugation } }
-				FROM = { any_realm_province = { has_disease = yes } }
+				
+				# Exception
+				custom_tooltip = {
+					text = war_fires_by_event_tooltip
+					hidden_tooltip = { FROM = { has_character_flag = event_war_exception_flag } }
+				}
 			}
 		}
 	}
@@ -490,17 +506,22 @@ scourge_subjugation = {
 			
 			has_landed_title = e_scourge
 			NOT = { same_realm = FROM }
-			NOT = { is_liege_or_above = FROM }
 		}
 		FROM = {
-			is_landed = yes
-			independent = yes
+			# Warcraft
+			character_can_lose_title_trigger = yes
 			
-			# can_be_undead_trigger = yes		# Can declare war only against those who can be turned into undead
-		}
+			is_landed = yes
+			# independent = yes
+			in_revolt = no
+			OR = {
+				is_tribal = yes
+				is_feudal = yes
+			}
+			higher_tier_than = BARON
 
-		# Doesn't fight in another subjugation war
-		FROM = {
+			NOT = { is_offmap_governor = yes }
+			# Doesn't fight in another subjugation war
 			NOT = {
 				any_war = {
 					defender = { character = PREVPREV }
@@ -511,12 +532,16 @@ scourge_subjugation = {
 					}
 				}
 			}
+			
+			# can_be_undead_trigger = yes		# Can declare war only against those who can be turned into undead
 		}
 
-		# Shares the border or HAS DISEASE
+		# Shares the border
 		OR = {
 			FROM = { shares_realm_border_with = ROOT }
-			FROM = { any_realm_province = { has_disease = yes } }
+			
+			# Exceptions
+			FROM = { has_character_flag = event_war_exception_flag }
 		}
 	}
 
@@ -529,32 +554,44 @@ scourge_subjugation = {
 
 		FROM = {
 			is_landed = yes
-			independent = yes
+			# independent = yes
 		}
 	}
 	
 	on_add = {
-		trigger_if = {
-			limit = { FROM = { any_realm_province = { has_disease = yes } } }
+		hidden_tooltip = { fire_haruspicy_event_effect = yes }
+		
+		if = {
+			limit = { FROM = { NOT = { has_character_flag = event_war_exception_flag } } }
 			ROOT = {
-				wealth = -250
-				prestige = -500
-				piety = -250
+				show_scope_change = no
+				prestige = -1250
+				piety = -625
+			}
+		}
+		
+		hidden_tooltip = {
+			FROM = {
+				if = {
+					limit = { has_character_flag = event_war_exception_flag }
+					clr_character_flag = event_war_exception_flag
+				}
 			}
 		}
 	}
 	
 	on_invalidation = {
 		ROOT = {
-			wealth = 250
-			prestige = 500
-			piety = 250
+			show_scope_change = no
+			prestige = 1250
+			piety = 625
 		}
 	}
 
 	on_success = {
 		# Wealth, piety and prestige
 		ROOT = {
+			show_scope_change = no
 			if = {
 				limit = { NOT = { religion = FROM } }
 				religion_authority = {
@@ -564,6 +601,7 @@ scourge_subjugation = {
 			}
 		}
 		FROM = {
+			show_scope_change = no
 			prestige = -200
 			if = {
 				limit = { NOT = { religion = ROOT } }
@@ -578,100 +616,83 @@ scourge_subjugation = {
 			hidden_tooltip = { participation_scaled_prestige = 200 }
 		}
 
-		FROM = {
-			custom_tooltip = {
-				text = scourge_subjugation_suc_tooltip
-				hidden_tooltip = {
-					any_vassal = {
-						limit = {
-							OR = {
-								religion = ROOT
-								true_religion = { target = ROOT target_type = public }
-								AND = {
-									OR = {
-										religion = orcish_fel
-										religion = burning_legion_religion
-										true_religion = orcish_fel
-										true_religion = burning_legion_religion
-									}
-									ROOT = {
+		ROOT = {
+			show_scope_change = no
+			FROM = {
+				show_scope_change = no
+				custom_tooltip = {
+					text = scourge_subjugation_suc_tooltip
+					hidden_tooltip = {
+						any_vassal = {
+							limit = {
+								OR = {
+									religion = ROOT
+									true_religion = { target = ROOT target_type = public }
+									AND = {
 										OR = {
 											religion = orcish_fel
 											religion = burning_legion_religion
+											true_religion = orcish_fel
+											true_religion = burning_legion_religion
+										}
+										ROOT = {
+											OR = {
+												religion = orcish_fel
+												religion = burning_legion_religion
+											}
 										}
 									}
 								}
 							}
+							convert_to_secret_religion = yes
+							set_defacto_liege = ROOT
 						}
-						convert_to_secret_religion = yes
-						set_defacto_liege = ROOT
-					}
-					any_realm_lord = {
-						limit = { ai = no }
-						set_defacto_liege = THIS	# Gives players a chance
-					}
-					ROOT = {
-						occupy_minors_of_occupied_settlements = FROM
-						gain_all_occupied_titles = { who = FROM type = invasion }
-					}
-					any_realm_lord = {
-						any_demesne_title = {
-							limit = {
-								can_be_conquered_trigger = yes
+						any_realm_lord = {
+							limit = { ai = no }
+							set_defacto_liege = THIS	# Gives players a chance
+						}
+						ROOT = {
+							occupy_minors_of_occupied_settlements = FROM
+							gain_all_occupied_titles = { who = FROM type = invasion }
+						}
+						any_realm_lord = {
+							any_demesne_title = {
+								limit = {
+									title_can_be_lost_trigger = yes
 
-								tier = COUNT
-								location = {
-									OR = {
-										religion = ROOT
-										has_province_modifier = undead_province
-										has_disease = yes
+									tier = COUNT
+									location = {
+										OR = {
+											religion = ROOT
+											has_province_modifier = undead_province
+										}
 									}
 								}
-							}
-							ROOT = {
-								gain_settlements_under_title = {
-									title = PREV
-									enemy = FROM
-									is_crusade = yes # Even if the title holder is not participating in the war, gain holdings occupied by all Crusade participants
-									type = invasion
+								ROOT = {
+									gain_settlements_under_title = {
+										title = PREV
+										enemy = FROM
+										is_crusade = yes # Even if the title holder is not participating in the war, gain holdings occupied by all Crusade participants
+										type = invasion
+									}
 								}
+								grant_title_no_opinion = { target = ROOT type = invasion }
 							}
-							grant_title_no_opinion = { target = ROOT type = invasion }
 						}
-					}
-					any_vassal = {
+						any_vassal = {
+							if = {
+								limit = { higher_tier_than = BARON }
+								set_defacto_liege = THIS
+							}
+						}
+						prev_subjugate_this_destroy_titles_effect = yes
 						if = {
-							limit = { higher_tier_than = BARON }
-							set_defacto_liege = THIS
-						}
-					}
-					any_demesne_title = {
-						limit = {
-							can_be_conquered_trigger = yes
-
-							OR = {
-								higher_tier_than = ROOT
-								tier = ROOT
-							}
-						}
-						grant_title_no_opinion = { target = ROOT type = invasion }
-						destroy_landed_title = THIS
-					}
-					if = {
-						limit = {
-							# NOT = { trait = undead }
-							can_be_undead_trigger = yes
-						}
-						e_scourge = { holder_scope = { save_event_target_as = target_necromancer } }
-						character_event = { id = WCPOD.5013 }			# Turns into undead
-						set_defacto_liege = ROOT
-					}
-					else = {
-						any_demesne_title = {
 							limit = {
-								can_be_conquered_trigger = yes
+								# NOT = { trait = being_undead }
+								can_be_undead_trigger = yes
 							}
-							grant_title_no_opinion = { target = ROOT type = invasion }
+							e_scourge = { holder_scope = { save_event_target_as = target_necromancer } }
+							character_event = { id = WCPOD.5013 }			# Turns into undead
 						}
 					}
 				}
@@ -682,10 +703,12 @@ scourge_subjugation = {
 	on_fail = {
 		# Wealth, piety and prestige
 		ROOT = {
+			show_scope_change = no
 			prestige = -100
 			piety = -100
 		}
 		FROM = {
+			show_scope_change = no
 			prestige = 100
 			piety = 100
 			participation_scaled_prestige = 100
@@ -699,6 +722,7 @@ scourge_subjugation = {
 	on_reverse_demand = {
 		# Wealth, piety and prestige
 		ROOT = {
+			show_scope_change = no
 			prestige = -200
 			piety = -200
 			transfer_scaled_wealth = {
@@ -714,6 +738,7 @@ scourge_subjugation = {
 			}
 		}
 		FROM = {
+			show_scope_change = no
 			prestige = 200
 			piety = 200
 			participation_scaled_prestige = 200
@@ -758,11 +783,8 @@ scourge_subjugation = {
 			FROM = { is_forbidden_war_target_for_ai_root_trigger = yes }
 		}
 		modifier = {
-			factor = 0
-			NOR = {
-				year = 610
-				FROM = { capital_scope = { region = world_northrend } }		# Forbids to declare war on realms outside of Northrend before 610 year
-			}
+			factor = 0.1
+			FROM = { capital_scope = { NOT = { region = world_northrend } } }		# Prefer to conquer Northrend first
 		}
 	}
 }
@@ -786,15 +808,17 @@ common_invasion = {
 
 	can_use_gui = {
 		ROOT = {
-			prestige = 500
-			piety = 250
+			prestige = 1000
+			piety = 500
 		}
 	}
 
 	on_add = {
+		hidden_tooltip = { fire_haruspicy_event_effect = yes }
+		
 		ROOT = {
-			prestige = -500
-			piety = -250
+			prestige = -1000
+			piety = -500
 		}
 	}
 
@@ -809,7 +833,12 @@ common_invasion = {
 
 		ROOT = {
 			can_rule_peacefully_trigger = no
-			can_use_total_invasion_cb_trigger = no
+			
+			# If you're Invader, you can use this CB only against other Invaders
+			trigger_if = {
+				limit = { is_azeroth_invader_trigger = yes }
+				FROM = { is_azeroth_invader_trigger = yes }
+			}
 		}
 	}
 
@@ -874,8 +903,8 @@ common_invasion = {
 
 	on_invalidation = {
 		ROOT = {
-			prestige = 500
-			piety = 250
+			prestige = 1000
+			piety = 500
 		}
 	}
 
@@ -1064,15 +1093,17 @@ purge_lands = {
 
 	can_use_gui = {
 		ROOT = {
-			prestige = 500
-			piety = 250
+			prestige = 750
+			piety = 375
 		}
 	}
 
 	on_add = {
+		hidden_tooltip = { fire_haruspicy_event_effect = yes }
+		
 		ROOT = {
-			prestige = -500
-			piety = -250
+			prestige = -750
+			piety = -375
 		}
 	}
 
@@ -1089,11 +1120,13 @@ purge_lands = {
 			can_rule_peacefully_trigger = yes 	# These have another CB
 		}
 		ROOT = {
-			FROM = {
-				OR = {
-					can_rule_peacefully_trigger = no
-					is_unholy_creature_to_prev_trigger = yes
+			OR = {
+				AND = {
+					evil_public_religion_trigger = no
+					
+					FROM = { can_rule_peacefully_trigger = no }
 				}
+				FROM = { is_unholy_creature_to_prev_trigger = yes }
 			}
 		}
 	}
@@ -1168,8 +1201,8 @@ purge_lands = {
 
 	on_invalidation = {
 		ROOT = {
-			prestige = 500
-			piety = 250
+			prestige = 750
+			piety = 375
 		}
 	}
 
@@ -1355,27 +1388,17 @@ change_religion_cb = {
 	sort_priority = 2000
 
 	can_use = {
-		ROOT = {
-			can_declare_wars_trigger = yes
-			FROM = {
-				can_declare_wars_trigger = yes
-				is_in_prev_faction = no
-			}
-		}
-
-		ROOT = {
-			controls_religion = yes
-			religion_group = elemental_lords_group
-		}
-		FROM = {
-			NOT = { religion_group = ROOT }
-		}
+		always = no	# Can only be initiated through special means
 	}
 
 	is_valid = {
 		FROM = {
 			NOT = { religion_group = ROOT }
 		}
+	}
+	
+	on_add = {
+		hidden_tooltip = { fire_haruspicy_event_effect = yes }
 	}
 
 	on_invalidation = {

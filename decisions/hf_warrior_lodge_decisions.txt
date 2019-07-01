@@ -262,6 +262,17 @@ targeted_decisions = {
 					}
 	        	}
 	        }
+	        trigger_if = {
+	        	limit = {
+					has_character_modifier = has_recently_declined_duel_cooldown
+	        	}
+	        	custom_tooltip = {
+	        		text = opinion_duel_decline_cooldown_tt
+		        	NOT = { 
+		        		has_character_modifier = has_recently_declined_duel_cooldown
+					}
+	        	}
+	        }
 	    }
 	    
 	    effect = {
@@ -490,6 +501,18 @@ targeted_decisions = {
 	        }
 	        
 	        is_within_diplo_range = FROM # CPU HEAVY!
+
+	        trigger_if = {
+	        	limit = {
+					has_character_modifier = has_recently_declined_duel_cooldown
+	        	}
+	        	custom_tooltip = {
+	        		text = opinion_duel_decline_cooldown_tt
+		        	NOT = { 
+		        		has_character_modifier = has_recently_declined_duel_cooldown
+					}
+	        	}
+	        }
 	    }
 	    
 	    effect = {
@@ -628,6 +651,13 @@ targeted_decisions = {
 	    	trigger_if = {
 	    		limit = { #can't be in a society already...
 	    			is_in_society = yes
+	    			NOR = { # but not a secret one...
+	    				is_secret_religious_society_member_trigger = yes
+		                is_devil_worshiper_trigger = yes
+						
+						# Warcraft
+		                # society_member_of = the_assassins
+	    			}
 	    		}
 		    	is_in_society = no
 	    	}
@@ -942,13 +972,17 @@ targeted_decisions = {
 		
 		potential = {
 			# Warcraft
+			always = no
 			is_untouchable_trigger = no
 			
 			character = FROM
 			has_dlc = "Holy Fury"
 			is_playable = yes
 			is_adult = yes
-			society_member_of = warrior_lodge_bon
+			
+			# Warcraft
+			# society_member_of = warrior_lodge_bon
+			
 			society_rank = 1
 			NOT = { has_character_flag = using_toughness } #to stop you spamming the button
 		}
@@ -1002,13 +1036,17 @@ targeted_decisions = {
 		
 		potential = {
 			# Warcraft
+			always = no
 			is_untouchable_trigger = no
 			
 			character = FROM
 			has_dlc = "Holy Fury"
 			is_playable = yes
 			is_adult = yes
-			society_member_of = warrior_lodge_norse
+			
+			# Warcraft
+			# society_member_of = warrior_lodge_norse
+			
 			society_rank = 1
 			NOT = { has_character_flag = going_berserk } #to stop you spamming the button
 		}
@@ -1029,36 +1067,37 @@ targeted_decisions = {
 		effect = {
 			if = {
 				limit = { NOT = { trait = berserker } }
-				tooltip = {
-					add_trait = berserker
+				custom_tooltip = {
+					text = gain_berserker_tt #Specifies what the trait gives: must be updated if trait is
+					#tooltip = { add_trait = berserker } #no longer needed
 				}
 			}
 			set_character_flag = special_berserker # Will last for at least 10 years
-    		
-    		if = {
-    			limit = {
-    				NOT = { trait = wroth }
-    				NOT = { trait = patient }
-    			}
-    			add_trait = wroth
-    		}
-			else_if = {
-				limit = { trait = patient }
-				remove_trait = patient
-			}
-			else_if = {
-				limit = { trait = defensive_leader }
-				remove_trait = defensive_leader
-			}
-			else_if = {
-				limit = {
-					NOT = { leader_traits = 1 }
-					NOT = { trait = aggressive_leader }
+			hidden_effect = {
+	    		if = {
+	    			limit = {
+	    				NOT = { trait = wroth }
+	    				NOT = { trait = patient }
+	    			}
+    				add_trait = wroth
+	    		}
+				if = {
+					limit = { trait = patient }
+					remove_trait = patient
 				}
-				add_trait = aggressive_leader
+				if = {
+					limit = { trait = defensive_leader }
+					remove_trait = defensive_leader
+				}
+				if = {
+					limit = {
+						NOT = { leader_traits = 1 }
+						NOT = { trait = aggressive_leader }
+					}
+					add_trait = aggressive_leader
+				}
 			}
-
-			hidden_tooltip = {
+			hidden_effect = {
 				if = {
 					limit = { prisoner = no }
 					character_event = { id = HF.10056 } #Fires event to handle outcome...
@@ -1175,7 +1214,15 @@ society_decisions = {
 			is_adult = yes
 			is_member_of_any_warrior_lodge_trigger = yes
 			society_rank == 4
-			society_has_active_progress = no
+			OR = {
+				society_has_active_progress = no
+				society = {
+					had_flag = {
+		                flag = used_legendary_gathering
+		                years = 100
+		            }
+	            }
+			}
 
 		}
 		allow = {
@@ -1183,15 +1230,52 @@ society_decisions = {
 			is_inaccessible_trigger = no
 			custom_tooltip = {
 				text = legendary_gathering_cd_tt
-				society = { NOT = { has_flag = used_legendary_gathering } }
+				society = {
+					OR = {
+						NOT = { has_flag = used_legendary_gathering }
+						had_flag = {
+		                    flag = used_legendary_gathering
+		                    years = 100
+		                }
+					}
+				}
 			}
 		}
 		effect = {
 			detract_society_currency_major_effect = yes
 			custom_tooltip = { text = legendary_gathering_tt }
-			start_society_progress = yes
 			sound_effect = pagan_warhorn
+
+			if = {
+				limit = {
+					society = {
+						had_flag = {
+			                flag = used_legendary_gathering
+			                years = 100
+			            }
+					}
+				}
+				clr_flag = used_legendary_gathering
+			}
+
 			society = { set_flag = used_legendary_gathering } #Needs to be checked (should stick 100 years)
+
+			hidden_effect = {
+				society = { clr_flag = block_society_progress }
+				if = {
+					limit = {
+						society_has_active_progress = yes
+						society = {
+							had_flag = {
+				                flag = used_legendary_gathering
+				                years = 100
+				            }
+			            }
+					}
+					set_society_progress = 0
+				}
+			}
+			start_society_progress = yes
 		}
 		revoke_allowed = {
 			always = no
@@ -1571,17 +1655,24 @@ society_decisions = {
 		is_high_prio = yes
 		potential = {
 			# Warcraft
+			always = no
 			is_untouchable_trigger = no
 			
 			has_dlc = "Holy Fury"
 			is_playable = yes
 			is_adult = yes
-			society_member_of = warrior_lodge_finnish
+			
+			# Warcraft
+			# society_member_of = warrior_lodge_finnish
+			
 			society_rank = 3
-			OR = { 
-				religion = finnish_pagan 
-				religion = finnish_pagan_reformed
-			}
+			
+			# Warcraft
+			# OR = { 
+				# religion = finnish_pagan 
+				# religion = finnish_pagan_reformed
+			# }
+			
 			OR = {
 				ai = no
 				any_war = {
@@ -1633,17 +1724,24 @@ society_decisions = {
 		is_high_prio = yes
 		potential = {
 			# Warcraft
+			always = no
 			is_untouchable_trigger = no
 			
 			has_dlc = "Holy Fury"
 			is_playable = yes
 			is_adult = yes
-			society_member_of = warrior_lodge_slavic
+			
+			# Warcraft
+			# society_member_of = warrior_lodge_slavic
+			
 			society_rank = 2
-			OR = { 
-				religion = slavic_pagan 
-				religion = slavic_pagan_reformed
-			}
+			
+			# Warcraft
+			# OR = { 
+				# religion = slavic_pagan 
+				# religion = slavic_pagan_reformed
+			# }
+			
 			OR = {
 				ai = no
 				any_war = {
@@ -1713,17 +1811,23 @@ society_decisions = {
 		is_high_prio = yes
 		potential = {
 			# Warcraft
+			always = no
 			is_untouchable_trigger = no
 			
 			has_dlc = "Holy Fury"
 			is_playable = yes
 			is_adult = yes
-			society_member_of = warrior_lodge_tengri
+			
+			# Warcraft
+			# society_member_of = warrior_lodge_tengri
+			
 			society_rank = 2
-			OR = { 
-				religion = tengri_pagan 
-				religion = tengri_pagan_reformed
-			}
+			
+			# Warcraft
+			# OR = { 
+				# religion = tengri_pagan 
+				# religion = tengri_pagan_reformed
+			# }
 		}
 		allow = {
 			#show_only_failed_conditions = yes
@@ -1924,17 +2028,23 @@ society_decisions = {
 		ai_check_interval = 12 #check only once every 12 months.
 		potential = {
 			# Warcraft
+			always = no
 			is_untouchable_trigger = no
 			
 			has_dlc = "Holy Fury"
 			is_playable = yes
 			is_adult = yes
-			society_member_of = warrior_lodge_zun
+			
+			# Warcraft
+			# society_member_of = warrior_lodge_zun
+			
 			society_rank >= 2
-			OR = { 
-				religion = zun_pagan 
-				religion = zun_pagan_reformed
-			}
+			
+			# Warcraft
+			# OR = { 
+				# religion = zun_pagan 
+				# religion = zun_pagan_reformed
+			# }
 		}
 		allow = {
 			has_society_currency_minor_trigger = yes
@@ -2015,16 +2125,23 @@ society_decisions = {
 		ai_check_interval = 150 #check only once every 150 months.
 		potential = {
 			# Warcraft
+			always = no
 			is_untouchable_trigger = no
 			
 			has_dlc = "Holy Fury"
 			is_adult = yes
-			society_member_of = warrior_lodge_west_african
+			
+			# Warcraft
+			# society_member_of = warrior_lodge_west_african
+			
 			society_rank = 4
-			OR = { 
-				religion = west_african_pagan 
-				religion = west_african_pagan_reformed
-			}
+			
+			# Warcraft
+			# OR = { 
+				# religion = west_african_pagan 
+				# religion = west_african_pagan_reformed
+			# }
+			
 			OR = {
 				ai = no
 				AND = {
@@ -2306,6 +2423,7 @@ settlement_decisions = {
 		
 		from_potential = {
 			# Warcraft
+			always = no
 			is_untouchable_trigger = no
 			
 			is_playable = yes
@@ -2313,12 +2431,17 @@ settlement_decisions = {
 			is_adult = yes
 			higher_tier_than = BARON
 			has_dlc = "Holy Fury"
-			society_member_of = warrior_lodge_baltic
+			
+			# Warcraft
+			# society_member_of = warrior_lodge_baltic
+			
 			society_rank >= 3
-			OR = { 
-				religion = baltic_pagan 
-				religion = baltic_pagan_reformed
-			}
+			
+			# Warcraft
+			# OR = { 
+				# religion = baltic_pagan 
+				# religion = baltic_pagan_reformed
+			# }
 		}
 		
 		potential = {

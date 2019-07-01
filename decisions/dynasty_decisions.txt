@@ -22,8 +22,6 @@ targetted_decisions = {
 		potential = {
 			# Warcraft
 			is_untouchable_trigger = no
-			can_rule_peacefully_trigger = yes
-			
 			is_adult = yes
 
 			OR = {
@@ -48,7 +46,17 @@ targetted_decisions = {
 			prisoner = no
 			custom_tooltip = {
 				text = is_not_busy_trigger_tooltip
-				hidden_tooltip = { NOR  = { has_character_flag = do_not_disturb is_inaccessible_trigger = yes } }
+				hidden_tooltip = {
+					# NOR  = { has_character_flag = do_not_disturb is_inaccessible_trigger = yes }
+					# Line above outcommented to account for Seclusion (below)
+					OR = {
+						in_seclusion = yes
+						NOR = {
+							has_character_flag = do_not_disturb
+							is_inaccessible_trigger = yes
+						}
+					}
+				}
 			}
 			custom_tooltip = {
 				NOT = { has_character_flag = attempting_suicide }
@@ -99,8 +107,6 @@ targetted_decisions = {
 		from_potential = {
 			# Warcraft
 			is_untouchable_trigger = no
-			can_rule_peacefully_trigger = yes
-			
 			ai = no
 			is_playable = yes
 			has_children = yes
@@ -110,8 +116,6 @@ targetted_decisions = {
 		potential = {
 			# Warcraft
 			is_untouchable_trigger = no
-			can_rule_peacefully_trigger = yes
-			
 			trait = bastard
 			is_child_of = FROM
 			is_liege_or_above = FROM
@@ -314,26 +318,46 @@ targetted_decisions = {
 			is_adult = yes
 			has_dlc = "Sons of Abraham"
 			OR = {
+				# Warcraft
 				AND = { 
-					religion_group = christian
+					religion = holy_light
 					is_alternate_start = no
 				}
 				AND = { 
-					religion = hindu
+					religion = scarlet_light
 					is_alternate_start = no
 				}
 				AND = { 
-					religion = buddhist
+					religion = tidemother
 					is_alternate_start = no
 				}
 				AND = { 
-					religion = jain
+					religion = forsaken_cult
 					is_alternate_start = no
 				}
-				AND = { 
-					religion = manichean
-					is_alternate_start = no
-				}
+				
+				# Warcraft
+				# AND = { 
+					# religion_group = christian
+					# is_alternate_start = no
+				# }
+				# AND = { 
+					# religion = hindu
+					# is_alternate_start = no
+				# }
+				# AND = { 
+					# religion = buddhist
+					# is_alternate_start = no
+				# }
+				# AND = { 
+					# religion = jain
+					# is_alternate_start = no
+				# }
+				# AND = { 
+					# religion = manichean
+					# is_alternate_start = no
+				# }
+				
 				has_religion_feature = religion_monastic
 				has_religion_feature = religion_feature_west_african
 			}
@@ -352,12 +376,14 @@ targetted_decisions = {
 				is_incapable = yes 
 				trait = monk
 				trait = nun
-				trait = muni
-				trait = aryika
-				trait = bhikkhu
-				trait = bhikkhuni
-				trait = sanyasi
-				trait = sanyasini
+				
+				# Warcraft
+				# trait = muni
+				# trait = aryika
+				# trait = bhikkhu
+				# trait = bhikkhuni
+				# trait = sanyasi
+				# trait = sanyasini
 			}
 			host = { character = FROM }
 		}
@@ -368,7 +394,6 @@ targetted_decisions = {
 					is_married = no
 					custom_tooltip = {
 						text = NOT_HEIR_TITLE_TT
-
 						NOT = {
                         	any_heir_title = { 
                             	always = yes
@@ -377,36 +402,61 @@ targetted_decisions = {
                     }
 				}
 				prisoner = yes
+				conditional_tooltip = {
+					trigger = { dynasty = FROM }
+					custom_tooltip = { #Matilde's Bloodline
+						text = BLOODLINE_EASIER_VOWS_TOOLTIP
+						AND = { 
+							FROM = { 
+								dynasty = ROOT
+								any_owned_bloodline = {
+									has_bloodline_flag = bloodline_easy_monks
+									bloodline_is_active_for = PREV
+								}
+							}
+							ROOT = { 
+								any_owned_bloodline = {
+									has_bloodline_flag = bloodline_easy_monks
+									bloodline_is_active_for = PREV
+								}
+							}
+						}
+					}
+				}
 			}
 			FROM = { piety = 50 }
 		}
+
 		effect = {
 			FROM = { piety = -50 }
 			add_ascetic_trait_effect = yes #Adds religion-based monk-traits.
-			if = { #For pagans and Altstart
-				limit = { 
-					NOR = { 
-						religion_group = christian 
-						religion = hindu
-						religion = buddhist
-						religion = jain
-					} 
-					is_female = no
-				}
-				add_trait = monk
-			}
-			if = {
-				limit = { 
-					NOR = { 
-						religion_group = christian 
-						religion = hindu
-						religion = buddhist
-						religion = jain
-					} 
-					is_female = yes
-				}
-				add_trait = nun
-			}
+			
+			# Warcraft
+			# if = { #For pagans and Altstart
+				# limit = {
+					# NOR = { 
+						# religion_group = christian 
+						# religion = hindu
+						# religion = buddhist
+						# religion = jain
+					# } 
+					# is_female = no
+				# }
+				# add_trait = monk
+			# }
+			# if = {
+				# limit = {
+					# NOR = { 
+						# religion_group = christian 
+						# religion = hindu
+						# religion = buddhist
+						# religion = jain
+					# } 
+					# is_female = yes
+				# }
+				# add_trait = nun
+			# }
+			
 			if = {
 				limit = { prisoner = yes }
 				prisoner = no
@@ -415,123 +465,127 @@ targetted_decisions = {
 				limit = { is_married = yes }
 				any_spouse = { remove_spouse = ROOT }
 			}
-			if = { #Make them actually become monks/nuns if you have Societies.
-				limit = { 
-					has_dlc = "Mystics"	
-					is_in_society = no		
-					OR = {
-						religion = catholic
-						AND = {
-							is_heretic = no
-							OR = {
-								religion = fraticelli
-								religion = waldensian
-								religion = lollard
-								religion = cathar
-							}
-						}
-					} 
-				}
-				custom_tooltip = { text = tooltip_vows_monk_joins_society }
-				hidden_tooltip = { 
-					random_list = { 
-						50 = { 
-							trigger = { religion = catholic } 
-							join_society = monastic_order_benedictine 
-						} 
-						50 = { join_society = monastic_order_dominican } 
-					}
-				}
-			}
-			if = {
-				limit = { 
-					has_dlc = "Mystics" 
-					is_in_society = no
-					OR = {
-						religion = orthodox
-						AND = {
-							is_heretic = no
-							OR = {
-								religion = bogomilist
-								religion = monothelite
-								religion = iconoclast
-								religion = paulician
-							}
-						}
-					}
-				}
-				custom_tooltip = { text = tooltip_vows_monk_joins_society }
-				hidden_tooltip = { 
-					join_society = monastic_order_orthodox
-				}
-			}
-			if = {
-				limit = { 
-					has_dlc = "Mystics" 
-					is_in_society = no
-					OR = {
-						religion = nestorian
-						AND = {
-							is_heretic = no
-							religion = messalian
-						}
-					}
-				}
-				custom_tooltip = { text = tooltip_vows_monk_joins_society }
-				hidden_tooltip = { 
-					join_society = monastic_order_nestorian
-				}
-			}
-			if = {
-				limit = { 
-					has_dlc = "Mystics" 
-					is_in_society = no
-					OR = {
-						religion = miaphysite
-						AND = {
-							is_heretic = no
-							religion = monophysite
-						}
-					}
-				}
-				custom_tooltip = { text = tooltip_vows_monk_joins_society }
-				hidden_tooltip = { 
-					join_society = monastic_order_monophysite
-				}
-			}
-			if = {
-				limit = { 
-					has_dlc = "Mystics" 
-					is_in_society = no
-					religion = hindu 
-				}
-				custom_tooltip = { text = tooltip_vows_monk_joins_society }
-				hidden_tooltip = { 
-					join_society = monastic_order_hindu
-				}
-			}
-			if = {
-				limit = { 
-					has_dlc = "Mystics" 
-					is_in_society = no
-					religion = buddhist 
-				}
-				custom_tooltip = { text = tooltip_vows_monk_joins_society }
-				hidden_tooltip = { 
-					join_society = monastic_order_buddhist
-				}
-			}
-			if = {
-				limit = { 
-					has_dlc = "Mystics" 
-					is_in_society = no
-					religion = jain
-				}
-				custom_tooltip = { text = tooltip_vows_monk_joins_society }
-				hidden_tooltip = { 
-					join_society = monastic_order_jain
-				}
-			}
+			
+			# Warcraft
+			# if = { #Make them actually become monks/nuns if you have Societies.
+				# limit = { 
+					# has_dlc = "Mystics"	
+					# is_in_society = no		
+					# OR = {
+						# religion = catholic
+						# AND = {
+							# is_heretic = no
+							# OR = {
+								# religion = fraticelli
+								# religion = waldensian
+								# religion = lollard
+								
+								# # Warcraft
+							# }
+						# }
+					# } 
+				# }
+				# custom_tooltip = { text = tooltip_vows_monk_joins_society }
+				# hidden_tooltip = { 
+					# random_list = { 
+						# 50 = { 
+							# trigger = { religion = catholic } 
+							# join_society = monastic_order_benedictine 
+						# } 
+						# 50 = { join_society = monastic_order_dominican } 
+					# }
+				# }
+			# }
+			# if = {
+				# limit = { 
+					# has_dlc = "Mystics" 
+					# is_in_society = no
+					# OR = {
+						# religion = orthodox
+						# AND = {
+							# is_heretic = no
+							# OR = {
+								# religion = bogomilist
+								# religion = monothelite
+								# religion = iconoclast
+								# religion = paulician
+							# }
+						# }
+					# }
+				# }
+				# custom_tooltip = { text = tooltip_vows_monk_joins_society }
+				# hidden_tooltip = { 
+					# join_society = monastic_order_orthodox
+				# }
+			# }
+			# if = {
+				# limit = { 
+					# has_dlc = "Mystics" 
+					# is_in_society = no
+					# OR = {
+						# religion = nestorian
+						# AND = {
+							# is_heretic = no
+							# religion = messalian
+						# }
+					# }
+				# }
+				# custom_tooltip = { text = tooltip_vows_monk_joins_society }
+				# hidden_tooltip = { 
+					# join_society = monastic_order_nestorian
+				# }
+			# }
+			# if = {
+				# limit = { 
+					# has_dlc = "Mystics" 
+					# is_in_society = no
+					# OR = {
+						# religion = miaphysite
+						# AND = {
+							# is_heretic = no
+							# religion = monophysite
+						# }
+					# }
+				# }
+				# custom_tooltip = { text = tooltip_vows_monk_joins_society }
+				# hidden_tooltip = { 
+					# join_society = monastic_order_monophysite
+				# }
+			# }
+			# if = {
+				# limit = { 
+					# has_dlc = "Mystics" 
+					# is_in_society = no
+					# religion = hindu 
+				# }
+				# custom_tooltip = { text = tooltip_vows_monk_joins_society }
+				# hidden_tooltip = { 
+					# join_society = monastic_order_hindu
+				# }
+			# }
+			# if = {
+				# limit = { 
+					# has_dlc = "Mystics" 
+					# is_in_society = no
+					# religion = buddhist 
+				# }
+				# custom_tooltip = { text = tooltip_vows_monk_joins_society }
+				# hidden_tooltip = { 
+					# join_society = monastic_order_buddhist
+				# }
+			# }
+			# if = {
+				# limit = { 
+					# has_dlc = "Mystics" 
+					# is_in_society = no
+					# religion = jain
+				# }
+				# custom_tooltip = { text = tooltip_vows_monk_joins_society }
+				# hidden_tooltip = { 
+					# join_society = monastic_order_jain
+				# }
+			# }
+			
 			if = {
 				limit = { 
 					any_realm_lord = { is_theocracy = yes religion = ROOT }
@@ -667,8 +721,6 @@ targetted_decisions = {
 		from_potential = {
 			# Warcraft
 			is_untouchable_trigger = no
-			can_rule_peacefully_trigger = yes
-			
 			is_ruler = yes
 			has_regent = no
 			has_children = yes
@@ -1014,8 +1066,6 @@ targetted_decisions = {
 		potential = {
 			# Warcraft
 			is_untouchable_trigger = no
-			can_rule_peacefully_trigger = yes
-			
 			prisoner = no
 			is_inaccessible_trigger = no
 			OR = {
@@ -1245,8 +1295,6 @@ targetted_decisions = {
 		from_potential = {
 			# Warcraft
 			is_untouchable_trigger = no
-			can_rule_peacefully_trigger = yes
-			
 			is_ruler = yes
 			has_regent = no
 			OR = {

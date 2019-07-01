@@ -8,14 +8,17 @@ feudal_governments = {
 		potential = {
 			is_secular_ruler_trigger = yes
 			has_invader_title_trigger = no
+			has_active_faction_title_trigger = no
 			is_patrician = no
 			
 			OR = {
 				can_be_feudal_trigger = yes
-				AND = {
-					OR = {
-						has_game_started = yes
-						is_save_game = yes
+				trigger_if = {
+					limit = {
+						OR = {
+							has_game_started = yes
+							is_save_game = yes
+						}
 					}
 					government = feudal_government
 				}
@@ -25,34 +28,26 @@ feudal_governments = {
 			# Feudals
 			# Converts characters to legion_government, scourge_government etc
 			# ONLY at the start of the game
-			OR = {
-				has_game_started = yes
-				is_save_game = yes
+			trigger_if = {
+				limit = {
+					has_game_started = no
+					is_save_game = no
+				}
 				NOR = {
 					is_government_potential = legion_government
 					is_government_potential = scourge_government
 					is_government_potential = black_pact_government
-					
-					AND = {
-						NOR = {
-							religion = ursine
-							religion_group = primitive_group
-							religion = primitive_shamanism
-							can_be_feudal_trigger = yes
-						}
-						is_government_potential = tribal_monarchy_government
-					}
 				}
 			}
 			NOT = { is_government_potential = order_government }
 			NOT = { is_government_potential = society_government }
-
-			# Republics
-			NOT = { is_government_potential = uncolonized_government }
 			
 			# Theocracies
 			NOT = { is_government_potential = dragon_government }
 		}
+		
+		# Modifiers
+		court_size_modifier = 10
 
 		# Holdings rules
 		preferred_holdings = { CASTLE }
@@ -67,9 +62,14 @@ feudal_governments = {
 		can_build_tribal = no
 
 		# Other governments and tiers
-		accepts_liege_governments = { # Gets the wrong religion modifier instead
-			muslim_government
-			military_dictatorship_government
+		accepts_liege_governments = { # Accepts feudals
+			# feudal_government
+			legion_government
+			scourge_government
+			black_pact_government
+			order_government
+			society_government
+			faction_government
 		}
 		free_revoke_on_governments_religion = {
 			tribal_government
@@ -99,18 +99,11 @@ feudal_governments = {
 				# has_landed_title = e_burning_legion
 				has_landed_title = e_black_empire
 			}
-			is_patrician = no
-
 			OR = {
-				trait = demon
-				top_liege = {
-					NOT = { character = ROOT }
-					government = legion_government
-				}
-				capital_scope = { religion = burning_legion_religion }
-				is_landed = no
+				is_patrician = no
 				has_landed_title = e_burning_legion
 			}
+
 			OR = {
 				religion = burning_legion_religion
 				has_landed_title = e_burning_legion
@@ -119,9 +112,6 @@ feudal_governments = {
 			# Feudals
 			NOT = { is_government_potential = order_government }
 			
-			# Republics
-			NOT = { is_government_potential = uncolonized_government }
-			
 			# Theocracies
 			NOT = { is_government_potential = dragon_government }
 		}
@@ -129,12 +119,13 @@ feudal_governments = {
 		# Modifiers
 		demesne_size = 5
 		vassal_limit = -10
+		court_size_modifier = 10
 		character_modifier = {
 			# global_levy_size = -0.5
 		}
 
 		# Holdings rules
-		preferred_holdings = { CASTLE TEMPLE CITY TRIBAL }
+		preferred_holdings = { CASTLE CITY TRIBAL }
 		allowed_holdings = {
 			CASTLE
 			TEMPLE
@@ -152,32 +143,26 @@ feudal_governments = {
 			COUNT
 			BARON
 		}
-		ignore_in_vassal_limit_calculation = {
-			# All government except this one
-			tribal_government
-			tribal_monarchy_government
+		ignore_in_vassal_limit_calculation = {	# Ignore all
+			feudal_government
+			# legion_government
+			scourge_government
+			black_pact_government
+			order_government
+			society_government
+			faction_government
 			
-			theocracy_government
-			weak_technocracy_government
-			magocracy_government
+			nomadic_government
 			
 			merchant_republic_government
 			republic_government
 			technocracy_government
+			magocracy_government
+			weak_technocracy_government
 			
-			feudal_government
+			theocracy_government
 			dragon_government
-			# legion_government
-			scourge_government
-			black_pact_government
-		}
-		vassal_call_to_arms = {
-			# legion_government
-			tribal_government
-			tribal_monarchy_government
-		}
-		no_vassal_tax = {
-			# legion_government
+			
 			tribal_government
 			tribal_monarchy_government
 		}
@@ -205,18 +190,11 @@ feudal_governments = {
 				has_landed_title = e_burning_legion
 				has_landed_title = e_black_empire
 			}
-			is_patrician = no
-
 			OR = {
-				trait = undead
-				top_liege = {
-					NOT = { character = ROOT }
-					government = scourge_government
-				}
-				capital_scope = { religion = death_god }
-				is_landed = no
+				is_patrician = no
 				has_landed_title = e_scourge
 			}
+
 			OR = {
 				religion = death_god
 				has_landed_title = e_scourge
@@ -225,9 +203,6 @@ feudal_governments = {
 			# Feudals
 			NOT = { is_government_potential = order_government }
 			
-			# Republics
-			NOT = { is_government_potential = uncolonized_government }
-			
 			# Theocracies
 			NOT = { is_government_potential = dragon_government }
 		}
@@ -235,6 +210,7 @@ feudal_governments = {
 		# Modifiers
 		demesne_size = 5
 		vassal_limit = -10
+		court_size_modifier = 10
 		character_modifier = {
 			# global_levy_size = -0.5
 		}
@@ -258,32 +234,26 @@ feudal_governments = {
 			COUNT
 			BARON
 		}
-		ignore_in_vassal_limit_calculation = {
-			# All government except this one
-			tribal_government
-			tribal_monarchy_government
+		ignore_in_vassal_limit_calculation = {	# Ignore all
+			feudal_government
+			legion_government
+			# scourge_government
+			black_pact_government
+			order_government
+			society_government
+			faction_government
 			
-			theocracy_government
-			weak_technocracy_government
-			magocracy_government
+			nomadic_government
 			
 			merchant_republic_government
 			republic_government
 			technocracy_government
+			magocracy_government
+			weak_technocracy_government
 			
-			feudal_government
+			theocracy_government
 			dragon_government
-			legion_government
-			# scourge_government
-			black_pact_government
-		}
-		vassal_call_to_arms = {
-			# scourge_government
-			tribal_government
-			tribal_monarchy_government
-		}
-		no_vassal_tax = {
-			# scourge_government
+			
 			tribal_government
 			tribal_monarchy_government
 		}
@@ -311,19 +281,11 @@ feudal_governments = {
 				has_landed_title = e_burning_legion
 				# has_landed_title = e_black_empire
 			}
-			is_patrician = no
-
 			OR = {
-				trait = creature_nraqi
-				trait = creature_cthraxxi
-				top_liege = {
-					NOT = { character = ROOT }
-					government = black_pact_government
-				}
-				capital_scope = { religion = old_gods_worship }
-				is_landed = no
+				is_patrician = no
 				has_landed_title = e_black_empire
 			}
+
 			OR = {
 				religion = old_gods_worship
 				has_landed_title = e_black_empire
@@ -332,9 +294,6 @@ feudal_governments = {
 			# Feudals
 			NOT = { is_government_potential = order_government }
 			
-			# Republics
-			NOT = { is_government_potential = uncolonized_government }
-			
 			# Theocracies
 			NOT = { is_government_potential = dragon_government }
 		}
@@ -342,10 +301,11 @@ feudal_governments = {
 		# Modifiers
 		demesne_size = 5
 		vassal_limit = -10
+		court_size_modifier = 10
 		character_modifier = {
 			# global_levy_size = -0.5
-			global_tax_modifier = -0.25
-			monthly_character_piety = 2
+			# global_tax_modifier = -0.25
+			# monthly_character_piety = 2
 		}
 
 		# Holdings rules
@@ -358,14 +318,14 @@ feudal_governments = {
 			FORT
 			HOSPITAL
 		}
-		builds_with_piety = {
-			CASTLE
-			TEMPLE
-			CITY
-			TRIBAL
-			FORT
-			HOSPITAL
-		}
+		# builds_with_piety = {
+			# CASTLE
+			# TEMPLE
+			# CITY
+			# TRIBAL
+			# FORT
+			# HOSPITAL
+		# }
 		can_build_tribal = no
 
 		# Other governments and tiers
@@ -375,32 +335,26 @@ feudal_governments = {
 			COUNT
 			BARON
 		}
-		ignore_in_vassal_limit_calculation = {
-			# All government except this one
-			tribal_government
-			tribal_monarchy_government
+		ignore_in_vassal_limit_calculation = {	# Ignore all
+			feudal_government
+			legion_government
+			scourge_government
+			# black_pact_government
+			order_government
+			society_government
+			faction_government
 			
-			theocracy_government
-			weak_technocracy_government
-			magocracy_government
+			nomadic_government
 			
 			merchant_republic_government
 			republic_government
 			technocracy_government
+			magocracy_government
+			weak_technocracy_government
 			
-			feudal_government
+			theocracy_government
 			dragon_government
-			legion_government
-			scourge_government
-			# black_pact_government
-		}
-		vassal_call_to_arms = {
-			# black_pact_government
-			tribal_government
-			tribal_monarchy_government
-		}
-		no_vassal_tax = {
-			# black_pact_government
+			
 			tribal_government
 			tribal_monarchy_government
 		}
@@ -424,19 +378,25 @@ feudal_governments = {
 		}
 		allowed_holdings = {
 			CASTLE
+			TEMPLE
 			TRIBAL
 			FORT
 			HOSPITAL
-			
-			# Warcraft
-			TEMPLE
 		}
-		accepts_liege_governments = {
+		allowed_holdings_culture = {
+			TRIBAL
+		}
+		accepts_liege_governments = {	# Accepts feudals and theocracies
 			feudal_government
-			muslim_government
+			legion_government
+			scourge_government
+			black_pact_government
+			# order_government
+			society_government
+			faction_government
+			
 			theocracy_government
-			theocratic_feudal_government
-			chinese_imperial_government
+			dragon_government
 		}
 		free_revoke_on_governments = {
 			order_government
@@ -486,14 +446,13 @@ feudal_governments = {
 					}
 				}
 			}
-			
-			# Republics
-			NOT = { is_government_potential = uncolonized_government }
 		}
 
 		color = { 169 169 169 }
 
-		have_gender_laws = no
+		# Warcraft
+		have_gender_laws = yes
+		
 		can_create_kingdoms = no
 		can_create_empires = no
 		can_imprison_without_reason = no
@@ -516,6 +475,28 @@ feudal_governments = {
 			FORT
 			HOSPITAL
 		}
+		allowed_holdings_culture = {
+			TRIBAL
+		}
+		accepts_liege_governments = {	# Accepts feudals and theocracies
+			feudal_government
+			legion_government
+			scourge_government
+			black_pact_government
+			order_government
+			# society_government
+			faction_government
+			
+			theocracy_government
+			dragon_government
+		}
+		free_revoke_on_governments = {
+			society_government
+		}
+		free_revoke_on_tiers = {
+			BARON
+		}
+
 		forced_contract = {
 			society_government
 		}
@@ -556,21 +537,79 @@ feudal_governments = {
 					}
 				}
 			}
-			
-			# Republics
-			NOT = { is_government_potential = uncolonized_government }
 		}
 
 		color = { 169 169 169 }
 
-		have_gender_laws = no
+		# Warcraft
+		have_gender_laws = yes
+		
 		can_create_kingdoms = no
 		can_create_empires = no
 		can_imprison_without_reason = no
 		can_revoke_without_reason = no
+		dukes_called_kings = yes
+		barons_need_dynasty = yes
 		can_usurp_kingdoms_and_empires = no
 		can_grant_kingdoms_and_empires_to_other_government = no
 		can_be_granted_kingdoms_and_empires_by_other_government = no
 		can_inherit = no
+		free_retract_vassalage = yes
+	}
+	
+	faction_government = {
+		color = { 255 204 153 }
+
+		dukes_called_kings = yes
+		barons_need_dynasty = yes
+		frame_suffix = "_faction"
+
+		potential = {
+			is_secular_ruler_trigger = yes
+			has_invader_title_trigger = no
+			is_patrician = no
+			has_active_faction_title_trigger = yes
+		}
+		
+		# Modifiers
+		court_size_modifier = 15
+		vassal_limit = 10
+		
+		# Holdings rules
+		preferred_holdings = { CASTLE }
+		allowed_holdings = {
+			CASTLE
+			FORT
+			HOSPITAL
+		}
+		allowed_holdings_culture = { # Will not get the wrong government type penalty for tribes of the same culture
+			TRIBAL
+		}
+		can_build_tribal = no
+
+		# Other governments and tiers
+		free_revoke_on_governments_religion = {
+			legion_government
+			scourge_government
+			black_pact_government
+		}
+		vassal_call_to_arms = {
+			tribal_government
+			tribal_monarchy_government
+		}
+		no_vassal_tax = {
+			tribal_government
+			tribal_monarchy_government
+		}
+		can_create_empires = no
+		can_demand_religious_conversion = no
+		can_grant_kingdoms_and_empires_to_other_government_group = yes
+		can_inherit = no
+		can_usurp_kingdoms_and_empires = no
+		gets_religion_opinion_penalties = no
+		gives_religion_opinion_penalties = no
+		vassal_government_opinion_penalties = no		
+		
+		capital_move_delay = 600
 	}
 }

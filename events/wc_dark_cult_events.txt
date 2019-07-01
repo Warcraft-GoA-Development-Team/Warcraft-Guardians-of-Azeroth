@@ -64,34 +64,32 @@ character_event = {
 character_event = {
 	id = WCDAC.150
 	desc = {
-		trigger = { FROM = { trait = undead } }
+		trigger = { has_character_flag = show_notification_undead_flag }
 		text = EVTDESC_WCPOD_5014
 		picture = GFX_evt_cemetery
 	}
 	desc = {
-		trigger = { FROM = { trait = demon } }
+		trigger = { has_character_flag = show_notification_demon_flag }
 		text = EVTDESC_WCDAC_150_demon
 		picture = GFX_evt_burning_legion
 	}
 	# desc = {
-		# trigger = { FROM = { has_character_flag = void_creature } }
+		# trigger = { has_character_flag = show_notification_void_flag }
 		# text = EVTDESC_WCDAC_150_void_creature
 		# picture = GFX_evt_nraqi
 	# }
 	desc = {
-		trigger = { FROM = { trait = worgen } }
+		trigger = { has_character_flag = show_notification_worgen_flag }
 		text = EVTDESC_WCDRU_5014
 		picture = GFX_evt_worgen
 	}
 	desc = {
 		trigger = {
-			FROM = {
-				NOR = {
-					trait = undead
-					trait = demon
-					has_character_flag = void_creature
-					trait = worgen
-				}
+			NOR = {
+				has_character_flag = show_notification_undead_flag
+				has_character_flag = show_notification_demon_flag
+				has_character_flag = show_notification_void_flag
+				has_character_flag = show_notification_worgen_flag
 			}
 		}
 		text = EVTDESC_WCDAC_150_evil
@@ -119,6 +117,7 @@ character_event = {
 				OR = {
 					is_dark_being_trigger = yes
 					trait = worgen
+					dark_true_religion_trigger = yes
 				}
 				FROM = {
 					OR = {
@@ -127,7 +126,7 @@ character_event = {
 					}
 				}
 			}
-			text = EVTOPTB_WCPOD_5014_undead
+			text = INTERESTING
 		}
 		# You're shocked
 		name = {
@@ -141,6 +140,7 @@ character_event = {
 						OR = {
 							is_dark_being_trigger = yes
 							trait = worgen
+							dark_true_religion_trigger = yes
 						}
 						FROM = {
 							OR = {
@@ -174,31 +174,36 @@ character_event = {
 			}
 			modifier = {
 				factor = 0
-				evil_public_religion_trigger = no
-				FROM = { evil_public_religion_trigger = yes }
+				NOT = { opinion = { who = FROM value = -25 } }
 			}
 		}
 	}
-	# IT... isn't my son/daughter/etc anymore!
 	option = {
-		trigger = {
-			OR = {
-				AND = {
-					is_dark_being_trigger = no
-					NOT = { trait = worgen }
-					FROM = {
-						OR = {
-							is_dark_being_trigger = yes
-							trait = worgen
-						}
-					}
+		trigger = { FROM = { is_unpleasant_creature_to_prev_trigger = yes } }
+		name = {
+			trigger = {
+				OR = {
+					is_married = FROM
+					is_friend = FROM
+					is_lover = FROM
+					is_close_relative = FROM
 				}
-				ROOT = { FROM = { is_unholy_creature_to_prev_trigger = yes } }
 			}
+			text = EVTOPTB_WCDAC_150_close	# IT... isn't my son/daughter/etc anymore!
 		}
-		name = EVTOPTB_WCDAC_150
+		name = {
+			trigger = {
+				NOR = {
+					is_married = FROM
+					is_friend = FROM
+					is_lover = FROM
+					is_close_relative = FROM
+				}
+			}
+			text = EVTOPTB_WCDAC_150_stranger	# IT... isn't my son/daughter/etc anymore!
+		}
 
-		reverse_opinion = { modifier = opinion_accused_apostate who = FROM years = 20 }
+		opinion = { modifier = opinion_accused_apostate who = FROM years = 20 }
 		if = {
 			limit = { is_married = FROM }
 			remove_spouse = FROM
@@ -235,6 +240,10 @@ character_event = {
 			factor = 90
 		}
 	}
+	
+	after = {
+		clear_flags_with_prefix = show_notification_
+	}
 }
 
 ##########################
@@ -261,7 +270,6 @@ character_event = {
 	}
 }
 
-
 # Notification from decision join_the_scourge
 letter_event = {
 	id = WCDAC.3940
@@ -283,9 +291,13 @@ narrative_event = {
 	picture = GFX_evt_secret_ceremony
 
 	is_triggered_only = yes
-	hide_from = yes
 
 	major = yes
+	major_trigger = {
+		ai = no
+	}
+	# show_root = yes
+	hide_from = yes
 
 	option = {
 		trigger = {
@@ -351,14 +363,7 @@ character_event = {
 		is_alive = yes
 		is_dying = no
 
-		higher_tier_than = KING
-		primary_title = { has_law = law_voting_power_1 }
-		shadow_council = {
-			any_society_member = {
-				is_society_grandmaster = yes
-				reverse_has_opinion_modifier = { who = ROOT modifier = opinion_loyal_servant }
-			}
-		}
+		can_have_shadow_council_member_trigger = yes
 		OR = {
 			NOT = { has_assigned_minor_title = title_shadow_council_member_1 }
 			NOT = { has_assigned_minor_title = title_shadow_council_member_2 }
@@ -510,7 +515,6 @@ character_event = {
 					limit = { has_dlc = "Mystics" }
 					join_society_shadow_council_effect = yes
 				}
-				character_event = { id = WCRAC.10 }
 				move_character = event_target:target_loyal_ruler
 				character_event = { id = WCDAC.4017 }
 			}
@@ -708,7 +712,10 @@ province_event = {
 		province_event = { id = WCDAC.5029 days = 1825 }
 		d_twilights_hammer = {
 			if = {
-				limit = { has_holder = yes }
+				limit = {
+					has_holder = yes
+					is_primary_holder_title = yes
+				}
 				holder_scope = { narrative_event = { id = WCDAC.5000 } }
 				break = yes
 			}
@@ -764,7 +771,10 @@ province_event = {
 		}
 		d_twilights_hammer = {
 			if = {
-				limit = { has_holder = yes }
+				limit = {
+					has_holder = yes
+					is_primary_holder_title = yes
+				}
 				holder_scope = { narrative_event = { id = WCDAC.5005 } }
 				break = yes
 			}
@@ -819,7 +829,10 @@ province_event = {
 		}
 		d_twilights_hammer = {
 			if = {
-				limit = { has_holder = yes }
+				limit = {
+					has_holder = yes
+					is_primary_holder_title = yes
+				}
 				holder_scope = { narrative_event = { id = WCDAC.5010 } }
 				break = yes
 			}
@@ -869,7 +882,10 @@ province_event = {
 		}
 		d_twilights_hammer = {
 			if = {
-				limit = { has_holder = yes }
+				limit = {
+					has_holder = yes
+					is_primary_holder_title = yes
+				}
 				holder_scope = { narrative_event = { id = WCDAC.5015 } }
 				break = yes
 			}
@@ -918,7 +934,11 @@ province_event = {
 			if = {
 				limit = {
 					has_holder = yes
-					holder_scope = { true_religion = old_gods_worship }
+					holder_scope = {
+						prisoner = no
+						
+						true_religion = old_gods_worship
+					}
 				}
 				holder_scope = { narrative_event = { id = WCDAC.5030 } }
 				break = yes
@@ -972,6 +992,10 @@ narrative_event = {
 	border = GFX_event_narrative_frame_intrigue
 
 	is_triggered_only = yes
+	
+	immediate = {
+		add_trait = travelling
+	}
 
 	# I will fulfill the will of the Gods!
 	option = {
@@ -990,7 +1014,13 @@ province_event = {
 	immediate = {
 		FROM = {
 			if = {
-				limit = { is_alive = yes }
+				limit = {
+					is_alive = yes
+					
+					prisoner = no
+					
+					true_religion = old_gods_worship
+				}
 				narrative_event = { id = WCDAC.5035 }
 				break = yes
 			}
@@ -999,7 +1029,11 @@ province_event = {
 			if = {
 				limit = {
 					has_holder = yes
-					holder_scope = { true_religion = old_gods_worship }
+					holder_scope = {
+						prisoner = no
+						
+						true_religion = old_gods_worship
+					}
 				}
 				holder_scope = { narrative_event = { id = WCDAC.5035 } }
 				break = yes
@@ -1035,7 +1069,13 @@ province_event = {
 	immediate = {
 		FROM = {
 			if = {
-				limit = { is_alive = yes }
+				limit = {
+					is_alive = yes
+					
+					prisoner = no
+					
+					true_religion = old_gods_worship
+				}
 				narrative_event = { id = WCDAC.5040 }
 				break = yes
 			}
@@ -1044,7 +1084,11 @@ province_event = {
 			if = {
 				limit = {
 					has_holder = yes
-					holder_scope = { true_religion = old_gods_worship }
+					holder_scope = {
+						prisoner = no
+						
+						true_religion = old_gods_worship
+					}
 				}
 				holder_scope = { narrative_event = { id = WCDAC.5040 } }
 				break = yes
@@ -1107,65 +1151,43 @@ narrative_event = {
 	is_triggered_only = yes
 
 	immediate = {
+		# Used in scripted effects
+		save_event_target_as = target_settler
+		
 		religion = old_gods_worship
 		clear_event_target = yes
-		k_silithus = {
+		
+		remove_trait = travelling
+		
+		c_hivezora = {
+			# event_target:target_settler and its people settle here
+			settle_as_target_settler_effect = yes
+		}
+		
+		# If you're not independent ruler, gives old titles to liege
+		give_old_titles_to_liege_effect = yes
+		
+		d_crystalvale = {
 			any_direct_de_jure_vassal_title = {
-				any_direct_de_jure_vassal_title = {
-					limit = { holder_scope = { government = uncolonized_government } }
-					grant_title_no_opinion = PREVPREVPREV
-					location = {
-						culture = ROOT
-						religion = ROOT
-					}
-				}
+				# event_target:target_settler and its people settle here
+				settle_as_target_settler_effect = yes
 			}
 		}
-		k_ahnqiraj = {
+		d_scarab_wall = {
 			any_direct_de_jure_vassal_title = {
-				any_direct_de_jure_vassal_title = {
-					limit = { holder_scope = { government = uncolonized_government } }
-					grant_title_no_opinion = PREVPREVPREV
-					location = {
-						culture = ROOT
-						religion = ROOT
-					}
-				}
+				# event_target:target_settler and its people settle here
+				settle_as_target_settler_effect = yes
 			}
 		}
-		if = {
-			limit = {
-				is_ruler = yes
-				independent = no
-			}
-			top_liege = {
-				ROOT = {
-					any_vassal = {
-						limit = {
-							capital_holding = {
-								NOT = { de_jure_liege_or_above = k_silithus }
-								NOT = { de_jure_liege_or_above = k_ahnqiraj }
-							}
-						}
-						set_defacto_liege = PREVPREV
-					}
-					any_demesne_title = {
-						limit = {
-							tier = COUNT
-
-							NOT = { de_jure_liege_or_above = k_silithus }
-							NOT = { de_jure_liege_or_above = k_ahnqiraj }
-						}
-						grant_title_no_opinion = PREVPREV
-						location = {
-							culture = PREVPREVPREV
-							religion = PREVPREVPREV
-						}
-					}
-				}
-			}
+		
+		c_hivezora = {
+			# Declares war against player
+			target_settler_declare_war_effect = yes
 		}
-		set_defacto_liege = THIS
+		
+		clear_settler_flag_effect = yes
+		
+		# Spawns army for start
 		capital_scope = {
 			ROOT = {
 				spawn_unit = {
@@ -1193,8 +1215,10 @@ narrative_event = {
 
 		leave_society = yes
 		join_society_twilights_hammer_cult_effect = yes
-		set_society_grandmaster = yes # Set character as Grand Master
-		add_society_currency_massive_effect = yes # Give the Grand Master a start-up capital to induct members
+		hidden_effect = {
+			set_society_grandmaster = yes # Set character as Grand Master
+			add_society_currency_massive_effect = yes # Give the Grand Master a start-up capital to induct members
+		}
 
 		add_35_void_corruption_effect = yes
 
@@ -1220,9 +1244,13 @@ narrative_event = {
 	picture = GFX_evt_shadow_acolytes
 
 	is_triggered_only = yes
-	hide_from = yes
 
 	major = yes
+	major_trigger = {
+		ai = no
+	}
+	# show_root = yes
+	hide_from = yes
 
 	option = {
 		trigger = {
@@ -2391,7 +2419,7 @@ society_quest_event = {
 }
 
 # on_county_religion_change
-# Gives modifier to province if province's converted to evil religion
+# Upgrades tribals, builds buildings when province is converted to evil religion
 province_event = {
 	id = WCDAC.9990
 
@@ -2399,18 +2427,14 @@ province_event = {
 	hide_window = yes
 
 	trigger = {
-		evil_public_religion_trigger = yes
+		OR = {
+			use_scourge_buildings_trigger = yes
+			use_legion_buildings_trigger = yes
+			use_shathyar_buildings_trigger = yes
+		}
 	}
 
 	immediate = {
-		if = {
-			limit = { NOT = { has_province_modifier = unholy_architecture } }
-			if = {
-				limit = { holder_scope = { ai = yes } }
-				add_province_modifier = { name = unholy_architecture years = 5 }
-			}
-			else = { add_province_modifier = { name = unholy_architecture years = 3 } }
-		}
 		if = {
 			limit = {
 				any_province_holding = {
@@ -2420,6 +2444,57 @@ province_event = {
 			random_province_holding = {
 				limit = { holding_type = tribal }
 				convert_tribal_to_castle_effect = yes
+			}
+		}
+		any_province_holding = {
+			limit = {
+				OR = {
+					holding_type = castle
+					holding_type = city
+					holding_type = temple
+				}
+			}
+			if = {
+				limit = { ROOT = { use_scourge_buildings_trigger = yes } }
+				if = {
+					limit = { holding_type = castle }
+					build_scourge_castle_buildings_effect = yes
+				}
+				else_if = {
+					limit = { holding_type = city }
+					build_scourge_city_buildings_effect = yes
+				}
+				else = {
+					build_scourge_temple_buildings_effect = yes
+				}
+			}
+			else_if = {
+				limit = { ROOT = { use_legion_buildings_trigger = yes } }
+				if = {
+					limit = { holding_type = castle }
+					build_legion_castle_buildings_effect = yes
+				}
+				else_if = {
+					limit = { holding_type = city }
+					build_legion_city_buildings_effect = yes
+				}
+				else = {
+					build_legion_temple_buildings_effect = yes
+				}
+			}
+			else_if = {
+				limit = { ROOT = { use_shathyar_buildings_trigger = yes } }
+				if = {
+					limit = { holding_type = castle }
+					build_shathyar_castle_buildings_effect = yes
+				}
+				else_if = {
+					limit = { holding_type = city }
+					build_shathyar_city_buildings_effect = yes
+				}
+				else = {
+					build_shathyar_temple_buildings_effect = yes
+				}
 			}
 		}
 	}

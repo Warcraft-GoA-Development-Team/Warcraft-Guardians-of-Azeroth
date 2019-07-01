@@ -506,21 +506,21 @@ defined_text = {
 			}
 		}
 	}
-	text = {
-		localisation_key = GetRelation_Acquaintance 
-		trigger = { 
-			NOR = { 
-				relationship_with_root_trigger = yes
-				family_of_root_trigger = yes
-				liege = { character = ROOT }
-				is_liege_of = ROOT
-				AND = {
-					dynasty = ROOT
-					NOT = { dynasty = none }
-				}
-			} 
-		}
-	}
+#	text = { # Outcommented, now that we have proper fallback text.
+#		localisation_key = GetRelation_Acquaintance 
+#		trigger = { 
+#			NOR = { 
+#				relationship_with_root_trigger = yes
+#				family_of_root_trigger = yes
+#				liege = { character = ROOT }
+#				is_liege_of = ROOT
+#				AND = {
+#					dynasty = ROOT
+#					NOT = { dynasty = none }
+#				}
+#			} 
+#		}
+#	}
 	text = {
 		localisation_key = GetRelation_fellow_member
 		trigger = { 
@@ -551,6 +551,59 @@ defined_text = {
 		trigger = { 
 			is_consort = ROOT
 			is_female = no
+		}
+	}
+	text = {
+		localisation_key = GetRelation_enemy
+		weight_multiplier = { factor = 100 }
+		trigger = {
+			any_war = {
+				OR = {
+					AND = {
+						any_defender = {
+							character = PREVPREV
+						}
+						any_attacker = {
+							character = ROOT
+						}
+					}
+					AND = {
+						any_defender = {
+							character = ROOT
+						}
+						any_attacker = {
+							character = PREVPREV
+						}
+					}
+				}
+			}
+		}
+	}
+	text = {
+		localisation_key = GetRelation_sway_target
+		weight_multiplier = { factor = 1 }
+		trigger = { 
+			ROOT = {
+				persistent_event_target:sway_target = {
+					character = PREVPREV
+				}
+			}
+		}
+	}
+	text = {
+		localisation_key = GetRelation_antagonist
+		weight_multiplier = { factor = 1 }
+		trigger = { 
+			OR = {
+				ROOT = {
+					persistent_event_target:antagonize_target = {
+						character = PREVPREV
+					}
+				}
+				persistent_event_target:antagonize_target = {
+					character = ROOT
+				}
+			}
 		}
 	}
 	fallback_text = {
@@ -1589,6 +1642,13 @@ defined_text = {
 
 defined_text = {
 	name = GetDisease
+	
+	# Warcraft
+	text = {
+		trigger = { trait = corrupted_blood }
+		localisation_key = String_corrupted_blood
+	}
+	
 	text = {
 		trigger = { trait = ill }
 		localisation_key = String_fever
@@ -1811,19 +1871,12 @@ defined_text = {
 		trigger = { society_member_of = shadow_council }
 	}
 	text = {
-		localisation_key = String_Old_One
+		localisation_key = String_Twilight
 		trigger = { society_member_of = twilights_hammer_cult }
 	}
-	
 	text = {
-		localisation_key = String_Satan
-		trigger = {
-			society_member_of = the_satanists
-			OR = {
-				religion_group = christian
-				religion_group = jewish_group
-			}
-		}
+		localisation_key = String_Death_God
+		trigger = { society_member_of = cult_of_the_damned }
 	}
 
 	text = {
@@ -6991,7 +7044,7 @@ defined_text = {
 			location = {
 				OR = {
 					region = world_europe
-					region = world_steppe
+					like_world_steppe_region_trigger = yes
 
 				}
 			}
@@ -7244,7 +7297,11 @@ defined_text = {
 	text = {
 		trigger = { has_character_flag = armor_set }
 		localisation_key = String_set_of_armor
-	}	
+	}
+	text = {
+		trigger = { has_character_flag = zweihanded_sword }
+		localisation_key = String_sword
+	}
 }
 
 defined_text = {
@@ -9696,6 +9753,9 @@ defined_text = {
 	}
 	text = {
 		localisation_key = String_cracking_knuckles
+		trigger = {
+			trait = wroth
+		}
 	}
 	text = {
 		localisation_key = String_optimistic_outlook_on_life
@@ -9721,6 +9781,134 @@ defined_text = {
 				trait = paranoid
 				is_evil_trigger = yes
 				has_unpleasant_personality_trigger = yes
+			}
+		}
+	}
+}
+
+defined_text = {
+	name = GetLoverEnjoyableQuirk #noun, singular
+	
+	text = {
+		localisation_key = String_way_with_words
+		trigger = {
+			OR = {
+				has_pleasant_trait_trigger = yes
+				diplomacy = 20
+			}
+		}
+	}
+	text = {
+		localisation_key = String_love_of_poetry
+		trigger = {
+			trait = poet
+		}
+	}
+	text = {
+		localisation_key = String_sharp_wit
+		trigger = {
+			is_smart_trigger = yes
+		}
+	}
+	text = {
+		localisation_key = String_boldness
+		trigger = {
+			OR = {
+				trait = brave
+				trait = brilliant_strategist
+				this_is_sea_raider_trigger = yes
+			}
+			NOT = { trait = craven }
+		}
+	}
+	text = {
+		localisation_key = String_love_of_life
+		trigger = {
+			NOT = { trait = depressed }
+			NOT = { trait = stressed }
+		}
+	}	
+	text = {
+		localisation_key = String_morbid_sense_of_humor
+		trigger = {
+			is_evil_trigger = yes
+		}
+	}
+	text = {
+		localisation_key = String_gentle_spirit
+		trigger = {
+			OR = {
+				is_benevolent_trigger = yes
+				is_dumb_trigger = yes	
+			}
+		}
+	}
+	text = {
+		localisation_key = String_honesty
+		trigger = {
+			trait = honest
+		}
+	}
+	text = {
+		localisation_key = String_mischieveous_sense_of_humor
+		trigger = {
+			OR = {
+				has_vice_trigger = yes	
+				has_impious_trait_trigger= yes
+			}
+			is_dumb_trigger = no
+		}
+	}
+	text = {
+		localisation_key = String_sense_of_humor
+	}	
+	text = {
+		localisation_key = String_infectious_smile
+		trigger = {
+			OR = {
+				has_lifestyle_diplomacy_trigger = yes
+				has_education_diplomacy_trigger = yes
+				has_attractive_trait_trigger = yes
+			}
+		}
+	}
+	text = {
+		localisation_key = String_seeing_the_best_in_people
+		trigger = {
+			trait = trusting
+		}
+	}
+	text = {
+		localisation_key = String_cracking_knuckles
+		trigger = {
+			trait = wroth
+		}
+	}
+	text = {
+		localisation_key = String_optimism
+		trigger = {
+			OR = {
+				has_pleasant_trait_trigger = yes
+				has_benevolent_trait_trigger = yes
+			}
+		}
+	}
+	text = {
+		localisation_key = String_innocence
+		trigger = {
+			has_pleasant_trait_trigger = yes
+			NOT = { age = 40 }
+		}
+	}	
+	text = {
+		localisation_key = String_jaded_view_on_romance
+		trigger = {
+			OR = {
+				trait = cynical
+				trait = paranoid
+				is_evil_trigger = yes
+				has_unpleasant_personality_trigger = yes
+				is_devil_worshiper_trigger = yes
 			}
 		}
 	}
@@ -11313,7 +11501,7 @@ defined_text = {
 				OR = {
 					region = world_europe_north
 					region = world_europe_east
-					region = world_steppe
+					like_world_steppe_region_trigger = yes
 					region = world_himalayas					
 				}
 			}
@@ -11367,7 +11555,7 @@ defined_text = {
 				OR = {
 					region = world_europe_north
 					region = world_europe_east
-					region = world_steppe
+					like_world_steppe_region_trigger = yes
 					region = world_himalayas					
 				}
 			}
@@ -11410,7 +11598,7 @@ defined_text = {
 				OR = {
 					region = world_europe_north
 					region = world_europe_east
-					region = world_steppe
+					like_world_steppe_region_trigger = yes
 					region = world_europe_south
 					region = world_europe_west
 					region = world_asia_minor
@@ -16123,6 +16311,48 @@ defined_text = { ### Needs a province scope - USE ONLY TOGETHER WITH GetTerrain!
 	}
 }
 defined_text = { ### Needs a province scope - USE ONLY TOGETHER WITH GetTerrain! ###
+	name = GetInOnCap
+	text = {
+		trigger = { terrain = forest }
+		localisation_key = string_In
+	}
+	text = {
+		trigger = { terrain = hills }
+		localisation_key = string_In
+	}
+	text = {
+		trigger = { terrain = mountain }
+		localisation_key = string_In
+	}
+	text = {
+		trigger = { terrain = plains }
+		localisation_key = string_On
+	}
+	text = {
+		trigger = { terrain = farmlands }
+		localisation_key = string_On
+	}
+	text = {
+		trigger = { terrain = steppe }
+		localisation_key = string_On
+	}
+	text = {
+		trigger = { terrain = desert }
+		localisation_key = string_In
+	}
+	text = {
+		trigger = { terrain = jungle }
+		localisation_key = string_In
+	}
+	text = {
+		trigger = { terrain = arctic }
+		localisation_key = string_In
+	}
+	fallback_text = {
+		localisation_key = string_In
+	}
+}
+defined_text = { ### Needs a province scope - USE ONLY TOGETHER WITH GetTerrain! ###
 	name = GetThroughOver
 	text = {
 		trigger = { terrain = forest }
@@ -17040,7 +17270,10 @@ defined_text = {
 
 	text = {
 		trigger = {
-			has_character_flag = sword_tier_2
+			OR = {
+				has_character_flag = sword_tier_2
+				has_character_flag = zweihanded_sword
+				}
 		}
 		localisation_key = string_greatsword
 	}
@@ -17647,6 +17880,58 @@ defined_text = {
 }
 
 defined_text = {
+	name = GetAlcoholCap
+
+	text = {
+		trigger = { is_tribal = yes }
+		localisation_key = String_Ale
+	}
+	text = {
+		trigger = { is_nomadic = yes }
+		localisation_key = String_Airag
+	}
+	text = {
+		trigger = { 
+			is_tribal = no
+			is_nomadic = no
+			NOR = {
+				culture_group = latin
+				culture_group = iberian
+				culture_group = byzantine
+				culture_group = south_slavic
+				culture_group = iranian
+				culture_group = arabic
+				culture_group = chinese_group
+				culture_group = dravidian_group
+				culture_group = indo_aryan_group
+			}
+		}
+		localisation_key = String_Beer
+	}
+	text = {
+		trigger = { 
+			is_tribal = no
+			is_nomadic = no
+			OR = {
+				culture_group = latin
+				culture_group = iberian
+				culture_group = byzantine
+				culture_group = south_slavic
+				culture_group = iranian
+				culture_group = arabic
+				culture_group = chinese_group
+				culture_group = dravidian_group
+				culture_group = indo_aryan_group
+			}
+		}
+		localisation_key = String_Wine
+	}
+	fallback_text = {
+		localisation_key = String_Beer
+	}
+}
+
+defined_text = {
 	name = GetRegionalSmallGameAnimal
 	
 	text = {
@@ -17669,7 +17954,7 @@ defined_text = {
 				OR = {
 					region = world_middle_east
 					region = world_africa
-					region = world_steppe
+					like_world_steppe_region_trigger = yes
 					region = world_asia_minor
 				}
 			}
@@ -19292,3 +19577,183 @@ defined_text = {
 		localisation_key = string_vanilla_augustus_desc
 	}
 }
+defined_text = {
+	name = GetPrincelyElectorsList
+	text = {
+		trigger = {
+			e_hre = {
+				persistent_event_target:hre_title_1_per = {
+					always = yes #If one of them exists then all of them do.
+				}
+			}
+		}
+		localisation_key = string_princely_elective_elector_list_desc
+	}
+
+	fallback_text = {
+		localisation_key = String_empty_space
+	}
+}
+
+
+defined_text = {
+	name = GetGirlWomanBoyMan
+
+	text = {
+		localisation_key = String_girl
+		trigger = {
+			is_female = yes
+			is_adult = no
+		}
+	}
+	text = {
+		localisation_key = String_woman
+		trigger = {
+			is_female = yes
+			is_adult = yes
+		}
+	}
+	text = {
+		localisation_key = String_boy
+		trigger = {
+			is_female = no
+			is_adult = no
+		}
+	}
+	text = {
+		localisation_key = String_man
+		trigger = {
+			is_female = no
+			is_adult = yes
+		}
+	}
+}
+
+
+defined_text = {
+	name = GetArtifactStorage
+
+	text = {
+		localisation_key = String_library
+		trigger = {
+			has_artifact_flag = book
+		}
+	}
+	text = {
+		localisation_key = String_armory
+		trigger = {
+			OR = {
+				has_artifact_flag = armor
+				has_artifact_flag = combat_weapon
+			}
+			NOT = { artifact_age = 30 }
+		}
+	}
+	text = {
+		localisation_key = String_old_armory
+		trigger = {
+			OR = {
+				has_artifact_flag = armor
+				has_artifact_flag = combat_weapon
+			}
+			artifact_age = 30
+		}
+	}
+	text = {
+		localisation_key = String_treasury
+		trigger = {
+			has_artifact_flag = jewelry
+		}
+	}
+	text = {
+		localisation_key = String_temple
+		trigger = {
+			has_artifact_flag = saint
+			ROOT = { religion_group = christian }
+		}
+	}
+	text = {
+		localisation_key = String_temple
+		trigger = {
+			has_artifact_flag = saint
+			has_artifact_flag = bodypart
+		}
+	}
+	text = {
+		localisation_key = String_treasury
+		trigger = {
+			has_artifact_flag = skull
+		}
+	}
+	
+	fallback_text = {
+		localisation_key = String_treasury
+	}
+}
+
+defined_text = {
+	name = GetScriptedDiseaseName
+
+	text = {
+		localisation_key = String_consumption
+		trigger = { trait = has_tuberculosis }
+	}
+	text = {
+		localisation_key = String_slow_fever
+		trigger = { trait = has_typhoid_fever }		
+	}
+	text = {
+		localisation_key = String_camp_fever
+		trigger = { trait = has_typhus }
+	}
+	text = {
+		localisation_key = String_the_Plague
+		trigger = { trait = has_bubonic_plague }
+	}
+	text = {
+		localisation_key = String_measles
+		trigger = { trait = has_measles }
+	}
+	text = {
+		localisation_key = String_smallpox
+		trigger = { trait = has_small_pox }
+	}
+	text = {
+		localisation_key = String_syphilis
+		trigger = { trait = syphilitic }
+	}
+	text = {
+		localisation_key = String_flu
+		trigger = { trait = flu }
+	}
+	text = {
+		localisation_key = String_dysentery
+		trigger = { trait = dysentery }		
+	}
+	text = {
+		localisation_key = String_gout
+		trigger = { trait = gout }
+	}
+	text = {
+		localisation_key = String_food_poisoning
+		trigger = { trait = food_poisoning }
+	}
+	text = {
+		localisation_key = String_rabies
+		trigger = { trait = rabies }
+	}
+	text = {
+		localisation_key = cancer
+		trigger = { trait = cancer }
+	}
+	text = {
+		localisation_key = string_pneumonia
+		trigger = { trait = pneumonic }
+	}
+	
+	fallback_text = {
+		localisation_key = String_disease
+	}
+}
+
+

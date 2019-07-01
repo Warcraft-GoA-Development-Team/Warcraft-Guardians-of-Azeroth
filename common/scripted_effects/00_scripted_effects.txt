@@ -337,9 +337,7 @@ add_trait_severely_injured_effect = {
 					# Warcraft
 					modifier = {
 						factor = 0
-
-						is_humanoid_trigger = yes
-						NOT = { trait = undead }
+						can_get_sick_trigger = no
 					}
 				}
 			}
@@ -370,6 +368,18 @@ add_trait_slothful_effect = {
 		}
 		add_trait = slothful
 		hidden_tooltip = { character_event = { id = 38251 } } #notify slothful
+	}
+}
+
+add_trait_stressed_effect = {
+	if = {
+		limit = {
+			NOR = {
+				trait = stressed
+			}
+		}
+		add_trait = stressed
+		hidden_tooltip = { character_event = { id = 38282 } } #notify stressed
 	}
 }
 
@@ -822,6 +832,7 @@ remove_trait_charitable_effect = {
 	if = {
 		limit = { trait = charitable }
 		remove_trait = charitable
+		hidden_tooltip = { character_event = { id = 38321 } }
 	}
 }
 
@@ -876,6 +887,14 @@ remove_trait_envious_effect = {
 	if = {
 		limit = { trait = envious }
 		remove_trait = envious
+	}
+}
+
+remove_trait_greedy_effect = {
+	if = {
+		limit = { trait = greedy }
+		remove_trait = greedy
+		hidden_tooltip = { character_event = { id = 38322 } }
 	}
 }
 
@@ -1494,10 +1513,6 @@ add_maimed_trait_effect = {
 	}
 	if = {
 		limit = {
-			# Warcraft
-			is_dark_being_trigger = no
-			is_humanoid_trigger = yes
-			
 			AND = {
 				has_dlc = "Reapers"
 				NOT = { trait = severely_injured }
@@ -1510,6 +1525,11 @@ add_maimed_trait_effect = {
 					character_event = { id = RIP.11000 days = 90 random = 275}
 				}
 				25 = { #Get rid of severely_injured but develop infection
+					# Warcraft
+					trigger = {
+						can_get_sick_trigger = yes
+					}
+					
 					set_character_flag = pending_infection
 					character_event = { id = RIP.11000 days = 90 random = 275}
 				}
@@ -2616,6 +2636,11 @@ remove_treatment_modifiers_effect = {
 }
 
 remove_disease_flags_effect = {
+	# Warcraft
+	clr_character_flag = got_plague_of_undeath
+	clr_character_flag = got_corrupted_blood
+	clr_character_flag = manifest_corrupted_blood
+	
 	clr_character_flag = developing_illness
 	clr_character_flag = got_syphilis
 	clr_character_flag = got_tuberculosis
@@ -2663,11 +2688,45 @@ leave_court_effect = {
 	}
 }
 
+courtiers_leaving_effect = {
+	hidden_effect = { #To get a banishment reason
+		reverse_opinion = {
+			modifier = opinion_leave
+			who = ROOT
+		}
+
+		banish = yes
+
+		reverse_remove_opinion = {
+			modifier = opinion_leave
+			who = ROOT
+		}
+	}
+	opinion = {
+		modifier = opinion_left_court
+		who = root
+	}
+}
+
 leave_court_and_die_effect = {
 	death = { death_reason = death_missing }
 }
 
 give_epidemic_disease_effect = {
+	# Warcraft
+	if = {
+		limit = {
+			can_get_sick_trigger = yes
+			
+			location = { disease = corrupted_blood_epidemic }
+			NOT = { has_character_flag = immune_corrupted_blood }
+		}
+		
+		get_corrupted_blood_effect = yes
+		
+		break = yes
+	}
+	
 	if = {
 		limit = {
 			# Warcraft
@@ -2812,6 +2871,12 @@ deaths_gift_removes_disease_effect = {
 }
 
 remove_disease_trait_effect = {
+	# Warcraft
+	if = {
+	 	limit = { trait = corrupted_blood }
+	 	remove_trait = corrupted_blood
+	}
+
 	if = {
 	 	limit = { trait = ill }
 	 	remove_trait = ill
@@ -2975,6 +3040,35 @@ leave_council_position_effect = {
 			hidden = yes
 		}
 	}
+	
+	# Warcraft
+	if = {
+		limit = { has_minor_title = title_shadow_council_member_1 }
+		remove_title = title_shadow_council_member_1
+		add_character_modifier = {
+			modifier = resigned_in_anger
+			years = 2
+			hidden = yes
+		}
+	}
+	if = {
+		limit = { has_minor_title = title_shadow_council_member_2 }
+		remove_title = title_shadow_council_member_2
+		add_character_modifier = {
+			modifier = resigned_in_anger
+			years = 2
+			hidden = yes
+		}
+	}
+	if = {
+		limit = { has_minor_title = title_shadow_council_member_3 }
+		remove_title = title_shadow_council_member_3
+		add_character_modifier = {
+			modifier = resigned_in_anger
+			years = 2
+			hidden = yes
+		}
+	}
 }
 
 increase_prosperity_effect = {
@@ -3069,19 +3163,19 @@ add_disease_level_effect = {
 				}
 				modifier = {
 					factor = 1.5
-					age = 50
+					is_50_age_trigger = yes
 				}
 				modifier = {
 					factor = 1.5
-					age = 60
+					is_60_age_trigger = yes
 				}
 				modifier = {
 					factor = 1.5
-					age = 70
+					is_70_age_trigger = yes
 				}
 				modifier = {
 					factor = 1.5
-					age = 80
+					is_80_age_trigger = yes
 				}
 				custom_tooltip = {
 					text = become_severe_ill
@@ -3113,19 +3207,19 @@ add_disease_level_effect = {
 				}
 				 modifier = {
 					factor = 2
-					age = 50
+					is_50_age_trigger = yes
 				}
 				modifier = {
 					factor = 2
-					age = 60
+					is_60_age_trigger = yes
 				}
 				modifier = {
 					factor = 2
-					age = 70
+					is_70_age_trigger = yes
 				}
 				modifier = {
 					factor = 2
-					age = 80
+					is_80_age_trigger = yes
 				}
 				custom_tooltip = {
 					text = become_bedridden_ill
@@ -3631,8 +3725,7 @@ venereal_disease_effect_event_target = {
 	# Warcraft
 	if = {
 		limit = {
-			is_humanoid_trigger = yes
-			is_dark_being_trigger = no
+			can_get_sick_trigger = yes
 		}
 		#Great pox and aztec disease for sex_partner
 		if = {
@@ -3720,7 +3813,7 @@ impregnate_effect_event_target = {
 		if = {
 			limit = {
 				is_female = yes
-				NOT = { age = 45 }
+				NOT = { is_50_age_trigger = yes }
 				is_pregnant = no
 				health = 3
 				event_target:sex_partner = { NOT = { trait = eunuch } }
@@ -3770,7 +3863,7 @@ impregnate_effect_event_target = {
 			limit = {
 				event_target:sex_partner = {
 					is_female = yes
-					NOT = { age = 45 }
+					NOT = { is_50_age_trigger = yes }
 					is_pregnant = no
 					health = 3
 					PREV = { NOT = { trait = eunuch } }
@@ -3869,8 +3962,7 @@ venereal_disease_effect = {
 	# Warcraft
 	if = {
 		limit = {
-			is_humanoid_trigger = yes
-			is_dark_being_trigger = no
+			can_get_sick_trigger = yes
 		}
 		#Great pox and aztec disease for FROM
 		if = {
@@ -3958,7 +4050,7 @@ impregnate_effect = {
 		if = {
 			limit = {
 				is_female = yes
-				NOT = { age = 45 }
+				NOT = { is_50_age_trigger = yes }
 				is_pregnant = no
 				health = 3
 				FROM = { NOT = { trait = eunuch } }
@@ -4012,7 +4104,7 @@ impregnate_effect = {
 			limit = {
 				FROM = {
 					is_female = yes
-					NOT = { age = 45 }
+					NOT = { is_50_age_trigger = yes }
 					is_pregnant = no
 					health = 3
 					ROOT = { NOT = { trait = eunuch } }
@@ -4239,6 +4331,16 @@ add_crusade_trait_effect = {
 	}
 	if = {
 		limit = {
+			OR = {
+				religion = bon
+				religion = bon_reformed
+			}
+		}
+		add_trait = kailash_guardian
+		break = yes
+	}
+	if = {
+		limit = {
 			religion_group = muslim
 		}
 		add_trait = mujahid
@@ -4449,86 +4551,106 @@ major_soul_corruption_effect = {
 				50 = { }
 			}
 		}
-		# Warcraft
-		if = {
-			limit = {
-				is_dark_being_trigger = no
-				is_humanoid_trigger = yes
+		random_list = { #Risk of getting weaker
+			10 = {
+				trigger = { NOT = { trait = stressed } }
+				character_event = { id = MNM.7051 days = 32 random = 5 }
 			}
-			random_list = { #Risk of getting weaker
-				10 = {
-					trigger = { NOT = { trait = stressed } }
-					character_event = { id = MNM.7051 days = 32 random = 5 }
+			5 = {
+				trigger = { NOT = { trait = lunatic } }
+				character_event = { id = MNM.7052 days = 32 random = 5 }
+			}
+			5 = {
+				trigger = {
+					# Warcraft
+					can_get_sick_trigger = yes
+					
+					NOR = { trait = stutter }
 				}
-				5 = {
-					trigger = { NOT = { trait = lunatic } }
-					character_event = { id = MNM.7052 days = 32 random = 5 }
+				character_event = { id = MNM.7053 days = 32 random = 5 }
+			}
+			5 = {
+				trigger = {
+					# Warcraft
+					can_get_sick_trigger = yes
+					
+					NOR = { trait = clubfooted }
 				}
-				5 = {
-					trigger = { NOR = { trait = stutter } }
-					character_event = { id = MNM.7053 days = 32 random = 5 }
+				character_event = { id = MNM.7054 days = 32 random = 5} 
+			}
+			5 = {
+				trigger = {
+					# Warcraft
+					can_get_sick_trigger = yes
+					
+					NOR = { trait = hunchback }
 				}
-				5 = {
-					trigger = { NOR = { trait = clubfooted } }
-					character_event = { id = MNM.7054 days = 32 random = 5} 
+				character_event = { id = MNM.7055 days = 32 random = 5 }
+			}
+			5 = {
+				trigger = {
+					# Warcraft
+					can_get_sick_trigger = yes
+					
+					NOR = { trait = ugly }
 				}
-				5 = {
-					trigger = { NOR = { trait = hunchback } }
-					character_event = { id = MNM.7055 days = 32 random = 5 }
+				character_event = { id = MNM.7056 days = 32 random = 5 }
+			}
+			5 = {
+				trigger = {
+					# Warcraft
+					can_get_sick_trigger = yes
+					
+					NOR = {
+						trait = feeble
+						trait = weak
+						trait = strong
+					}
 				}
-				5 = {
-					trigger = { NOR = { trait = ugly } }
-					character_event = { id = MNM.7056 days = 32 random = 5 }
+				character_event = { id = MNM.7059 days = 32 random = 5 }
+			}
+			40 = {
+				trigger = {
+					# Warcraft
+					can_get_sick_trigger = yes
 				}
-				5 = {
-					trigger = {
-						NOR = {
-				    		trait = feeble
-				    		trait = weak
-				    		trait = strong
-				    	}
-					}
-					character_event = { id = MNM.7059 days = 32 random = 5 }
+				#trigger = { 
+				#	NOR = { 
+				#		NOT = { health = 3 }
+				#		has_character_modifier = corrupting_magic_minor
+				#		has_character_modifier = corrupting_magic_major
+				#	}
+				#}
+				character_event = { id = MNM.7057 days = 32 random = 5 }
+			}
+			220 = { # High visibility (ability abuse) increases the risk of getting weaker
+				modifier = {
+					factor = 0.9
+					check_variable = { which = visibility_value value = 10 }
 				}
-				40 = {
-					#trigger = { 
-					#	NOR = { 
-					#		NOT = { health = 3 }
-					#		has_character_modifier = corrupting_magic_minor
-					#		has_character_modifier = corrupting_magic_major
-					#	}
-					#}
-					character_event = { id = MNM.7057 days = 32 random = 5 }
+				modifier = {
+					factor = 0.9
+					check_variable = { which = visibility_value value = 15 }
 				}
-				220 = { # High visibility (ability abuse) increases the risk of getting weaker
-					modifier = {
-						factor = 0.9
-						check_variable = { which = visibility_value value = 10 }
-					}
-					modifier = {
-						factor = 0.9
-						check_variable = { which = visibility_value value = 15 }
-					}
-					modifier = {
-						factor = 0.9
-						check_variable = { which = visibility_value value = 20 }
-					}
-					modifier = {
-						factor = 0.9
-						check_variable = { which = visibility_value value = 25 }
-					}
-					modifier = {
-						factor = 0.9
-						check_variable = { which = visibility_value value = 30 }
-					}
-					modifier = {
-						factor = 0.9
-						check_variable = { which = visibility_value value = 35 }
-					}
-					modifier = {
-						factor = 0.9
-						check_variable = { which = visibility_value value = 40 }
-					}
+				modifier = {
+					factor = 0.9
+					check_variable = { which = visibility_value value = 20 }
+				}
+				modifier = {
+					factor = 0.9
+					check_variable = { which = visibility_value value = 25 }
+				}
+				modifier = {
+					factor = 0.9
+					check_variable = { which = visibility_value value = 30 }
+				}
+				modifier = {
+					factor = 0.9
+					check_variable = { which = visibility_value value = 35 }
+				}
+				modifier = {
+					factor = 0.9
+					check_variable = { which = visibility_value value = 40 }
 				}
 			}
 		}
@@ -4644,86 +4766,106 @@ minor_soul_corruption_effect = {
 				# }
 				80 = { }
 			}
-			# Warcraft
-			if = {
-				limit = {
-					is_dark_being_trigger = no
-					is_humanoid_trigger = yes
+			random_list = { #Risk of getting weaker
+				15 = {
+					trigger = { NOT = { trait = stressed } }
+					character_event = { id = MNM.7051 days = 32 random = 5 }
 				}
-				random_list = { #Risk of getting weaker
-					15 = {
-						trigger = { NOT = { trait = stressed } }
-						character_event = { id = MNM.7051 days = 32 random = 5 }
+				5 = {
+					trigger = { NOT = { trait = lunatic } }
+					character_event = { id = MNM.7052 days = 32 random = 5 }
+				}
+				5 = {
+					trigger = {
+						# Warcraft
+						can_get_sick_trigger = yes
+						
+						NOR = { trait = stutter }
 					}
-					5 = {
-						trigger = { NOT = { trait = lunatic } }
-						character_event = { id = MNM.7052 days = 32 random = 5 }
+					character_event = { id = MNM.7053 days = 32 random = 5 }
+				}
+				5 = {
+					trigger = {
+						# Warcraft
+						can_get_sick_trigger = yes
+						
+						NOR = { trait = clubfooted }
 					}
-					5 = {
-						trigger = { NOR = { trait = stutter } }
-						character_event = { id = MNM.7053 days = 32 random = 5 }
+					character_event = { id = MNM.7054 days = 32 random = 5 }
+				}
+				5 = {
+					trigger = {
+						# Warcraft
+						can_get_sick_trigger = yes
+						
+						NOR = { trait = hunchback }
 					}
-					5 = {
-						trigger = { NOR = { trait = clubfooted } }
-						character_event = { id = MNM.7054 days = 32 random = 5 }
+					character_event = { id = MNM.7055 days = 32 random = 5 }
+				}
+				5 = {
+					trigger = {
+						# Warcraft
+						can_get_sick_trigger = yes
+						
+						NOR = { trait = ugly }
 					}
-					5 = {
-						trigger = { NOR = { trait = hunchback } }
-						character_event = { id = MNM.7055 days = 32 random = 5 }
+					character_event = { id = MNM.7056 days = 32 random = 5 }
+				}
+				5 = {
+					trigger = {
+						# Warcraft
+						can_get_sick_trigger = yes
+						
+						NOR = {
+							trait = feeble
+							trait = weak
+							trait = strong
+						}
 					}
-					5 = {
-						trigger = { NOR = { trait = ugly } }
-						character_event = { id = MNM.7056 days = 32 random = 5 }
+					character_event = { id = MNM.7059 days = 32 random = 5 }
+				}
+				50 = {
+					trigger = {
+						# Warcraft
+						can_get_sick_trigger = yes
 					}
-					5 = {
-						trigger = {
-							NOR = {
-								trait = feeble
-								trait = weak
-								trait = strong
-							}
-						}
-						character_event = { id = MNM.7059 days = 32 random = 5 }
+					#trigger = { 
+					#	NOR = { 
+					#		NOT = { health = 3 }
+					#		has_character_modifier = corrupting_magic_minor
+					#		has_character_modifier = corrupting_magic_major
+					#	}
+					#}
+					character_event = { id = MNM.7058 days = 32 random = 5 }
+				}
+				450 = {  # High visibility (ability abuse) increases the risk of getting weaker
+					modifier = {
+						factor = 0.9
+						check_variable = { which = visibility_value value = 10 }
 					}
-					50 = {
-						#trigger = { 
-						#	NOR = { 
-						#		NOT = { health = 3 }
-						#		has_character_modifier = corrupting_magic_minor
-						#		has_character_modifier = corrupting_magic_major
-						#	}
-						#}
-						character_event = { id = MNM.7058 days = 32 random = 5 }
+					modifier = {
+						factor = 0.9
+						check_variable = { which = visibility_value value = 15 }
 					}
-					450 = {  # High visibility (ability abuse) increases the risk of getting weaker
-						modifier = {
-							factor = 0.9
-							check_variable = { which = visibility_value value = 10 }
-						}
-						modifier = {
-							factor = 0.9
-							check_variable = { which = visibility_value value = 15 }
-						}
-						modifier = {
-							factor = 0.9
-							check_variable = { which = visibility_value value = 20 }
-						}
-						modifier = {
-							factor = 0.9
-							check_variable = { which = visibility_value value = 25 }
-						}
-						modifier = {
-							factor = 0.9
-							check_variable = { which = visibility_value value = 30 }
-						}
-						modifier = {
-							factor = 0.9
-							check_variable = { which = visibility_value value = 35 }
-						}
-						modifier = {
-							factor = 0.9
-							check_variable = { which = visibility_value value = 40 }
-						}
+					modifier = {
+						factor = 0.9
+						check_variable = { which = visibility_value value = 20 }
+					}
+					modifier = {
+						factor = 0.9
+						check_variable = { which = visibility_value value = 25 }
+					}
+					modifier = {
+						factor = 0.9
+						check_variable = { which = visibility_value value = 30 }
+					}
+					modifier = {
+						factor = 0.9
+						check_variable = { which = visibility_value value = 35 }
+					}
+					modifier = {
+						factor = 0.9
+						check_variable = { which = visibility_value value = 40 }
 					}
 				}
 			}
@@ -4864,6 +5006,15 @@ remove_random_maimed_effect = { #remember to clear flags if using this effect :D
 
 remove_random_disease_effect = { # Do actual trait removal in event. This is a clunky solution, but communication to player has been prioritised for the sake of event MNM.7119
 	random_list = {
+		# Warcraft
+		10 = {
+			modifier = {
+				NOT = { trait = corrupted_blood }
+				factor = 0
+			}
+			set_character_flag = removing_corrupted_blood
+		}
+		
 		40 = {
 			modifier = {
 				NOT = { trait = flu }
@@ -4941,6 +5092,15 @@ remove_random_disease_effect = { # Do actual trait removal in event. This is a c
 
 remove_random_epidemic_disease_effect = {
 	random_list = {
+		# Warcraft
+		10 = {
+			modifier = {
+				NOT = { trait = corrupted_blood }
+				factor = 0
+			}
+			set_character_flag = removing_corrupted_blood
+		}
+		
 		10 = {
 			modifier = {
 				NOT = { trait = has_tuberculosis}
@@ -5183,64 +5343,65 @@ remove_all_negative_congenital_traits_effect = {
 
 
 join_from_devil_worshiper_society_effect = {
-	FROM = {
-		if = {
-			limit = {
-				society_member_of = the_satanists
-			}
-			ROOT = {
-				join_society = the_satanists
-			}
-		}
-		if = {
-			limit = {
-				society_member_of = the_cold_ones
-			}
-			ROOT = {
-				join_society = the_cold_ones
-			}
-		}
-		if = {
-			limit = {
-				society_member_of = the_plaguebringers
-			}
-			ROOT = {
-				join_society = the_plaguebringers
-			}
-		}
-		if = {
-			limit = {
-				society_member_of = the_cult_of_kali
-			}
-			ROOT = {
-				join_society = the_cult_of_kali
-			}
-		}
-		if = {
-			limit = {
-				society_member_of = the_trollcrafters
-			}
-			ROOT = {
-				join_society = the_trollcrafters
-			}
-		}
-		if = {
-			limit = {
-				society_member_of = the_bacchants
-			}
-			ROOT = {
-				join_society = the_bacchants
-			}
-		}
-		if = {
-			limit = {
-				society_member_of = the_vodouns
-			}
-			ROOT = {
-				join_society = the_vodouns
-			}
-		}
-	}
+	# Warcraft
+	# FROM = {
+		# if = {
+			# limit = {
+				# society_member_of = the_satanists
+			# }
+			# ROOT = {
+				# join_society = the_satanists
+			# }
+		# }
+		# if = {
+			# limit = {
+				# society_member_of = the_cold_ones
+			# }
+			# ROOT = {
+				# join_society = the_cold_ones
+			# }
+		# }
+		# if = {
+			# limit = {
+				# society_member_of = the_plaguebringers
+			# }
+			# ROOT = {
+				# join_society = the_plaguebringers
+			# }
+		# }
+		# if = {
+			# limit = {
+				# society_member_of = the_cult_of_kali
+			# }
+			# ROOT = {
+				# join_society = the_cult_of_kali
+			# }
+		# }
+		# if = {
+			# limit = {
+				# society_member_of = the_trollcrafters
+			# }
+			# ROOT = {
+				# join_society = the_trollcrafters
+			# }
+		# }
+		# if = {
+			# limit = {
+				# society_member_of = the_bacchants
+			# }
+			# ROOT = {
+				# join_society = the_bacchants
+			# }
+		# }
+		# if = {
+			# limit = {
+				# society_member_of = the_vodouns
+			# }
+			# ROOT = {
+				# join_society = the_vodouns
+			# }
+		# }
+	# }
 }
 
 remove_demonic_blessing_effect = {
@@ -5316,200 +5477,203 @@ add_prolong_life_effect = {
 }
 
 join_prev_devil_worshiper_society_effect = {
-	if = {
-		limit = { PREV = { society_member_of = the_satanists } }
-		join_society = the_satanists
-	}
-	if = {
-		limit = { PREV = { society_member_of = the_cold_ones } }
-		join_society = the_cold_ones
-	}
-	if = {
-		limit = { PREV = { society_member_of = the_plaguebringers } }
-		join_society = the_plaguebringers
-	}
-	if = {
-		limit = { PREV = { society_member_of = the_cult_of_kali } }
-		join_society = the_cult_of_kali
-	}
-	if = {
-		limit = { PREV = { society_member_of = the_trollcrafters } }
-		join_society = the_trollcrafters
-	}
-	if = {
-		limit = { PREV = { society_member_of = the_bacchants } }
-		join_society = the_bacchants
-	}
-	if = {
-		limit = { PREV = { society_member_of = the_vodouns } }
-		join_society = the_vodouns
-	}
+	# Warcraft
+	# if = {
+		# limit = { PREV = { society_member_of = the_satanists } }
+		# join_society = the_satanists
+	# }
+	# if = {
+		# limit = { PREV = { society_member_of = the_cold_ones } }
+		# join_society = the_cold_ones
+	# }
+	# if = {
+		# limit = { PREV = { society_member_of = the_plaguebringers } }
+		# join_society = the_plaguebringers
+	# }
+	# if = {
+		# limit = { PREV = { society_member_of = the_cult_of_kali } }
+		# join_society = the_cult_of_kali
+	# }
+	# if = {
+		# limit = { PREV = { society_member_of = the_trollcrafters } }
+		# join_society = the_trollcrafters
+	# }
+	# if = {
+		# limit = { PREV = { society_member_of = the_bacchants } }
+		# join_society = the_bacchants
+	# }
+	# if = {
+		# limit = { PREV = { society_member_of = the_vodouns } }
+		# join_society = the_vodouns
+	# }
 }
 join_prev_warrior_lodge_society_effect = {
-	if = {
-		limit = { PREV = { society_member_of = warrior_lodge_norse } }
-		join_society = warrior_lodge_norse
-	}
-	if = {
-		limit = { PREV = { society_member_of = warrior_lodge_tengri } }
-		join_society = warrior_lodge_tengri
-	}
-	if = {
-		limit = { PREV = { society_member_of = warrior_lodge_baltic } }
-		join_society = warrior_lodge_baltic
-	}
-	if = {
-		limit = { PREV = { society_member_of = warrior_lodge_finnish } }
-		join_society = warrior_lodge_finnish
-	}
-	if = {
-		limit = { PREV = { society_member_of = warrior_lodge_slavic } }
-		join_society = warrior_lodge_slavic
-	}
-	if = {
-		limit = { PREV = { society_member_of = warrior_lodge_west_african } }
-		join_society = warrior_lodge_west_african
-	}
-	if = {
-		limit = { PREV = { society_member_of = warrior_lodge_zun } }
-		join_society = warrior_lodge_zun
-	}
-	if = {
-		limit = { PREV = { society_member_of = warrior_lodge_bon } }
-		join_society = warrior_lodge_bon
-	}
-	if = {
-		limit = { PREV = { society_member_of = warrior_lodge_hellenic } }
-		join_society = warrior_lodge_hellenic
-	}
+	# Warcraft
+	# if = {
+		# limit = { PREV = { society_member_of = warrior_lodge_norse } }
+		# join_society = warrior_lodge_norse
+	# }
+	# if = {
+		# limit = { PREV = { society_member_of = warrior_lodge_tengri } }
+		# join_society = warrior_lodge_tengri
+	# }
+	# if = {
+		# limit = { PREV = { society_member_of = warrior_lodge_baltic } }
+		# join_society = warrior_lodge_baltic
+	# }
+	# if = {
+		# limit = { PREV = { society_member_of = warrior_lodge_finnish } }
+		# join_society = warrior_lodge_finnish
+	# }
+	# if = {
+		# limit = { PREV = { society_member_of = warrior_lodge_slavic } }
+		# join_society = warrior_lodge_slavic
+	# }
+	# if = {
+		# limit = { PREV = { society_member_of = warrior_lodge_west_african } }
+		# join_society = warrior_lodge_west_african
+	# }
+	# if = {
+		# limit = { PREV = { society_member_of = warrior_lodge_zun } }
+		# join_society = warrior_lodge_zun
+	# }
+	# if = {
+		# limit = { PREV = { society_member_of = warrior_lodge_bon } }
+		# join_society = warrior_lodge_bon
+	# }
+	# if = {
+		# limit = { PREV = { society_member_of = warrior_lodge_hellenic } }
+		# join_society = warrior_lodge_hellenic
+	# }
 }
 give_this_warrior_lodge_religion_effect = { #Mostly for spawned characters.
-	if = {
-		limit = { 
-			society_member_of = warrior_lodge_norse 
-			NOT = { has_global_flag = norse_reformation }
-		}
-		religion = norse_pagan
-	}
-	if = {
-		limit = { 
-			society_member_of = warrior_lodge_norse 
-			has_global_flag = norse_reformation
-		}
-		religion = norse_pagan_reformed
-	}
-	if = {
-		limit = { 
-			society_member_of = warrior_lodge_tengri 
-			NOT = { has_global_flag = tengri_reformation }
-		}
-		religion = tengri_pagan
-	}
-	if = {
-		limit = { 
-			society_member_of = warrior_lodge_tengri 
-			has_global_flag = tengri_reformation
-		}
-		religion = tengri_pagan_reformed
-	}
-	if = {
-		limit = { 
-			society_member_of = warrior_lodge_baltic 
-			NOT = { has_global_flag = baltic_reformation }
-		}
-		religion = baltic_pagan
-	}
-	if = {
-		limit = { 
-			society_member_of = warrior_lodge_baltic 
-			has_global_flag = baltic_reformation
-		}
-		religion = baltic_pagan_reformed
-	}
-	if = {
-		limit = { 
-			society_member_of = warrior_lodge_finnish 
-			NOT = { has_global_flag = finnish_reformation }
-		}
-		religion = finnish_pagan
-	}
-	if = {
-		limit = { 
-			society_member_of = warrior_lodge_finnish 
-			has_global_flag = finnish_reformation
-		}
-		religion = finnish_pagan_reformed
-	}
-	if = {
-		limit = { 
-			society_member_of = warrior_lodge_slavic 
-			NOT = { has_global_flag = slavic_reformation }
-		}
-		religion = slavic_pagan
-	}
-	if = {
-		limit = { 
-			society_member_of = warrior_lodge_slavic 
-			has_global_flag = slavic_reformation
-		}
-		religion = slavic_pagan_reformed
-	}
-	if = {
-		limit = { 
-			society_member_of = warrior_lodge_west_african 
-			NOT = { has_global_flag = west_african_reformation }
-		}
-		religion = west_african_pagan
-	}
-	if = {
-		limit = { 
-			society_member_of = warrior_lodge_west_african 
-			has_global_flag = west_african_reformation
-		}
-		religion = west_african_pagan_reformed
-	}
-	if = {
-		limit = { 
-			society_member_of = warrior_lodge_zun 
-			NOT = { has_global_flag = zun_reformation }
-		}
-		religion = zun_pagan
-	}
-	if = {
-		limit = { 
-			society_member_of = warrior_lodge_zun 
-			has_global_flag = zun_reformation
-		}
-		religion = zun_pagan_reformed
-	}
-	if = {
-		limit = { 
-			society_member_of = warrior_lodge_bon 
-			NOT = { has_global_flag = bon_reformation }
-		}
-		religion = bon
-	}
-	if = {
-		limit = { 
-			society_member_of = warrior_lodge_bon 
-			has_global_flag = bon_reformation
-		}
-		religion = bon_reformed
-	}
-	if = {
-		limit = { 
-			society_member_of = warrior_lodge_hellenic 
-			NOT = { has_global_flag = hellenic_reformation }
-		}
-		religion = hellenic_pagan
-	}
-	if = {
-		limit = { 
-			society_member_of = warrior_lodge_hellenic 
-			has_global_flag = hellenic_reformation
-		}
-		religion = hellenic_pagan_reformed
-	}
+	# Warcraft
+	# if = {
+		# limit = { 
+			# society_member_of = warrior_lodge_norse 
+			# NOT = { has_global_flag = norse_reformation }
+		# }
+		# religion = norse_pagan
+	# }
+	# if = {
+		# limit = { 
+			# society_member_of = warrior_lodge_norse 
+			# has_global_flag = norse_reformation
+		# }
+		# religion = norse_pagan_reformed
+	# }
+	# if = {
+		# limit = { 
+			# society_member_of = warrior_lodge_tengri 
+			# NOT = { has_global_flag = tengri_reformation }
+		# }
+		# religion = tengri_pagan
+	# }
+	# if = {
+		# limit = { 
+			# society_member_of = warrior_lodge_tengri 
+			# has_global_flag = tengri_reformation
+		# }
+		# religion = tengri_pagan_reformed
+	# }
+	# if = {
+		# limit = { 
+			# society_member_of = warrior_lodge_baltic 
+			# NOT = { has_global_flag = baltic_reformation }
+		# }
+		# religion = baltic_pagan
+	# }
+	# if = {
+		# limit = { 
+			# society_member_of = warrior_lodge_baltic 
+			# has_global_flag = baltic_reformation
+		# }
+		# religion = baltic_pagan_reformed
+	# }
+	# if = {
+		# limit = { 
+			# society_member_of = warrior_lodge_finnish 
+			# NOT = { has_global_flag = finnish_reformation }
+		# }
+		# religion = finnish_pagan
+	# }
+	# if = {
+		# limit = { 
+			# society_member_of = warrior_lodge_finnish 
+			# has_global_flag = finnish_reformation
+		# }
+		# religion = finnish_pagan_reformed
+	# }
+	# if = {
+		# limit = { 
+			# society_member_of = warrior_lodge_slavic 
+			# NOT = { has_global_flag = slavic_reformation }
+		# }
+		# religion = slavic_pagan
+	# }
+	# if = {
+		# limit = { 
+			# society_member_of = warrior_lodge_slavic 
+			# has_global_flag = slavic_reformation
+		# }
+		# religion = slavic_pagan_reformed
+	# }
+	# if = {
+		# limit = { 
+			# society_member_of = warrior_lodge_west_african 
+			# NOT = { has_global_flag = west_african_reformation }
+		# }
+		# religion = west_african_pagan
+	# }
+	# if = {
+		# limit = { 
+			# society_member_of = warrior_lodge_west_african 
+			# has_global_flag = west_african_reformation
+		# }
+		# religion = west_african_pagan_reformed
+	# }
+	# if = {
+		# limit = { 
+			# society_member_of = warrior_lodge_zun 
+			# NOT = { has_global_flag = zun_reformation }
+		# }
+		# religion = zun_pagan
+	# }
+	# if = {
+		# limit = { 
+			# society_member_of = warrior_lodge_zun 
+			# has_global_flag = zun_reformation
+		# }
+		# religion = zun_pagan_reformed
+	# }
+	# if = {
+		# limit = { 
+			# society_member_of = warrior_lodge_bon 
+			# NOT = { has_global_flag = bon_reformation }
+		# }
+		# religion = bon
+	# }
+	# if = {
+		# limit = { 
+			# society_member_of = warrior_lodge_bon 
+			# has_global_flag = bon_reformation
+		# }
+		# religion = bon_reformed
+	# }
+	# if = {
+		# limit = { 
+			# society_member_of = warrior_lodge_hellenic 
+			# NOT = { has_global_flag = hellenic_reformation }
+		# }
+		# religion = hellenic_pagan
+	# }
+	# if = {
+		# limit = { 
+			# society_member_of = warrior_lodge_hellenic 
+			# has_global_flag = hellenic_reformation
+		# }
+		# religion = hellenic_pagan_reformed
+	# }
 }
 
 remove_education_effect = {
@@ -5624,42 +5788,43 @@ monastic_order_purity_effect = {
 }
 
 join_prev_monastic_order_society = {
-	if = {
-		limit = { PREV = { society_member_of = monastic_order_orthodox } }
-		join_society = monastic_order_orthodox
-	}
-	if = {
-		limit = { PREV = { society_member_of = monastic_order_benedictine } }
-		join_society = monastic_order_benedictine
-	}
-	if = {
-		limit = { PREV = { society_member_of = monastic_order_dominican } }
-		join_society = monastic_order_dominican
-	}
-	if = {
-		limit = { PREV = { society_member_of = monastic_order_nestorian } }
-		join_society = monastic_order_nestorian
-	}
-	if = {
-		limit = { PREV = { society_member_of = monastic_order_monophysite } }
-		join_society = monastic_order_monophysite
-	}
-	if = {
-		limit = { PREV = { society_member_of = monastic_order_hindu } }
-		join_society = monastic_order_hindu
-	}
-	if = {
-		limit = { PREV = { society_member_of = monastic_order_buddhist } }
-		join_society = monastic_order_buddhist
-	}
-	if = {
-		limit = { PREV = { society_member_of = monastic_order_jain } }
-		join_society = monastic_order_jain
-	}
-	if = {
-		limit = { PREV = { society_member_of = monastic_order_stoics } }
-		join_society = monastic_order_stoics
-	}
+	# Warcraft
+	# if = {
+		# limit = { PREV = { society_member_of = monastic_order_orthodox } }
+		# join_society = monastic_order_orthodox
+	# }
+	# if = {
+		# limit = { PREV = { society_member_of = monastic_order_benedictine } }
+		# join_society = monastic_order_benedictine
+	# }
+	# if = {
+		# limit = { PREV = { society_member_of = monastic_order_dominican } }
+		# join_society = monastic_order_dominican
+	# }
+	# if = {
+		# limit = { PREV = { society_member_of = monastic_order_nestorian } }
+		# join_society = monastic_order_nestorian
+	# }
+	# if = {
+		# limit = { PREV = { society_member_of = monastic_order_monophysite } }
+		# join_society = monastic_order_monophysite
+	# }
+	# if = {
+		# limit = { PREV = { society_member_of = monastic_order_hindu } }
+		# join_society = monastic_order_hindu
+	# }
+	# if = {
+		# limit = { PREV = { society_member_of = monastic_order_buddhist } }
+		# join_society = monastic_order_buddhist
+	# }
+	# if = {
+		# limit = { PREV = { society_member_of = monastic_order_jain } }
+		# join_society = monastic_order_jain
+	# }
+	# if = {
+		# limit = { PREV = { society_member_of = monastic_order_stoics } }
+		# join_society = monastic_order_stoics
+	# }
 }
 
 clr_artifact_flagsmodifiers_effect = {
@@ -9407,41 +9572,47 @@ spawn_religious_reinforcements_effect = {
 add_ascetic_trait_effect = {
 	if = {
 		limit = { is_female = yes }
-		if = {
-			limit = { religion_group = christian }
-			add_trait = nun
-		}
-		if = {
-			limit = { religion = jain }
-			add_trait = aryika
-		}
-		if = {
-			limit = { religion = buddhist }
-			add_trait = bhikkhuni
-		}
-		if = {
-			limit = { religion = hindu }
-			add_trait = sanyasini
-		}
+		
+		# Warcraft
+		add_trait = nun
+		# if = {
+			# limit = { religion_group = christian }
+			# add_trait = nun
+		# }
+		# if = {
+			# limit = { religion = jain }
+			# add_trait = aryika
+		# }
+		# if = {
+			# limit = { religion = buddhist }
+			# add_trait = bhikkhuni
+		# }
+		# if = {
+			# limit = { religion = hindu }
+			# add_trait = sanyasini
+		# }
 	}
 	if = {
 		limit = { is_female = no }
-		if = {
-			limit = { religion_group = christian }
-			add_trait = monk
-		}
-		if = {
-			limit = { religion = jain }
-			add_trait = muni
-		}
-		if = {
-			limit = { religion = buddhist }
-			add_trait = bhikkhu
-		}
-		if = {
-			limit = { religion = hindu }
-			add_trait = sanyasi
-		}
+		
+		# Warcraft
+		add_trait = monk
+		# if = {
+			# limit = { religion_group = christian }
+			# add_trait = monk
+		# }
+		# if = {
+			# limit = { religion = jain }
+			# add_trait = muni
+		# }
+		# if = {
+			# limit = { religion = buddhist }
+			# add_trait = bhikkhu
+		# }
+		# if = {
+			# limit = { religion = hindu }
+			# add_trait = sanyasi
+		# }
 	}
 }
 
@@ -13739,7 +13910,9 @@ increase_visibility_effect = {
 		# Warcraft
 		if = {
 			limit = {
-				evil_public_religion_trigger = no
+				# Warcraft
+				society_associated_with_religion_trigger = no
+				
 				is_in_society = yes
 			}
 			change_variable = { which = visibility_value value = 5 } 
@@ -13796,7 +13969,9 @@ increase_visibility_minor_effect = {
 		# Warcraft
 		if = {
 			limit = {
-				evil_public_religion_trigger = no
+				# Warcraft
+				society_associated_with_religion_trigger = no
+				
 				is_in_society = yes
 			}
 			change_variable = { which = visibility_value value = 2 } 
@@ -15217,592 +15392,593 @@ add_western_zodiac_trait_effect = {
 }
 
 flip_secret_religious_community_provinces = {
-	trigger_switch = {
-		on_trigger = society_member_of
-		secret_religious_society_catholic = {
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_catholic_community
-					}
-					religion = catholic
-					remove_province_modifier = secret_catholic_community
-				}
-			}
-		}
-		secret_religious_society_cathar = {
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_cathar_community
-					}
-					religion = cathar
-					remove_province_modifier = secret_cathar_community
-				}
-			}
-		}
-		secret_religious_society_fraticelli = {
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_fraticelli_community
-					}
-					religion = fraticelli
-					remove_province_modifier = secret_fraticelli_community
-				}
-			}
-		}
-		secret_religious_society_waldensian = {
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_waldensian_community
-					}
-					religion = waldensian
-					remove_province_modifier = secret_waldensian_community
-				}
-			}
-		}
-		secret_religious_society_lollard = {
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_lollard_community
-					}
-					religion = lollard
-					remove_province_modifier = secret_lollard_community
-				}
-			}
-		}
-		secret_religious_society_orthodox = { 
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_orthodox_community
-					}
-					religion = orthodox
-					remove_province_modifier = secret_orthodox_community
-				}
-			}
-		}
-		secret_religious_society_miaphysite = {
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_miaphysite_community
-					}
-					religion = miaphysite
-					remove_province_modifier = secret_miaphysite_community
-				}
-			}
-		}
-		secret_religious_society_monophysite = {
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_monophysite_community
-					}
-					religion = monophysite
-					remove_province_modifier = secret_monophysite_community
-				}
-			}
-		}
-		secret_religious_society_bogomilist = {
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_bogomilist_community
-					}
-					religion = bogomilist
-					remove_province_modifier = secret_bogomilist_community
-				}
-			}
-		}
-		secret_religious_society_monothelite = {
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_monothelite_community
-					}
-					religion = monothelite
-					remove_province_modifier = secret_monothelite_community
-				}
-			}
-		}
-		secret_religious_society_iconoclast = {
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_iconoclast_community
-					}
-					religion = iconoclast
-					remove_province_modifier = secret_iconoclast_community
-				}
-			}
-		}
-		secret_religious_society_paulician = {
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_paulician_community
-					}
-					religion = paulician
-					remove_province_modifier = secret_paulician_community
-				}
-			}
-		}
-		secret_religious_society_nestorian = {
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_nestorian_community
-					}
-					religion = nestorian
-					remove_province_modifier = secret_nestorian_community
-				}
-			}
-		}
-		secret_religious_society_messalian = {
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_messalian_community
-					}
-					religion = messalian
-					remove_province_modifier = secret_messalian_community
-				}
-			}
-		}
-		secret_religious_society_sunni = { 
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_sunni_community
-					}
-					religion = sunni
-					remove_province_modifier = secret_sunni_community
-				}
-			}
-		}
-		secret_religious_society_zikri = {
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_zikri_community
-					}
-					religion = zikri
-					remove_province_modifier = secret_zikri_community
-				}
-			}
-		}
-		secret_religious_society_yazidi = {
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_yazidi_community
-					}
-					religion = yazidi
-					remove_province_modifier = secret_yazidi_community
-				}
-			}
-		}
-		secret_religious_society_ibadi = {
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_ibadi_community
-					}
-					religion = ibadi
-					remove_province_modifier = secret_ibadi_community
-				}
-			}
-		}
-		secret_religious_society_kharijite = {
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_kharijite_community
-					}
-					religion = kharijite
-					remove_province_modifier = secret_kharijite_community
-				}
-			}
-		}
-		secret_religious_society_shiite = { 
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_shiite_community
-					}
-					religion = shiite
-					remove_province_modifier = secret_shiite_community
-				}
-			}
-		}
-		secret_religious_society_druze = {
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_druze_community
-					}
-					religion = druze
-					remove_province_modifier = secret_druze_community
-				}
-			}
-		}
-		secret_religious_society_hurufi = {
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_hurufi_community
-					}
-					religion = hurufi
-					remove_province_modifier = secret_hurufi_community
-				}
-			}
-		}
-		secret_religious_society_jewish = { 
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_jewish_community
-					}
-					religion = jewish
-					remove_province_modifier = secret_jewish_community
-				}
-			}
-		}
-		secret_religious_society_karaite = { 
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_karaite_community
-					}
-					religion = karaite
-					remove_province_modifier = secret_karaite_community
-				}
-			}
-		}
-		secret_religious_society_samaritan = { 
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_samaritan_community
-					}
-					religion = samaritan
-					remove_province_modifier = secret_samaritan_community
-				}
-			}
-		}
-		secret_religious_society_zoroastrian = { 
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_zoroastrian_community
-					}
-					religion = zoroastrian
-					remove_province_modifier = secret_zoroastrian_community
-				}
-			}
-		}
-		secret_religious_society_mazdaki = { 
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_mazdaki_community
-					}
-					religion = mazdaki
-					remove_province_modifier = secret_mazdaki_community
-				}
-			}
-		}
-		secret_religious_society_manichean = { 
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_manichean_community
-					}
-					religion = manichean
-					remove_province_modifier = secret_manichean_community
-				}
-			}
-		}
-		secret_religious_society_khurmazta = { 
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_khurmazta_community
-					}
-					religion = khurmazta
-					remove_province_modifier = secret_khurmazta_community
-				}
-			}
-		}
-		secret_religious_society_bon = { 
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_bon_community
-					}
-					religion = bon
-					remove_province_modifier = secret_bon_community
-				}
-			}
-		}
-		secret_religious_society_bon_reformed = { 
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_bon_reformed_community
-					}
-					religion = bon_reformed
-					remove_province_modifier = secret_bon_reformed_community
-				}
-			}
-		}
-		secret_religious_society_hellenic_pagan = { 
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_hellenic_pagan_community
-					}
-					religion = hellenic_pagan
-					remove_province_modifier = secret_hellenic_pagan_community
-				}
-			}
-		}
-		secret_religious_society_hellenic_pagan_reformed = { 
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_hellenic_pagan_reformed_community
-					}
-					religion = hellenic_pagan_reformed
-					remove_province_modifier = secret_hellenic_pagan_reformed_community
-				}
-			}
-		}
-		secret_religious_society_taoist = { 
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_taoist_community
-					}
-					religion = taoist
-					remove_province_modifier = secret_taoist_community
-				}
-			}
-		}
-		secret_religious_society_hindu = { 
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_hindu_community
-					}
-					religion = hindu
-					remove_province_modifier = secret_hindu_community
-				}
-			}
-		}
-		secret_religious_society_buddhist = { 
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_buddhist_community
-					}
-					religion = buddhist
-					remove_province_modifier = secret_buddhist_community
-				}
-			}
-		}
-		secret_religious_society_jain = { 
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_jain_community
-					}
-					religion = jain
-					remove_province_modifier = secret_jain_community
-				}
-			}
-		}
-		secret_religious_society_norse_pagan_reformed = { 
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_norse_pagan_reformed_community
-					}
-					religion = norse_pagan_reformed
-					remove_province_modifier = secret_norse_pagan_reformed_community
-				}
-			}
-		}
-		secret_religious_society_norse_pagan = { 
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_norse_pagan_community
-					}
-					religion = norse_pagan
-					remove_province_modifier = secret_norse_pagan_community
-				}
-			}
-		}
-		secret_religious_society_slavic_pagan_reformed = { 
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_slavic_pagan_reformed_community
-					}
-					religion = slavic_pagan_reformed
-					remove_province_modifier = secret_slavic_pagan_reformed_community
-				}
-			}
-		}
-		secret_religious_society_slavic_pagan = { 
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_slavic_pagan_community
-					}
-					religion = slavic_pagan
-					remove_province_modifier = secret_slavic_pagan_community
-				}
-			}
-		}
-		secret_religious_society_tengri_pagan_reformed = {
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_tengri_pagan_reformed_community
-					}
-					religion = tengri_pagan_reformed
-					remove_province_modifier = secret_tengri_pagan_reformed_community
-				}
-			}
-		}
-		secret_religious_society_tengri_pagan = {
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_tengri_pagan_community
-					}
-					religion = tengri_pagan
-					remove_province_modifier = secret_tengri_pagan_community
-				}
-			}
-		}
-		secret_religious_society_baltic_pagan_reformed = { 
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_baltic_pagan_reformed_community
-					}
-					religion = baltic_pagan_reformed
-					remove_province_modifier = secret_baltic_pagan_reformed_community
-				}
-			}
-		}
-		secret_religious_society_baltic_pagan = { 
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_baltic_pagan_community
-					}
-					religion = baltic_pagan
-					remove_province_modifier = secret_baltic_pagan_community
-				}
-			}
-		}
-		secret_religious_society_finnish_pagan_reformed = { 
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_finnish_pagan_reformed_community
-					}
-					religion = finnish_pagan_reformed
-					remove_province_modifier = secret_finnish_pagan_reformed_community
-				}
-			}
-		}
-		secret_religious_society_finnish_pagan = { 
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_finnish_pagan_community
-					}
-					religion = finnish_pagan
-					remove_province_modifier = secret_finnish_pagan_community
-				}
-			}
-		}
-		secret_religious_society_west_african_pagan_reformed = { 
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_west_african_pagan_reformed_community
-					}
-					religion = west_african_pagan_reformed
-					remove_province_modifier = secret_west_african_pagan_reformed_community
-				}
-			}
-		}
-		secret_religious_society_west_african_pagan = { 
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_west_african_pagan_community
-					}
-					religion = west_african_pagan
-					remove_province_modifier = secret_west_african_pagan_community
-				}
-			}
-		}
-		secret_religious_society_zun_pagan_reformed = { 
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_zun_pagan_reformed_community
-					}
-					religion = zun_pagan_reformed 
-					remove_province_modifier = secret_zun_pagan_reformed_community
-				}
-			}
-		} 
-		secret_religious_society_zun_pagan = { 
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_zun_pagan_community
-					}
-					religion = zun_pagan 
-					remove_province_modifier = secret_zun_pagan_community
-				}
-			}
-		} 
-		secret_religious_society_aztec = { 
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_aztec_community
-					}
-					religion = aztec 
-					remove_province_modifier = secret_aztec_community
-				}
-			}
-		}  
-		secret_religious_society_aztec_reformed = { 
-			ROOT = {
-				any_demesne_province = {
-					limit = {
-						has_province_modifier = secret_aztec_reformed_community
-					}
-					religion = aztec_reformed 
-					remove_province_modifier = secret_aztec_reformed_community
-				}
-			}
-		}  
-	}
+	# Warcraft
+	# trigger_switch = {
+		# on_trigger = society_member_of
+		# secret_religious_society_catholic = {
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_catholic_community
+					# }
+					# religion = catholic
+					# remove_province_modifier = secret_catholic_community
+				# }
+			# }
+		# }
+		# secret_religious_society_cathar = {
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_cathar_community
+					# }
+					# religion = cathar
+					# remove_province_modifier = secret_cathar_community
+				# }
+			# }
+		# }
+		# secret_religious_society_fraticelli = {
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_fraticelli_community
+					# }
+					# religion = fraticelli
+					# remove_province_modifier = secret_fraticelli_community
+				# }
+			# }
+		# }
+		# secret_religious_society_waldensian = {
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_waldensian_community
+					# }
+					# religion = waldensian
+					# remove_province_modifier = secret_waldensian_community
+				# }
+			# }
+		# }
+		# secret_religious_society_lollard = {
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_lollard_community
+					# }
+					# religion = lollard
+					# remove_province_modifier = secret_lollard_community
+				# }
+			# }
+		# }
+		# secret_religious_society_orthodox = { 
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_orthodox_community
+					# }
+					# religion = orthodox
+					# remove_province_modifier = secret_orthodox_community
+				# }
+			# }
+		# }
+		# secret_religious_society_miaphysite = {
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_miaphysite_community
+					# }
+					# religion = miaphysite
+					# remove_province_modifier = secret_miaphysite_community
+				# }
+			# }
+		# }
+		# secret_religious_society_monophysite = {
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_monophysite_community
+					# }
+					# religion = monophysite
+					# remove_province_modifier = secret_monophysite_community
+				# }
+			# }
+		# }
+		# secret_religious_society_bogomilist = {
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_bogomilist_community
+					# }
+					# religion = bogomilist
+					# remove_province_modifier = secret_bogomilist_community
+				# }
+			# }
+		# }
+		# secret_religious_society_monothelite = {
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_monothelite_community
+					# }
+					# religion = monothelite
+					# remove_province_modifier = secret_monothelite_community
+				# }
+			# }
+		# }
+		# secret_religious_society_iconoclast = {
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_iconoclast_community
+					# }
+					# religion = iconoclast
+					# remove_province_modifier = secret_iconoclast_community
+				# }
+			# }
+		# }
+		# secret_religious_society_paulician = {
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_paulician_community
+					# }
+					# religion = paulician
+					# remove_province_modifier = secret_paulician_community
+				# }
+			# }
+		# }
+		# secret_religious_society_nestorian = {
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_nestorian_community
+					# }
+					# religion = nestorian
+					# remove_province_modifier = secret_nestorian_community
+				# }
+			# }
+		# }
+		# secret_religious_society_messalian = {
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_messalian_community
+					# }
+					# religion = messalian
+					# remove_province_modifier = secret_messalian_community
+				# }
+			# }
+		# }
+		# secret_religious_society_sunni = { 
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_sunni_community
+					# }
+					# religion = sunni
+					# remove_province_modifier = secret_sunni_community
+				# }
+			# }
+		# }
+		# secret_religious_society_zikri = {
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_zikri_community
+					# }
+					# religion = zikri
+					# remove_province_modifier = secret_zikri_community
+				# }
+			# }
+		# }
+		# secret_religious_society_yazidi = {
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_yazidi_community
+					# }
+					# religion = yazidi
+					# remove_province_modifier = secret_yazidi_community
+				# }
+			# }
+		# }
+		# secret_religious_society_ibadi = {
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_ibadi_community
+					# }
+					# religion = ibadi
+					# remove_province_modifier = secret_ibadi_community
+				# }
+			# }
+		# }
+		# secret_religious_society_kharijite = {
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_kharijite_community
+					# }
+					# religion = kharijite
+					# remove_province_modifier = secret_kharijite_community
+				# }
+			# }
+		# }
+		# secret_religious_society_shiite = { 
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_shiite_community
+					# }
+					# religion = shiite
+					# remove_province_modifier = secret_shiite_community
+				# }
+			# }
+		# }
+		# secret_religious_society_druze = {
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_druze_community
+					# }
+					# religion = druze
+					# remove_province_modifier = secret_druze_community
+				# }
+			# }
+		# }
+		# secret_religious_society_hurufi = {
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_hurufi_community
+					# }
+					# religion = hurufi
+					# remove_province_modifier = secret_hurufi_community
+				# }
+			# }
+		# }
+		# secret_religious_society_jewish = { 
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_jewish_community
+					# }
+					# religion = jewish
+					# remove_province_modifier = secret_jewish_community
+				# }
+			# }
+		# }
+		# secret_religious_society_karaite = { 
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_karaite_community
+					# }
+					# religion = karaite
+					# remove_province_modifier = secret_karaite_community
+				# }
+			# }
+		# }
+		# secret_religious_society_samaritan = { 
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_samaritan_community
+					# }
+					# religion = samaritan
+					# remove_province_modifier = secret_samaritan_community
+				# }
+			# }
+		# }
+		# secret_religious_society_zoroastrian = { 
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_zoroastrian_community
+					# }
+					# religion = zoroastrian
+					# remove_province_modifier = secret_zoroastrian_community
+				# }
+			# }
+		# }
+		# secret_religious_society_mazdaki = { 
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_mazdaki_community
+					# }
+					# religion = mazdaki
+					# remove_province_modifier = secret_mazdaki_community
+				# }
+			# }
+		# }
+		# secret_religious_society_manichean = { 
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_manichean_community
+					# }
+					# religion = manichean
+					# remove_province_modifier = secret_manichean_community
+				# }
+			# }
+		# }
+		# secret_religious_society_khurmazta = { 
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_khurmazta_community
+					# }
+					# religion = khurmazta
+					# remove_province_modifier = secret_khurmazta_community
+				# }
+			# }
+		# }
+		# secret_religious_society_bon = { 
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_bon_community
+					# }
+					# religion = bon
+					# remove_province_modifier = secret_bon_community
+				# }
+			# }
+		# }
+		# secret_religious_society_bon_reformed = { 
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_bon_reformed_community
+					# }
+					# religion = bon_reformed
+					# remove_province_modifier = secret_bon_reformed_community
+				# }
+			# }
+		# }
+		# secret_religious_society_hellenic_pagan = { 
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_hellenic_pagan_community
+					# }
+					# religion = hellenic_pagan
+					# remove_province_modifier = secret_hellenic_pagan_community
+				# }
+			# }
+		# }
+		# secret_religious_society_hellenic_pagan_reformed = { 
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_hellenic_pagan_reformed_community
+					# }
+					# religion = hellenic_pagan_reformed
+					# remove_province_modifier = secret_hellenic_pagan_reformed_community
+				# }
+			# }
+		# }
+		# secret_religious_society_taoist = { 
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_taoist_community
+					# }
+					# religion = taoist
+					# remove_province_modifier = secret_taoist_community
+				# }
+			# }
+		# }
+		# secret_religious_society_hindu = { 
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_hindu_community
+					# }
+					# religion = hindu
+					# remove_province_modifier = secret_hindu_community
+				# }
+			# }
+		# }
+		# secret_religious_society_buddhist = { 
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_buddhist_community
+					# }
+					# religion = buddhist
+					# remove_province_modifier = secret_buddhist_community
+				# }
+			# }
+		# }
+		# secret_religious_society_jain = { 
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_jain_community
+					# }
+					# religion = jain
+					# remove_province_modifier = secret_jain_community
+				# }
+			# }
+		# }
+		# secret_religious_society_norse_pagan_reformed = { 
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_norse_pagan_reformed_community
+					# }
+					# religion = norse_pagan_reformed
+					# remove_province_modifier = secret_norse_pagan_reformed_community
+				# }
+			# }
+		# }
+		# secret_religious_society_norse_pagan = { 
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_norse_pagan_community
+					# }
+					# religion = norse_pagan
+					# remove_province_modifier = secret_norse_pagan_community
+				# }
+			# }
+		# }
+		# secret_religious_society_slavic_pagan_reformed = { 
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_slavic_pagan_reformed_community
+					# }
+					# religion = slavic_pagan_reformed
+					# remove_province_modifier = secret_slavic_pagan_reformed_community
+				# }
+			# }
+		# }
+		# secret_religious_society_slavic_pagan = { 
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_slavic_pagan_community
+					# }
+					# religion = slavic_pagan
+					# remove_province_modifier = secret_slavic_pagan_community
+				# }
+			# }
+		# }
+		# secret_religious_society_tengri_pagan_reformed = {
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_tengri_pagan_reformed_community
+					# }
+					# religion = tengri_pagan_reformed
+					# remove_province_modifier = secret_tengri_pagan_reformed_community
+				# }
+			# }
+		# }
+		# secret_religious_society_tengri_pagan = {
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_tengri_pagan_community
+					# }
+					# religion = tengri_pagan
+					# remove_province_modifier = secret_tengri_pagan_community
+				# }
+			# }
+		# }
+		# secret_religious_society_baltic_pagan_reformed = { 
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_baltic_pagan_reformed_community
+					# }
+					# religion = baltic_pagan_reformed
+					# remove_province_modifier = secret_baltic_pagan_reformed_community
+				# }
+			# }
+		# }
+		# secret_religious_society_baltic_pagan = { 
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_baltic_pagan_community
+					# }
+					# religion = baltic_pagan
+					# remove_province_modifier = secret_baltic_pagan_community
+				# }
+			# }
+		# }
+		# secret_religious_society_finnish_pagan_reformed = { 
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_finnish_pagan_reformed_community
+					# }
+					# religion = finnish_pagan_reformed
+					# remove_province_modifier = secret_finnish_pagan_reformed_community
+				# }
+			# }
+		# }
+		# secret_religious_society_finnish_pagan = { 
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_finnish_pagan_community
+					# }
+					# religion = finnish_pagan
+					# remove_province_modifier = secret_finnish_pagan_community
+				# }
+			# }
+		# }
+		# secret_religious_society_west_african_pagan_reformed = { 
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_west_african_pagan_reformed_community
+					# }
+					# religion = west_african_pagan_reformed
+					# remove_province_modifier = secret_west_african_pagan_reformed_community
+				# }
+			# }
+		# }
+		# secret_religious_society_west_african_pagan = { 
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_west_african_pagan_community
+					# }
+					# religion = west_african_pagan
+					# remove_province_modifier = secret_west_african_pagan_community
+				# }
+			# }
+		# }
+		# secret_religious_society_zun_pagan_reformed = { 
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_zun_pagan_reformed_community
+					# }
+					# religion = zun_pagan_reformed 
+					# remove_province_modifier = secret_zun_pagan_reformed_community
+				# }
+			# }
+		# } 
+		# secret_religious_society_zun_pagan = { 
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_zun_pagan_community
+					# }
+					# religion = zun_pagan 
+					# remove_province_modifier = secret_zun_pagan_community
+				# }
+			# }
+		# } 
+		# secret_religious_society_aztec = { 
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_aztec_community
+					# }
+					# religion = aztec 
+					# remove_province_modifier = secret_aztec_community
+				# }
+			# }
+		# }  
+		# secret_religious_society_aztec_reformed = { 
+			# ROOT = {
+				# any_demesne_province = {
+					# limit = {
+						# has_province_modifier = secret_aztec_reformed_community
+					# }
+					# religion = aztec_reformed 
+					# remove_province_modifier = secret_aztec_reformed_community
+				# }
+			# }
+		# }  
+	# }
 }
 
 clean_up_after_leaving_society_effect = {
@@ -16125,6 +16301,9 @@ spawn_good_commander_effect = {
 				intrigue = 2
 				martial = 8
 			}
+			
+			# Warcraft
+			flag = race_delay_flag
 		}
 	}
 	new_character = {
@@ -16188,46 +16367,68 @@ spawn_good_commander_effect = {
 			}
 		}
 		hidden_tooltip = {
-			if = {
-				limit = {
-					has_dharmic_religion_trigger = yes
-				}
-				add_trait = kshatriya
-				character_event = { id = RoI.30121 }
-			}
-			if = {
-				limit = {
-					OR = {
-						religion = hellenic_pagan
-						religion = hellenic_pagan_reformed
-						has_religion_feature = religion_astrology
-					}
-				}
-				hidden_tooltip = { add_western_zodiac_trait_effect = yes }
-			}
-			if = {
-				limit = {
-					has_religion_feature = religion_no_leader
-					religion_group = pagan_group
-				}
-				random_list = {  
-					5 = {
-						add_trait = pagan_branch_1
-					}
-					25 = {
-						add_trait = pagan_branch_2
-					}
-					25 = {
-						add_trait = pagan_branch_3
-					}
-					25 = {
-						add_trait = pagan_branch_4
-					}
-				}
-			}
+			# Warcraft
+			# if = {
+				# limit = {
+					# has_dharmic_religion_trigger = yes
+				# }
+				# add_trait = kshatriya
+				# character_event = { id = RoI.30121 }
+			# }
+			# if = {
+				# limit = {
+					# OR = {
+						# religion = hellenic_pagan
+						# religion = hellenic_pagan_reformed
+						# has_religion_feature = religion_astrology
+					# }
+				# }
+				# hidden_tooltip = { add_western_zodiac_trait_effect = yes }
+			# }
+			# if = {
+				# limit = {
+					# has_religion_feature = religion_no_leader
+					# religion_group = pagan_group
+				# }
+				# random_list = {  
+					# 5 = {
+						# add_trait = pagan_branch_1
+					# }
+					# 25 = {
+						# add_trait = pagan_branch_2
+					# }
+					# 25 = {
+						# add_trait = pagan_branch_3
+					# }
+					# 25 = {
+						# add_trait = pagan_branch_4
+					# }
+				# }
+			# }
 		}
 		set_character_flag = invited_soldier
 		save_event_target_as = invited_character
+		
+		# Warcraft
+		set_prev_gfx_effect = yes
+		character_event = { id = WCRAC.10 }
+		random_list = {
+			30 = {
+				ai_add_hunter_class_effect = yes
+				modifier = {
+					factor = 0
+					united_hunter_trigger = no
+				}
+				hunter_culture_score = yes
+			}
+			70 = {
+				ai_add_warrior_class_effect = yes
+				modifier = {
+					factor = 0
+					united_warrior_trigger = no
+				}
+			}
+		}
 	}
 }
 
@@ -16268,6 +16469,9 @@ spawn_great_commander_effect = {
 				intrigue = 3
 				martial = 9
 			}
+			
+			# Warcraft
+			flag = race_delay_flag
 		}
 	}
 	new_character = {
@@ -16383,46 +16587,68 @@ spawn_great_commander_effect = {
 			}
 		}
 		hidden_tooltip = {
-			if = {
-				limit = {
-					has_dharmic_religion_trigger = yes
-				}
-				add_trait = kshatriya
-				character_event = { id = RoI.30121 }
-			}
-			if = {
-				limit = {
-					OR = {
-						religion = hellenic_pagan
-						religion = hellenic_pagan_reformed
-						has_religion_feature = religion_astrology
-					}
-				}
-				hidden_tooltip = { add_western_zodiac_trait_effect = yes }
-			}
-			if = {
-				limit = {
-					has_religion_feature = religion_no_leader
-					religion_group = pagan_group
-				}
-				random_list = {  
-					5 = {
-						add_trait = pagan_branch_1
-					}
-					25 = {
-						add_trait = pagan_branch_2
-					}
-					25 = {
-						add_trait = pagan_branch_3
-					}
-					25 = {
-						add_trait = pagan_branch_4
-					}
-				}
-			}
+			# Warcraft
+			# if = {
+				# limit = {
+					# has_dharmic_religion_trigger = yes
+				# }
+				# add_trait = kshatriya
+				# character_event = { id = RoI.30121 }
+			# }
+			# if = {
+				# limit = {
+					# OR = {
+						# religion = hellenic_pagan
+						# religion = hellenic_pagan_reformed
+						# has_religion_feature = religion_astrology
+					# }
+				# }
+				# hidden_tooltip = { add_western_zodiac_trait_effect = yes }
+			# }
+			# if = {
+				# limit = {
+					# has_religion_feature = religion_no_leader
+					# religion_group = pagan_group
+				# }
+				# random_list = {  
+					# 5 = {
+						# add_trait = pagan_branch_1
+					# }
+					# 25 = {
+						# add_trait = pagan_branch_2
+					# }
+					# 25 = {
+						# add_trait = pagan_branch_3
+					# }
+					# 25 = {
+						# add_trait = pagan_branch_4
+					# }
+				# }
+			# }
 		}
 		set_character_flag = invited_soldier
 		save_event_target_as = invited_character
+		
+		# Warcraft
+		set_prev_gfx_effect = yes
+		character_event = { id = WCRAC.10 }
+		random_list = {
+			30 = {
+				ai_add_hunter_class_effect = yes
+				modifier = {
+					factor = 0
+					united_hunter_trigger = no
+				}
+				hunter_culture_score = yes
+			}
+			70 = {
+				ai_add_warrior_class_effect = yes
+				modifier = {
+					factor = 0
+					united_warrior_trigger = no
+				}
+			}
+		}
 	}
 }
 
@@ -16464,6 +16690,9 @@ spawn_fantastic_commander_effect = {
 				intrigue = 4
 				martial = 12
 			}
+			
+			# Warcraft
+			flag = race_delay_flag
 		}
 	}
 	new_character = {
@@ -16700,36 +16929,58 @@ spawn_fantastic_commander_effect = {
 			}
 		}
 		hidden_tooltip = {
-			if = {
-				limit = {
-					has_dharmic_religion_trigger = yes
-				}
-				add_trait = kshatriya
-				character_event = { id = RoI.30121 }
-			}
-			if = {
-				limit = {
-					has_religion_feature = religion_no_leader
-					religion_group = pagan_group
-				}
-				random_list = {  
-					5 = {
-						add_trait = pagan_branch_1
-					}
-					25 = {
-						add_trait = pagan_branch_2
-					}
-					25 = {
-						add_trait = pagan_branch_3
-					}
-					25 = {
-						add_trait = pagan_branch_4
-					}
-				}
-			}
+			# Warcraft
+			# if = {
+				# limit = {
+					# has_dharmic_religion_trigger = yes
+				# }
+				# add_trait = kshatriya
+				# character_event = { id = RoI.30121 }
+			# }
+			# if = {
+				# limit = {
+					# has_religion_feature = religion_no_leader
+					# religion_group = pagan_group
+				# }
+				# random_list = {  
+					# 5 = {
+						# add_trait = pagan_branch_1
+					# }
+					# 25 = {
+						# add_trait = pagan_branch_2
+					# }
+					# 25 = {
+						# add_trait = pagan_branch_3
+					# }
+					# 25 = {
+						# add_trait = pagan_branch_4
+					# }
+				# }
+			# }
 		}
 		set_character_flag = invited_soldier
 		save_event_target_as = invited_character
+		
+		# Warcraft
+		set_prev_gfx_effect = yes
+		character_event = { id = WCRAC.10 }
+		random_list = {
+			30 = {
+				ai_add_hunter_class_effect = yes
+				modifier = {
+					factor = 0
+					united_hunter_trigger = no
+				}
+				hunter_culture_score = yes
+			}
+			70 = {
+				ai_add_warrior_class_effect = yes
+				modifier = {
+					factor = 0
+					united_warrior_trigger = no
+				}
+			}
+		}
 	}
 }
 
@@ -16771,6 +17022,9 @@ spawn_fantastic_diplomat_effect = {
 				intrigue = 4
 				martial = 4
 			}
+			
+			# Warcraft
+			flag = race_delay_flag
 		}
 	}
 	new_character = {
@@ -16822,6 +17076,10 @@ spawn_fantastic_diplomat_effect = {
 		if = {
 			limit = {
 				has_global_flag = christian_crusades_unlocked
+				OR = {
+					religion = catholic
+					religion = fraticelli
+				}
 			}
 			random = { 
 				chance = 20 
@@ -16830,36 +17088,41 @@ spawn_fantastic_diplomat_effect = {
 		}
 		
 		hidden_tooltip = {
-			if = {
-				limit = {
-					has_dharmic_religion_trigger = yes
-				}
-				add_trait = kshatriya
-				character_event = { id = RoI.30121 }
-			}
-			if = {
-				limit = {
-					has_religion_feature = religion_no_leader
-					religion_group = pagan_group
-				}
-				random_list = {  
-					5 = {
-						add_trait = pagan_branch_1
-					}
-					25 = {
-						add_trait = pagan_branch_2
-					}
-					25 = {
-						add_trait = pagan_branch_3
-					}
-					25 = {
-						add_trait = pagan_branch_4
-					}
-				}
-			}
+			# Warcraft
+			# if = {
+				# limit = {
+					# has_dharmic_religion_trigger = yes
+				# }
+				# add_trait = kshatriya
+				# character_event = { id = RoI.30121 }
+			# }
+			# if = {
+				# limit = {
+					# has_religion_feature = religion_no_leader
+					# religion_group = pagan_group
+				# }
+				# random_list = {  
+					# 5 = {
+						# add_trait = pagan_branch_1
+					# }
+					# 25 = {
+						# add_trait = pagan_branch_2
+					# }
+					# 25 = {
+						# add_trait = pagan_branch_3
+					# }
+					# 25 = {
+						# add_trait = pagan_branch_4
+					# }
+				# }
+			# }
 		}
 		set_character_flag = invited_soldier
 		save_event_target_as = invited_character
+		
+		# Warcraft
+		set_prev_gfx_effect = yes
+		character_event = { id = WCRAC.10 }
 	}
 }
 
@@ -16901,6 +17164,9 @@ spawn_fantastic_scholar_effect = {
 				intrigue = 4
 				martial = 4
 			}
+			
+			# Warcraft
+			flag = race_delay_flag
 		}
 	}
 	new_character = {
@@ -16932,10 +17198,9 @@ spawn_fantastic_scholar_effect = {
 		remove_trait = theologian
 		remove_trait = scholar
 		
-		remove_trait = naive_appeaser
-		remove_trait = underhanded_rogue
-		remove_trait = charismatic_negotiator
-		remove_trait = grey_eminence
+		remove_trait = detached_priest
+		remove_trait = martial_cleric
+		remove_trait = scholarly_theologian
 		
 		add_trait = mastermind_theologian
 
@@ -16952,36 +17217,41 @@ spawn_fantastic_scholar_effect = {
 		}
 		
 		hidden_tooltip = {
-			if = {
-				limit = {
-					has_dharmic_religion_trigger = yes
-				}
-				add_trait = brahmin
-				character_event = { id = RoI.30121 }
-			}
-			if = {
-				limit = {
-					has_religion_feature = religion_no_leader
-					religion_group = pagan_group
-				}
-				random_list = {  
-					5 = {
-						add_trait = pagan_branch_1
-					}
-					25 = {
-						add_trait = pagan_branch_2
-					}
-					25 = {
-						add_trait = pagan_branch_3
-					}
-					25 = {
-						add_trait = pagan_branch_4
-					}
-				}
-			}
+			# Warcraft
+			# if = {
+				# limit = {
+					# has_dharmic_religion_trigger = yes
+				# }
+				# add_trait = brahmin
+				# character_event = { id = RoI.30121 }
+			# }
+			# if = {
+				# limit = {
+					# has_religion_feature = religion_no_leader
+					# religion_group = pagan_group
+				# }
+				# random_list = {  
+					# 5 = {
+						# add_trait = pagan_branch_1
+					# }
+					# 25 = {
+						# add_trait = pagan_branch_2
+					# }
+					# 25 = {
+						# add_trait = pagan_branch_3
+					# }
+					# 25 = {
+						# add_trait = pagan_branch_4
+					# }
+				# }
+			# }
 		}
 		set_character_flag = invited_soldier
 		save_event_target_as = invited_character
+		
+		# Warcraft
+		set_prev_gfx_effect = yes
+		character_event = { id = WCRAC.10 }
 	}
 }
 
@@ -19570,594 +19840,595 @@ add_chinese_artifact_effect = { #Used in event JD.15016 (possible to use elsewhe
 }
 
 root_secret_religion_provinces_convert_effect = {
-	ROOT = {
-		trigger_switch = {
-			on_trigger = society_member_of
-			secret_religious_society_catholic = {
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_catholic_community
-						}
-						religion = catholic
-						remove_province_modifier = secret_catholic_community
-					}
-				}
-			}
-			secret_religious_society_cathar = {
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_cathar_community
-						}
-						religion = cathar
-						remove_province_modifier = secret_cathar_community
-					}
-				}
-			}
-			secret_religious_society_fraticelli = {
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_fraticelli_community
-						}
-						religion = fraticelli
-						remove_province_modifier = secret_fraticelli_community
-					}
-				}
-			}
-			secret_religious_society_waldensian = {
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_waldensian_community
-						}
-						religion = waldensian
-						remove_province_modifier = secret_waldensian_community
-					}
-				}
-			}
-			secret_religious_society_lollard = {
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_lollard_community
-						}
-						religion = lollard
-						remove_province_modifier = secret_lollard_community
-					}
-				}
-			}
-			secret_religious_society_orthodox = { 
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_orthodox_community
-						}
-						religion = orthodox
-						remove_province_modifier = secret_orthodox_community
-					}
-				}
-			}
-			secret_religious_society_miaphysite = {
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_miaphysite_community
-						}
-						religion = miaphysite
-						remove_province_modifier = secret_miaphysite_community
-					}
-				}
-			}
-			secret_religious_society_monophysite = {
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_monophysite_community
-						}
-						religion = monophysite
-						remove_province_modifier = secret_monophysite_community
-					}
-				}
-			}
-			secret_religious_society_bogomilist = {
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_bogomilist_community
-						}
-						religion = bogomilist
-						remove_province_modifier = secret_bogomilist_community
-					}
-				}
-			}
-			secret_religious_society_monothelite = {
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_monothelite_community
-						}
-						religion = monothelite
-						remove_province_modifier = secret_monothelite_community
-					}
-				}
-			}
-			secret_religious_society_iconoclast = {
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_iconoclast_community
-						}
-						religion = iconoclast
-						remove_province_modifier = secret_iconoclast_community
-					}
-				}
-			}
-			secret_religious_society_paulician = {
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_paulician_community
-						}
-						religion = paulician
-						remove_province_modifier = secret_paulician_community
-					}
-				}
-			}
-			secret_religious_society_nestorian = {
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_nestorian_community
-						}
-						religion = nestorian
-						remove_province_modifier = secret_nestorian_community
-					}
-				}
-			}
-			secret_religious_society_messalian = {
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_messalian_community
-						}
-						religion = messalian
-						remove_province_modifier = secret_messalian_community
-					}
-				}
-			}
-			secret_religious_society_sunni = { 
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_sunni_community
-						}
-						religion = sunni
-						remove_province_modifier = secret_sunni_community
-					}
-				}
-			}
-			secret_religious_society_zikri = {
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_zikri_community
-						}
-						religion = zikri
-						remove_province_modifier = secret_zikri_community
-					}
-				}
-			}
-			secret_religious_society_yazidi = {
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_yazidi_community
-						}
-						religion = yazidi
-						remove_province_modifier = secret_yazidi_community
-					}
-				}
-			}
-			secret_religious_society_ibadi = {
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_ibadi_community
-						}
-						religion = ibadi
-						remove_province_modifier = secret_ibadi_community
-					}
-				}
-			}
-			secret_religious_society_kharijite = {
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_kharijite_community
-						}
-						religion = kharijite
-						remove_province_modifier = secret_kharijite_community
-					}
-				}
-			}
-			secret_religious_society_shiite = { 
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_shiite_community
-						}
-						religion = shiite
-						remove_province_modifier = secret_shiite_community
-					}
-				}
-			}
-			secret_religious_society_druze = {
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_druze_community
-						}
-						religion = druze
-						remove_province_modifier = secret_druze_community
-					}
-				}
-			}
-			secret_religious_society_hurufi = {
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_hurufi_community
-						}
-						religion = hurufi
-						remove_province_modifier = secret_hurufi_community
-					}
-				}
-			}
-			secret_religious_society_aztec = {
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_aztec_community
-						}
-						religion = aztec
-						remove_province_modifier = secret_aztec_community
-					}
-				}
-			}
-			secret_religious_society_aztec_reformed = {
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_aztec_reformed_community
-						}
-						religion = aztec_reformed
-						remove_province_modifier = secret_aztec_reformed_community
-					}
-				}
-			}
-			secret_religious_society_jewish = { 
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_jewish_community
-						}
-						religion = jewish
-						remove_province_modifier = secret_jewish_community
-					}
-				}
-			}
-			secret_religious_society_samaritan = {
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_samaritan_community
-						}
-						religion = samaritan
-						remove_province_modifier = secret_samaritan_community
-					}
-				}
-			}
-			secret_religious_society_karaite = {
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_karaite_community
-						}
-						religion = karaite
-						remove_province_modifier = secret_karaite_community
-					}
-				}
-			}
-			secret_religious_society_zoroastrian = { 
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_zoroastrian_community
-						}
-						religion = zoroastrian
-						remove_province_modifier = secret_zoroastrian_community
-					}
-				}
-			}
-			secret_religious_society_mazdaki = {
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_mazdaki_community
-						}
-						religion = mazdaki
-						remove_province_modifier = secret_mazdaki_community
-					}
-				}
-			}
-			secret_religious_society_manichean = {
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_manichean_community
-						}
-						religion = manichean
-						remove_province_modifier = secret_manichean_community
-					}
-				}
-			}
-			secret_religious_society_khurmazta = {
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_khurmazta_community
-						}
-						religion = khurmazta
-						remove_province_modifier = secret_khurmazta_community
-					}
-				}
-			}
-			secret_religious_society_bon = {
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_bon_community
-						}
-						religion = bon
-						remove_province_modifier = secret_bon_community
-					}
-				}
-			}
-			secret_religious_society_bon_reformed = {
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_bon_reformed_community
-						}
-						religion = bon_reformed
-						remove_province_modifier = secret_bon_reformed_community
-					}
-				}
-			}
-			secret_religious_society_hellenic_pagan = {
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_hellenic_pagan_community
-						}
-						religion = hellenic_pagan
-						remove_province_modifier = secret_hellenic_pagan_community
-					}
-				}
-			}
-			secret_religious_society_hellenic_pagan_reformed = {
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_hellenic_pagan_reformed_community
-						}
-						religion = hellenic_pagan_reformed
-						remove_province_modifier = secret_hellenic_pagan_reformed_community
-					}
-				}
-			}
-			secret_religious_society_taoist = {
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_taoist_community
-						}
-						religion = taoist
-						remove_province_modifier = secret_taoist_community
-					}
-				}
-			}
-			secret_religious_society_hindu = { 
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_hindu_community
-						}
-						religion = hindu
-						remove_province_modifier = secret_hindu_community
-					}
-				}
-			}
-			secret_religious_society_buddhist = { 
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_buddhist_community
-						}
-						religion = buddhist
-						remove_province_modifier = secret_buddhist_community
-					}
-				}
-			}
-			secret_religious_society_jain = { 
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_jain_community
-						}
-						religion = jain
-						remove_province_modifier = secret_jain_community
-					}
-				}
-			}
-			secret_religious_society_norse_pagan_reformed = { 
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_norse_pagan_reformed_community
-						}
-						religion = norse_pagan_reformed
-						remove_province_modifier = secret_norse_pagan_reformed_community
-					}
-				}
-			}
-			secret_religious_society_norse_pagan = { 
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_norse_pagan_community
-						}
-						religion = norse_pagan
-						remove_province_modifier = secret_norse_pagan_community
-					}
-				}
-			}
-			secret_religious_society_slavic_pagan_reformed = { 
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_slavic_pagan_reformed_community
-						}
-						religion = slavic_pagan_reformed
-						remove_province_modifier = secret_slavic_pagan_reformed_community
-					}
-				}
-			}
-			secret_religious_society_slavic_pagan = { 
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_slavic_pagan_community
-						}
-						religion = slavic_pagan
-						remove_province_modifier = secret_slavic_pagan_community
-					}
-				}
-			}
-			secret_religious_society_tengri_pagan_reformed = {
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_tengri_pagan_reformed_community
-						}
-						religion = tengri_pagan_reformed
-						remove_province_modifier = secret_tengri_pagan_reformed_community
-					}
-				}
-			}
-			secret_religious_society_tengri_pagan = {
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_tengri_pagan_community
-						}
-						religion = tengri_pagan
-						remove_province_modifier = secret_tengri_pagan_community
-					}
-				}
-			}
-			secret_religious_society_baltic_pagan_reformed = { 
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_baltic_pagan_reformed_community
-						}
-						religion = baltic_pagan_reformed
-						remove_province_modifier = secret_baltic_pagan_reformed_community
-					}
-				}
-			}
-			secret_religious_society_baltic_pagan = { 
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_baltic_pagan_community
-						}
-						religion = baltic_pagan
-						remove_province_modifier = secret_baltic_pagan_community
-					}
-				}
-			}
-			secret_religious_society_finnish_pagan_reformed = { 
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_finnish_pagan_reformed_community
-						}
-						religion = finnish_pagan_reformed
-						remove_province_modifier = secret_finnish_pagan_reformed_community
-					}
-				}
-			}
-			secret_religious_society_finnish_pagan = { 
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_finnish_pagan_community
-						}
-						religion = finnish_pagan
-						remove_province_modifier = secret_finnish_pagan_community
-					}
-				}
-			}
-			secret_religious_society_west_african_pagan_reformed = { 
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_west_african_pagan_reformed_community
-						}
-						religion = west_african_pagan_reformed
-						remove_province_modifier = secret_west_african_pagan_reformed_community
-					}
-				}
-			}
-			secret_religious_society_west_african_pagan = { 
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_west_african_pagan_community
-						}
-						religion = west_african_pagan
-						remove_province_modifier = secret_west_african_pagan_community
-					}
-				}
-			}
-			secret_religious_society_zun_pagan_reformed = { 
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_zun_pagan_reformed_community
-						}
-						religion = zun_pagan_reformed 
-						remove_province_modifier = secret_zun_pagan_reformed_community
-					}
-				}
-			} 
-			secret_religious_society_zun_pagan = { 
-				PREV = {
-					any_demesne_province = {
-						limit = {
-							has_province_modifier = secret_zun_pagan_community
-						}
-						religion = zun_pagan 
-						remove_province_modifier = secret_zun_pagan_community
-					}
-				}
-			} 
-		}
-	}
+	# Warcraft
+	# ROOT = {
+		# trigger_switch = {
+			# on_trigger = society_member_of
+			# secret_religious_society_catholic = {
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_catholic_community
+						# }
+						# religion = catholic
+						# remove_province_modifier = secret_catholic_community
+					# }
+				# }
+			# }
+			# secret_religious_society_cathar = {
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_cathar_community
+						# }
+						# religion = cathar
+						# remove_province_modifier = secret_cathar_community
+					# }
+				# }
+			# }
+			# secret_religious_society_fraticelli = {
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_fraticelli_community
+						# }
+						# religion = fraticelli
+						# remove_province_modifier = secret_fraticelli_community
+					# }
+				# }
+			# }
+			# secret_religious_society_waldensian = {
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_waldensian_community
+						# }
+						# religion = waldensian
+						# remove_province_modifier = secret_waldensian_community
+					# }
+				# }
+			# }
+			# secret_religious_society_lollard = {
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_lollard_community
+						# }
+						# religion = lollard
+						# remove_province_modifier = secret_lollard_community
+					# }
+				# }
+			# }
+			# secret_religious_society_orthodox = { 
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_orthodox_community
+						# }
+						# religion = orthodox
+						# remove_province_modifier = secret_orthodox_community
+					# }
+				# }
+			# }
+			# secret_religious_society_miaphysite = {
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_miaphysite_community
+						# }
+						# religion = miaphysite
+						# remove_province_modifier = secret_miaphysite_community
+					# }
+				# }
+			# }
+			# secret_religious_society_monophysite = {
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_monophysite_community
+						# }
+						# religion = monophysite
+						# remove_province_modifier = secret_monophysite_community
+					# }
+				# }
+			# }
+			# secret_religious_society_bogomilist = {
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_bogomilist_community
+						# }
+						# religion = bogomilist
+						# remove_province_modifier = secret_bogomilist_community
+					# }
+				# }
+			# }
+			# secret_religious_society_monothelite = {
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_monothelite_community
+						# }
+						# religion = monothelite
+						# remove_province_modifier = secret_monothelite_community
+					# }
+				# }
+			# }
+			# secret_religious_society_iconoclast = {
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_iconoclast_community
+						# }
+						# religion = iconoclast
+						# remove_province_modifier = secret_iconoclast_community
+					# }
+				# }
+			# }
+			# secret_religious_society_paulician = {
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_paulician_community
+						# }
+						# religion = paulician
+						# remove_province_modifier = secret_paulician_community
+					# }
+				# }
+			# }
+			# secret_religious_society_nestorian = {
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_nestorian_community
+						# }
+						# religion = nestorian
+						# remove_province_modifier = secret_nestorian_community
+					# }
+				# }
+			# }
+			# secret_religious_society_messalian = {
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_messalian_community
+						# }
+						# religion = messalian
+						# remove_province_modifier = secret_messalian_community
+					# }
+				# }
+			# }
+			# secret_religious_society_sunni = { 
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_sunni_community
+						# }
+						# religion = sunni
+						# remove_province_modifier = secret_sunni_community
+					# }
+				# }
+			# }
+			# secret_religious_society_zikri = {
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_zikri_community
+						# }
+						# religion = zikri
+						# remove_province_modifier = secret_zikri_community
+					# }
+				# }
+			# }
+			# secret_religious_society_yazidi = {
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_yazidi_community
+						# }
+						# religion = yazidi
+						# remove_province_modifier = secret_yazidi_community
+					# }
+				# }
+			# }
+			# secret_religious_society_ibadi = {
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_ibadi_community
+						# }
+						# religion = ibadi
+						# remove_province_modifier = secret_ibadi_community
+					# }
+				# }
+			# }
+			# secret_religious_society_kharijite = {
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_kharijite_community
+						# }
+						# religion = kharijite
+						# remove_province_modifier = secret_kharijite_community
+					# }
+				# }
+			# }
+			# secret_religious_society_shiite = { 
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_shiite_community
+						# }
+						# religion = shiite
+						# remove_province_modifier = secret_shiite_community
+					# }
+				# }
+			# }
+			# secret_religious_society_druze = {
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_druze_community
+						# }
+						# religion = druze
+						# remove_province_modifier = secret_druze_community
+					# }
+				# }
+			# }
+			# secret_religious_society_hurufi = {
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_hurufi_community
+						# }
+						# religion = hurufi
+						# remove_province_modifier = secret_hurufi_community
+					# }
+				# }
+			# }
+			# secret_religious_society_aztec = {
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_aztec_community
+						# }
+						# religion = aztec
+						# remove_province_modifier = secret_aztec_community
+					# }
+				# }
+			# }
+			# secret_religious_society_aztec_reformed = {
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_aztec_reformed_community
+						# }
+						# religion = aztec_reformed
+						# remove_province_modifier = secret_aztec_reformed_community
+					# }
+				# }
+			# }
+			# secret_religious_society_jewish = { 
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_jewish_community
+						# }
+						# religion = jewish
+						# remove_province_modifier = secret_jewish_community
+					# }
+				# }
+			# }
+			# secret_religious_society_samaritan = {
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_samaritan_community
+						# }
+						# religion = samaritan
+						# remove_province_modifier = secret_samaritan_community
+					# }
+				# }
+			# }
+			# secret_religious_society_karaite = {
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_karaite_community
+						# }
+						# religion = karaite
+						# remove_province_modifier = secret_karaite_community
+					# }
+				# }
+			# }
+			# secret_religious_society_zoroastrian = { 
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_zoroastrian_community
+						# }
+						# religion = zoroastrian
+						# remove_province_modifier = secret_zoroastrian_community
+					# }
+				# }
+			# }
+			# secret_religious_society_mazdaki = {
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_mazdaki_community
+						# }
+						# religion = mazdaki
+						# remove_province_modifier = secret_mazdaki_community
+					# }
+				# }
+			# }
+			# secret_religious_society_manichean = {
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_manichean_community
+						# }
+						# religion = manichean
+						# remove_province_modifier = secret_manichean_community
+					# }
+				# }
+			# }
+			# secret_religious_society_khurmazta = {
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_khurmazta_community
+						# }
+						# religion = khurmazta
+						# remove_province_modifier = secret_khurmazta_community
+					# }
+				# }
+			# }
+			# secret_religious_society_bon = {
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_bon_community
+						# }
+						# religion = bon
+						# remove_province_modifier = secret_bon_community
+					# }
+				# }
+			# }
+			# secret_religious_society_bon_reformed = {
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_bon_reformed_community
+						# }
+						# religion = bon_reformed
+						# remove_province_modifier = secret_bon_reformed_community
+					# }
+				# }
+			# }
+			# secret_religious_society_hellenic_pagan = {
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_hellenic_pagan_community
+						# }
+						# religion = hellenic_pagan
+						# remove_province_modifier = secret_hellenic_pagan_community
+					# }
+				# }
+			# }
+			# secret_religious_society_hellenic_pagan_reformed = {
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_hellenic_pagan_reformed_community
+						# }
+						# religion = hellenic_pagan_reformed
+						# remove_province_modifier = secret_hellenic_pagan_reformed_community
+					# }
+				# }
+			# }
+			# secret_religious_society_taoist = {
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_taoist_community
+						# }
+						# religion = taoist
+						# remove_province_modifier = secret_taoist_community
+					# }
+				# }
+			# }
+			# secret_religious_society_hindu = { 
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_hindu_community
+						# }
+						# religion = hindu
+						# remove_province_modifier = secret_hindu_community
+					# }
+				# }
+			# }
+			# secret_religious_society_buddhist = { 
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_buddhist_community
+						# }
+						# religion = buddhist
+						# remove_province_modifier = secret_buddhist_community
+					# }
+				# }
+			# }
+			# secret_religious_society_jain = { 
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_jain_community
+						# }
+						# religion = jain
+						# remove_province_modifier = secret_jain_community
+					# }
+				# }
+			# }
+			# secret_religious_society_norse_pagan_reformed = { 
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_norse_pagan_reformed_community
+						# }
+						# religion = norse_pagan_reformed
+						# remove_province_modifier = secret_norse_pagan_reformed_community
+					# }
+				# }
+			# }
+			# secret_religious_society_norse_pagan = { 
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_norse_pagan_community
+						# }
+						# religion = norse_pagan
+						# remove_province_modifier = secret_norse_pagan_community
+					# }
+				# }
+			# }
+			# secret_religious_society_slavic_pagan_reformed = { 
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_slavic_pagan_reformed_community
+						# }
+						# religion = slavic_pagan_reformed
+						# remove_province_modifier = secret_slavic_pagan_reformed_community
+					# }
+				# }
+			# }
+			# secret_religious_society_slavic_pagan = { 
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_slavic_pagan_community
+						# }
+						# religion = slavic_pagan
+						# remove_province_modifier = secret_slavic_pagan_community
+					# }
+				# }
+			# }
+			# secret_religious_society_tengri_pagan_reformed = {
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_tengri_pagan_reformed_community
+						# }
+						# religion = tengri_pagan_reformed
+						# remove_province_modifier = secret_tengri_pagan_reformed_community
+					# }
+				# }
+			# }
+			# secret_religious_society_tengri_pagan = {
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_tengri_pagan_community
+						# }
+						# religion = tengri_pagan
+						# remove_province_modifier = secret_tengri_pagan_community
+					# }
+				# }
+			# }
+			# secret_religious_society_baltic_pagan_reformed = { 
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_baltic_pagan_reformed_community
+						# }
+						# religion = baltic_pagan_reformed
+						# remove_province_modifier = secret_baltic_pagan_reformed_community
+					# }
+				# }
+			# }
+			# secret_religious_society_baltic_pagan = { 
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_baltic_pagan_community
+						# }
+						# religion = baltic_pagan
+						# remove_province_modifier = secret_baltic_pagan_community
+					# }
+				# }
+			# }
+			# secret_religious_society_finnish_pagan_reformed = { 
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_finnish_pagan_reformed_community
+						# }
+						# religion = finnish_pagan_reformed
+						# remove_province_modifier = secret_finnish_pagan_reformed_community
+					# }
+				# }
+			# }
+			# secret_religious_society_finnish_pagan = { 
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_finnish_pagan_community
+						# }
+						# religion = finnish_pagan
+						# remove_province_modifier = secret_finnish_pagan_community
+					# }
+				# }
+			# }
+			# secret_religious_society_west_african_pagan_reformed = { 
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_west_african_pagan_reformed_community
+						# }
+						# religion = west_african_pagan_reformed
+						# remove_province_modifier = secret_west_african_pagan_reformed_community
+					# }
+				# }
+			# }
+			# secret_religious_society_west_african_pagan = { 
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_west_african_pagan_community
+						# }
+						# religion = west_african_pagan
+						# remove_province_modifier = secret_west_african_pagan_community
+					# }
+				# }
+			# }
+			# secret_religious_society_zun_pagan_reformed = { 
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_zun_pagan_reformed_community
+						# }
+						# religion = zun_pagan_reformed 
+						# remove_province_modifier = secret_zun_pagan_reformed_community
+					# }
+				# }
+			# } 
+			# secret_religious_society_zun_pagan = { 
+				# PREV = {
+					# any_demesne_province = {
+						# limit = {
+							# has_province_modifier = secret_zun_pagan_community
+						# }
+						# religion = zun_pagan 
+						# remove_province_modifier = secret_zun_pagan_community
+					# }
+				# }
+			# } 
+		# }
+	# }
 }
 
 random_coronation_events_effect = {
@@ -20468,55 +20739,58 @@ random_coronation_events_effect = {
 			}
 			character_event = { id = HF.20324 } # Priest approves of ceremony.
 		}
-		4 = { 
+		
+		# Warcraft
+		# 4 = { 
 
-			modifier = { 
-				factor = 0 
-				has_character_flag = flag_coronation_hre_talk  
-			}
-			modifier = { 
-				factor = 0 
-				has_character_flag = is_charlemagne	#Shouldn't happen anyway, but, just to be safe... 
-			}
-			modifier = { 
-				factor = 0.5
-				has_character_flag = flag_secluded_coronation
-			}
-			modifier = { 
-				factor = 1.5 
-				has_character_flag = flag_extravagant_coronation
-			}
-			modifier = { 
-				factor = 0
-				NOT = { has_landed_title = e_hre }
-				NOT = { has_landed_title = e_france }
-			}
-			modifier = { 
-				factor = 1.5 
-				event_target:coronation_priest = { trait = zealous }
-			}
-			character_event = { id = HF.20326 } # Priest talks about responsibilities of HRE.
-		}
-		4 = { 
+			# modifier = { 
+				# factor = 0 
+				# has_character_flag = flag_coronation_hre_talk  
+			# }
+			# modifier = { 
+				# factor = 0 
+				# has_character_flag = is_charlemagne	#Shouldn't happen anyway, but, just to be safe... 
+			# }
+			# modifier = { 
+				# factor = 0.5
+				# has_character_flag = flag_secluded_coronation
+			# }
+			# modifier = { 
+				# factor = 1.5 
+				# has_character_flag = flag_extravagant_coronation
+			# }
+			# modifier = { 
+				# factor = 0
+				# NOT = { has_landed_title = e_hre }
+			# }
+			# modifier = { 
+				# factor = 1.5 
+				# event_target:coronation_priest = { trait = zealous }
+			# }
+			# character_event = { id = HF.20326 } # Priest talks about responsibilities of HRE.
+		# }
+		
+		# 4 = { 
 
-			modifier = { 
-				factor = 0 
-				has_character_flag = flag_coronation_pope_talk  
-			}
-			modifier = { 
-				factor = 0.5
-				has_character_flag = flag_secluded_coronation
-			}
-			modifier = { 
-				factor = 2 
-				has_character_flag = flag_extravagant_coronation
-			}
-			modifier = { 
-				factor = 0
-				NOT = { event_target:coronation_priest = { has_landed_title = k_papal_state } }
-			}
-			character_event = { id = HF.20327 } # Pope talks about responsibilities of Christian King.
-		}
+			# modifier = { 
+				# factor = 0 
+				# has_character_flag = flag_coronation_pope_talk  
+			# }
+			# modifier = { 
+				# factor = 0.5
+				# has_character_flag = flag_secluded_coronation
+			# }
+			# modifier = { 
+				# factor = 2 
+				# has_character_flag = flag_extravagant_coronation
+			# }
+			# modifier = { 
+				# factor = 0
+				# NOT = { event_target:coronation_priest = { has_landed_title = k_papal_state } }
+			# }
+			# character_event = { id = HF.20327 } # Pope talks about responsibilities of Christian King.
+		# }
+		
 		4 = { 
 			modifier = { 
 				factor = 0 
@@ -21046,6 +21320,11 @@ troubled_pregnancy_chance_low_effect = {
 random_list = { 
 	70 = { custom_tooltip = { text = tooltip_pregnancy_stable } }
 	30 = { custom_tooltip = { text = tooltip_pregnancy_gets_worse }
+		# Warcraft
+		trigger = {
+			is_mammal_trigger = yes
+		}
+		
 		modifier = { 
 			factor = 0.85
 			has_character_modifier = mother_dark_rest
@@ -21120,27 +21399,27 @@ random_list = {
 		} 
 		modifier = { 
 			factor = 1.25
-			age = 27 #Too old
+			is_30_age_trigger = yes #Too old
 		} 
 		modifier = { 
 			factor = 1.25
-			age = 30 #Too old
+			is_30_age_trigger = yes #Too old
 		} 
 		modifier = { 
 			factor = 1.25
-			age = 35 #Too old
+			is_40_age_trigger = yes #Too old
 		} 
 		modifier = { 
 			factor = 1.5
-			age = 40 #Too old
+			is_40_age_trigger = yes #Too old
 		} 	
 		modifier = { 	
 			factor = 1.5
-			age = 45 #Too old
+			is_50_age_trigger = yes #Too old
 		} 
 		modifier = { 
 			factor = 1.75
-			age = 50 #Too old
+			is_50_age_trigger = yes #Too old
 		} 
 		modifier = { 
 			factor = 1.25
@@ -21227,6 +21506,13 @@ random_list = {
 			factor = 1.15
 			trait = scarred
 		} 
+		
+		# Warcraft
+		modifier = {
+			factor = 3
+			trait = corrupted_blood
+		}
+		
 		modifier = { 
 			factor = 1.5
 			trait = ill
@@ -21416,6 +21702,11 @@ troubled_pregnancy_chance_medium_effect = {
 random_list = { 
 	50 = { custom_tooltip = { text = tooltip_pregnancy_stable } }
 	50 = { custom_tooltip = { text = tooltip_pregnancy_gets_worse }
+		# Warcraft
+		trigger = {
+			is_mammal_trigger = yes
+		}
+		
 		modifier = { 
 			factor = 0.85
 			has_character_modifier = mother_dark_rest
@@ -21490,27 +21781,27 @@ random_list = {
 		} 
 		modifier = { 
 			factor = 1.25
-			age = 27 #Too old
+			is_30_age_trigger = yes #Too old
 		} 
 		modifier = { 
 			factor = 1.25
-			age = 30 #Too old
+			is_30_age_trigger = yes #Too old
 		} 
 		modifier = { 
 			factor = 1.25
-			age = 35 #Too old
+			is_40_age_trigger = yes #Too old
 		} 
 		modifier = { 
 			factor = 1.5
-			age = 40 #Too old
+			is_40_age_trigger = yes #Too old
 		} 	
 		modifier = { 	
 			factor = 1.5
-			age = 45 #Too old
+			is_50_age_trigger = yes #Too old
 		} 
 		modifier = { 
 			factor = 1.75
-			age = 50 #Too old
+			is_50_age_trigger = yes #Too old
 		} 
 		modifier = { 
 			factor = 1.25
@@ -21597,6 +21888,13 @@ random_list = {
 			factor = 1.15
 			trait = scarred
 		} 
+		
+		# Warcraft
+		modifier = {
+			factor = 3
+			trait = corrupted_blood
+		}
+		
 		modifier = { 
 			factor = 1.5
 			trait = ill
@@ -24894,36 +25192,37 @@ select_and_save_fellow_society_member_effect = { #[Runs for ROOT]
 }
 
 add_warrior_lodge_leader_trait_effect = {
-	trigger_switch = {
-		on_trigger = society_member_of
-		warrior_lodge_norse = {
-			add_trait = norse_leader
-		}
-		warrior_lodge_tengri = {
-			add_trait = tengri_leader
-		}
-		warrior_lodge_baltic = {
-			add_trait = baltic_leader
-		}
-		warrior_lodge_finnish = {
-			add_trait = finnish_leader
-		}
-		warrior_lodge_slavic = {
-			add_trait = slavic_leader
-		}
-		warrior_lodge_west_african = {
-			add_trait = west_african_leader
-		}
-		warrior_lodge_zun = {
-			add_trait = zun_leader
-		}
-		warrior_lodge_bon = {
-			add_trait = bon_leader
-		}
-		warrior_lodge_hellenic = {
-			add_trait = hellenic_leader
-		}
-	}
+	# Warcraft
+	# trigger_switch = {
+		# on_trigger = society_member_of
+		# warrior_lodge_norse = {
+			# add_trait = norse_leader
+		# }
+		# warrior_lodge_tengri = {
+			# add_trait = tengri_leader
+		# }
+		# warrior_lodge_baltic = {
+			# add_trait = baltic_leader
+		# }
+		# warrior_lodge_finnish = {
+			# add_trait = finnish_leader
+		# }
+		# warrior_lodge_slavic = {
+			# add_trait = slavic_leader
+		# }
+		# warrior_lodge_west_african = {
+			# add_trait = west_african_leader
+		# }
+		# warrior_lodge_zun = {
+			# add_trait = zun_leader
+		# }
+		# warrior_lodge_bon = {
+			# add_trait = bon_leader
+		# }
+		# warrior_lodge_hellenic = {
+			# add_trait = hellenic_leader
+		# }
+	# }
 }
 fire_haruspicy_event_effect = {
 	hidden_tooltip = { #Divination.
@@ -24931,8 +25230,10 @@ fire_haruspicy_event_effect = {
 			limit = { 
 				attacker = { 
 					OR = { 
-						religion = hellenic_pagan 
-						religion = hellenic_pagan_reformed
+						# Warcraft
+						# religion = hellenic_pagan 
+						# religion = hellenic_pagan_reformed
+						
 						has_religion_feature = religion_haruspicy 
 					} 
 				} 
@@ -24945,8 +25246,10 @@ fire_haruspicy_event_effect = {
 			limit = { 
 				defender = { 
 					OR = { 
-						religion = hellenic_pagan 
-						religion = hellenic_pagan_reformed
+						# Warcraft
+						# religion = hellenic_pagan 
+						# religion = hellenic_pagan_reformed
+						
 						has_religion_feature = religion_haruspicy 
 					} 
 				} 
@@ -25119,10 +25422,6 @@ pacifists_lose_piety_effect = {
 
 #Current variable values: Scarred = 1, Very Scarred = 5, Horrifically Scarred = 10. To rebalance how quickly a character moves up from one to the other, just change the variable effects on all the following scripted_effects.
 add_scarred_tiered_effect = {
-	if = {
-		limit = { NOT = { check_variable = { which = scarred_variable value = 1 } } }
-		tooltip = { add_trait = scarred }
-	}
 	if = {
 		limit = { has_dlc = "Holy Fury" }
 		hidden_tooltip = { change_variable = { which = scarred_variable value = 1 } } 
@@ -25774,188 +26073,190 @@ spawn_debutante_effect = {
 }
 
 transfer_crown_on_abdication_effect = {
-	if = {
-		limit = { 
-			has_landed_title = e_hre
-			any_artifact = { artifact_type = crown_hre } 
-		}
-			current_heir = { save_event_target_as = crown_hre_heir }
-			any_artifact = { 
-				limit = { artifact_type = crown_hre }
-				transfer_artifact = {
-					from = PREV
-					to = event_target:crown_hre_heir
-				} 
-			}
-	}
-	if = {
-		limit = { 
-			has_landed_title = e_byzantium
-			any_artifact = { artifact_type = crown_byzantine }
-		}
-			current_heir = { save_event_target_as = crown_byzantine_heir }
-			any_artifact = { 
-				limit = { artifact_type = crown_byzantine }
-				transfer_artifact = {
-					from = PREV
-					to = event_target:crown_byzantine_heir
-				} 
-			}
-	}
-	if = {
-		limit = { 
-			has_landed_title = e_persia
-			any_artifact = { artifact_type = crown_pahlavi }
-		}
-			current_heir = { save_event_target_as = crown_pahlavi_heir }
-			any_artifact = { 
-				limit = { artifact_type = crown_pahlavi }
-				transfer_artifact = {
-					from = PREV
-					to = event_target:crown_pahlavi_heir
-				} 
-			}
-	}
-	if = {
-		limit = { 
-			has_landed_title = d_norse_pagan_reformed
-			any_artifact = { artifact_type = crown_fylkir }
-		}
-			current_heir = { save_event_target_as = crown_fylkir_heir }
-			any_artifact = { 
-				limit = { artifact_type = crown_fylkir }
-				transfer_artifact = {
-					from = PREV
-					to = event_target:crown_fylkir_heir
-				} 
-			}
-	}
-	if = {
-		limit = { 
-			has_landed_title = d_tengri_pagan_reformed
-			any_artifact = { artifact_type = crown_tengri_fylkir }
-		}
-			current_heir = { save_event_target_as = crown_tengri_fylkir_heir }
-			any_artifact = { 
-				limit = { artifact_type = crown_tengri_fylkir }
-				transfer_artifact = {
-					from = PREV
-					to = event_target:crown_tengri_fylkir_heir
-				} 
-			}
-	}
-	if = {
-		limit = { 
-			has_landed_title = d_slavic_pagan_reformed
-			any_artifact = { artifact_type = crown_slavic_fylkir }
-		}
-			current_heir = { save_event_target_as = crown_slavic_fylkir_heir }
-			any_artifact = { 
-				limit = { artifact_type = crown_slavic_fylkir }
-				transfer_artifact = {
-					from = PREV
-					to = event_target:crown_slavic_fylkir_heir
-				} 
-			}
-	}
-	if = {
-		limit = { 
-			has_landed_title = d_baltic_pagan_reformed
-			any_artifact = { artifact_type = crown_romuva_fylkir }
-		}
-			current_heir = { save_event_target_as = crown_romuva_fylkir_heir }
-			any_artifact = { 
-				limit = { artifact_type = crown_romuva_fylkir }
-				transfer_artifact = {
-					from = PREV
-					to = event_target:crown_romuva_fylkir_heir
-				} 
-			}
-	}
-	if = {
-		limit = { 
-			has_landed_title = d_finnish_pagan_reformed
-			any_artifact = { artifact_type = crown_finnish_fylkir }
-		}
-			current_heir = { save_event_target_as = crown_finnish_fylkir_heir }
-			any_artifact = { 
-				limit = { artifact_type = crown_finnish_fylkir }
-				transfer_artifact = {
-					from = PREV
-					to = event_target:crown_finnish_fylkir_heir
-				} 
-			}
-	}
-	if = {
-		limit = { 
-			has_landed_title = d_west_african_pagan_reformed
-			any_artifact = { artifact_type = crown_west_african_fylkir }
-		}
-			current_heir = { save_event_target_as = crown_west_african_fylkir_heir }
-			any_artifact = { 
-				limit = { artifact_type = crown_west_african_fylkir }
-				transfer_artifact = {
-					from = PREV
-					to = event_target:crown_west_african_fylkir_heir
-				} 
-			}
-	}
-	if = {
-		limit = { 
-			has_landed_title = d_zun_pagan_reformed
-			any_artifact = { artifact_type = crown_zun_fylkir }
-		}
-			current_heir = { save_event_target_as = crown_zun_fylkir_heir }
-			any_artifact = { 
-				limit = { artifact_type = crown_zun_fylkir }
-				transfer_artifact = {
-					from = PREV
-					to = event_target:crown_zun_fylkir_heir
-				} 
-			}
-	}
-	if = {
-		limit = { 
-			has_landed_title = d_bon_reformed
-			any_artifact = { artifact_type = scepter_bon_fylkir }
-		}
-			current_heir = { save_event_target_as = scepter_bon_fylkir_heir }
-			any_artifact = { 
-				limit = { artifact_type = scepter_bon_fylkir }
-				transfer_artifact = {
-					from = PREV
-					to = event_target:scepter_bon_fylkir_heir
-				} 
-			}
-	}
-	if = {
-		limit = { 
-			has_landed_title = d_aztec_reformed
-			any_artifact = { artifact_type = crown_aztec_fylkir }
-		}
-			current_heir = { save_event_target_as = crown_aztec_fylkir_heir }
-			any_artifact = { 
-				limit = { artifact_type = crown_aztec_fylkir }
-				transfer_artifact = {
-					from = PREV
-					to = event_target:crown_aztec_fylkir_heir
-				} 
-			}
-	}
-	if = {
-		limit = { 
-			has_landed_title = k_hellenic_pagan
-			any_artifact = { artifact_type = scepter_hellenic_fylkir }
-		}
-			current_heir = { save_event_target_as = scepter_hellenic_fylkir_heir }
-			any_artifact = { 
-				limit = { artifact_type = scepter_hellenic_fylkir }
-				transfer_artifact = {
-					from = PREV
-					to = event_target:scepter_hellenic_fylkir_heir
-				} 
-			}
-	}
+	# Warcraft
+	# if = {
+		# limit = { 
+			# has_landed_title = e_hre
+			# any_artifact = { artifact_type = crown_hre } 
+		# }
+			# current_heir = { save_event_target_as = crown_hre_heir }
+			# any_artifact = { 
+				# limit = { artifact_type = crown_hre }
+				# transfer_artifact = {
+					# from = PREV
+					# to = event_target:crown_hre_heir
+				# } 
+			# }
+	# }
+	# if = {
+		# limit = { 
+			# has_landed_title = e_byzantium
+			# any_artifact = { artifact_type = crown_byzantine }
+		# }
+			# current_heir = { save_event_target_as = crown_byzantine_heir }
+			# any_artifact = { 
+				# limit = { artifact_type = crown_byzantine }
+				# transfer_artifact = {
+					# from = PREV
+					# to = event_target:crown_byzantine_heir
+				# } 
+			# }
+	# }
+	# if = {
+		# limit = { 
+			# has_landed_title = e_persia
+			# any_artifact = { artifact_type = crown_pahlavi }
+		# }
+			# current_heir = { save_event_target_as = crown_pahlavi_heir }
+			# any_artifact = { 
+				# limit = { artifact_type = crown_pahlavi }
+				# transfer_artifact = {
+					# from = PREV
+					# to = event_target:crown_pahlavi_heir
+				# } 
+			# }
+	# }
+	# if = {
+		# limit = { 
+			# has_landed_title = d_norse_pagan_reformed
+			# any_artifact = { artifact_type = crown_fylkir }
+		# }
+			# current_heir = { save_event_target_as = crown_fylkir_heir }
+			# any_artifact = { 
+				# limit = { artifact_type = crown_fylkir }
+				# transfer_artifact = {
+					# from = PREV
+					# to = event_target:crown_fylkir_heir
+				# } 
+			# }
+	# }
+	# if = {
+		# limit = { 
+			# has_landed_title = d_tengri_pagan_reformed
+			# any_artifact = { artifact_type = crown_tengri_fylkir }
+		# }
+			# current_heir = { save_event_target_as = crown_tengri_fylkir_heir }
+			# any_artifact = { 
+				# limit = { artifact_type = crown_tengri_fylkir }
+				# transfer_artifact = {
+					# from = PREV
+					# to = event_target:crown_tengri_fylkir_heir
+				# } 
+			# }
+	# }
+	# if = {
+		# limit = { 
+			# has_landed_title = d_slavic_pagan_reformed
+			# any_artifact = { artifact_type = crown_slavic_fylkir }
+		# }
+			# current_heir = { save_event_target_as = crown_slavic_fylkir_heir }
+			# any_artifact = { 
+				# limit = { artifact_type = crown_slavic_fylkir }
+				# transfer_artifact = {
+					# from = PREV
+					# to = event_target:crown_slavic_fylkir_heir
+				# } 
+			# }
+	# }
+	# if = {
+		# limit = { 
+			# has_landed_title = d_baltic_pagan_reformed
+			# any_artifact = { artifact_type = crown_romuva_fylkir }
+		# }
+			# current_heir = { save_event_target_as = crown_romuva_fylkir_heir }
+			# any_artifact = { 
+				# limit = { artifact_type = crown_romuva_fylkir }
+				# transfer_artifact = {
+					# from = PREV
+					# to = event_target:crown_romuva_fylkir_heir
+				# } 
+			# }
+	# }
+	# if = {
+		# limit = { 
+			# has_landed_title = d_finnish_pagan_reformed
+			# any_artifact = { artifact_type = crown_finnish_fylkir }
+		# }
+			# current_heir = { save_event_target_as = crown_finnish_fylkir_heir }
+			# any_artifact = { 
+				# limit = { artifact_type = crown_finnish_fylkir }
+				# transfer_artifact = {
+					# from = PREV
+					# to = event_target:crown_finnish_fylkir_heir
+				# } 
+			# }
+	# }
+	# if = {
+		# limit = { 
+			# has_landed_title = d_west_african_pagan_reformed
+			# any_artifact = { artifact_type = crown_west_african_fylkir }
+		# }
+			# current_heir = { save_event_target_as = crown_west_african_fylkir_heir }
+			# any_artifact = { 
+				# limit = { artifact_type = crown_west_african_fylkir }
+				# transfer_artifact = {
+					# from = PREV
+					# to = event_target:crown_west_african_fylkir_heir
+				# } 
+			# }
+	# }
+	# if = {
+		# limit = { 
+			# has_landed_title = d_zun_pagan_reformed
+			# any_artifact = { artifact_type = crown_zun_fylkir }
+		# }
+			# current_heir = { save_event_target_as = crown_zun_fylkir_heir }
+			# any_artifact = { 
+				# limit = { artifact_type = crown_zun_fylkir }
+				# transfer_artifact = {
+					# from = PREV
+					# to = event_target:crown_zun_fylkir_heir
+				# } 
+			# }
+	# }
+	# if = {
+		# limit = { 
+			# has_landed_title = d_bon_reformed
+			# any_artifact = { artifact_type = scepter_bon_fylkir }
+		# }
+			# current_heir = { save_event_target_as = scepter_bon_fylkir_heir }
+			# any_artifact = { 
+				# limit = { artifact_type = scepter_bon_fylkir }
+				# transfer_artifact = {
+					# from = PREV
+					# to = event_target:scepter_bon_fylkir_heir
+				# } 
+			# }
+	# }
+	# if = {
+		# limit = { 
+			# has_landed_title = d_aztec_reformed
+			# any_artifact = { artifact_type = crown_aztec_fylkir }
+		# }
+			# current_heir = { save_event_target_as = crown_aztec_fylkir_heir }
+			# any_artifact = { 
+				# limit = { artifact_type = crown_aztec_fylkir }
+				# transfer_artifact = {
+					# from = PREV
+					# to = event_target:crown_aztec_fylkir_heir
+				# } 
+			# }
+	# }
+	# if = {
+		# limit = { 
+			# has_landed_title = k_hellenic_pagan
+			# any_artifact = { artifact_type = scepter_hellenic_fylkir }
+		# }
+			# current_heir = { save_event_target_as = scepter_hellenic_fylkir_heir }
+			# any_artifact = { 
+				# limit = { artifact_type = scepter_hellenic_fylkir }
+				# transfer_artifact = {
+					# from = PREV
+					# to = event_target:scepter_hellenic_fylkir_heir
+				# } 
+			# }
+	# }
+	
 	#Now transfer all other remaining artifacts to the player_heir, who may or may not be the current_heir.
 	player_heir = { save_event_target_as = scoped_player_heir }
 	any_artifact = { 
@@ -25992,12 +26293,19 @@ rename_character_effect = {
 }
 
 move_childrens_crusade_region_effect = {
-	if = { #If at any point during the preparation Jerusalem is no longer a valid target, stop everything.
+	if = { #If at any point during the preparation Jerusalem is no longer a valid target, or a real Crusade starts, stop everything.
 		limit = {
 			OR = {
 				k_jerusalem = { has_holder = yes holder_scope = { religion_group = christian } }
 				c_jerusalem = { holder_scope = { religion_group = christian } }
 				c_jerusalem = { holder_scope = { is_crusade_target = yes } }
+				religion_head = { is_preparing_crusade = yes }
+				religion_head = { 
+					OR = { 
+						any_war = { using_cb = crusade }  
+						any_war = { using_cb = new_crusade } 
+					} 
+				} 
 			}
 		}
 		any_player = { 
@@ -26017,68 +26325,23 @@ move_childrens_crusade_region_effect = {
 		add_trait = lunatic
 		piety = -150
 		remove_trait = disinherited 
+		set_variable = { which = children_crusade_forces value = 0 }
+		set_variable = { which = children_crusade_morale value = 0 }
+		set_variable = { which = children_crusade_heavy_troops value = 0 }
 		any_courtier = { 
 			remove_trait = disinherited
 			clr_character_flag = no_court_invites
 		}
 		break = yes
 	}
-	if = { #Check starting position to determine traveling path.
-		limit = {
-			NOR = {
-				has_character_flag = flag_children_at_genoa
-				has_character_flag = flag_children_at_achaia
-				has_character_flag = flag_children_at_nikaea
-				has_character_flag = flag_children_at_antioch
-			}
-		}
-		if = {
-			limit = {
-				location = { region = world_europe_south_italy }
-			}
-			clr_character_flag = flag_children_at_genoa
-			clr_character_flag = flag_children_at_nikaea
-			clr_character_flag = flag_children_at_antioch
-			set_character_flag = flag_children_at_achaia
-		}
-		if = {
-			limit = {
-				location = { region = world_europe_south_east }
-			}
-			clr_character_flag = flag_children_at_genoa
-			clr_character_flag = flag_children_at_achaia
-			clr_character_flag = flag_children_at_antioch
-			set_character_flag = flag_children_at_nikaea
-		}
-		if = {
-			limit = {
-				location = { region = world_asia_minor }
-			}
-			clr_character_flag = flag_children_at_genoa
-			clr_character_flag = flag_children_at_achaia
-			clr_character_flag = flag_children_at_nikaea
-			set_character_flag = flag_children_at_antioch
-		}
-	}
 	if = { #Move to Genoa first.
 		limit = {
-			OR = {
-				NOR = {
-					location = { region = world_europe_south_italy }
-					location = { region = world_europe_south_east }
-					location = { region = world_asia_minor }
-					has_character_flag = flag_children_at_achaia
-					has_character_flag = flag_children_at_nikaea
-					has_character_flag = flag_children_at_antioch
-				}
-			}
+			has_character_flag = flag_children_at_beginning
 		}
 		primary_title = { set_preferred_capital = c_genoa } #Historically traveled here.
 		change_variable = { which = children_crusade_forces value = 1 }
 		change_variable = { which = children_crusade_morale value = -1 }
-		clr_character_flag = flag_children_at_achaia
-		clr_character_flag = flag_children_at_nikaea
-		clr_character_flag = flag_children_at_antioch
+		clr_character_flag = flag_children_at_beginning
 		set_character_flag = flag_children_at_genoa
 		if = { 
 			limit = {  
@@ -26100,11 +26363,6 @@ move_childrens_crusade_region_effect = {
 	else_if = { #Then shipwreck to Achaia.
 		limit = {
 			has_character_flag = flag_children_at_genoa
-			NOR = { #Safety check, do not get too lost now...
-				has_character_flag = flag_children_at_achaia
-				has_character_flag = flag_children_at_nikaea
-				has_character_flag = flag_children_at_antioch
-			}
 		}
 		primary_title = { set_preferred_capital = c_achaia } 
 		change_variable = { which = children_crusade_morale value = -1 }
@@ -26133,10 +26391,6 @@ move_childrens_crusade_region_effect = {
 	else_if = { #Then crawl to Nikaea.
 		limit = {
 			has_character_flag = flag_children_at_achaia
-			NOR = { #Safety check, do not get too lost now...
-				has_character_flag = flag_children_at_nikaea
-				has_character_flag = flag_children_at_antioch
-			}
 		}
 		primary_title = { set_preferred_capital = c_nikaea } 
 		clr_character_flag = flag_children_at_achaia
@@ -26156,9 +26410,6 @@ move_childrens_crusade_region_effect = {
 	else_if = { #We actually got there. Start the war.
 		limit = {
 			has_character_flag = flag_children_at_nikaea
-			NOT = { #Safety check, do not get too lost now...
-				has_character_flag = flag_children_at_antioch
-			}
 		}
 		primary_title = { set_preferred_capital = c_antiocheia } #Where the troops will spawn.
 		clr_character_flag = flag_children_at_nikaea
@@ -26215,10 +26466,11 @@ spawn_childrens_crusade_light_troops_effect = {
 				can_toggle_looting = no
 				cannot_inherit = yes
 				merge = yes
+				disband_on_peace = yes
 				earmark = childrens_crusade_infantry_earmark
 				troops = {
-					light_infantry = { 4000 4000 }
-					archers = { 250 250 }
+					light_infantry = { 3000 3000 }
+					archers = { 100 100 }
 				}
 			}
 		}
@@ -26230,7 +26482,6 @@ spawn_childrens_crusade_light_troops_effect = {
 		character_event = { id = HF.25821 }
 	}
 }
-
 
 spawn_childrens_crusade_heavy_troops_effect = {
 	change_variable = { which = children_crusade_heavy_troops value = -1 }
@@ -26248,7 +26499,7 @@ spawn_childrens_crusade_heavy_troops_effect = {
 				merge = yes
 				troops = {
 					heavy_infantry = { 500 500 }
-					light_cavalry = { 250 250 }
+					light_cavalry = { 150 150 }
 				}
 			}
 		}
@@ -26260,6 +26511,7 @@ spawn_childrens_crusade_heavy_troops_effect = {
 		character_event = { id = HF.25822 }
 	}
 }
+
 warrior_lodge_pay_dice_debt_effect = {
 	if = { 
 		limit = { has_character_flag = flag_betting_money_1000 } 
@@ -27266,31 +27518,31 @@ stable_attribute_improvement_effect = {
 						modifier = { 
 							factor = 1.25
 							event_target:scoped_improvement_ruler = { 
-								age = 30
+								is_30_age_trigger = yes
 							}
 						}
 						modifier = { 
 							factor = 1.25
 							event_target:scoped_improvement_ruler = { 
-								age = 35
+								is_40_age_trigger = yes
 							}
 						}
 						modifier = { 
 							factor = 1.5
 							event_target:scoped_improvement_ruler = { 
-								age = 40
+								is_40_age_trigger = yes
 							}
 						}
 						modifier = { 
 							factor = 1.5
 							event_target:scoped_improvement_ruler = { 
-								age = 45
+								is_50_age_trigger = yes
 							}
 						}
 						modifier = { 
 							factor = 1.75
 							event_target:scoped_improvement_ruler = { 
-								age = 50
+								is_50_age_trigger = yes
 							}
 						}
 						modifier = { 
@@ -27464,31 +27716,31 @@ stable_attribute_improvement_effect = {
 						modifier = { 
 							factor = 1.25
 							event_target:scoped_improvement_ruler = { 
-								age = 30
+								is_30_age_trigger = yes
 							}
 						}
 						modifier = { 
 							factor = 1.25
 							event_target:scoped_improvement_ruler = { 
-								age = 35
+								is_40_age_trigger = yes
 							}
 						}
 						modifier = { 
 							factor = 1.5
 							event_target:scoped_improvement_ruler = { 
-								age = 40
+								is_40_age_trigger = yes
 							}
 						}
 						modifier = { 
 							factor = 1.5
 							event_target:scoped_improvement_ruler = { 
-								age = 45
+								is_50_age_trigger = yes
 							}
 						}
 						modifier = { 
 							factor = 1.75
 							event_target:scoped_improvement_ruler = { 
-								age = 50
+								is_50_age_trigger = yes
 							}
 						}
 						modifier = { 
@@ -27662,31 +27914,31 @@ stable_attribute_improvement_effect = {
 						modifier = { 
 							factor = 1.25
 							event_target:scoped_improvement_ruler = { 
-								age = 30
+								is_30_age_trigger = yes
 							}
 						}
 						modifier = { 
 							factor = 1.25
 							event_target:scoped_improvement_ruler = { 
-								age = 35
+								is_40_age_trigger = yes
 							}
 						}
 						modifier = { 
 							factor = 1.5
 							event_target:scoped_improvement_ruler = { 
-								age = 40
+								is_40_age_trigger = yes
 							}
 						}
 						modifier = { 
 							factor = 1.5
 							event_target:scoped_improvement_ruler = { 
-								age = 45
+								is_50_age_trigger = yes
 							}
 						}
 						modifier = { 
 							factor = 1.75
 							event_target:scoped_improvement_ruler = { 
-								age = 50
+								is_50_age_trigger = yes
 							}
 						}
 						modifier = { 
@@ -27866,31 +28118,31 @@ stable_attribute_improvement_effect = {
 						modifier = { 
 							factor = 1.25
 							event_target:scoped_improvement_ruler = { 
-								age = 30
+								is_30_age_trigger = yes
 							}
 						}
 						modifier = { 
 							factor = 1.25
 							event_target:scoped_improvement_ruler = { 
-								age = 35
+								is_40_age_trigger = yes
 							}
 						}
 						modifier = { 
 							factor = 1.5
 							event_target:scoped_improvement_ruler = { 
-								age = 40
+								is_40_age_trigger = yes
 							}
 						}
 						modifier = { 
 							factor = 1.5
 							event_target:scoped_improvement_ruler = { 
-								age = 45
+								is_50_age_trigger = yes
 							}
 						}
 						modifier = { 
 							factor = 1.75
 							event_target:scoped_improvement_ruler = { 
-								age = 50
+								is_50_age_trigger = yes
 							}
 						}
 						modifier = { 
@@ -28449,32 +28701,33 @@ add_same_commander_trait_as_FROM = {
 }
 
 landless_pope_effect = {
-	if = {
-		limit = {
-			has_landed_title = k_papal_state
-			NOT = {
-				catholic = {
-					is_name_randomized = yes
-				}
-			}
-		}
-		if = {
-			limit = {
-				NOR = {
-					any_demesne_province = {
-						always = yes
-					}
-					any_realm_lord = {
-						any_demesne_province = {
-							always = yes
-						}
-					}
-				}
-			}
-			character_event = { id = HFP.40034 }
-			character_event = { id = HFP.40035 }
-		}
-	}
+	# Warcraft
+	# if = {
+		# limit = {
+			# has_landed_title = k_papal_state
+			# NOT = {
+				# catholic = {
+					# is_name_randomized = yes
+				# }
+			# }
+		# }
+		# if = {
+			# limit = {
+				# NOR = {
+					# any_demesne_province = {
+						# always = yes
+					# }
+					# any_realm_lord = {
+						# any_demesne_province = {
+							# always = yes
+						# }
+					# }
+				# }
+			# }
+			# character_event = { id = HFP.40034 }
+			# character_event = { id = HFP.40035 }
+		# }
+	# }
 }
 
 # Used for rains in African regions...
@@ -29675,6 +29928,7 @@ reformation_god_names_changes_effect = { #Reforming religion with certain Doctri
 					add_evil_god_name = GOD_KRONOS
 					add_evil_god_name = GOD_DIONYSUS
 					add_evil_god_name = GOD_HERMES
+					add_evil_god_name = GOD_TYPHON
 				}
 				if = { #Religion is Patriarchal.
 					limit = {
@@ -29707,6 +29961,7 @@ reformation_god_names_changes_effect = { #Reforming religion with certain Doctri
 					add_evil_god_name = GOD_HERA
 					add_evil_god_name = GOD_ATHENA
 					add_evil_god_name = GOD_ARTEMIS
+					add_evil_god_name = GOD_DELFINE
 				}
 				if = { #Religion is Matriarchal.
 					limit = {
@@ -29729,6 +29984,7 @@ reformation_god_names_changes_effect = { #Reforming religion with certain Doctri
 					add_evil_god_name = GOD_GREEK_JUPITER #Otherwise shows Conclave...
 					add_evil_god_name = GOD_POSEIDON
 					add_evil_god_name = GOD_ARES
+					add_evil_god_name = GOD_TYPHON
 				}
 			}
 			if = { #A ruler reforms Hellenism while NOT being Greek-cultured.
@@ -29781,6 +30037,7 @@ reformation_god_names_changes_effect = { #Reforming religion with certain Doctri
 					add_evil_god_name = GOD_PLUTO
 					add_evil_god_name = GOD_BACCHUS
 					add_evil_god_name = GOD_MERCURY
+					add_evil_god_name = GOD_TYPHON
 				}
 				if = { #Religion is Patriarchal.
 					limit = {
@@ -29813,6 +30070,7 @@ reformation_god_names_changes_effect = { #Reforming religion with certain Doctri
 					add_evil_god_name = GOD_JUNO
 					add_evil_god_name = GOD_MINERVA
 					add_evil_god_name = GOD_DIANA
+					add_evil_god_name = GOD_DELFINE
 				}
 				if = { #Religion is Matriarchal.
 					limit = {
@@ -29835,6 +30093,7 @@ reformation_god_names_changes_effect = { #Reforming religion with certain Doctri
 					add_evil_god_name = GOD_JUPITER
 					add_evil_god_name = GOD_NEPTUNE
 					add_evil_god_name = GOD_MARS
+					add_evil_god_name = GOD_TYPHON
 				}
 			}
 		}
@@ -30067,5 +30326,1737 @@ murder_bloodline_check_effect = {
 		}
 		set_character_flag = flag_about_to_murder_bloodline
 		narrative_event = { id = HF.24048 days = 25 random = 25 }
+	}
+}
+
+princely_elective_german_elector_setup_effect = {
+	e_hre = { 
+		#County of Koln
+		#County of Mainz
+		#County of Trier
+		#Duchy of Bohemia
+		#Duchy of Franconia
+		#Duchy of Saxony
+		#Duchy of Brandenburg
+		save_persistent_event_target = { name = hre_title_1_per scope = c_koln }
+		save_persistent_event_target = { name = hre_title_2_per scope = c_mainz }
+		save_persistent_event_target = { name = hre_title_3_per scope = c_trier }
+		save_persistent_event_target = { name = hre_title_4_per scope = d_bohemia }
+		save_persistent_event_target = { name = hre_title_5_per scope = d_franconia }
+		save_persistent_event_target = { name = hre_title_6_per scope = d_saxony }
+		save_persistent_event_target = { name = hre_title_7_per scope = d_brandenburg }
+	}
+}
+
+princely_elective_french_elector_setup_effect = {
+	e_hre = { 
+		#County of Amiens
+		#County of Reims
+		#County of Anjou
+		#Duchy of Aquitaine
+		#Duchy of Burgundy
+		#Duchy of Normandy
+		#Duchy of Champagne
+		save_persistent_event_target = { name = hre_title_1_per scope = c_amiens }
+		save_persistent_event_target = { name = hre_title_2_per scope = c_reims }
+		save_persistent_event_target = { name = hre_title_3_per scope = c_anjou }
+		save_persistent_event_target = { name = hre_title_4_per scope = d_aquitaine }
+		save_persistent_event_target = { name = hre_title_5_per scope = d_burgundy }
+		save_persistent_event_target = { name = hre_title_6_per scope = d_normandy }
+		save_persistent_event_target = { name = hre_title_7_per scope = d_champagne }
+	}
+}
+
+princely_elective_italian_elector_setup_effect = {
+	e_hre = { 
+		#County of Rome
+		#County of Ravenna
+		#County of Genoa
+		#Duchy of Latium
+		#Duchy of Milan
+		#Duchy of Tuscany
+		#Duchy of Pisa
+		save_persistent_event_target = { name = hre_title_1_per scope = c_roma }
+		save_persistent_event_target = { name = hre_title_2_per scope = c_ravenna }
+		save_persistent_event_target = { name = hre_title_3_per scope = c_genoa }
+		save_persistent_event_target = { name = hre_title_4_per scope = d_latium }
+		save_persistent_event_target = { name = hre_title_5_per scope = d_lombardia }
+		save_persistent_event_target = { name = hre_title_6_per scope = d_toscana }
+		save_persistent_event_target = { name = hre_title_7_per scope = d_pisa }
+	}
+}
+
+princely_elective_spain_elector_setup_effect = {
+	e_hre = { 
+		#County of Santiago
+		#County of Cordoba
+		#County of Leon
+		#Duchy of Barcelona
+		#Duchy of Castille
+		#Duchy of Portucale
+		#Duchy of Seville
+		save_persistent_event_target = { name = hre_title_1_per scope = c_santiago }
+		save_persistent_event_target = { name = hre_title_2_per scope = c_leon }
+		save_persistent_event_target = { name = hre_title_3_per scope = c_cordoba }
+		save_persistent_event_target = { name = hre_title_4_per scope = d_barcelona }
+		save_persistent_event_target = { name = hre_title_5_per scope = d_castilla }
+		save_persistent_event_target = { name = hre_title_6_per scope = d_porto }
+		save_persistent_event_target = { name = hre_title_7_per scope = d_sevilla }
+	}
+}
+
+princely_elective_britannia_elector_setup_effect = {
+	e_hre = { 
+		#County of Kent
+		#County of Worcester
+		#County of Durham
+		#Duchy of Mercia
+		#Duchy of Meath
+		#Duchy of Albany
+		#Duchy of Gwynedd
+		save_persistent_event_target = { name = hre_title_1_per scope = c_kent }
+		save_persistent_event_target = { name = hre_title_2_per scope = c_worcester }
+		save_persistent_event_target = { name = hre_title_3_per scope = c_durham }
+		save_persistent_event_target = { name = hre_title_4_per scope = d_mercia }
+		save_persistent_event_target = { name = hre_title_5_per scope = d_meath }
+		save_persistent_event_target = { name = hre_title_6_per scope = d_albany }
+		save_persistent_event_target = { name = hre_title_7_per scope = d_gwynedd }
+	}
+}
+
+princely_elective_apply_elector_setup_effect = { 
+	if = {
+		limit = {
+			capital_scope = {
+				region = world_europe_south_italy
+			}
+		}
+		hidden_tooltip = {
+			princely_elective_italian_elector_setup_effect = yes
+		}
+	}
+	else_if = {
+		limit = {
+			capital_scope = {
+				region = world_europe_west_francia
+			}
+		}
+		hidden_tooltip = {
+			princely_elective_french_elector_setup_effect = yes
+		}
+	}
+	else_if = {
+		limit = {
+			capital_scope = {
+				region = world_europe_west_germania
+			}
+		}
+		hidden_tooltip = {
+			princely_elective_german_elector_setup_effect = yes
+		}
+	}
+	else_if = {
+		limit = {
+			capital_scope = {
+				region = world_europe_west_iberia
+			}
+		}
+		hidden_tooltip = {
+			princely_elective_spain_elector_setup_effect = yes
+		}
+	}
+	else_if = {
+		limit = {
+			capital_scope = {
+				region = world_europe_west_brittania
+			}
+		}
+		hidden_tooltip = {
+			princely_elective_britannia_elector_setup_effect = yes
+		}
+	}
+	else = { #If outside usual borders, default to Germania.
+		hidden_tooltip = {
+			princely_elective_german_elector_setup_effect = yes
+		}
+	}
+}
+
+give_goldsmith_artifacts_flag_okay_effect = {
+	if = {
+	    limit = { 
+	    	OR = {
+	    		religion_group = christian 
+	    		religion_group = jewish_group
+			}
+		}
+	    add_artifact = the_lily_crown
+        add_artifact = noble_scepter
+        add_artifact = engraved_sword
+	}
+	else_if = {
+	    limit = { 
+	        OR = {
+	        	religion_group = muslim 
+	        	religion = west_african_pagan
+	        	religion = west_african_pagan_reformed
+	        }
+	    }
+	    add_artifact = engraved_dagger
+        add_artifact = silver_bracelets
+	}
+	else_if = {
+	    limit = { 
+	        OR = {
+	        	religion_group = indian_group
+	        	religion = bon
+	        	religion = bon_reformed
+	        }
+	    }
+	    add_artifact = engraved_dagger
+        add_artifact = collar_of_pearls
+	}
+	else_if = {
+	    limit = { 
+	        OR = {
+	        	religion_group = zoroastrian_group
+	        	religion = zun_pagan
+	        	religion = zun_pagan_reformed
+			}
+		}
+	    add_artifact = circlet_of_twilight
+        add_artifact = silver_staff
+	}
+	else_if = {
+	    limit = {
+			# Warcraft
+			like_norse_pagan_public_religion_trigger = yes
+	    }
+	    add_artifact = iron_crown
+        add_artifact = engraved_sword
+	}
+	else = {
+	    add_artifact = engraved_crown
+        add_artifact = ceremonial_axe
+	}
+}
+
+give_goldsmith_artifacts_flag_good_effect = {
+	if = {
+	    limit = { 
+	    	OR = {
+	    		religion_group = christian 
+	    		religion_group = jewish_group
+			}
+		}
+	    add_artifact = crown_of_pearls
+        add_artifact = ruby_scepter
+        add_artifact = golden_sword
+	}
+	else_if = {
+	    limit = { 
+	        OR = {
+	        	religion_group = muslim 
+	        	religion = west_african_pagan
+	        	religion = west_african_pagan_reformed
+	        }
+	    }
+	    add_artifact = bejeweled_dagger
+        add_artifact = golden_bracelets
+	}
+	else_if = {
+	    limit = { 
+	        OR = {
+	        	religion_group = indian_group
+	        	religion = bon
+	        	religion = bon_reformed
+	        }
+	    }
+	    add_artifact = bejeweled_dagger
+        add_artifact = necklace_of_radiance
+	}
+	else_if = {
+	    limit = { 
+	        OR = {
+	        	religion_group = zoroastrian_group
+	        	religion = zun_pagan
+	        	religion = zun_pagan_reformed
+			}
+		}
+	    add_artifact = circlet_of_the_heavens
+        add_artifact = golden_staff
+	}
+	else_if = {
+	    limit = {
+			# Warcraft
+			like_norse_pagan_public_religion_trigger = yes
+	    }
+	    add_artifact = crown_of_the_sea
+        add_artifact = golden_sword
+	}
+	else = {
+	    add_artifact = amber_crown
+        add_artifact = obsidian_axe
+	}
+}
+
+give_goldsmith_artifacts_flag_expensive_effect = {
+	if = {
+	    limit = { 
+	    	OR = {
+	    		religion_group = christian 
+	    		religion_group = jewish_group
+			}
+		}
+	    add_artifact = crown_of_majesty
+	    add_artifact = emerald_scepter
+	    add_artifact = sword_of_heroes
+	}
+	else_if = {
+	    limit = { 
+	        OR = {
+	        	religion_group = muslim 
+	        	religion = west_african_pagan
+	        	religion = west_african_pagan_reformed
+	        }
+	    }
+	    add_artifact = dagger_of_glory
+	    add_artifact = ruby_bracelets
+	}
+	else_if = {
+	    limit = { 
+	        OR = {
+	        	religion_group = indian_group
+	        	religion = bon
+	        	religion = bon_reformed
+	        }
+	    }
+	    add_artifact = dagger_of_glory
+	    add_artifact = celestial_necklace
+	}
+	else_if = {
+	    limit = { 
+	        OR = {
+	        	religion_group = zoroastrian_group
+	        	religion = zun_pagan
+	        	religion = zun_pagan_reformed
+			}
+		}
+	    add_artifact = circlet_of_the_heavens
+	    add_artifact = staff_of_majesty
+	}
+	else_if = {
+	    limit = {
+			# Warcraft
+			like_norse_pagan_public_religion_trigger = yes
+	    }
+	    add_artifact = crown_of_crows
+	    add_artifact = sword_of_heroes
+	}
+	else = {
+	    add_artifact = heros_crown
+	    add_artifact = axe_of_the_ancestors
+	}
+}
+
+give_goldsmith_artifacts_flag_amazing_effect = {
+	if = {
+	    limit = { 
+	    	OR = {
+	    		religion_group = christian 
+	    		religion_group = jewish_group
+			}
+		}
+	    add_artifact = crown_of_majesty_2
+	    add_artifact = emerald_scepter_2
+	    add_artifact = sword_of_heroes_2
+	}
+	else_if = {
+	    limit = { 
+	        OR = {
+	        	religion_group = muslim 
+	        	religion = west_african_pagan
+	        	religion = west_african_pagan_reformed
+	        }
+	    }
+	    add_artifact = dagger_of_glory_2
+	    add_artifact = ruby_bracelets_2
+	}
+	else_if = {
+	    limit = { 
+	        OR = {
+	        	religion_group = indian_group
+	        	religion = bon
+	        	religion = bon_reformed
+	        }
+	    }
+	    add_artifact = dagger_of_glory_2
+	    add_artifact = celestial_necklace_2
+	}
+	else_if = {
+	    limit = { 
+	        OR = {
+	        	religion_group = zoroastrian_group
+	        	religion = zun_pagan
+	        	religion = zun_pagan_reformed
+			}
+		}
+	    add_artifact = circlet_of_the_heavens_2
+	    add_artifact = staff_of_majesty_2
+	}
+	else_if = {
+	    limit = {
+			# Warcraft
+			like_norse_pagan_public_religion_trigger = yes
+	    }
+	    add_artifact = crown_of_crows_2
+	    add_artifact = sword_of_heroes_2
+	}
+	else = {
+	    add_artifact = heros_crown_2
+	    add_artifact = axe_of_the_ancestors_2
+	}
+}
+
+
+give_weaponsmith_artifacts_flag_okay_effect = {
+	if = {
+	    limit = { 
+	    	OR = {
+	    		religion_group = christian 
+	    		religion_group = jewish_group
+			}
+		}
+	    add_artifact = the_lily_crown
+        add_artifact = noble_scepter
+        add_artifact = engraved_sword
+	}
+	else_if = {
+	    limit = { 
+	        OR = {
+	        	religion_group = muslim 
+	        	religion = west_african_pagan
+	        	religion = west_african_pagan_reformed
+	        }
+	    }
+	    add_artifact = engraved_dagger
+        add_artifact = silver_bracelets
+	}
+	else_if = {
+	    limit = { 
+	        OR = {
+	        	religion_group = indian_group
+	        	religion = bon
+	        	religion = bon_reformed
+	        }
+	    }
+	    add_artifact = engraved_dagger
+        add_artifact = collar_of_pearls
+	}
+	else_if = {
+	    limit = { 
+	        OR = {
+	        	religion_group = zoroastrian_group
+	        	religion = zun_pagan
+	        	religion = zun_pagan_reformed
+			}
+		}
+	    add_artifact = circlet_of_twilight
+        add_artifact = silver_staff
+	}
+	else_if = {
+	    limit = {
+			# Warcraft
+			like_norse_pagan_public_religion_trigger = yes
+	    }
+	    add_artifact = iron_crown
+        add_artifact = engraved_sword
+	}
+	else = {
+	    add_artifact = engraved_crown
+        add_artifact = ceremonial_axe
+	}
+}
+
+give_weaponsmith_artifacts_flag_good_effect = {
+	if = {
+	    limit = { 
+	    	OR = {
+	    		religion_group = christian 
+	    		religion_group = jewish_group
+			}
+		}
+	    add_artifact = crown_of_pearls
+        add_artifact = ruby_scepter
+        add_artifact = golden_sword
+	}
+	else_if = {
+	    limit = { 
+	        OR = {
+	        	religion_group = muslim 
+	        	religion = west_african_pagan
+	        	religion = west_african_pagan_reformed
+	        }
+	    }
+	    add_artifact = bejeweled_dagger
+        add_artifact = golden_bracelets
+	}
+	else_if = {
+	    limit = { 
+	        OR = {
+	        	religion_group = indian_group
+	        	religion = bon
+	        	religion = bon_reformed
+	        }
+	    }
+	    add_artifact = bejeweled_dagger
+        add_artifact = necklace_of_radiance
+	}
+	else_if = {
+	    limit = { 
+	        OR = {
+	        	religion_group = zoroastrian_group
+	        	religion = zun_pagan
+	        	religion = zun_pagan_reformed
+			}
+		}
+	    add_artifact = circlet_of_the_heavens
+        add_artifact = golden_staff
+	}
+	else_if = {
+	    limit = {
+			# Warcraft
+			like_norse_pagan_public_religion_trigger = yes
+	    }
+	    add_artifact = crown_of_the_sea
+        add_artifact = golden_sword
+	}
+	else = {
+	    add_artifact = amber_crown
+        add_artifact = obsidian_axe
+	}
+}
+
+give_weaponsmith_artifacts_flag_expensive_effect = {
+	if = {
+	    limit = { 
+	    	OR = {
+	    		religion_group = christian 
+	    		religion_group = jewish_group
+			}
+		}
+	    add_artifact = crown_of_majesty
+	    add_artifact = emerald_scepter
+	    add_artifact = sword_of_heroes
+	}
+	else_if = {
+	    limit = { 
+	        OR = {
+	        	religion_group = muslim 
+	        	religion = west_african_pagan
+	        	religion = west_african_pagan_reformed
+	        }
+	    }
+	    add_artifact = dagger_of_glory
+	    add_artifact = ruby_bracelets
+	}
+	else_if = {
+	    limit = { 
+	        OR = {
+	        	religion_group = indian_group
+	        	religion = bon
+	        	religion = bon_reformed
+	        }
+	    }
+	    add_artifact = dagger_of_glory
+	    add_artifact = celestial_necklace
+	}
+	else_if = {
+	    limit = { 
+	        OR = {
+	        	religion_group = zoroastrian_group
+	        	religion = zun_pagan
+	        	religion = zun_pagan_reformed
+			}
+		}
+	    add_artifact = circlet_of_the_heavens
+	    add_artifact = staff_of_majesty
+	}
+	else_if = {
+	    limit = {
+			# Warcraft
+			like_norse_pagan_public_religion_trigger = yes
+	    }
+	    add_artifact = crown_of_crows
+	    add_artifact = sword_of_heroes
+	}
+	else = {
+	    add_artifact = heros_crown
+	    add_artifact = axe_of_the_ancestors
+	}
+}
+
+give_smith_artifacts_flag_okay_effect = {
+	if = {
+        limit = { FROM = { has_character_flag = weapon_sword } }
+        add_artifact = sword_tier_1_new
+        set_character_flag = sword_tier_1   
+            new_artifact = {
+            	set_name = artifact_name
+            	set_description = artifact_description_smith_tier_1
+            }
+    }
+    if = {
+        limit = { FROM = { has_character_flag = weapon_scimitar } }
+        add_artifact = scimitar_tier_1_new
+        set_character_flag = scimitar_tier_1   
+        new_artifact = {
+          	set_name = artifact_name
+           	set_description = artifact_description_smith_tier_1
+        }
+    }
+    if = {
+        limit = { FROM = { has_character_flag = weapon_lance } }
+        add_artifact = lance_tier_1_new
+		set_character_flag = lance_tier_1   
+        new_artifact = {
+            set_name = artifact_name
+            set_description = artifact_description_smith_tier_1
+        }
+    }
+    if = {
+        limit = { FROM = { has_character_flag = weapon_axe } }
+        add_artifact = axe_tier_1_new
+        set_character_flag = axe_tier_1   
+        new_artifact = {
+            set_name = artifact_name
+            set_description = artifact_description_smith_tier_1
+        }
+    }
+    if = {
+        limit = { FROM = { has_character_flag = weapon_mace } }
+        add_artifact = mace_tier_1_new
+        set_character_flag = mace_tier_1   
+        new_artifact = {
+        	set_name = artifact_name
+        	set_description = artifact_description_smith_tier_1
+        }
+    }
+    if = {
+        limit = { FROM = { has_character_flag = weapon_bow } }
+        add_artifact = bow_tier_1_new
+        set_character_flag = bow_tier_1   
+        new_artifact = {
+            set_name = artifact_name
+            set_description = artifact_description_smith_tier_1
+        }
+    }
+    if = {
+        limit = { FROM = { has_character_flag = armor_set } }
+        add_artifact = armor_tier_1
+    }
+}
+
+give_smith_artifacts_flag_good_effect = {
+	if = {
+        limit = { FROM = { has_character_flag = weapon_sword } }
+        add_artifact = sword_tier_2_new
+        set_character_flag = sword_tier_2   
+            new_artifact = {
+            	set_name = artifact_name
+            	set_description = artifact_description_smith_tier_2
+            }
+    }
+    if = {
+        limit = { FROM = { has_character_flag = weapon_scimitar } }
+        add_artifact = scimitar_tier_2_new
+        set_character_flag = scimitar_tier_2   
+        new_artifact = {
+          	set_name = artifact_name
+           	set_description = artifact_description_smith_tier_2
+        }
+    }
+    if = {
+        limit = { FROM = { has_character_flag = weapon_lance } }
+        add_artifact = lance_tier_2_new
+		set_character_flag = lance_tier_2   
+        new_artifact = {
+            set_name = artifact_name
+            set_description = artifact_description_smith_tier_2
+        }
+    }
+    if = {
+        limit = { FROM = { has_character_flag = weapon_axe } }
+        add_artifact = axe_tier_2_new
+        set_character_flag = axe_tier_2   
+        new_artifact = {
+            set_name = artifact_name
+            set_description = artifact_description_smith_tier_2
+        }
+    }
+    if = {
+        limit = { FROM = { has_character_flag = weapon_mace } }
+        add_artifact = mace_tier_2_new
+        set_character_flag = mace_tier_2   
+        new_artifact = {
+        	set_name = artifact_name
+        	set_description = artifact_description_smith_tier_2
+        }
+    }
+    if = {
+        limit = { FROM = { has_character_flag = weapon_bow } }
+        add_artifact = bow_tier_2_new
+        set_character_flag = bow_tier_2   
+        new_artifact = {
+            set_name = artifact_name
+            set_description = artifact_description_smith_tier_2
+        }
+    }
+    if = {
+        limit = { FROM = { has_character_flag = armor_set } }
+        add_artifact = armor_tier_2
+    }
+}
+
+give_smith_artifacts_flag_amazing_optionA_effect = {
+	if = {
+        limit = { FROM = { has_character_flag = weapon_sword } }
+        add_artifact = sword_tier_4_heartseeker
+    }
+    if = {
+        limit = { FROM = { has_character_flag = weapon_scimitar } }
+        add_artifact = scimitar_tier_4_golden
+    }
+    if = {
+        limit = { FROM = { has_character_flag = weapon_lance } }
+        add_artifact = lance_tier_4_impaler
+    }
+    if = {
+        limit = { FROM = { has_character_flag = weapon_axe } }
+        add_artifact = axe_tier_4_cleaver
+    }
+    if = {
+        limit = { FROM = { has_character_flag = weapon_mace } }
+        add_artifact = mace_tier_4_foe_hammer
+    }
+    if = {
+        limit = { FROM = { has_character_flag = weapon_bow } }
+        add_artifact = bow_tier_4_silent_wind
+    }
+    if = {
+        limit = { FROM = { has_character_flag = armor_set } }
+        add_artifact = armor_tier_4_guardian
+    }
+}
+
+give_smith_artifacts_flag_amazing_optionB_effect = {
+	if = {
+        limit = { FROM = { has_character_flag = weapon_sword } }
+        add_artifact = sword_tier_4_vengeance
+    }
+    if = {
+        limit = { FROM = { has_character_flag = weapon_scimitar } }
+        add_artifact = scimitar_tier_4_fortune
+    }
+    if = {
+        limit = { FROM = { has_character_flag = weapon_lance } }
+        add_artifact = lance_tier_4_trident
+    }
+    if = {
+        limit = { FROM = { has_character_flag = weapon_axe } }
+        add_artifact = axe_tier_4_ravager
+    }
+    if = {
+        limit = { FROM = { has_character_flag = weapon_mace } }
+        add_artifact = mace_tier_4_bone_breaker
+    }
+    if = {
+        limit = { FROM = { has_character_flag = weapon_bow } }
+        add_artifact = bow_tier_4_lightning
+    }
+    if = {
+        limit = { FROM = { has_character_flag = armor_set } }
+        add_artifact = armor_tier_4_champion
+    }
+}
+
+give_smith_artifacts_flag_amazing_optionC_effect = {
+	if = {
+        limit = { FROM = { has_character_flag = weapon_sword } }
+        add_artifact = sword_tier_4_fury
+    }
+    if = {
+        limit = { FROM = { has_character_flag = weapon_scimitar } }
+        add_artifact = scimitar_tier_4_conquest
+    }
+    if = {
+        limit = { FROM = { has_character_flag = weapon_lance } }
+        add_artifact = lance_tier_4_piercer
+    }
+    if = {
+        limit = { FROM = { has_character_flag = weapon_axe } }
+        add_artifact = axe_tier_4_marauder
+    }
+    if = {
+        limit = { FROM = { has_character_flag = weapon_mace } }
+        add_artifact = mace_tier_4_shatterer
+    }
+    if = {
+        limit = { FROM = { has_character_flag = weapon_bow } }
+        add_artifact = bow_tier_4_eagle
+    }
+    if = {
+        limit = { FROM = { has_character_flag = armor_set } }
+        add_artifact = armor_tier_4_warden
+    }
+}
+
+give_smith_artifacts_flag_expensive_optionA_effect = {
+	if = {
+        limit = { FROM = { has_character_flag = weapon_sword } }
+        add_artifact = sword_tier_3_heartseeker
+    }
+    if = {
+        limit = { FROM = { has_character_flag = weapon_scimitar } }
+        add_artifact = scimitar_tier_3_golden
+    }
+    if = {
+        limit = { FROM = { has_character_flag = weapon_lance } }
+        add_artifact = lance_tier_3_impaler
+    }
+    if = {
+        limit = { FROM = { has_character_flag = weapon_axe } }
+        add_artifact = axe_tier_3_cleaver
+    }
+    if = {
+        limit = { FROM = { has_character_flag = weapon_mace } }
+        add_artifact = mace_tier_3_foe_hammer
+    }
+    if = {
+        limit = { FROM = { has_character_flag = weapon_bow } }
+        add_artifact = bow_tier_3_silent_wind
+    }
+    if = {
+        limit = { FROM = { has_character_flag = armor_set } }
+        add_artifact = armor_tier_3_guardian
+    }
+}
+
+give_smith_artifacts_flag_expensive_optionB_effect = {
+	if = {
+        limit = { FROM = { has_character_flag = weapon_sword } }
+        add_artifact = sword_tier_3_vengeance
+    }
+    if = {
+        limit = { FROM = { has_character_flag = weapon_scimitar } }
+        add_artifact = scimitar_tier_3_fortune
+    }
+    if = {
+        limit = { FROM = { has_character_flag = weapon_lance } }
+        add_artifact = lance_tier_3_trident
+    }
+    if = {
+        limit = { FROM = { has_character_flag = weapon_axe } }
+        add_artifact = axe_tier_3_ravager
+    }
+    if = {
+        limit = { FROM = { has_character_flag = weapon_mace } }
+        add_artifact = mace_tier_3_bone_breaker
+    }
+    if = {
+        limit = { FROM = { has_character_flag = weapon_bow } }
+        add_artifact = bow_tier_3_lightning
+    }
+    if = {
+        limit = { FROM = { has_character_flag = armor_set } }
+        add_artifact = armor_tier_3_champion
+    }
+}
+
+give_smith_artifacts_flag_expensive_optionC_effect = {
+	if = {
+        limit = { FROM = { has_character_flag = weapon_sword } }
+        add_artifact = sword_tier_3_fury
+    }
+    if = {
+        limit = { FROM = { has_character_flag = weapon_scimitar } }
+        add_artifact = scimitar_tier_3_conquest
+    }
+    if = {
+        limit = { FROM = { has_character_flag = weapon_lance } }
+        add_artifact = lance_tier_3_piercer
+    }
+    if = {
+        limit = { FROM = { has_character_flag = weapon_axe } }
+        add_artifact = axe_tier_3_marauder
+    }
+    if = {
+        limit = { FROM = { has_character_flag = weapon_mace } }
+        add_artifact = mace_tier_3_shatterer
+    }
+    if = {
+        limit = { FROM = { has_character_flag = weapon_bow } }
+        add_artifact = bow_tier_3_eagle
+    }
+    if = {
+        limit = { FROM = { has_character_flag = armor_set } }
+        add_artifact = armor_tier_3_warden
+    }
+}
+
+give_random_character_modifier_effect = {
+	random_list = {
+		100 = {
+			trigger = {
+				NOT = { has_character_modifier = aspiring_poet }
+			}
+			modifier = {
+				factor = 2
+				learning = 12
+			}
+			add_character_modifier = {
+				name = aspiring_poet
+				years = 5
+			}
+		}
+		100 = {
+			trigger = {
+				NOT = { has_character_modifier = aspiring_duelist }
+			}
+			modifier = {
+				factor = 2
+				martial = 12
+			}
+			modifier = {
+				factor = 2
+				OR = {
+					duelist_skill_is_medium_group_trigger = yes
+					duelist_skill_is_high_group_trigger = yes
+				}
+			}
+			add_character_modifier = {
+				name = aspiring_duelist
+				years = 5
+			}
+		}
+		100 = {
+			trigger = {
+				NOT = { has_character_modifier = aspiring_hunter }
+			}
+			add_character_modifier = {
+				name = aspiring_hunter
+				years = 5
+			}
+		}
+		100 = {
+			trigger = {
+				NOT = { has_character_modifier = aspiring_falconer }
+			}
+			add_character_modifier = {
+				name = aspiring_falconer
+				years = 5
+			}
+		}
+		100 = {
+			trigger = {
+				NOT = { has_character_modifier = learning_advice }
+			}
+			add_character_modifier = {
+				name = learning_advice
+				years = 5
+			}
+		}
+		100 = {
+			trigger = {
+				NOT = { has_character_modifier = slept_in_church }
+			}
+			modifier = {
+				factor = 2
+				trait = drunkard
+			}
+			add_character_modifier = {
+				name = slept_in_church
+				years = 5
+			}
+		}
+		100 = {
+			trigger = {
+				NOT = { has_character_modifier = gambler }
+			}
+			add_character_modifier = {
+				name = gambler
+				years = 5
+			}
+		}
+		100 = {
+			trigger = {
+				NOT = { has_character_modifier = whoremaster }
+			}
+			modifier = {
+				factor = 2
+				trait = lustful
+			}
+			add_character_modifier = {
+				name = whoremaster
+				years = 5
+			}
+		}
+		100 = {
+			trigger = {
+				NOT = { has_character_modifier = good_deeds }
+			}
+			modifier = {
+				factor = 1.5
+				is_benevolent_trigger = yes
+			}
+			modifier = {
+				factor = 1.5
+				has_pleasant_personality_trigger = yes
+			}
+			add_character_modifier = {
+				name = good_deeds
+				years = 5
+			}
+		}
+		100 = {
+			trigger = {
+				NOT = { has_character_modifier = proving_bravery }
+			}
+			modifier = {
+				factor = 2
+				trait = brave
+			}
+			add_character_modifier = {
+				name = proving_bravery
+				years = 5
+			}
+		}
+		100 = {
+			trigger = {
+				NOT = { has_character_modifier = suspected_coward }
+			}
+			modifier = {
+				factor = 0.5
+				trait = brave
+			}
+			add_character_modifier = {
+				name = suspected_coward
+				years = 5
+			}
+		}
+		5 = {
+			trigger = {
+				NOT = { has_character_modifier = speaking_in_tounges }
+			}
+			modifier = {
+				factor = 4
+				trait = lunatic
+			}
+			add_character_modifier = {
+				name = speaking_in_tounges
+				years = 5
+			}
+		}
+		100 = {
+			trigger = {
+				NOT = { has_character_modifier = good_times }
+			}
+			add_character_modifier = {
+				name = good_times
+				years = 5
+			}
+		}
+		100 = {
+			trigger = {
+				NOT = { has_character_modifier = good_hunt }
+			}
+			modifier = {
+				factor = 2
+				trait = hunter
+			}
+			add_character_modifier = {
+				name = good_hunt
+				years = 5
+			}
+		}
+		5 = {
+			trigger = {
+				NOT = { has_character_modifier = epic_hangover }
+			}
+			modifier ={
+				factor = 4
+				trait = drunkard
+			}
+			add_character_modifier = {
+				name = epic_hangover
+				years = 5
+			}
+		}
+		100 = {
+			trigger = {
+				NOT = { has_character_modifier = weird_scholar }
+			}
+			modifier = {
+				factor = 2
+				learning = 12
+			}
+			add_character_modifier = {
+				name = weird_scholar
+				years = 5
+			}
+		}
+		100 = {
+			trigger = {
+				NOT = { has_character_modifier = comfort_of_lover }
+			}
+			trigger = {
+				has_lover = yes
+			}
+			add_character_modifier = {
+				name = comfort_of_lover
+				years = 5
+			}
+		}
+		100 = {
+			trigger = {
+				NOT = { has_character_modifier = sleep_deprivation }
+			}
+			add_character_modifier = {
+				name = sleep_deprivation
+				years = 5
+			}
+		}
+		100 = {
+			trigger = {
+				NOT = { has_character_modifier = pet_cat }
+			}
+			add_character_modifier = {
+				name = pet_cat
+				years = 5
+			}
+			random_list = {
+				25 = {
+					trigger = {
+						is_female = yes
+					}
+					add_character_modifier = {
+	    				name = crazy_cat_lady
+	    				years = 5
+	    			}
+				}
+				25 = {
+					trigger = {
+						is_female = no
+					}
+					add_character_modifier = {
+	    				name = crazy_cat_lord
+	    				years = 5
+	    			}
+				}
+				50 = {}
+			}
+		}
+		100 = {
+			trigger = {
+				NOT = { has_character_modifier = invigorated }
+			}
+			add_character_modifier = {
+				name = invigorated
+				years = 5
+			}
+		}
+		100 = {
+			trigger = {
+				NOT = { has_character_modifier = good_listener }
+			}
+			add_character_modifier = {
+				name = good_listener
+				years = 5
+			}
+		}
+		100 = {
+			trigger = {
+				NOT = { has_character_modifier = confident }
+			}
+			add_character_modifier = {
+				name = confident
+				years = 5
+			}
+		}
+		100 = {
+			trigger = {
+				NOT = { has_character_modifier = bad_person }
+				is_benevolent_trigger = no
+				has_pleasant_personality_trigger = no
+			}
+			modifier = {
+				factor = 2
+				OR = {
+					is_evil_trigger = yes
+					has_unpleasant_personality_trigger = yes
+				}
+			}
+			add_character_modifier = {
+				name = bad_person
+				years = 5
+			}
+		}
+		100 = {
+			trigger = {
+				NOT = { has_character_modifier = pet_parrot }
+			}
+			add_character_modifier = {
+				name = pet_parrot
+				years = 5
+			}
+		}
+		100 = {
+			trigger = {
+				NOT = { has_character_modifier = pet_owl }
+			}
+			add_character_modifier = {
+				name = pet_owl
+				years = 5
+			}
+		}
+		100 = {
+			trigger = {
+				NOT = { has_character_modifier = taking_it_easy }
+			}
+			modifier = {
+				factor = 2
+				trait = slothful
+			}
+			add_character_modifier = {
+				name = taking_it_easy
+				years = 5
+			}
+		}
+		100 = {
+			trigger = {
+				NOT = { has_character_modifier = fell_into_the_river }
+			}
+			add_character_modifier = {
+				name = fell_into_the_river
+				years = 5
+			}
+		}
+		100 = {
+			trigger = {
+				NOT = { has_character_modifier = green_fingers }
+			}
+			add_character_modifier = {
+				name = green_fingers
+				years = 5
+			}
+		}
+		100 = {
+			trigger = {
+				NOT = { has_character_modifier = pet_house_dog }
+			}
+			add_character_modifier = {
+				name = pet_house_dog
+				years = 5
+			}
+		}
+		100 = {
+			trigger = {
+				NOT = { has_character_modifier = pet_hedgehog }
+			}
+			add_character_modifier = {
+				name = pet_hedgehog
+				years = 5
+			}
+		}
+		100 = {
+			trigger = {
+				NOT = { has_character_modifier = pet_otter }
+			}
+			add_character_modifier = {
+				name = pet_otter
+				years = 5
+			}
+		}
+		100 = {
+			trigger = {
+				NOT = { has_character_modifier = bad_nights_sleep }
+			}
+			add_character_modifier = {
+				name = bad_nights_sleep
+				years = 5
+			}
+		}
+		100 = {
+			trigger = {
+				NOT = { has_character_modifier = good_nights_sleep }
+			}
+			add_character_modifier = {
+				name = good_nights_sleep
+				years = 5
+			}
+		}
+		100 = {
+			trigger = {
+				NOT = { has_character_modifier = well_spoken }
+			}
+			modifier = {
+				factor = 2
+				diplomacy = 12
+			}
+			add_character_modifier = {
+				name = well_spoken
+				years = 5
+			}
+		}
+		100 = {
+			trigger = {
+				NOT = { has_character_modifier = jumbling_words }
+			}
+			modifier = {
+				factor = 2
+				diplomacy < 8
+			}
+			add_character_modifier = {
+				name = jumbling_words
+				years = 5
+			}
+		}
+		100 = {
+			trigger = {
+				has_injury_trigger = no
+			}
+			apply_random_minor_injury_effect = yes
+		}
+		0.001 = {
+			#fallback
+		}
+	}
+}
+
+assign_random_nickname_effect = {
+	random_list = {
+		10 = {
+			trigger = {
+				trait = brave
+			}
+			random_list = {
+				10 = {
+					give_nickname = nick_the_brave
+				}
+				10 = {
+					give_nickname = nick_the_fearless
+				}
+			}
+		}
+		10 = {
+			give_nickname = nick_the_unlucky
+		}
+		10 = {
+			give_nickname = nick_the_lucky
+		}
+		5 = {
+			modifier = {
+				factor = 4
+				learning < 6
+			}
+			give_nickname = nick_the_clueless
+		}
+		10 = {
+			modifier = {
+				factor = 4
+				OR = {
+					is_evil_trigger = yes
+					has_unpleasant_personality_trigger = yes
+				}
+			}
+			give_nickname = nick_the_ill_tempered
+		}
+		10 = {
+			modifier = {
+				factor = 4
+				OR = {
+					has_pleasant_personality_trigger = yes
+					is_pious_trigger = yes
+				}
+			}
+			give_nickname = nick_the_affable
+		}
+		10 = {
+			trigger = {
+				age < 30
+			}
+			give_nickname = nick_the_youthful
+		}
+		5 = {
+			modifier = {
+				factor = 4
+				is_attractive_trigger = yes
+			}
+			give_nickname = nick_the_beguiling
+		}
+		10 = {
+			trigger = {
+				trait = lustful
+			}
+			give_nickname = nick_the_lewd
+		}
+		5 = {
+			modifier = {
+				factor = 4
+				trait = lustful
+			}
+			modifier = {
+				factor = 2
+				has_lover = yes
+			}
+			give_nickname = nick_the_unchaste
+		}
+		5 = {
+			trigger = {
+				uses_decadence = yes
+				decadence = 50
+			}
+			modifier = {
+				factor = 4
+				decadence = 70
+			}
+			give_nickname = nick_the_decadent
+		}
+		10 = {
+			trigger = {
+				has_unpleasant_personality_trigger = yes
+			}
+			random_list = {
+				10 = {
+					give_nickname = nick_the_shrewd
+				}
+				10 = {
+					give_nickname = nick_the_wily
+				}
+			}
+		}
+		10 = {
+			trigger = {
+				has_pleasant_personality_trigger = yes
+			}
+			give_nickname = nick_the_jolly
+		}
+		10 = {
+			trigger ={
+				has_pleasant_personality_trigger = yes
+			}
+			random_list = {
+				10 = {
+					give_nickname = nick_the_gracious
+				}
+				10 = {
+					give_nickname = nick_the_kind
+				}
+				10 = {
+					give_nickname = nick_the_good
+				}
+			}
+		}
+		10 = {
+			trigger = {
+				trait = patient
+			}
+			random_list = {
+				10 = {
+					give_nickname = nick_the_tenacious
+				}
+				10 = {
+					give_nickname = nick_the_mule
+				}
+			}
+		}
+		5 = {
+			modifier = {
+				factor = 4
+				has_mental_disorder_trigger = yes
+			}
+			give_nickname = nick_the_strange
+		}
+		10 = {
+			trigger = {
+				is_weak_trigger = yes
+			}
+			give_nickname = nick_the_clumsy
+		}
+		10 = {
+			trigger = {
+				is_impious_trigger = yes
+			}
+			give_nickname = nick_the_evil
+		}
+		10 = {
+			trigger = {
+				is_strong_trigger = yes
+			}
+			give_nickname = nick_the_strong
+		}
+		10 = {
+			modifier = {
+				factor = 2
+				has_pleasant_personality_trigger = yes
+			}
+			give_nickname = nick_the_merry
+		}
+		10 = {
+			modifier = {
+				factor = 2
+				has_pleasant_personality_trigger = yes
+			}
+			give_nickname = nick_the_gentle
+		}
+		10 = {
+			trigger = {
+				trait = proud
+			}
+			give_nickname = nick_the_proud
+		}
+		10 = {
+			trigger = {
+				trait = shy
+			}
+			give_nickname = nick_the_silent
+		}
+		10 = {
+			trigger = {
+				trait = chaste
+			}
+			give_nickname = nick_the_chaste
+		}
+		10 = {
+			trigger = {
+				is_attractive_trigger = yes
+				is_female = no
+			}
+			random_list = {
+				10 = {
+					give_nickname = nick_the_handsome
+				}
+				10 = {
+					give_nickname = nick_the_vain
+				}
+			}
+		}
+		10 = {
+			trigger = {
+				is_attractive_trigger = yes
+				is_female = yes
+			}
+			random_list = {
+				10 = {
+					give_nickname = nick_the_fair
+				}
+				10 = {
+					give_nickname = nick_the_vain
+				}
+				10 = {
+					give_nickname = nick_the_flower
+				}
+			}
+		}
+		10 = {
+			trigger = {
+				is_unattractive_trigger = yes
+			}
+			random_list = {
+				10 = {
+					give_nickname = nick_the_hideous
+				}
+				10 = {
+					give_nickname = nick_the_frog
+				}
+				10 = {
+					give_nickname = nick_the_repulsive
+				}
+			}
+		}
+		10 = {
+			trigger = {
+				trait = lunatic
+			}
+			give_nickname = nick_the_mad
+		}
+		10 = {
+			trigger = {
+				trait = drunkard
+			}
+			give_nickname = nick_the_drunkard
+		}
+		10 = {
+			trigger = {
+				learning = 10
+			}
+			modifier = {
+				factor = 2
+				learning = 14
+			}
+			give_nickname = nick_the_wise
+		}
+		10 = {
+			trigger = {
+				is_pious_trigger = yes
+			}
+			random_list = {
+				10 = {
+					give_nickname = nick_the_pious 
+				}
+				10 = {
+					give_nickname = nick_the_blessed 
+				}
+			}
+		}
+		10 = {
+			give_nickname = nick_the_careless 
+		}
+		10 = {
+			trigger = {
+				age < 25
+			}
+			give_nickname = nick_the_young 
+		}
+		10 = {
+			trigger = {
+				age = 50
+			}
+			give_nickname = nick_the_old 
+		}
+		10 = {
+			trigger = {
+				learning = 10
+			}
+			random_list = {
+				10 = {
+					give_nickname = nick_the_scholar
+				}
+				10 = {
+					give_nickname = nick_the_understanding
+				} 
+				10 = {
+					give_nickname = nick_the_healer 
+				}
+			}
+		}
+		10 = {
+			trigger = {
+				combat_rating = 10
+			}
+			give_nickname = nick_the_oakskin
+		}
+		10 = {
+			give_nickname = nick_the_jittery
+		}
+		10 = {
+			trigger = {
+				trait = slothful
+			}
+			give_nickname = nick_the_sleepy
+		}
+		10 = {
+			trigger = {
+				base_health < 3
+			}
+			random_list = {
+				10 = {
+					give_nickname = nick_butter_teeth
+				}
+				10 = {
+					give_nickname = nick_the_toothless
+				}
+			}
+		}
+		10 = {
+			trigger = {
+				trait = craven
+			}
+			random_list = {
+				10 = {
+					give_nickname = nick_the_cowardly
+				}
+				10 = {
+					give_nickname = nick_the_squirmy
+				}
+			}
+		}
+		10 = {
+			trigger = {
+				trait = paranoid
+			}
+			give_nickname = nick_the_frantic 
+		}
+		10 = {
+			give_nickname = nick_the_dry_throat 
+		}
+		10 = {
+			trigger = {
+				NOR = {
+					trait = genius
+					trait = quick
+				}
+			}
+			modifier = {
+				factor = 4
+				OR = {
+					trait = imbecile
+					trait = slow
+				}
+			}
+			random_list = {
+				10 = {
+					give_nickname = nick_the_thin_minded
+				}
+				10 = {
+					give_nickname = nick_the_forgetful
+				}
+			}
+		}
+		10 = {
+			give_nickname = nick_the_messy 
+		}
+		10 = {
+			give_nickname = nick_the_feeble
+		}
+		10 = {
+			trigger = {
+				NOT = { trait = gregarious }
+			}
+			modifier = {
+				factor = 2
+				trait = shy
+			}
+			give_nickname = nick_the_recluse
+		}
+		10 = {
+			trigger = {
+				trait = wroth
+			}
+			give_nickname = nick_the_short_tempered
+		}
+		10 = {
+			give_nickname = nick_the_red_cheeks
+		}
+		10 = {
+			give_nickname = nick_the_blushing
+		}
+		10 = {
+			trigger = {
+				NOT = {
+					trait = content
+				}
+			}
+			give_nickname = nick_the_whiner
+		}
+		10 = {
+			trigger = {
+				trait = deceitful
+			}
+			give_nickname = nick_the_liar
+		}
+		10 = {
+			give_nickname = nick_the_twitchy
+		}
 	}
 }

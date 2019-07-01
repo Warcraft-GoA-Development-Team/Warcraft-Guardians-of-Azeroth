@@ -172,16 +172,13 @@ targeted_decisions = {
 		from_potential = {
 			# Warcraft
 			is_untouchable_trigger = no
-			can_rule_peacefully_trigger = yes
-			
 			has_dlc = "Reapers"
 		}
 		
 		potential = {
 			# Warcraft
 			is_untouchable_trigger = no
-			can_rule_peacefully_trigger = yes
-			
+
 			FROMFROM = {
 				attacker = { character = ROOT }
 			}
@@ -239,7 +236,6 @@ targeted_decisions = {
 		from_potential = {
 			# Warcraft
 			is_untouchable_trigger = no
-			can_rule_peacefully_trigger = yes
 			
 			has_dlc = "Reapers"
 			has_dlc = "Conclave"
@@ -248,7 +244,6 @@ targeted_decisions = {
 		potential = {
 			# Warcraft
 			is_untouchable_trigger = no
-			can_rule_peacefully_trigger = yes
 			
 			FROMFROM = {
 				attacker = { character = ROOT }
@@ -294,7 +289,6 @@ targeted_decisions = {
 		from_potential = {
 			# Warcraft
 			is_untouchable_trigger = no
-			can_rule_peacefully_trigger = yes
 			
 			has_dlc = "Reapers"
 		}
@@ -302,7 +296,6 @@ targeted_decisions = {
 		potential = {
 			# Warcraft
 			is_untouchable_trigger = no
-			can_rule_peacefully_trigger = yes
 			
 			FROMFROM = {
 				defender = { character = ROOT }
@@ -361,7 +354,6 @@ targeted_decisions = {
 		from_potential = {
 			# Warcraft
 			is_untouchable_trigger = no
-			can_rule_peacefully_trigger = yes
 			
 			has_dlc = "Reapers"
 			has_dlc = "Conclave"
@@ -370,7 +362,6 @@ targeted_decisions = {
 		potential = {
 			# Warcraft
 			is_untouchable_trigger = no
-			can_rule_peacefully_trigger = yes
 			
 			FROMFROM = {
 				defender = { character = ROOT }
@@ -552,33 +543,29 @@ targeted_decisions = {
 		ai_target_filter = court
 		ai = no
 		
-		from_potential = {
-			# Warcraft
-			is_untouchable_trigger = no
-			
-			has_dlc = "Reapers"
-		}
 		potential = {
 			liege = { character = FROM }
-			can_be_asked_to_leave_court_trigger = yes
-			NOT = {
-				any_spouse = {
-					liege = { character = FROM }
-					can_be_asked_to_leave_court_trigger = no
-				}
-			}
 		}
 		allow = {
-			NOT = {
-				is_incapable = yes
-			}
-			prisoner = no
-			NOT = {
-				any_spouse = {
-					liege = { character = FROM }
-					OR = {
-						is_incapable = yes
-						prisoner = yes
+			can_be_asked_to_leave_court_trigger = yes
+
+			trigger_if = {
+				limit = {
+					is_married = yes
+					any_spouse = {
+						liege = { character = FROM }
+						NOT = { character = FROM }
+					}
+				}
+				# custom tooltip for their spouse not being eligble for leaving the court
+				custom_tooltip = {
+					text = their_spouse_must_be_allow_to_leave_tt
+					any_spouse = {
+						hidden_trigger = {
+							liege = { character = FROM }
+							NOT = { character = FROM }
+						}
+						can_be_asked_to_leave_court_trigger = yes
 					}
 				}
 			}
@@ -586,20 +573,41 @@ targeted_decisions = {
 		effect = {
 			FROM = { prestige = -5 }
 		
-			opinion = {
-				modifier = opinion_disappointed
-				who = FROM
-				years = 10
+			if = {
+				limit = {
+					free_court_slots < -10
+				}
+				opinion = {
+					modifier = opinion_was_ordered_to_leave_crowded_court
+					who = FROM
+					years = 10
+				}
+				any_spouse = {
+					limit = { liege = { character = FROM } }
+					opinion = {
+						modifier = opinion_was_ordered_to_leave_crowded_court
+						who = FROM
+						years = 10
+					}
+				}
 			}
-			
-			any_spouse = {
-				limit = { liege = { character = FROM } }
+			else = {
 				opinion = {
 					modifier = opinion_disappointed
 					who = FROM
 					years = 10
 				}
+				
+				any_spouse = {
+					limit = { liege = { character = FROM } }
+					opinion = {
+						modifier = opinion_disappointed
+						who = FROM
+						years = 10
+					}
+				}
 			}
+
 			
 			if = { # Move to a same-religion court
 				limit = {
@@ -717,13 +725,15 @@ targeted_decisions = {
 			#owns holy order, this religion
 			primary_title = { holy_order = yes }
 			religion = FROM
-			NOR = {
-				has_landed_title = k_teutonic_state
-				AND = {
-					has_landed_title = d_teutonic_order
-					has_global_flag = northern_crusades_active
-				}
-			}
+			
+			# Warcraft
+			# NOR = {
+				# has_landed_title = k_teutonic_state
+				# AND = {
+					# has_landed_title = d_teutonic_order
+					# has_global_flag = northern_crusades_active
+				# }
+			# }
 		}
 		allow = {
 			FROM = {
@@ -766,7 +776,7 @@ targeted_decisions = {
 		
 		potential = {
 			# Warcraft
-			always = no
+			is_untouchable_trigger = no
 
 			is_adult = yes
 			prisoner = no
@@ -836,12 +846,14 @@ decisions = {
 		
 		potential = {
 			# Warcraft
-			is_untouchable_trigger = no
-			can_rule_peacefully_trigger = yes
+			can_have_court_physician_trigger = yes
 			
 			is_playable = yes
 			NOT = { trait = troubled_pregnancy } #Treatment handled by special event chain.
 			OR = {
+				# Warcraft
+				trait = corrupted_blood
+				
 				trait = has_tuberculosis
 				trait = has_typhoid_fever
 				trait = has_typhus
@@ -1006,8 +1018,7 @@ decisions = {
 		ai_check_interval = 24
 		potential = {
 			# Warcraft
-			is_untouchable_trigger = no
-			can_rule_peacefully_trigger = yes
+			can_have_court_physician_trigger = yes
 			
 			has_dlc = "Reapers"
 			NOR = {
@@ -1271,12 +1282,6 @@ decisions = {
 		}
 		ai_will_do = {
 			factor = 0.2
-
-			# Warcraft
-			modifier = {
-				factor = 0
-				religion = death_god
-			}
 			
 			modifier = {
 				factor = 0
@@ -1467,7 +1472,6 @@ decisions = {
 			}
 		}
 	}
-	
 }
 
 title_decisions = {
