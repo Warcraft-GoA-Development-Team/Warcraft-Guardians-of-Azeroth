@@ -27,7 +27,6 @@ total_invasion = {
 			show_scope_change = no
 			OR = {
 				AND = {
-					wealth = 250
 					prestige = 2000
 					piety = 1000
 				}
@@ -77,6 +76,9 @@ total_invasion = {
 			is_landed = yes
 			independent = yes
 			higher_tier_than = BARON
+			
+			# This CB can't be used against other Invaders, instead of it you have common_invasion
+			is_azeroth_invader_trigger = no
 		}
 
 		# Forbids AI to attack small realms
@@ -126,7 +128,6 @@ total_invasion = {
 		if = {
 			limit = { FROM = { NOT = { has_character_flag = event_war_exception_flag } } }
 			ROOT = {
-				wealth = -250
 				prestige = -2000
 				piety = -1000
 			}
@@ -144,7 +145,6 @@ total_invasion = {
 	
 	on_invalidation = {
 		ROOT = {
-			wealth = 250
 			prestige = 2000
 			piety = 1000
 		}
@@ -223,7 +223,7 @@ total_invasion = {
 					any_realm_lord = {
 						any_demesne_title = {
 							limit = {
-								title_can_be_conquered_trigger = yes
+								title_can_be_lost_trigger = yes
 								lower_tier_than = DUKE
 							}
 							ROOT = { grant_title_no_opinion = { target = PREV type = invasion } }
@@ -231,7 +231,7 @@ total_invasion = {
 					}
 					any_demesne_title = {
 						limit = {
-							title_can_be_conquered_trigger = yes
+							title_can_be_lost_trigger = yes
 							lower_tier_than = DUKE
 						}
 						ROOT = { grant_title_no_opinion = { target = PREV type = invasion } }
@@ -344,16 +344,13 @@ stop_invader = {
 			independent = yes
 			NOT = { same_realm = FROM }
 
-			can_use_total_invasion_cb_trigger = no
+			is_azeroth_invader_trigger = no
 		}
 		FROM = {
 			is_landed = yes
 			independent = yes
 			
-			OR = {
-				has_landed_title = e_scourge
-				can_use_total_invasion_cb_trigger = yes
-			}
+			is_azeroth_invader_trigger = yes
 			NOT = {
 				any_war = {
 					OR = {
@@ -480,7 +477,6 @@ scourge_subjugation = {
 			show_scope_change = no
 			OR = {
 				AND = {
-					wealth = 250
 					prestige = 1250
 					piety = 625
 				}
@@ -512,10 +508,16 @@ scourge_subjugation = {
 			NOT = { same_realm = FROM }
 		}
 		FROM = {
+			# Warcraft
+			character_can_lose_title_trigger = yes
+			
 			is_landed = yes
 			# independent = yes
 			in_revolt = no
-			is_nomadic = no
+			OR = {
+				is_tribal = yes
+				is_feudal = yes
+			}
 			higher_tier_than = BARON
 
 			NOT = { is_offmap_governor = yes }
@@ -563,7 +565,6 @@ scourge_subjugation = {
 			limit = { FROM = { NOT = { has_character_flag = event_war_exception_flag } } }
 			ROOT = {
 				show_scope_change = no
-				wealth = -250
 				prestige = -1250
 				piety = -625
 			}
@@ -582,7 +583,6 @@ scourge_subjugation = {
 	on_invalidation = {
 		ROOT = {
 			show_scope_change = no
-			wealth = 250
 			prestige = 1250
 			piety = 625
 		}
@@ -658,7 +658,7 @@ scourge_subjugation = {
 						any_realm_lord = {
 							any_demesne_title = {
 								limit = {
-									title_can_be_conquered_trigger = yes
+									title_can_be_lost_trigger = yes
 
 									tier = COUNT
 									location = {
@@ -783,11 +783,8 @@ scourge_subjugation = {
 			FROM = { is_forbidden_war_target_for_ai_root_trigger = yes }
 		}
 		modifier = {
-			factor = 0
-			NOR = {
-				year = 610
-				FROM = { capital_scope = { region = world_northrend } }		# Forbids to declare war on realms outside of Northrend before 610 year
-			}
+			factor = 0.1
+			FROM = { capital_scope = { NOT = { region = world_northrend } } }		# Prefer to conquer Northrend first
 		}
 	}
 }
@@ -836,7 +833,12 @@ common_invasion = {
 
 		ROOT = {
 			can_rule_peacefully_trigger = no
-			can_use_total_invasion_cb_trigger = no
+			
+			# If you're Invader, you can use this CB only against other Invaders
+			trigger_if = {
+				limit = { is_azeroth_invader_trigger = yes }
+				FROM = { is_azeroth_invader_trigger = yes }
+			}
 		}
 	}
 
@@ -1386,21 +1388,7 @@ change_religion_cb = {
 	sort_priority = 2000
 
 	can_use = {
-		ROOT = {
-			can_declare_wars_trigger = yes
-			FROM = {
-				can_declare_wars_trigger = yes
-				is_in_prev_faction = no
-			}
-		}
-
-		ROOT = {
-			controls_religion = yes
-			religion_group = elemental_lords_group
-		}
-		FROM = {
-			NOT = { religion_group = ROOT }
-		}
+		always = no	# Can only be initiated through special means
 	}
 
 	is_valid = {

@@ -2,10 +2,7 @@
 # YOU CAN NOT INTERACT WITH THEM
 is_untouchable_trigger = {
 	hidden_tooltip = {
-		OR = {
-			government = uncolonized_government
-			trait = sleeping_trait
-		}
+		trait = sleeping_trait
 	}
 }
 # FORBIDS GOOD AI TO ATTACK THEM
@@ -30,8 +27,10 @@ can_rule_peacefully_trigger = {
 		hidden_tooltip = {
 			trigger_if = {
 				limit = {
-					is_ruler = yes
+					is_landed = yes
 					is_theocracy = no
+					holy_order = no
+					mercenary = no
 				}
 				evil_government_trigger = no
 			}
@@ -139,26 +138,36 @@ can_switch_religion_trigger = {
 	}
 }
 # TITLE CAN'T BE CONQUERED IF IT'S NOT TRUE
-title_can_be_conquered_trigger = {
-	controls_religion = no
+title_can_be_lost_trigger = {
+	OR = {
+		has_holder = no
+		holder_scope = { is_untouchable_trigger = no }
+	}
+	trigger_if = {
+		limit = {
+			controls_religion = yes
+		}
+		OR = {
+			has_holder = no
+			holder_scope = { is_secular_ruler_trigger = yes }
+		}
+	}
+	trigger_else = {
+		controls_religion = no
+	}
 	mercenary = no
 	holy_order = no
-	is_landless_type_title = no
 	clan = no
 	NOT = { holding_type = family_palace }
-	title_can_be_lost_trigger = yes
-}
-# TITLES ARE IN DANGER, SO MANY CBS CAN'T BE USED AGAINST THIS CHARACTER
-character_can_lose_title_trigger = {
-	is_untouchable_trigger = no
-	
-	has_invader_title_trigger = no
-	has_dragonflight_title_trigger = no
-}
-# TITLES ARE IN DANGER, SO MANY CBS CAN'T BE USED
-title_can_be_lost_trigger = {
 	invader_title_trigger = no
 	dragonflight_title_trigger = no
+}
+# TITLES ARE IN DANGER, SO MANY ACTIONS CAN'T BE USED AGAINST THIS CHARACTER
+character_can_lose_title_trigger = {
+	is_untouchable_trigger = no
+
+	has_invader_title_trigger = no
+	has_dragonflight_title_trigger = no
 }
 # CAN'T GET SICK IF IT'S NOT TRUE
 # Associated with text_effect_can_not_get_diseases
@@ -213,52 +222,52 @@ can_has_children_trigger = {
 can_has_children_trait_trigger = {
 	NOR = {
 		trait = celibate
-		
+
 		trait = eunuch
-		
+
 		trait = being_undead
 		trait = being_demon
-		
+
 		trait = creature_red_whelp
 		trait = creature_red_drake
 		trait = creature_red_dragon
-		
+
 		trait = creature_blue_whelp
 		trait = creature_blue_drake
 		trait = creature_blue_dragon
-		
+
 		trait = creature_green_whelp
 		trait = creature_green_drake
 		trait = creature_green_dragon
-		
+
 		trait = creature_black_whelp
 		trait = creature_black_drake
 		trait = creature_black_dragon
-		
+
 		trait = creature_air_elemental
 		trait = creature_earth_elemental
 		trait = creature_fire_elemental
 		trait = creature_flamewaker
 		trait = creature_water_elemental
-		
+
 		trait = creature_iron_dwarf
 		trait = creature_watcher
 		trait = creature_harpy
 		trait = creature_mechagnome
 		trait = creature_earthen
-		
+
 		trait = creature_bronze_whelp
 		trait = creature_bronze_drake
 		trait = creature_bronze_dragon
-		
+
 		trait = creature_nraqi
 		trait = creature_cthraxxi
 		trait = creature_qiraji
-		
+
 		trait = creature_infinite_whelp
 		trait = creature_infinite_drake
 		trait = creature_infinite_dragon
-		
+
 		trait = creature_protector
 		trait = creature_ancient_war
 		trait = creature_ancient_lore
@@ -277,151 +286,109 @@ can_has_sexual_relation_with_prev = {
 			trait = creature_sayaadi
 		}
 	}
-	OR = {
-		has_prev_race_trigger = yes
-
-		# Can have sexual relationship with all "non- void_creature humanoid that can marry" races
-		AND = {
-			trait = creature_sayaadi
-			PREV = {
-				NOT = { trait = being_void }
-				is_humanoid_trigger = yes
-				can_marry_trigger = yes
+	trigger_if = {
+		limit = {
+			has_game_rule = {
+				name = interracial_marriages
+				value = unrestricted
 			}
 		}
-		AND = {
-			NOT = { trait = being_void }
-			is_humanoid_trigger = yes
-			can_marry_trigger = yes
-			PREV = { trait = creature_sayaadi }
-		}
-
-		AND = {
-			is_elf_trigger = yes
-			PREV = { is_elf_trigger = yes }
-		}
-		AND = {
-			is_dragon_race_trigger = yes
-			PREV = { is_dragon_race_trigger = yes }
-		}
-		AND = {
-			OR = {
-				trait = creature_taunka
-				trait = creature_tauren
-			}
-			PREV = {
-				OR = {
-					trait = creature_taunka
-					trait = creature_tauren
-				}
-			}
-		}
-		AND = {
-			OR = {
-				trait = creature_earthen
-				trait = creature_iron_dwarf
-			}
-			PREV = {
-				OR = {
-					trait = creature_earthen
-					trait = creature_iron_dwarf
-				}
-			}
-		}
-		AND = {
-			OR = {
-				trait = creature_frostnymph
-				trait = creature_dryad
-				trait = creature_centaur
-				trait = creature_magnataur
-			}
-			PREV = {
-				OR = {
-					trait = creature_frostnymph
-					trait = creature_dryad
-					trait = creature_centaur
-					trait = creature_magnataur
-				}
-			}
-		}
+		always = yes
 	}
-}
-can_has_sexual_relation_with_root = {
-	OR = {
-		can_marry_trigger = yes
-		trait = creature_sayaadi
-	}
-	ROOT = {
+	trigger_else = {
 		OR = {
-			can_marry_trigger = yes
-			trait = creature_sayaadi
-		}
-	}
-	OR = {
-		has_prev_race_trigger = yes
+			# Racial relations
+			has_prev_race_trigger = yes
 
-		# Can have sexual relationship with all races
-		AND = {
-			trait = creature_sayaadi
-			ROOT = {
-				NOT = { trait = being_void }
-				is_humanoid_trigger = yes
-				can_marry_trigger = yes
-			}
-		}
-		AND = {
-			NOT = { trait = being_void }
-			is_humanoid_trigger = yes
-			can_marry_trigger = yes
-			ROOT = { trait = creature_sayaadi }
-		}
-
-		AND = {
-			is_elf_trigger = yes
-			ROOT = { is_elf_trigger = yes }
-		}
-		AND = {
-			is_dragon_race_trigger = yes
-			ROOT = { is_dragon_race_trigger = yes }
-		}
-		AND = {
-			OR = {
-				trait = creature_taunka
-				trait = creature_tauren
-			}
-			ROOT = {
+			# Distant interracial relations
+			# Can have sexual relationship with all humanoids that can marry
+			trigger_if = {
+				limit = {
+					NOT = {
+						has_game_rule = {
+							name = interracial_marriages
+							value = off
+						}
+					}
+				}
 				OR = {
-					trait = creature_taunka
-					trait = creature_tauren
+					trigger_if = {
+						limit = { trait = creature_sayaadi }
+						PREV = {
+							is_humanoid_trigger = yes
+							can_marry_trigger = yes
+						}
+					}
+					trigger_if = {
+						limit = { PREV = { trait = creature_sayaadi } }
+						is_humanoid_trigger = yes
+						can_marry_trigger = yes
+					}
+					trigger_if = {
+						limit = {
+							OR = {
+								trait = creature_human
+								is_orc_trigger = yes
+								is_elf_trigger = yes
+								is_eredar_trigger = yes
+							}
+						}
+						PREV = {
+							OR = {
+								trait = creature_human
+								is_orc_trigger = yes
+								is_elf_trigger = yes
+								is_eredar_trigger = yes
+							}
+						}
+					}
+					trigger_if = {
+						limit = {
+							OR = {
+								is_orc_trigger = yes
+								trait = creature_ogre
+							}
+						}
+						PREV = {
+							OR = {
+								is_orc_trigger = yes
+								trait = creature_ogre
+							}
+						}
+					}
+					trigger_if = {
+						limit = {
+							OR = {
+								trait = creature_human
+								trait = creature_vrykul
+							}
+						}
+						PREV = {
+							OR = {
+								trait = creature_human
+								trait = creature_vrykul
+							}
+						}
+					}
 				}
 			}
-		}
-		AND = {
-			OR = {
-				trait = creature_earthen
-				trait = creature_iron_dwarf
+			
+			# Close interracial relations
+			trigger_if = {
+				limit = { is_dragon_race_trigger = yes }
+				PREV = { is_dragon_race_trigger = yes }
 			}
-			PREV = {
-				OR = {
-					trait = creature_earthen
-					trait = creature_iron_dwarf
-				}
+			trigger_else_if = {
+				limit = { is_yaungol_trigger = yes }
+				PREV = { is_yaungol_trigger = yes }
 			}
-		}
-		AND = {
-			OR = {
-				trait = creature_frostnymph
-				trait = creature_dryad
-				trait = creature_centaur
-				trait = creature_magnataur
+			trigger_else_if = {
+				limit = { OR = { trait = creature_earthen trait = creature_iron_dwarf } }
+				PREV = { OR = { trait = creature_earthen trait = creature_iron_dwarf } }
 			}
-			ROOT = {
-				OR = {
-					trait = creature_frostnymph
-					trait = creature_dryad
-					trait = creature_centaur
-					trait = creature_magnataur
-				}
+			trigger_else_if = {
+				limit = { is_cenarius_offspring_trigger = yes }
+				PREV = { is_cenarius_offspring_trigger = yes }
 			}
 		}
 	}
@@ -441,8 +408,21 @@ can_gain_lose_weight_trigger = {
 can_be_drunkard_trigger = {
 	is_untouchable_trigger = no
 
-	is_humanoid_trigger = yes
 	is_dark_being_trigger = no
+	is_humanoid_trigger = yes
+	is_uncursed_titanforged_trigger = no
+	evil_public_religion_trigger = no
+	
+	has_invader_title_trigger = no
+}
+# Can't do party if it's not true
+can_do_party = {
+	is_untouchable_trigger = no
+	
+	is_humanoid_trigger = yes
+	is_uncursed_titanforged_trigger = no
+	evil_public_religion_trigger = no
+	
 	has_invader_title_trigger = no
 }
 can_be_sacrificed_trigger = {
@@ -632,50 +612,51 @@ can_be_feudal_trigger = {
 	}
 }
 is_humanoid_trigger = {
-	custom_tooltip = { text = is_humanoid_trigger_tooltip }
-	hidden_tooltip = {
-		# NOT = { trait = being_demon }
-		OR = {
-			is_small_humanoid_trigger = yes
-			is_medium_humanoid_trigger = yes
-			is_large_humanoid_trigger = yes
+	custom_tooltip = {
+		text = is_humanoid_trigger_tooltip
+		hidden_tooltip = {
+			# NOT = { trait = being_demon }
+			OR = {
+				is_small_humanoid_trigger = yes
+				is_medium_humanoid_trigger = yes
+				is_large_humanoid_trigger = yes
+			}
 		}
 	}
 }
 
 # Only humanoids made of meat
 is_small_humanoid_trigger = {
-	OR = {
-		trait = creature_murloc
-		trait = creature_kobold
-		trait = creature_dwarf
-		trait = creature_gnome
-		trait = creature_goblin
-		trait = creature_pygmy
-		trait = creature_gorloc
-		trait = creature_wolvar
-		trait = creature_vulpera
+	custom_tooltip = {
+		text = is_small_humanoid_tooltip
+		OR = {
+			trait = creature_murloc
+			trait = creature_kobold
+			trait = creature_dwarf
+			trait = creature_gnome
+			trait = creature_goblin
+			trait = creature_pygmy
+			trait = creature_gorloc
+			trait = creature_wolvar
+			trait = creature_vulpera
+		}
 	}
 }
 # Only humanoids made of meat
 is_medium_humanoid_trigger = {
 	OR = {
 		trait = creature_human
-		trait = creature_orc
+		is_orc_trigger = yes
 		trait = creature_troll
 		trait = creature_gnoll
-		trait = creature_high_elf
-		trait = creature_blood_elf
+		is_high_elf_trigger = yes
 		trait = creature_naga
 		trait = creature_hozen
-		trait = creature_draenei
+		is_eredar_trigger = yes
 		trait = creature_arakkoa_corrupted
 		trait = creature_ghoul
 		# trait = creature_skeleton
-		trait = creature_fel_orc
-		trait = creature_felblood_elf
 		trait = creature_satyr
-		trait = creature_eredar
 		trait = creature_sayaadi
 		trait = creature_moarg
 		trait = creature_tuskarr
@@ -717,7 +698,7 @@ is_large_humanoid_trigger = {
 
 can_have_shadow_council_member_trigger = {
 	higher_tier_than = DUKE
-	
+
 	is_society_grandmaster = no
 	society_member_of = shadow_council
 	primary_title = { has_law = law_voting_power_1 }
@@ -869,11 +850,7 @@ potential_race_human_trigger = {
 	NOT = { trait = creature_human }
 }
 potential_race_orc_trigger = {
-	OR = {
-		graphical_culture = orcgfx
-		graphical_culture = orcbrowngfx
-		graphical_culture = orcgraygfx
-	}
+	has_orc_gfx_trigger = yes
 	NOT = { trait = creature_orc }
 }
 potential_race_ogre_trigger = {
@@ -1044,6 +1021,7 @@ potential_race_lich_trigger = {
 # Demons
 potential_race_annihilan_trigger = {
 	graphical_culture = annihilangfx
+	is_female = no
 	NOT = { trait = creature_annihilan }
 }
 potential_race_nathrezim_trigger = {
@@ -1077,7 +1055,8 @@ potential_race_sayaadi_trigger = {
 	NOT = { trait = creature_sayaadi }
 }
 potential_race_shivarra_trigger = {
-	graphical_culture = shivarragfx
+	graphical_culture = annihilangfx
+	is_female = yes
 	NOT = { trait = creature_shivarra }
 }
 potential_race_moarg_trigger = {
@@ -1490,96 +1469,114 @@ has_race_trait_trigger = {
 
 has_prev_race_trigger = {
 	# Add new races always at the end
-	OR = {
-		AND = { trait = creature_human 				PREV = { trait = creature_human 				} }
-		AND = { trait = creature_orc 				PREV = { trait = creature_orc 					} }
-		AND = { trait = creature_ogre 				PREV = { trait = creature_ogre 					} }
-		AND = { trait = creature_troll 				PREV = { trait = creature_troll 				} }
-		AND = { trait = creature_murloc 			PREV = { trait = creature_murloc 				} }
-		AND = { trait = creature_gnoll 				PREV = { trait = creature_gnoll 				} }
-		AND = { trait = creature_kobold 			PREV = { trait = creature_kobold 				} }
-		AND = { trait = creature_dwarf 				PREV = { trait = creature_dwarf 				} }
-		AND = { trait = creature_gnome 				PREV = { trait = creature_gnome 				} }
-		AND = { is_high_elf_trigger = yes			PREV = { is_high_elf_trigger = yes				} }
-		AND = { trait = creature_naga 				PREV = { trait = creature_naga 					} }
-		AND = { is_red_dragon_trigger = yes			PREV = { is_red_dragon_trigger = yes			} }
-		AND = { is_blue_dragon_trigger = yes		PREV = { is_blue_dragon_trigger = yes			} }
-		AND = { is_green_dragon_trigger = yes		PREV = { is_green_dragon_trigger = yes			} }
-		AND = { is_black_dragon_trigger = yes		PREV = { is_black_dragon_trigger = yes			} }
-		AND = { trait = creature_goblin 			PREV = { trait = creature_goblin 				} }
-		AND = { trait = creature_pygmy 				PREV = { trait = creature_pygmy 				} }
-		AND = { trait = creature_hozen 				PREV = { trait = creature_hozen 				} }
-		AND = { trait = creature_draenei 			PREV = { trait = creature_draenei 				} }
-		AND = { trait = creature_arakkoa_corrupted 	PREV = { trait = creature_arakkoa_corrupted 	} }
-		AND = { trait = creature_ghoul 				PREV = { trait = creature_ghoul 				} }
-		AND = { trait = creature_wraith 			PREV = { trait = creature_wraith 				} }
-		AND = { trait = creature_banshee 			PREV = { trait = creature_banshee 				} }
-		AND = { trait = creature_plague_eruptor 	PREV = { trait = creature_plague_eruptor 		} }
-		AND = { trait = creature_abomination 		PREV = { trait = creature_abomination 			} }
-		AND = { trait = creature_skeleton 			PREV = { trait = creature_skeleton 				} }
-		AND = { trait = creature_lich 				PREV = { trait = creature_lich 					} }
-		AND = { trait = creature_annihilan 			PREV = { trait = creature_annihilan 			} }
-		AND = { trait = creature_nathrezim 			PREV = { trait = creature_nathrezim 			} }
-		AND = { trait = creature_eredruin 			PREV = { trait = creature_eredruin 				} }
-		AND = { trait = creature_fel_orc 			PREV = { trait = creature_fel_orc 				} }
-		AND = { trait = creature_felblood_elf 		PREV = { trait = creature_felblood_elf 			} }
-		AND = { trait = creature_satyr 				PREV = { trait = creature_satyr 				} }
-		AND = { trait = creature_eredar 			PREV = { trait = creature_eredar 				} }
-		AND = { trait = creature_sayaadi 			PREV = { trait = creature_sayaadi 				} }
-		AND = { trait = creature_shivarra 			PREV = { trait = creature_shivarra 				} }
-		AND = { trait = creature_moarg 				PREV = { trait = creature_moarg 				} }
-		AND = { trait = creature_observer 			PREV = { trait = creature_observer 				} }
-		AND = { trait = creature_air_elemental 		PREV = { trait = creature_air_elemental 		} }
-		AND = { trait = creature_earth_elemental 	PREV = { trait = creature_earth_elemental 		} }
-		AND = { trait = creature_fire_elemental 	PREV = { trait = creature_fire_elemental 		} }
-		AND = { trait = creature_flamewaker 		PREV = { trait = creature_flamewaker 			} }
-		AND = { trait = creature_water_elemental 	PREV = { trait = creature_water_elemental 		} }
-		AND = { trait = creature_iron_dwarf 		PREV = { trait = creature_iron_dwarf 			} }
-		AND = { trait = creature_vrykul 			PREV = { trait = creature_vrykul 				} }
-		AND = { trait = creature_tuskarr 			PREV = { trait = creature_tuskarr 				} }
-		AND = { trait = creature_magnataur 			PREV = { trait = creature_magnataur 			} }
-		AND = { trait = creature_furbolg 			PREV = { trait = creature_furbolg 				} }
-		AND = { trait = creature_gorloc 			PREV = { trait = creature_gorloc 				} }
-		AND = { trait = creature_watcher 			PREV = { trait = creature_watcher 				} }
-		AND = { trait = creature_wolvar 			PREV = { trait = creature_wolvar 				} }
-		AND = { trait = creature_taunka 			PREV = { trait = creature_taunka 				} }
-		AND = { trait = creature_kvaldir 			PREV = { trait = creature_kvaldir 				} }
-		AND = { trait = creature_nerubian 			PREV = { trait = creature_nerubian 				} }
-		AND = { trait = creature_harpy 				PREV = { trait = creature_harpy 				} }
-		AND = { trait = creature_mechagnome 		PREV = { trait = creature_mechagnome 			} }
-		AND = { trait = creature_earthen 			PREV = { trait = creature_earthen 				} }
-		AND = { is_bronze_dragon_trigger = yes		PREV = { is_bronze_dragon_trigger = yes			} }
-		AND = { trait = creature_ice_giant 			PREV = { trait = creature_ice_giant 			} }
+	trigger_if = { limit = { trait = creature_human 					} PREV = { trait = creature_human 					} }
+	trigger_else_if = { limit = { is_orc_trigger = yes 					} PREV = { is_orc_trigger = yes 					} }
+	trigger_else_if = { limit = { trait = creature_ogre 				} PREV = { trait = creature_ogre 					} }
+	trigger_else_if = { limit = { trait = creature_troll 				} PREV = { trait = creature_troll 					} }
+	trigger_else_if = { limit = { trait = creature_murloc 				} PREV = { trait = creature_murloc 				} }
+	trigger_else_if = { limit = { trait = creature_gnoll 				} PREV = { trait = creature_gnoll 					} }
+	trigger_else_if = { limit = { trait = creature_kobold 				} PREV = { trait = creature_kobold 				} }
+	trigger_else_if = { limit = { trait = creature_dwarf 				} PREV = { trait = creature_dwarf 					} }
+	trigger_else_if = { limit = { trait = creature_gnome 				} PREV = { trait = creature_gnome 					} }
+	
+	# High elves
+	trigger_else_if = { limit = { is_high_elf_trigger = yes				} PREV = { is_high_elf_trigger = yes				} }
+	trigger_else_if = { limit = { trait = creature_naga 				} PREV = { trait = creature_naga 					} }
+	
+	# Red dragons
+	trigger_else_if = { limit = { is_red_dragon_trigger = yes			} PREV = { is_red_dragon_trigger = yes				} }
+	
+	# Blue dragons
+	trigger_else_if = { limit = { is_blue_dragon_trigger = yes			} PREV = { is_blue_dragon_trigger = yes			} }
+	
+	# Green dragons
+	trigger_else_if = { limit = { is_green_dragon_trigger = yes			} PREV = { is_green_dragon_trigger = yes			} }
+	
+	# Black dragons
+	trigger_else_if = { limit = { is_black_dragon_trigger = yes			} PREV = { is_black_dragon_trigger = yes			} }
+	
+	trigger_else_if = { limit = { trait = creature_goblin 				} PREV = { trait = creature_goblin 				} }
+	trigger_else_if = { limit = { trait = creature_pygmy 				} PREV = { trait = creature_pygmy 					} }
+	trigger_else_if = { limit = { trait = creature_hozen 				} PREV = { trait = creature_hozen 					} }
+	trigger_else_if = { limit = { is_eredar_trigger = yes 				} PREV = { is_eredar_trigger = yes 				} }
+	trigger_else_if = { limit = { trait = creature_arakkoa_corrupted 	} PREV = { trait = creature_arakkoa_corrupted 		} }
+	
+	# Undeads
+	trigger_else_if = { limit = { trait = creature_ghoul 				} PREV = { trait = creature_ghoul 					} }
+	trigger_else_if = { limit = { trait = creature_wraith 				} PREV = { trait = creature_wraith 				} }
+	trigger_else_if = { limit = { trait = creature_banshee 				} PREV = { trait = creature_banshee 				} }
+	trigger_else_if = { limit = { trait = creature_plague_eruptor 		} PREV = { trait = creature_plague_eruptor 		} }
+	trigger_else_if = { limit = { trait = creature_abomination 			} PREV = { trait = creature_abomination 			} }
+	trigger_else_if = { limit = { trait = creature_skeleton 			} PREV = { trait = creature_skeleton 				} }
+	trigger_else_if = { limit = { trait = creature_lich 				} PREV = { trait = creature_lich 					} }
+	
+	# Demons
+	trigger_else_if = { limit = { trait = creature_annihilan 			} PREV = { trait = creature_annihilan 				} }
+	trigger_else_if = { limit = { trait = creature_nathrezim 			} PREV = { trait = creature_nathrezim 				} }
+	trigger_else_if = { limit = { trait = creature_eredruin 			} PREV = { trait = creature_eredruin 				} }
+	trigger_else_if = { limit = { trait = creature_satyr 				} PREV = { trait = creature_satyr 					} }
+	trigger_else_if = { limit = { trait = creature_sayaadi 				} PREV = { trait = creature_sayaadi 				} }
+	trigger_else_if = { limit = { trait = creature_shivarra 			} PREV = { trait = creature_shivarra 				} }
+	trigger_else_if = { limit = { trait = creature_moarg 				} PREV = { trait = creature_moarg 					} }
+	trigger_else_if = { limit = { trait = creature_observer 			} PREV = { trait = creature_observer 				} }
+	
+	# Elementals
+	trigger_else_if = { limit = { trait = creature_air_elemental 		} PREV = { trait = creature_air_elemental 			} }
+	trigger_else_if = { limit = { trait = creature_earth_elemental 		} PREV = { trait = creature_earth_elemental 		} }
+	trigger_else_if = { limit = { trait = creature_fire_elemental 		} PREV = { trait = creature_fire_elemental 		} }
+	trigger_else_if = { limit = { trait = creature_flamewaker 			} PREV = { trait = creature_flamewaker 			} }
+	trigger_else_if = { limit = { trait = creature_water_elemental 		} PREV = { trait = creature_water_elemental 		} }
+	
+	trigger_else_if = { limit = { trait = creature_iron_dwarf 			} PREV = { trait = creature_iron_dwarf 			} }
+	trigger_else_if = { limit = { trait = creature_vrykul 				} PREV = { trait = creature_vrykul 				} }
+	trigger_else_if = { limit = { trait = creature_tuskarr 				} PREV = { trait = creature_tuskarr 				} }
+	trigger_else_if = { limit = { trait = creature_magnataur 			} PREV = { trait = creature_magnataur 				} }
+	trigger_else_if = { limit = { trait = creature_furbolg 				} PREV = { trait = creature_furbolg 				} }
+	trigger_else_if = { limit = { trait = creature_gorloc 				} PREV = { trait = creature_gorloc 				} }
+	trigger_else_if = { limit = { trait = creature_watcher 				} PREV = { trait = creature_watcher 				} }
+	trigger_else_if = { limit = { trait = creature_wolvar 				} PREV = { trait = creature_wolvar 				} }
+	trigger_else_if = { limit = { trait = creature_taunka 				} PREV = { trait = creature_taunka 				} }
+	trigger_else_if = { limit = { trait = creature_kvaldir 				} PREV = { trait = creature_kvaldir 				} }
+	trigger_else_if = { limit = { trait = creature_nerubian 			} PREV = { trait = creature_nerubian 				} }
+	trigger_else_if = { limit = { trait = creature_harpy 				} PREV = { trait = creature_harpy 					} }
+	trigger_else_if = { limit = { trait = creature_mechagnome 			} PREV = { trait = creature_mechagnome 			} }
+	trigger_else_if = { limit = { trait = creature_earthen 				} PREV = { trait = creature_earthen 				} }
+	
+	# Bronze dragons
+	trigger_else_if = { limit = { is_bronze_dragon_trigger = yes		} PREV = { is_bronze_dragon_trigger = yes			} }
+	
+	trigger_else_if = { limit = { trait = creature_ice_giant 			} PREV = { trait = creature_ice_giant 				} }
 
-		AND = {
-			OR = { trait = creature_nraqi trait = creature_cthraxxi }
-			PREV = { OR = { trait = creature_nraqi trait = creature_cthraxxi } }
-		}
+	trigger_else_if = { limit = { is_nraqi_trigger = yes				} PREV = { is_nraqi_trigger = yes 					} }
 
-		AND = { trait = creature_night_elf 			PREV = { trait = creature_night_elf 			} }
-		AND = { trait = creature_tauren 			PREV = { trait = creature_tauren 				} }
-		AND = { trait = creature_centaur 			PREV = { trait = creature_centaur 				} }
-		AND = { trait = creature_quilboar 			PREV = { trait = creature_quilboar 				} }
-		AND = { trait = creature_tolvir 			PREV = { trait = creature_tolvir 				} }
-		AND = { trait = creature_qiraji 			PREV = { trait = creature_qiraji 				} }
-		AND = { trait = creature_dryad 				PREV = { trait = creature_dryad 				} }
-		AND = { trait = creature_frostnymph 		PREV = { trait = creature_frostnymph 			} }
-		AND = { trait = creature_highborne			PREV = { trait = creature_highborne 			} }
+	trigger_else_if = { limit = { trait = creature_night_elf 			} PREV = { trait = creature_night_elf 				} }
+	trigger_else_if = { limit = { trait = creature_tauren 				} PREV = { trait = creature_tauren 				} }
+	trigger_else_if = { limit = { trait = creature_centaur 				} PREV = { trait = creature_centaur 				} }
+	trigger_else_if = { limit = { trait = creature_quilboar 			} PREV = { trait = creature_quilboar 				} }
+	trigger_else_if = { limit = { trait = creature_tolvir 				} PREV = { trait = creature_tolvir 				} }
+	trigger_else_if = { limit = { trait = creature_qiraji 				} PREV = { trait = creature_qiraji 				} }
+	trigger_else_if = { limit = { trait = creature_dryad 				} PREV = { trait = creature_dryad 					} }
+	trigger_else_if = { limit = { trait = creature_frostnymph 			} PREV = { trait = creature_frostnymph 			} }
+	trigger_else_if = { limit = { trait = creature_highborne			} PREV = { trait = creature_highborne 				} }
 
-		# Infinite Dragons
-		AND = { is_infinite_dragon_trigger = yes	PREV = { is_infinite_dragon_trigger = yes		} }
+	# Infinite Dragons
+	trigger_else_if = { limit = { is_infinite_dragon_trigger = yes		} PREV = { is_infinite_dragon_trigger = yes		} }
 
-		AND = { trait = creature_old_god 			PREV = { trait = creature_old_god 				} }
-		AND = { trait = creature_vulpera 			PREV = { trait = creature_vulpera 				} }
-		AND = { trait = creature_sethrak 			PREV = { trait = creature_sethrak 				} }
-		AND = { trait = creature_titan_keeper 		PREV = { trait = creature_titan_keeper 			} }
-		AND = { trait = creature_titan 				PREV = { trait = creature_titan 				} }
+	trigger_else_if = { limit = { trait = creature_old_god 				} PREV = { trait = creature_old_god 				} }
+	trigger_else_if = { limit = { trait = creature_vulpera 				} PREV = { trait = creature_vulpera 				} }
+	trigger_else_if = { limit = { trait = creature_sethrak 				} PREV = { trait = creature_sethrak 				} }
+	trigger_else_if = { limit = { trait = creature_titan_keeper 		} PREV = { trait = creature_titan_keeper 			} }
+	trigger_else_if = { limit = { trait = creature_titan 				} PREV = { trait = creature_titan 					} }
 
-		# Ancients
-		AND = { trait = creature_protector			PREV = { trait = creature_protector				} }
-		AND = { trait = creature_ancient_war		PREV = { trait = creature_ancient_war			} }
-		AND = { trait = creature_ancient_lore		PREV = { trait = creature_ancient_lore			} }
-		AND = { trait = creature_ancient_wind		PREV = { trait = creature_ancient_wind			} }
+	# Ancients
+	trigger_else_if = { limit = { trait = creature_protector			} PREV = { trait = creature_protector				} }
+	trigger_else_if = { limit = { trait = creature_ancient_war			} PREV = { trait = creature_ancient_war			} }
+	trigger_else_if = { limit = { trait = creature_ancient_lore			} PREV = { trait = creature_ancient_lore			} }
+	trigger_else_if = { limit = { trait = creature_ancient_wind			} PREV = { trait = creature_ancient_wind			} }
+	
+	# Fallback, always at the end
+	trigger_else = {
+		always = no
 	}
 }
 
@@ -1588,6 +1585,12 @@ is_high_elf_trigger = {
 		trait = creature_high_elf
 		trait = creature_blood_elf
 		trait = creature_felblood_elf
+	}
+}
+is_eredar_trigger = {
+	OR = {
+		trait = creature_eredar
+		trait = creature_draenei
 	}
 }
 is_dragon_race_trigger = {
@@ -1914,11 +1917,7 @@ is_susceptible_to_plague_character_trigger = {
 			has_global_flag = nerubians_susceptible_to_plague
 		}
 		AND = {
-			OR = {
-				trait = creature_high_elf
-				trait = creature_blood_elf
-				trait = creature_night_elf
-			}
+			is_elf_trigger = yes
 			has_global_flag = elves_susceptible_to_plague
 		}
 		AND = {
@@ -2043,8 +2042,6 @@ has_demon_gfx_trigger = {
 		graphical_culture = annihilangfx
 		graphical_culture = nathrezimgfx
 		graphical_culture = eredruingfx
-		graphical_culture = nathrezimgfx
-		graphical_culture = shivarragfx
 		graphical_culture = moarggfx
 		graphical_culture = observergfx
 		graphical_culture = sargerasgfx
@@ -2115,6 +2112,12 @@ has_quilboar_gfx_trigger = {
 	OR = {
 		graphical_culture = quilboargfx
 		graphical_culture = quilboarundeadgfx
+	}
+}
+has_eredar_gfx_trigger = {
+	OR = {
+		graphical_culture = eredargfx
+		graphical_culture = draeneigfx
 	}
 }
 
@@ -2279,45 +2282,44 @@ can_use_total_invasion_cb_trigger = {
 
 # Used in conditions of powerful magical spells
 has_access_to_powerful_source_of_magic_trigger = {
+	OR = {
+		has_wonder = wonder_sunwell
+		b_violet_citadel = {
+			show_scope_change = no
+			
+			has_access_to_this_source_trigger = yes
+		}
+		b_nexus = {
+			show_scope_change = no
+			
+			has_access_to_this_source_trigger = yes
+		}
+		b_nordrassil = {
+			show_scope_change = no
+			
+			has_access_to_this_source_trigger = yes
+		}
+		b_karazhan = {
+			show_scope_change = no
+			
+			has_access_to_this_source_trigger = yes
+		}
+	}
+}
+has_access_to_this_source_trigger = {
 	custom_tooltip = {
-		text = has_access_to_powerful_source_of_magic_tooltip
+		text = has_access_to_this_source_tooltip
 		hidden_tooltip = {
 			OR = {
-				has_wonder = wonder_sunwell
-				b_violet_citadel = {
+				controlled_by = PREV
+				holder_scope = {
 					OR = {
-						controlled_by = PREV
-						holder_scope = {
-							OR = {
-								character = PREVPREV
-								is_liege_or_above = PREVPREV
-							}
-						}
-					}
-				}
-				b_nexus = {
-					OR = {
-						controlled_by = PREV
-						holder_scope = {
-							OR = {
-								character = PREVPREV
-								is_liege_or_above = PREVPREV
-							}
-						}
-					}
-				}
-				b_nordrassil = {
-					OR = {
-						controlled_by = PREV
-						holder_scope = {
-							OR = {
-								character = PREVPREV
-								is_liege_or_above = PREVPREV
-							}
-						}
+						character = PREVPREV
+						is_liege_or_above = PREVPREV
 					}
 				}
 			}
+			location = { has_province_modifier = ley_line }
 		}
 	}
 }
@@ -2372,13 +2374,15 @@ ai_from_prefer_to_hurt_this_trigger = {
 	OR = {
 		FROM = { ai = no }
 		AND = {
-			NOR = {
+			NOT = {
 				is_friend = FROM
 				is_lover = FROM
+				reverse_opinion = { who = FROM value = 50 }
 			}
 			OR = {
-				FROM = { is_foe = PREV }
+				is_foe = FROM
 				war_with = FROM
+				NOT = { reverse_opinion = { who = FROM value = -30 } }
 				holds_favor_on = FROM
 				any_spouse = { #Unfaithful spouse
 					character = FROM
@@ -2386,7 +2390,6 @@ ai_from_prefer_to_hurt_this_trigger = {
 				}
 				any_lover = { any_spouse = { character = FROM } } #Lover of spouse
 				any_lover = { any_lover = { character = FROM } } #Lover of lover
-				any_claim = { any_claimant = { character = FROM } } #Someone sharing claims
 			}
 		}
 	}
@@ -2621,7 +2624,7 @@ is_completely_immortal_trigger = {
 		is_black_dragon_trigger = yes
 		is_bronze_dragon_trigger = yes
 		is_infinite_dragon_trigger = yes
-		trait = creature_draenei
+		is_eredar_trigger = yes
 		trait = creature_air_elemental
 		trait = creature_earth_elemental
 		trait = creature_fire_elemental
@@ -2885,32 +2888,255 @@ is_elf_trigger = {
 		trait = creature_highborne
 	}
 }
+is_aqir_trigger = {
+	OR = {
+		trait = creature_nerubian
+		trait = creature_qiraji
+	}
+}
 
-# High chance to get...
-# ambitious
-is_ambitious_being_trigger = {
+# Like to be...
+# chaste
+like_chaste_trait_trigger = {
+	humble_public_religion_trigger = yes
+}
+prefer_chaste_trait_trigger = {
+	like_chaste_trait_trigger = yes
+	like_lustful_trait_trigger = no
+}
+# temperate
+like_temperate_trait_trigger = {
+	humble_public_religion_trigger = yes
+}
+prefer_temperate_trait_trigger = {
+	like_temperate_trait_trigger = yes
+	like_gluttonous_trait_trigger = no
+}
+# charitable
+like_charitable_trait_trigger = {
+	kind_public_religion_trigger = yes
+}
+prefer_charitable_trait_trigger = {
+	like_charitable_trait_trigger = yes
+	like_greedy_trait_trigger = no
+}
+# diligent
+like_diligent_trait_trigger = {
+	always = yes
+}
+prefer_diligent_trait_trigger = {
+	like_diligent_trait_trigger = yes
+	like_slothful_trait_trigger = no
+}
+# patient
+like_patient_trait_trigger = {
+	humble_public_religion_trigger = yes
+}
+prefer_patient_trait_trigger = {
+	like_patient_trait_trigger = yes
+	like_wroth_trait_trigger = no
+}
+# kind
+like_kind_trait_trigger = {
+	kind_public_religion_trigger = yes
+}
+prefer_kind_trait_trigger = {
+	like_kind_trait_trigger = yes
+	like_envious_trait_trigger = no
+	like_cruel_trait_trigger = no
+}
+# humble
+like_humble_trait_trigger = {
+	humble_public_religion_trigger = yes
+}
+prefer_humble_trait_trigger = {
+	like_humble_trait_trigger = yes
+	like_proud_trait_trigger = no
+}
+# lustful
+like_lustful_trait_trigger = {
+	OR = {
+		trait = being_demon
+
+		evil_public_religion_trigger = yes
+	}
+}
+prefer_lustful_trait_trigger = {
+	like_lustful_trait_trigger = yes
+	like_chaste_trait_trigger = no
+}
+# gluttonous
+like_gluttonous_trait_trigger = {
+	OR = {
+		religion = cult_of_wealth
+
+		culture_group = goblin_group
+	}
+}
+prefer_gluttonous_trait_trigger = {
+	like_gluttonous_trait_trigger = yes
+	like_temperate_trait_trigger = no
+}
+# greedy
+like_greedy_trait_trigger = {
 	OR = {
 		trait = being_demon
 		trait = being_void
 
-		trait = creature_troll
-		is_elf_trigger = yes
-		trait = creature_naga
-		trait = creature_nerubian
-		is_dragon_race_trigger = yes
+		religion_group = elemental_lords_group
+		evil_public_religion_trigger = yes
+		religion_group = primitive_group
+		religion = cult_of_wealth
+		religion_group = vrykul_religion_group
+
+		culture_group = goblin_group
 	}
+}
+prefer_greedy_trait_trigger = {
+	like_greedy_trait_trigger = yes
+	like_charitable_trait_trigger = no
+}
+# slothful
+like_slothful_trait_trigger = {
+	always = no
+}
+prefer_slothful_trait_trigger = {
+	like_slothful_trait_trigger = yes
+	like_diligent_trait_trigger = no
+}
+# wroth
+like_wroth_trait_trigger = {
+	OR = {
+		trait = being_demon
+		trait = being_void
+
+		this_is_warrior_culture_trigger = yes
+	}
+}
+prefer_wroth_trait_trigger = {
+	like_wroth_trait_trigger = yes
+	like_patient_trait_trigger = no
+}
+# envious
+like_envious_trait_trigger = {
+	OR = {
+		trait = being_demon
+		trait = being_void
+
+		evil_public_religion_trigger = yes
+	}
+}
+prefer_envious_trait_trigger = {
+	like_envious_trait_trigger = yes
+	like_kind_trait_trigger = no
+}
+# proud
+like_proud_trait_trigger = {
+	OR = {
+		trait = being_demon
+		trait = being_void
+
+		religion_group = elemental_lords_group
+		evil_public_religion_trigger = yes
+		religion_group = loa_group
+		religion_group = nerubian_religion_group
+		religion_group = vrykul_religion_group
+
+		culture_group = aqir_group
+		culture_group = arakkoa_group
+		culture_group = centaur_group
+		culture_group = naga_group
+		culture = highborne
+		culture_group = ogre_group
+		culture_group = satyr_group
+		culture_group = sethrak_group
+		culture_group = titanforged_group
+		culture_group = troll_group
+		culture_group = undead_group
+		culture_group = vrykul_group
+	}
+}
+prefer_proud_trait_trigger = {
+	like_proud_trait_trigger = yes
+	like_humble_trait_trigger = no
+}
+# ambitious
+like_ambitious_trait_trigger = {
+	OR = {
+		trait = being_demon
+		trait = being_void
+
+		religion_group = elemental_lords_group
+		evil_public_religion_trigger = yes
+		religion_group = loa_group
+		religion_group = nerubian_religion_group
+		religion_group = vrykul_religion_group
+
+		culture_group = aqir_group
+		culture_group = arakkoa_group
+		culture_group = centaur_group
+		culture_group = naga_group
+		culture = highborne
+		culture_group = ogre_group
+		culture_group = satyr_group
+		culture_group = sethrak_group
+		culture_group = titanforged_group
+		culture_group = troll_group
+		culture_group = undead_group
+		culture_group = vrykul_group
+	}
+}
+prefer_ambitious_trait_trigger = {
+	like_ambitious_trait_trigger = yes
+	like_content_trait_trigger = no
 }
 # arbitrary
-is_arbitrary_being_trigger = {
+like_arbitrary_trait_trigger = {
 	OR = {
 		trait = being_demon
 		trait = being_void
 
 		evil_public_religion_trigger = yes
+		religion_group = primitive_group
 	}
+}
+prefer_arbitrary_trait_trigger = {
+	like_arbitrary_trait_trigger = yes
+	like_just_trait_trigger = no
+}
+# brave
+like_brave_trait_trigger = {
+	OR = {
+		religion_group = light_group
+		religion_group = loa_group
+		religion_group = pandaren_religion_group
+		religion_group = primitive_group
+		religion_group = shamanism_group
+		religion_group = vrykul_religion_group
+	}
+}
+prefer_brave_trait_trigger = {
+	like_brave_trait_trigger = yes
+	like_craven_trait_trigger = no
+}
+# content
+like_content_trait_trigger = {
+	religion_group = pandaren_religion_group
+}
+prefer_content_trait_trigger = {
+	like_content_trait_trigger = yes
+	like_ambitious_trait_trigger = no
+}
+# craven
+like_craven_trait_trigger = {
+	always = no
+}
+prefer_craven_trait_trigger = {
+	like_craven_trait_trigger = yes
+	like_brave_trait_trigger = no
 }
 # cruel
-is_cruel_being_trigger = {
+like_cruel_trait_trigger = {
 	OR = {
 		trait = being_demon
 		trait = being_void
@@ -2918,83 +3144,166 @@ is_cruel_being_trigger = {
 		evil_public_religion_trigger = yes
 	}
 }
+prefer_cruel_trait_trigger = {
+	like_cruel_trait_trigger = yes
+	like_kind_trait_trigger = no
+}
 # cynical
-is_cynical_being_trigger = {
+like_cynical_trait_trigger = {
 	OR = {
-		trait = being_demon
-		trait = being_void
-
-		is_high_elf_trigger = yes
-		trait = creature_naga
-		trait = creature_nerubian
-		trait = creature_highborne
-
+		pacifist = yes
+		has_religion_feature = religion_cosmopolitan
+		
 		secular_public_religion_trigger = yes
 	}
 }
+prefer_cynical_trait_trigger = {
+	like_cynical_trait_trigger = yes
+	like_zealous_trait_trigger = no
+}
 # deceitful
-is_deceitful_being_trigger = {
+like_deceitful_trait_trigger = {
 	OR = {
 		trait = being_demon
 		trait = being_void
 
+		religion_group = elemental_lords_group
 		evil_public_religion_trigger = yes
 	}
 }
-# gluttonous
-is_gluttonous_being_trigger = {
+prefer_deceitful_trait_trigger = {
+	like_deceitful_trait_trigger = yes
+	like_honest_trait_trigger = no
+}
+# erudite
+like_erudite_trait_trigger = {
 	OR = {
-		trait = creature_goblin
-
-		religion = cult_of_wealth
+		this_is_diplomatic_culture_trigger = yes
+		this_is_spiritual_culture_trigger = yes
 	}
 }
-# greedy
-is_greedy_being_trigger = {
+prefer_erudite_trait_trigger = {
+	like_erudite_trait_trigger = yes
+}
+# gregarious
+like_gregarious_trait_trigger = {
 	OR = {
-		trait = being_demon
-		trait = being_void
-
-		trait = creature_goblin
-
-		evil_public_religion_trigger = yes
-		religion = cult_of_wealth
+		this_is_diplomatic_culture_trigger = yes
+		this_is_warrior_culture_trigger = yes
 	}
+}
+prefer_gregarious_trait_trigger = {
+	like_gregarious_trait_trigger = yes
+	like_shy_trait_trigger = no
 }
 # honest
-is_honest_being_trigger = {
+like_honest_trait_trigger = {
 	OR = {
-		trait = creature_orc
+		kind_public_religion_trigger = yes
+		
+		culture_group = orc_group
 	}
 }
-# lustful
-is_lustful_being_trigger = {
+prefer_honest_trait_trigger = {
+	like_honest_trait_trigger = yes
+	like_deceitful_trait_trigger = no
+}
+# just
+like_just_trait_trigger = {
+	kind_public_religion_trigger = yes
+}
+prefer_just_trait_trigger = {
+	like_just_trait_trigger = yes
+	like_arbitrary_trait_trigger = no
+}
+# paranoid
+like_paranoid_trait_trigger = {
+	always = no
+}
+prefer_paranoid_trait_trigger = {
+	like_paranoid_trait_trigger = yes
+	like_trusting_trait_trigger = no
+}
+# shy
+like_shy_trait_trigger = {
+	always = no
+}
+prefer_shy_trait_trigger = {
+	like_shy_trait_trigger = yes
+	like_gregarious_trait_trigger = no
+}
+# stubborn
+like_stubborn_trait_trigger = {
+	always = no
+}
+prefer_stubborn_trait_trigger = {
+	this_is_warrior_culture_trigger = yes
+}
+# trusting
+like_trusting_trait_trigger = {
+	always = no
+}
+prefer_trusting_trait_trigger = {
+	like_trusting_trait_trigger = yes
+	like_paranoid_trait_trigger = no
+}
+# zealous
+like_zealous_trait_trigger = {
 	OR = {
-		trait = creature_sayaadi
+		has_religion_feature = religion_dogmatic
+		
+		religion = wolf_cult_religion
+		religion = scarlet_light
+		religion = lightbound
+		religion = cult_of_hakkar
+		religion = old_gods_worship
 	}
 }
-# proud
-is_proud_being_trigger = {
+prefer_zealous_trait_trigger = {
+	like_zealous_trait_trigger = yes
+	like_cynical_trait_trigger = no
+}
+
+# This group prefer to be chaste, temperate, patient and humble
+humble_public_religion_trigger = {
 	OR = {
-		trait = being_demon
-		trait = being_void
-
-		trait = creature_troll
-		is_elf_trigger = yes
-		trait = creature_naga
-		trait = creature_nerubian
-		is_dragon_race_trigger = yes
-
-		evil_public_religion_trigger = yes
+		religion_group = arakkoa_religion_group
+		religion_group = druidism_group
+		religion_group = light_group
+		religion_group = pandaren_religion_group
+		religion_group = shamanism_group
 	}
 }
-# wroth
-is_wroth_being_trigger = {
+# This group prefer to be charitable, kind, honest and just
+kind_public_religion_trigger = {
 	OR = {
-		trait = being_demon
-		trait = being_void
-
-		evil_public_religion_trigger = yes
+		religion_group = arakkoa_religion_group
+		religion_group = arcane_group
+		religion_group = dragon_religion_group
+		AND = {
+			religion_group = druidism_group
+			NOT = { religion = wolf_cult_religion }
+		}
+		AND = {
+			religion_group = light_group
+			NOT = {
+				religion = scarlet_light
+				religion = lightbound
+			}
+		}
+		AND = {
+			religion_group = loa_group
+			NOT = { religion = cult_of_hakkar }
+		}
+		religion_group = pandaren_religion_group
+		AND = {
+			religion_group = secular_group
+			NOT = {
+				religion = cult_of_wealth
+				religion = cult_of_loken
+			}
+		}
+		religion_group = shamanism_group
 	}
 }
 
@@ -3012,7 +3321,7 @@ placeholder_gfx_trigger = {
 
 is_30_age_trigger = {
 	immortal = no
-	age = 40
+	age = 30
 }
 is_40_age_trigger = {
 	immortal = no
@@ -3096,7 +3405,7 @@ colonial_culture_trigger = {
 		culture = durotaric
 	}
 }
-	
+
 # These regions are like world_steppe
 like_world_steppe_region_trigger = {
 	OR = {
@@ -3112,18 +3421,18 @@ like_world_steppe_region_trigger = {
 # These conditions must be met to continue event chain
 frostwolf_exodus_d_frostwolf_trigger = {
 	prisoner = no
-	
+
 	# independent = no
-	
+
 	religion_group = shamanism_group
-	
+
 	primary_title = { title = d_frostwolf }
 }
 
 # Such character can safely acquire new lands, change overlord, travel
 can_resettle_trigger = {
 	is_consort = no
-	
+
 	mercenary = no
 	holy_order = no
 	OR = {
@@ -3163,7 +3472,7 @@ is_only_female_race_trigger = {
 is_mammal_trigger = {
 	OR = {
 		trait = creature_human
-		trait = creature_orc
+		is_orc_trigger = yes
 		trait = creature_ogre
 		trait = creature_troll
 		trait = creature_gnoll
@@ -3172,13 +3481,12 @@ is_mammal_trigger = {
 		trait = creature_gnome
 
 		# High elves
-		trait = creature_high_elf
-		trait = creature_blood_elf
+		is_high_elf_trigger = yes
 
 		trait = creature_goblin
 		trait = creature_pygmy
 		trait = creature_hozen
-		trait = creature_draenei
+		is_eredar_trigger = yes
 
 		trait = creature_vrykul
 		trait = creature_tuskarr
@@ -3213,7 +3521,7 @@ secular_public_religion_trigger = {
 		religion_group = necromancy_group
 		religion_group = nerubian_religion_group
 		religion_group = secular_group
-		religion_group = void_group
+		religion = voidfarer
 	}
 }
 secular_true_religion_trigger = {
@@ -3225,7 +3533,7 @@ secular_true_religion_trigger = {
 		true_religion_group = necromancy_group
 		true_religion_group = nerubian_religion_group
 		true_religion_group = secular_group
-		true_religion_group = void_group
+		true_religion = voidfarer
 	}
 }
 
@@ -3340,5 +3648,163 @@ is_evil_cultist_trigger = {
 		society_member_of = cult_of_the_damned
 		society_member_of = shadow_council
 		society_member_of = twilights_hammer_cult
+	}
+}
+
+use_dark_artifacts_trigger = {
+	OR = {
+		is_warlock_class_trigger = yes
+		is_death_knight_class_trigger = yes
+		is_necromancer_class_trigger = yes
+		is_shadow_priest_class_trigger = yes
+		dark_public_religion_trigger = yes
+	}
+}
+
+is_azeroth_invader_trigger = {
+	OR = {
+		AND = {
+			has_landed_title = e_horde
+			has_global_flag = orcish_invasion_flag
+		}
+		has_landed_title = e_scourge
+		has_landed_title = e_burning_legion
+		has_landed_title = e_black_empire
+	}
+}
+
+prefer_multiculturalism_trigger = {
+	OR = {
+		has_faction_title_trigger = yes
+		evil_public_religion_trigger = yes
+	}
+}
+prefer_multireligiosity_trigger = {
+	OR = {
+		religion_group = arcane_group
+		religion_group = dragon_religion_group
+		religion_group = pandaren_religion_group
+		religion_group = secular_group
+
+		has_faction_title_trigger = yes
+
+		has_religion_feature = religion_cosmopolitan
+	}
+}
+
+is_yaungol_trigger = {
+	OR = {
+		trait = creature_taunka
+		trait = creature_tauren
+	}
+}
+is_cenarius_offspring_trigger = {
+	OR = {
+		trait = creature_frostnymph
+		trait = creature_dryad
+		trait = creature_centaur
+		trait = creature_magnataur
+	}
+}
+is_nraqi_trigger = {
+	OR = {
+		trait = creature_nraqi
+		trait = creature_cthraxxi
+	}
+}
+is_orc_trigger = {
+	OR = {
+		trait = creature_orc
+		trait = creature_fel_orc
+	}
+}
+
+has_blood_trait_trigger = {
+	OR = {
+		trait = blood_human
+		trait = blood_orc
+		trait = blood_ogre
+		trait = blood_high_elf
+		trait = blood_magnataur
+		trait = blood_taunka
+		trait = blood_night_elf
+		trait = blood_tauren
+		trait = blood_centaur
+		trait = blood_frostnymph
+		trait = blood_highborne
+	}
+}
+has_prev_blood_trigger = {
+	trigger_if = { limit = { trait = blood_human 				} PREV = { trait = blood_human 					} }
+	trigger_else_if = { limit = { trait = blood_orc 			} PREV = { trait = blood_orc 					} }
+	trigger_else_if = { limit = { trait = blood_ogre 			} PREV = { trait = blood_ogre 					} }
+	trigger_else_if = { limit = { trait = blood_high_elf 		} PREV = { trait = blood_high_elf 				} }
+	trigger_else_if = { limit = { trait = blood_magnataur 	} PREV = { trait = blood_magnataur 				} }
+	trigger_else_if = { limit = { trait = blood_taunka 		} PREV = { trait = blood_taunka 				} }
+	trigger_else_if = { limit = { trait = blood_night_elf 	} PREV = { trait = blood_night_elf 				} }
+	trigger_else_if = { limit = { trait = blood_tauren 		} PREV = { trait = blood_tauren 				} }
+	trigger_else_if = { limit = { trait = blood_centaur 		} PREV = { trait = blood_centaur 				} }
+	trigger_else_if = { limit = { trait = blood_frostnymph 	} PREV = { trait = blood_frostnymph 			} }
+	trigger_else_if = { limit = { trait = blood_highborne 	} PREV = { trait = blood_highborne 				} }
+}
+
+has_important_empire_titles = {
+	OR = {
+		has_invader_title_trigger = yes
+		has_dragonflight_title_trigger = yes
+		has_faction_title_trigger = yes
+	}
+}
+
+horde_exodus_clan_trigger = {
+	is_untouchable_trigger = no
+	
+	is_inaccessible_trigger = no
+	
+	lower_real_tier_than = EMPEROR
+
+	NOT = { has_character_flag = invitation_to_sail_is_sent_flag }
+	NOT = { has_character_flag = exodus_horde_declined_flag }
+
+	trait = creature_orc
+	religion_group = shamanism_group
+	culture_group = orc_group
+
+	can_resettle_trigger = yes
+	is_in_political_faction_trigger = no
+	location = { region = world_eastern_kingdoms }
+}
+theramore_founding_refugees_trigger = {
+	is_untouchable_trigger = no
+	
+	is_inaccessible_trigger = no
+	
+	independent = no
+
+	NOT = { has_character_flag = invitation_to_sail_is_sent_flag }
+	NOT = { has_character_flag = foundation_theramore_declined_flag }
+
+	evil_public_religion_trigger = no
+	OR = {
+		has_alliance_religion_trigger = yes
+		has_alliance_culture_trigger = yes
+	}
+
+	can_resettle_trigger = yes
+	location = { region = world_eastern_kingdoms }
+}
+
+religion_has_heresy_trigger = {
+	OR = {
+		religion = rukhmar_worship
+		religion = sethekk_worship
+		religion = holy_light
+		religion = scarlet_light
+		religion = naaru
+		religion = lightbound
+		religion = mystery_of_the_makers
+		religion = cult_of_loken
+		religion_group = muslim
+		religion_group = jewish_group
 	}
 }
