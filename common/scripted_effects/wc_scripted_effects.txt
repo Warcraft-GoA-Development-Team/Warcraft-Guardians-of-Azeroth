@@ -14,6 +14,9 @@ set_cannot_marry_flag_effect = {
 	}
 }
 remove_racial_traits_effect = {
+	# Fixes immortal age
+	rejuvenate_effect = yes
+
 	# Add new races always at the end
 	# Humans
 	if = { limit = { trait = creature_human 				} remove_trait = creature_human 				}
@@ -781,6 +784,23 @@ drain_void_source_effect = {
 		}
 	}
 }
+sacrifice_all_prisoners_effect = {
+	custom_tooltip = {
+		text = sacrifice_all_prisoners_tooltip
+
+		any_courtier = {
+			limit = {
+				is_alive = yes
+				is_dying = no
+
+				prisoner = yes
+				can_be_sacrificed_trigger = yes
+				host = { character = ROOT }
+			}
+			prev_sacrifice_this_effect = yes
+		}
+	}
+}
 prev_sacrifice_this_effect = {
 	# Head of Religion
 	if = {
@@ -828,6 +848,7 @@ prev_sacrifice_this_effect = {
 			piety = 25
 		}
 	}
+	hidden_effect = { character_event = { id = WCLOA.101 } }
 	death = { death_reason = death_sacrificed killer = PREV }
 }
 add_xalatath_effect = {
@@ -2041,6 +2062,20 @@ settle_as_target_settler_effect = {
 		location = {
 			show_scope_change = no
 
+			if = {
+				limit = {
+					has_province_modifier = undead_province
+					event_target:target_settler = {
+						NOT = {
+							trait = undead
+
+							religion_group = necromancy_group
+						}
+					}
+				}
+				remove_province_modifier = undead_province
+			}
+
 			# Upgrade tribal if there's one
 			upgrade_province_as_target_settler_effect = yes
 
@@ -2408,6 +2443,43 @@ add_blood_trait_effect = {
 		random = {
 			chance = 5
 			add_trait = blood_vrykul
+		}
+	}
+}
+
+# Fixes immortal age
+rejuvenate_effect = {
+	hidden_effect = {
+		if = {
+			limit = {
+				# immortal = yes
+				age = 40
+			}
+			log = "(IMMORTALITY) [This.GetBestName] is rejuvenated"
+
+			export_to_variable = { which = "myAge" value = age }
+			change_variable = { which = "myAge" value = -30 }
+			set_variable = { which = "myNegativeAge" which = "myAge" }
+			multiply_variable = { which = "myNegativeAge" value = -1 }
+
+			add_age = "myNegativeAge"
+
+			set_character_flag = rejuvenated_flag
+		}
+	}
+}
+add_age_back_effect = {
+	hidden_effect = {
+		if = {
+			limit = { has_character_flag = rejuvenated_flag }
+			log = "(IMMORTALITY) [This.GetBestName] gets age back"
+
+			clr_character_flag = rejuvenated_flag
+
+			add_age = "myAge"
+
+			set_variable = { which = "myAge" value = 0 }
+			set_variable = { which = "myNegativeAge" value = 0 }
 		}
 	}
 }

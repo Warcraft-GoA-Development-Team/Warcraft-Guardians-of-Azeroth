@@ -105,6 +105,8 @@ leave_horde_faction_effect = {
 			is_alive = yes
 			is_dying = no
 		}
+		log = "[This.GetBestName] leaves the Horde"
+		
 		break_alliances_with_horde_faction_effect = yes
 		if = {
 			limit = {
@@ -113,12 +115,12 @@ leave_horde_faction_effect = {
 					has_landed_title = e_horde
 				}
 			}
-			remove_trait = leader_of_horde_trait
 			# Destroys faction
 			any_tributary = {
 				limit = { is_tributary = { type = political_faction suzerain = suzerain } }
 				leave_horde_faction_effect = yes
 			}
+			remove_trait = leader_of_horde_trait		# Must be after any_tributary
 			if = {
 				limit = {
 					OR = {
@@ -156,6 +158,8 @@ leave_alliance_faction_effect = {
 			is_alive = yes
 			is_dying = no
 		}
+		log = "[This.GetBestName] leaves the Alliance"
+		
 		break_alliances_with_alliance_faction_effect = yes
 		if = {
 			limit = {
@@ -164,7 +168,6 @@ leave_alliance_faction_effect = {
 					has_landed_title = e_alliance
 				}
 			}
-			remove_trait = leader_of_alliance_trait
 			if = {
 				limit = {
 					NOT = { has_global_flag = centralized_alliance_flag }
@@ -175,6 +178,7 @@ leave_alliance_faction_effect = {
 						is_tributary = { type = political_faction suzerain = PREV }
 					}
 				}
+				remove_trait = leader_of_alliance_trait
 				random_independent_ruler = {
 					limit = {
 						NOT = { character = PREV }
@@ -206,9 +210,10 @@ leave_alliance_faction_effect = {
 					limit = { is_tributary = { type = political_faction suzerain = suzerain } }
 					leave_alliance_faction_effect = yes
 				}
+				remove_trait = leader_of_alliance_trait			# Must be after any_tributary
+				narrative_event = { id = WCPLF.205 }
 				activate_title = { title = e_alliance status = no }
 				e_alliance = { destroy_landed_title = THIS }
-				narrative_event = { id = WCPLF.205 }
 			}
 		}
 		if = {
@@ -249,6 +254,8 @@ break_alliances_with_horde_faction_effect = {
 			is_alive = yes
 			is_dying = no
 		}
+		log = "[This.GetBestName] breaks alliances with the Horde"
+		
 		any_independent_ruler = {
 			limit = {
 				NOT = { character = PREV }
@@ -265,7 +272,15 @@ break_alliances_with_horde_faction_effect = {
 						modifier = broken_non_aggression_pact
 						who = PREV
 					}
+					reverse_opinion = {
+						modifier = broken_non_aggression_pact
+						who = PREV
+					}
 					opinion = {
+						modifier = dissolved_alliance
+						who = PREV
+					}
+					reverse_opinion = {
 						modifier = dissolved_alliance
 						who = PREV
 					}
@@ -280,6 +295,8 @@ break_alliances_with_alliance_faction_effect = {
 			is_alive = yes
 			is_dying = no
 		}
+		log = "[This.GetBestName] breaks alliances with the Alliance"
+		
 		any_independent_ruler = {
 			limit = {
 				NOT = { character = PREV }
@@ -296,7 +313,15 @@ break_alliances_with_alliance_faction_effect = {
 						modifier = broken_non_aggression_pact
 						who = PREV
 					}
+					reverse_opinion = {
+						modifier = broken_non_aggression_pact
+						who = PREV
+					}
 					opinion = {
+						modifier = dissolved_alliance
+						who = PREV
+					}
+					reverse_opinion = {
 						modifier = dissolved_alliance
 						who = PREV
 					}

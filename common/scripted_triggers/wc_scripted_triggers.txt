@@ -27,8 +27,10 @@ can_rule_peacefully_trigger = {
 		hidden_tooltip = {
 			trigger_if = {
 				limit = {
-					is_ruler = yes
+					is_landed = yes
 					is_theocracy = no
+					holy_order = no
+					mercenary = no
 				}
 				evil_government_trigger = no
 			}
@@ -159,7 +161,6 @@ title_can_be_lost_trigger = {
 	NOT = { holding_type = family_palace }
 	invader_title_trigger = no
 	dragonflight_title_trigger = no
-	faction_title_trigger = no
 }
 # TITLES ARE IN DANGER, SO MANY ACTIONS CAN'T BE USED AGAINST THIS CHARACTER
 character_can_lose_title_trigger = {
@@ -167,7 +168,6 @@ character_can_lose_title_trigger = {
 	
 	has_invader_title_trigger = no
 	has_dragonflight_title_trigger = no
-	has_faction_title_trigger = no
 }
 # CAN'T GET SICK IF IT'S NOT TRUE
 # Associated with text_effect_can_not_get_diseases
@@ -2042,7 +2042,6 @@ has_demon_gfx_trigger = {
 		graphical_culture = annihilangfx
 		graphical_culture = nathrezimgfx
 		graphical_culture = eredruingfx
-		graphical_culture = nathrezimgfx
 		graphical_culture = moarggfx
 		graphical_culture = observergfx
 		graphical_culture = sargerasgfx
@@ -2375,13 +2374,15 @@ ai_from_prefer_to_hurt_this_trigger = {
 	OR = {
 		FROM = { ai = no }
 		AND = {
-			NOR = {
+			NOT = {
 				is_friend = FROM
 				is_lover = FROM
+				reverse_opinion = { who = FROM value = 50 }
 			}
 			OR = {
-				FROM = { is_foe = PREV }
+				is_foe = FROM
 				war_with = FROM
+				NOT = { reverse_opinion = { who = FROM value = -30 } }
 				holds_favor_on = FROM
 				any_spouse = { #Unfaithful spouse
 					character = FROM
@@ -2389,7 +2390,6 @@ ai_from_prefer_to_hurt_this_trigger = {
 				}
 				any_lover = { any_spouse = { character = FROM } } #Lover of spouse
 				any_lover = { any_lover = { character = FROM } } #Lover of lover
-				any_claim = { any_claimant = { character = FROM } } #Someone sharing claims
 			}
 		}
 	}
@@ -3444,4 +3444,50 @@ has_prev_blood_trigger = {
 	trigger_else_if = { limit = { trait = blood_centaur 		} PREV = { trait = blood_centaur 				} }
 	trigger_else_if = { limit = { trait = blood_frostnymph 	} PREV = { trait = blood_frostnymph 			} }
 	trigger_else_if = { limit = { trait = blood_highborne 	} PREV = { trait = blood_highborne 				} }
+}
+
+has_important_empire_titles = {
+	OR = {
+		has_invader_title_trigger = yes
+		has_dragonflight_title_trigger = yes
+		has_faction_title_trigger = yes
+	}
+}
+
+horde_exodus_clan_trigger = {
+	is_untouchable_trigger = no
+	
+	is_inaccessible_trigger = no
+	
+	lower_real_tier_than = EMPEROR
+
+	NOT = { has_character_flag = invitation_to_sail_is_sent_flag }
+	NOT = { has_character_flag = exodus_horde_declined_flag }
+
+	trait = creature_orc
+	religion_group = shamanism_group
+	culture_group = orc_group
+
+	can_resettle_trigger = yes
+	is_in_political_faction_trigger = no
+	location = { region = world_eastern_kingdoms }
+}
+theramore_founding_refugees_trigger = {
+	is_untouchable_trigger = no
+	
+	is_inaccessible_trigger = no
+	
+	independent = no
+
+	NOT = { has_character_flag = invitation_to_sail_is_sent_flag }
+	NOT = { has_character_flag = foundation_theramore_declined_flag }
+
+	evil_public_religion_trigger = no
+	OR = {
+		has_alliance_religion_trigger = yes
+		has_alliance_culture_trigger = yes
+	}
+
+	can_resettle_trigger = yes
+	location = { region = world_eastern_kingdoms }
 }
