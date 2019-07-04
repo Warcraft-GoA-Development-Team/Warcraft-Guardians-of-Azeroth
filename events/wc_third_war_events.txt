@@ -122,20 +122,7 @@ narrative_event = {
 			# Invites another clan
 			random_independent_ruler = {
 				limit = {
-					is_untouchable_trigger = no
-					is_inaccessible_trigger = no
-					
-					lower_real_tier_than = EMPEROR
-
-					NOT = { has_character_flag = invitation_to_sail_is_sent_flag }
-
-					trait = creature_orc
-					religion_group = shamanism_group
-					culture_group = orc_group
-
-					can_resettle_trigger = yes
-					is_in_political_faction_trigger = no
-					location = { region = world_eastern_kingdoms }
+					horde_exodus_clan_trigger = yes
 				}
 				preferred_limit = {
 					ai = no
@@ -176,6 +163,10 @@ letter_event = {
 	border = GFX_event_letter_frame_diplomacy
 
 	is_triggered_only = yes
+	
+	trigger = {
+		horde_exodus_clan_trigger = yes
+	}
 	
 	immediate = {
 		# add_trait = travelling
@@ -818,20 +809,7 @@ narrative_event = {
 		hidden_effect = {
 			random_playable_ruler = {
 				limit = {
-					is_untouchable_trigger = no
-					is_inaccessible_trigger = no
-					
-					independent = no
-
-					NOT = { has_character_flag = invitation_to_sail_is_sent_flag }
-
-					OR = {
-						has_alliance_religion_trigger = yes
-						has_alliance_culture_trigger = yes
-					}
-
-					can_resettle_trigger = yes
-					location = { region = world_eastern_kingdoms }
+					theramore_founding_refugees_trigger = yes
 				}
 				preferred_limit = {
 					ai = no
@@ -871,6 +849,10 @@ letter_event = {
 	border = GFX_event_letter_frame_diplomacy
 
 	is_triggered_only = yes
+	
+	trigger = {
+		theramore_founding_refugees_trigger = yes
+	}
 	
 	immediate = {
 		# add_trait = travelling
@@ -1127,7 +1109,7 @@ narrative_event = {
 
 	immediate = {
 		ROOT = {
-			save_event_target_as = target_religion
+			save_event_target_as = target_corruptor
 			
 			trigger_switch = {
 				on_trigger = religion
@@ -1202,38 +1184,44 @@ province_event = {
 				e_quelthalas = {
 					has_holder = yes
 					holder_scope = {
+						NOT = { character = event_target:target_corruptor }	# One who corrupted the well
+						
 						trait = creature_high_elf
 						evil_public_religion_trigger = no
 					}
 				}
 			}
 			e_quelthalas = { holder_scope = { narrative_event = { id = WCTHW.1010 } } }
-			break = yes
 		}
 		# King of Quel'Thalas
-		if = {
+		else_if = {
 			limit = {
 				k_quelthalas = {
 					has_holder = yes
 					holder_scope = {
+						NOT = { character = event_target:target_corruptor }	# One who corrupted the well
+						
 						trait = creature_high_elf
 						evil_public_religion_trigger = no
 					}
 				}
 			}
 			k_quelthalas = { holder_scope = { narrative_event = { id = WCTHW.1010 } } }
-			break = yes
 		}
-		# Top liege of the Sunwell
-		394 = {
-			wonder = {
-				wonder_owner = {
-					if = {
-						limit = {
-							trait = creature_high_elf
-							evil_public_religion_trigger = no
+		else= {
+			# Top liege of the Sunwell
+			394 = {
+				wonder = {
+					wonder_owner = {
+						if = {
+							limit = {
+								NOT = { character = event_target:target_corruptor }	# One who corrupted the well
+								
+								trait = creature_high_elf
+								evil_public_religion_trigger = no
+							}
+							narrative_event = { id = WCTHW.1010 }
 						}
-						narrative_event = { id = WCTHW.1010 }
 					}
 				}
 			}
@@ -1289,9 +1277,24 @@ narrative_event = {
 		}
 	}
 	show_root = yes
+	
+	option = {
+		trigger = {
+			OR = {
+				character = event_target:target_corruptor	# One who corrupted the well
+				evil_true_religion_trigger = yes
+			}
+		}
+		
+		name = FOOLS
+	}
 
 	option = {
 		trigger = {
+			NOT = {
+				character = event_target:target_corruptor	# One who corrupted the well
+				evil_true_religion_trigger = yes
+			}
 			OR = {
 				trait = creature_high_elf
 				trait = creature_blood_elf
@@ -1310,7 +1313,13 @@ narrative_event = {
 		}
 	}
 	option = {
-		trigger = { trait = creature_high_elf }
+		trigger = {
+			NOT = {
+				character = event_target:target_corruptor	# One who corrupted the well
+				evil_true_religion_trigger = yes
+			}
+			trait = creature_high_elf
+		}
 		name = EVTOPTB_WCTHW_1010
 
 		ai_chance = {
@@ -1319,7 +1328,9 @@ narrative_event = {
 	}
 	option = {
 		trigger = {
-			NOR = {
+			NOT = {
+				character = event_target:target_corruptor	# One who corrupted the well
+				evil_true_religion_trigger = yes
 				trait = creature_high_elf
 				trait = creature_blood_elf
 			}
