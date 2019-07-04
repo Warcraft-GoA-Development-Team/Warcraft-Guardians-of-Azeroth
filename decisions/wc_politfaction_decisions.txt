@@ -250,7 +250,7 @@ decisions = {
 			OR = {
 				ai = no
 				has_landed_title = e_lordaeron
-				year = 586
+				year = 587
 			}
 			has_alliance_religion_trigger = yes
 			has_alliance_culture_trigger = yes
@@ -264,7 +264,21 @@ decisions = {
 			OR = {
 				ai = no
 				leader_of_horde_trait = { always = yes }
-				e_horde = { holder_scope = { infamy = 25 } }		# After first conquest
+				trigger_if = {							# After first conquest
+					limit = {
+						NOT = {
+							has_game_rule = {
+								name = defensive_pacts
+								value = off
+							}
+						}
+					}
+					e_horde = { holder_scope = { infamy = 25 } }
+				}
+				trigger_else = {
+					year = 585					
+					e_horde = { has_holder = yes }
+				}
 				e_scourge = { has_holder = yes }
 				e_burning_legion = { has_holder = yes }
 				e_black_empire = { has_holder = yes }
@@ -633,10 +647,18 @@ decisions = {
 		effect = {
 			if = {
 				limit = { trait = leader_of_horde_trait }
+				if = {
+					limit = { NOT = { has_global_flag = centralized_horde_flag } }
+					set_global_flag = centralized_horde_flag
+				}
 				create_e_horde_effect = yes
 			}
 			if = {
 				limit = { trait = leader_of_alliance_trait }
+				if = {
+					limit = { NOT = { has_global_flag = centralized_alliance_flag } }
+					set_global_flag = centralized_alliance_flag
+				}
 				create_e_alliance_effect = yes
 			}
 			hidden_effect = { character_event = { id = WCPLF.2 } }
