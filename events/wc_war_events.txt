@@ -288,19 +288,26 @@ character_event = {
 			
 			diplomatic_immunity = yes
 			set_character_flag = special_marshal 				# Always allow to be in command
-			set_character_flag = coalition_leader_flag		# Used in CBs
 			set_character_flag = ai_flag_refuse_conversion
 			
 			create_title = {
 				tier = DUKE
-				landless = yes
-				temporary = yes
-				short_name = yes
-				culture = lordaeronian
+				
 				name = "AZEROTH_COALITION"
 				ruler = "HIGHLORD_TITLE"
 				ruler_female = "HIGHLORD_FEM_TITLE"
+				
 				holder = THIS
+				
+				culture = lordaeronian
+				
+				custom_created = yes
+				landless = yes
+				short_name = yes
+				# temporary = yes
+			}
+			new_title = {
+				set_title_flag = coalition_flag					# Used in CBs
 			}
 			
 			# Picks war target
@@ -328,6 +335,11 @@ character_event = {
 						}
 					}
 					
+					# realm_size = 150
+					NAND = {				# Since this invasioin isn't long lasting
+						has_landed_title = e_horde
+						has_global_flag = orcish_invasion_flag
+					}
 					event_target:target_coalition_leader = {
 						can_use_cb = {
 							target = PREV
@@ -363,6 +375,11 @@ character_event = {
 						}
 					}
 					
+					# realm_size = 150
+					NAND = {				# Since this invasioin isn't long lasting
+						has_landed_title = e_horde
+						has_global_flag = orcish_invasion_flag
+					}
 					event_target:target_coalition_leader = {
 						can_use_cb = {
 							target = PREV
@@ -391,7 +408,7 @@ character_event = {
 		}
 		# There's no war target, so let him peacefully die
 		else = {
-			character_event = { id = HL.199 } # Cleanup
+			character_event = { id = WCWAR.800 } # Cleanup
 			death = { death_reason = death_missing }
 		}
 	}
@@ -407,6 +424,8 @@ character_event = {
 	border = GFX_event_normal_frame_war
 
 	is_triggered_only = yes
+
+	hide_new = yes
 
 	only_playable = yes
 	war = no
@@ -429,41 +448,23 @@ character_event = {
 		reverse_opinion = { modifier = opinion_very_grateful who = event_target:target_coalition_leader years = 5 }
 
 		ai_chance = {
-			factor = 20
-			modifier = {
-				factor = 1.67
-				trait = charitable
+			factor = 10
+			
+			modifier = {		# Care about the rule of cool
+				factor = 2
+				OR = {
+					is_member_of_horde_faction_trigger = yes
+					is_member_of_alliance_faction_trigger = yes
+					top_liege = {
+						OR = {
+							is_member_of_horde_faction_trigger = yes
+							is_member_of_alliance_faction_trigger = yes
+						}
+					}
+				}
 			}
 			modifier = {
-				factor = 1.67
-				trait = kind
-			}
-			modifier = {
-				factor = 1.67
-				trait = brave
-			}
-			modifier = {
-				factor = 1.67
-				trait = honest
-			}
-			modifier = {
-				factor = 1.67
-				trait = just
-			}
-			modifier = {
-				factor = 1.67
-				trait = zealous
-			}
-			modifier = {
-				factor = 1.67
-				opinion = { who = event_target:target_coalition_leader value = 25 }
-			}
-			modifier = {
-				factor = 1.67
-				opinion = { who = event_target:target_coalition_leader value = 50 }
-			}
-			modifier = {
-				factor = 1.67
+				factor = 1.5
 				event_target:target_invader = { has_invader_title_trigger = yes }
 			}
 		}
@@ -476,35 +477,42 @@ character_event = {
 		piety = -25
 
 		ai_chance = {
-			factor = 80
-			modifier = {
-				factor = 1.49
-				trait = greedy
-			}
-			modifier = {
-				factor = 1.49
-				trait = cruel
-			}
-			modifier = {
-				factor = 1.49
-				trait = craven
-			}
-			modifier = {
-				factor = 1.49
-				trait = deceitful
-			}
-			modifier = {
-				factor = 1.49
-				trait = arbitrary
-			}
-			modifier = {
-				factor = 1.49
-				trait = cynical
-			}
+			factor = 90
+			
+			evil_ai_chance_score = yes
 		}
 	}
 
 	after = {
 		clr_character_flag = invite_against_evil_flag
+	}
+}
+
+# Cleanup
+character_event = {
+	id = WCWAR.800
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
+		log = "Cleaning up coalition leader: [Root.GetTitledFirstName]"
+		
+		diplomatic_immunity = no
+		clr_character_flag = special_marshal
+		clr_character_flag = ai_flag_refuse_conversion
+		
+		disband_event_forces = yes
+		clan_title = {
+			activate_title = { title = THIS status = no }
+			destroy_landed_title = THIS
+		}
+		primary_title = {
+			if = {
+				limit = { has_title_flag = coalition_flag }
+				activate_title = { title = THIS status = no }
+				destroy_landed_title = THIS
+			}
+		}
 	}
 }
