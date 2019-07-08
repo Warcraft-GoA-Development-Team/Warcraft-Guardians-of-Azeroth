@@ -313,7 +313,6 @@ stop_invader = {
 	is_permanent = yes
 	is_holy_war = yes
 	can_ask_to_join_war = yes
-	allow_whitepeace = no
 
 	allowed_to_target_tributaries = no
 
@@ -425,6 +424,46 @@ stop_invader = {
 			}
 		}
 	}
+	
+	on_fail = {
+		# Wealth, piety and prestige
+		ROOT = {
+			show_scope_change = no
+			
+			# Must be first
+			hidden_effect = {
+				if = {
+					limit = { primary_title = { has_title_flag = coalition_flag } }
+					character_event = { id = WCWAR.700 }		# Cleanup
+				}
+			}
+			
+			prestige = -100
+			if = {
+				limit = { NOT = { religion = FROM } }
+				religion_authority = {
+					modifier = lost_total_invasion
+					years = 10
+				}
+			}
+		}
+		FROM = {
+			show_scope_change = no
+			
+			prestige = 100
+			if = {
+				limit = { NOT = { religion = ROOT } }
+				religion_authority = {
+					modifier = won_total_invasion
+					years = 10
+				}
+			}
+		}
+		any_defender = {
+			limit = { NOT = { character = ROOT } }
+			hidden_tooltip = { participation_scaled_prestige = 100 }
+		}
+	}
 
 	on_reverse_demand = {
 		# Wealth, piety and prestige
@@ -450,6 +489,7 @@ stop_invader = {
 		}
 		FROM = {
 			show_scope_change = no
+			
 			prestige = 200
 			if = {
 				limit = { NOT = { religion = ROOT } }

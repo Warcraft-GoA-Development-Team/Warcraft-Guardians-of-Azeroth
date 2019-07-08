@@ -357,9 +357,6 @@ character_event = {
 			spawn_good_commander_effect = yes
 			spawn_good_commander_effect = yes
 			
-			# Spawns army
-			spawn_coalition_troops_effect = yes
-			
 			random_independent_ruler = {
 				limit = {
 					OR = {
@@ -385,11 +382,42 @@ character_event = {
 				}
 				save_event_target_as = target_invader
 				
+				# Picks province to spawn army
+				if = {			# Capital of invader's neighbor
+					limit = {
+						any_neighbor_independent_ruler = { is_landed = yes }
+					}
+					random_neighbor_independent_ruler = {
+						limit = {
+							is_landed = yes
+						}
+						capital_scope = {
+							save_event_target_as = target_province
+						}
+					}
+				}
+				else_if = {		# Coast province of invader
+					limit = {
+						any_realm_province = {
+							port = yes
+						}
+					}
+					random_realm_province = {
+						limit = {
+							port = yes
+						}
+						save_event_target_as = target_province
+					}
+				}
+				
 				reverse_unsafe_war = {
 					casus_belli = stop_invader
 					target = event_target:target_coalition_leader
 				}
 			}
+			
+			# Spawns army
+			spawn_coalition_troops_effect = yes
 			
 			# Invites other rulers...
 			event_target:target_invader = {
@@ -445,6 +473,10 @@ character_event = {
 		ai_chance = {
 			factor = 10
 			
+			modifier = {
+				factor = 2
+				event_target:target_invader = { ai = no }
+			}
 			modifier = {		# Care about the rule of cool
 				factor = 2
 				OR = {
