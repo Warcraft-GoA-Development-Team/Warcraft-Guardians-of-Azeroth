@@ -24,23 +24,29 @@ society_decisions = { # Society decisions are only evaluated by members of socie
 			# Warcraft
 			is_untouchable_trigger = no
 			
+			# Warcraft
 			hidden_tooltip = {
-				OR = { #In some societies, there can only be 1 member at rank 4
-					society_rank < 3
-					NOR = {
-						# Warcraft
-						# society_member_of = the_assassins
-						
-						is_devil_worshiper_trigger = yes
+				# In some societies, there can only be 1 member at rank 4
+				trigger_if = {
+					limit = {
+						OR = {
+							# Warcraft
+							# society_member_of = the_assassins
+							
+							is_devil_worshiper_trigger = yes
 
-						# Warcraft
-						society_member_of = cult_of_the_damned
-						society_member_of = shadow_council
-						society_member_of = twilights_hammer_cult
-						society_member_of = cenarion_circle
+							# Warcraft
+							society_member_of = cult_of_the_damned
+							society_member_of = shadow_council
+							society_member_of = twilights_hammer_cult
+						}
 					}
+					society_rank < 3
 				}
-				society_rank < 4
+				trigger_else = {
+					society_rank < 4
+				}
+				
 				days_in_society > 365
 				#has_dlc = "Mystics"
 				is_in_society = yes
@@ -56,20 +62,110 @@ society_decisions = { # Society decisions are only evaluated by members of socie
 
 		allow = {
 			#Rank requirements. IMPORTANT!!! If you change the requirements, the customizable loc keys "GetSocietyRankUpTooltip" 1, 2, 3, and 4 must be updated, as it displays these requirements.
-			custom_tooltip = { # Sufficient currency
-				text = request_to_rank_up_within_society_currency_tt
-				OR = {
-					AND = {
-						society_rank == 1
-						society_currency >= 750
+			
+			# Warcraft
+			trigger_if = {
+				limit = {
+					OR = {
+						society_member_of = cenarion_circle
+						society_member_of = sisterhood_of_elune
 					}
-					AND = {
-						society_rank == 2
+				}
+				custom_tooltip = { # Sufficient currency
+					text = request_to_rank_up_within_alt_society_tt
+					trigger_if = {
+						limit = { society_rank == 1 }
 						society_currency >= 1000
+						trigger_if = {
+							limit = { society_member_of = cenarion_circle }
+							OR = {
+								trait = class_druid_3
+								trait = class_druid_4
+								trait = class_druid_5
+								trait = class_druid_6
+								trait = class_druid_7
+								trait = class_druid_8
+								trait = class_druid_9
+								trait = class_druid_10
+							}
+						}
+						trigger_else = {
+							OR = {
+								trait = class_priest_3
+								trait = class_priest_4
+								trait = class_priest_5
+								trait = class_priest_6
+								trait = class_priest_7
+								trait = class_priest_8
+								trait = class_priest_9
+								trait = class_priest_10
+							}
+						}
 					}
-					society_currency >= 2000 # rank 3
+					trigger_else_if = {
+						limit = { society_rank == 2 }
+						society_currency >= 3000
+						trigger_if = {
+							limit = { society_member_of = cenarion_circle }
+							OR = {
+								trait = class_druid_5
+								trait = class_druid_6
+								trait = class_druid_7
+								trait = class_druid_8
+								trait = class_druid_9
+								trait = class_druid_10
+							}
+						}
+						trigger_else = {
+							OR = {
+								trait = class_priest_5
+								trait = class_priest_6
+								trait = class_priest_7
+								trait = class_priest_8
+								trait = class_priest_9
+								trait = class_priest_10
+							}
+						}
+					}
+					trigger_else = {
+						society_currency >= 6000
+						trigger_if = {
+							limit = { society_member_of = cenarion_circle }
+							OR = {
+								trait = class_druid_7
+								trait = class_druid_8
+								trait = class_druid_9
+								trait = class_druid_10
+							}
+						}
+						trigger_else = {
+							OR = {
+								trait = class_priest_7
+								trait = class_priest_8
+								trait = class_priest_9
+								trait = class_priest_10
+							}
+						}
+					}
 				}
 			}
+			trigger_else = {
+				custom_tooltip = { # Sufficient currency
+					text = request_to_rank_up_within_society_currency_tt
+					OR = {
+						AND = {
+							society_rank == 1
+							society_currency >= 750
+						}
+						AND = {
+							society_rank == 2
+							society_currency >= 1000
+						}
+						society_currency >= 2000 # rank 3
+					}
+				}
+			}
+			
 			# custom_tooltip = { # No vices for Buddhist/Jain 					###Merged below
 				# text = request_to_rank_up_within_society_vices_tt
 				# OR = {
@@ -120,83 +216,6 @@ society_decisions = { # Society decisions are only evaluated by members of socie
 			}		
 
 			# Warcraft
-			# custom_tooltip = {
-				# text = request_to_rank_up_within_society_cynical_tt
-				# OR = {
-					# NOR = { society_member_of = monastic_order_jain society_member_of = monastic_order_buddhist society_member_of = monastic_order_stoics }
-					# AND = {
-						# society_rank == 1
-						# NOT = {
-							# trait = cruel
-						# }
-					# }
-					# AND = {
-						# society_rank == 2
-						# NOR = {
-							# trait = cruel
-							# trait = cynical
-						# }
-					# }
-					# AND = {
-						# society_rank == 3
-						# NOR = {
-							# trait = cruel
-							# trait = cynical
-							# trait = greedy
-							# trait = gluttonous
-							# trait = slothful
-							# trait = envious
-							# trait = wroth
-							# trait = cruel
-							# trait = proud
-						# }
-					# }
-				# }
-			# }
-			# custom_tooltip = {
-				# text = request_to_rank_up_within_society_virtues_tt
-				# OR = {
-					# NOR = { society_member_of = monastic_order_jain society_member_of = monastic_order_buddhist society_member_of = monastic_order_stoics }
-					# AND = {
-						# society_rank == 1
-						# OR = {
-							# trait = humble
-							# trait = charitable
-							# trait = chaste
-							# trait = kind
-							# trait = temperate
-							# trait = patient
-							# trait = diligent
-						# }
-					# }
-					# AND = {
-						# society_rank == 2
-						# calc_true_if = {
-							# amount = 2
-							# trait = humble
-							# trait = charitable
-							# trait = chaste
-							# trait = kind
-							# trait = temperate
-							# trait = patient
-							# trait = diligent
-						# }
-					# }
-					# AND = {
-						# society_rank == 3
-						# calc_true_if = {
-							# amount = 3
-							# trait = humble
-							# trait = charitable
-							# trait = chaste
-							# trait = kind
-							# trait = temperate
-							# trait = patient
-							# trait = diligent
-						# }
-					# }
-				# }
-			# }
 
 			custom_tooltip = {
 				text = must_not_have_sent_request_already_tooltip 
@@ -216,22 +235,36 @@ society_decisions = { # Society decisions are only evaluated by members of socie
 				}
 			}
 
+			# Warcraft
 			custom_tooltip = {
 				text = must_have_multiple_rank_4 #Society must allow multiple characters at Rank 4
-				NAND = {
-					society_rank == 3
-					OR = {
-						# Warcraft
-						# society_member_of = the_assassins
-						
-						is_devil_worshiper_trigger = yes
+				trigger_if = {
+					limit = {
+						OR = {
+							# Warcraft
+							# society_member_of = the_assassins
+							
+							is_devil_worshiper_trigger = yes
 
-						# Warcraft
-						society_member_of = cult_of_the_damned
-						society_member_of = shadow_council
-						society_member_of = twilights_hammer_cult
-						society_member_of = cenarion_circle
+							# Warcraft
+							society_member_of = cult_of_the_damned
+							society_member_of = shadow_council
+							society_member_of = twilights_hammer_cult
+						}
 					}
+					NOT = { society_rank == 3 }
+				}
+				trigger_else_if = {
+					limit = {
+						OR = {
+							society_member_of = cenarion_circle
+							society_member_of = sisterhood_of_elune
+						}
+					}
+					NOT = { society_rank == 4 }
+				}
+				trigger_else = {
+					always = yes
 				}
 			}
 		}
@@ -261,25 +294,62 @@ society_decisions = { # Society decisions are only evaluated by members of socie
 			}
 
 			else = { #For everyone else...
-				#Rank up cost
+				# Warcraft
+				# ...except cenarion_circle and sisterhood_of_elune...
 				if = {
-					limit = { society_rank == 1 }
-					change_society_currency = -750
+					limit = {
+						OR = {
+							society_member_of = cenarion_circle
+							society_member_of = sisterhood_of_elune
+						}
+					}
+					#Rank up cost
+					if = {
+						limit = { society_rank == 1 }
+						change_society_currency = -1000
+					}
+					if = {
+						limit = { society_rank == 2 }
+						change_society_currency = -3000
+					}
+					if = {
+						limit = { society_rank == 3 }
+						change_society_currency = -6000
+					}
 				}
-				if = {
-					limit = { society_rank == 2 }
-					change_society_currency = -1000
-				}
-				if = {
-					limit = { society_rank == 3 }
-					change_society_currency = -2000
+				else = {
+					#Rank up cost
+					if = {
+						limit = { society_rank == 1 }
+						change_society_currency = -750
+					}
+					if = {
+						limit = { society_rank == 2 }
+						change_society_currency = -1000
+					}
+					if = {
+						limit = { society_rank == 3 }
+						change_society_currency = -2000
+					}
 				}
 
 				#Perform rank up
 				hidden_tooltip = {
 					save_event_target_as = rank_up_target
 					set_character_flag = has_sent_request_to_rank_up
-					character_event = { id = MNM.10002 days = 20 random = 10 } # sends hidden delayed event to self, which then sends request to Leader of the society
+					
+					# Warcraft
+					if = {
+						limit = { society_member_of = cenarion_circle }
+						character_event = { id = WCCC.10 days = 20 random = 10 } # sends hidden delayed event to self, which then sends request to Leader of the society
+					}
+					else_if = {
+						limit = { society_member_of = sisterhood_of_elune }
+						character_event = { id = WCSE.10 days = 20 random = 10 } # sends hidden delayed event to self, which then sends request to Leader of the society
+					}
+					else = {
+						character_event = { id = MNM.10002 days = 20 random = 10 } # sends hidden delayed event to self, which then sends request to Leader of the society
+					}
 					
 					#Conversus power for benedictines
 					if = {
