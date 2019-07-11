@@ -2330,6 +2330,7 @@ give_old_titles_to_heir_effect = {
 				independent = no
 			}
 			liege = { save_event_target_as = target_liege }
+			# Picks who should be target_heir
 			if = {
 				limit = {
 					any_dynasty_member = {
@@ -2343,7 +2344,7 @@ give_old_titles_to_heir_effect = {
 						
 						can_resettle_trigger = yes
 						same_sex = PREV
-						NOT = { is_primary_heir = PREV }
+						is_heir = no
 					}
 				}
 				random_dynasty_member = {
@@ -2358,8 +2359,15 @@ give_old_titles_to_heir_effect = {
 						
 						can_resettle_trigger = yes
 						same_sex = PREV
-						NOT = { is_primary_heir = PREV }
+						is_heir = no
 					}
+					preferred_limit = {
+						is_30_age_trigger = no
+					}
+					preferred_limit = {
+						is_40_age_trigger = no
+					}
+
 					save_event_target_as = target_heir
 				}
 			}
@@ -2367,13 +2375,12 @@ give_old_titles_to_heir_effect = {
 				liege = { save_event_target_as = target_heir }
 			}
 			
-			any_vassal = {
-				limit = { dejure_liege_title = { NOT = { has_title_flag = new_title_flag } } }
-				set_defacto_liege = event_target:target_heir
-			}
+			# Gives titles
 			any_demesne_title = {
 				limit = {
-					lower_tier_than = DUKE
+					controls_religion = no 		# You still guide your people
+					is_titular = no				# No one cares about titular titles, take them
+					title_can_be_lost_trigger = yes
 					NOT = { has_title_flag = new_title_flag }
 					trigger_if = {
 						limit = { tier = BARON }
@@ -2389,7 +2396,20 @@ give_old_titles_to_heir_effect = {
 					}
 				}
 			}
+			# Transfers remaining vassals
+			any_vassal = {
+				limit = { dejure_liege_title = { NOT = { has_title_flag = new_title_flag } } }
+				if = {
+					limit = { lower_tier_than = event_target:target_heir }
+					set_defacto_liege = event_target:target_heir
+				}
+				else = {
+					set_defacto_liege = event_target:target_liege
+				}
+			}
+			# Makes you independent
 			set_defacto_liege = THIS
+			# Enslave target_heir
 			event_target:target_heir = {
 				if = {
 					limit = { NOT = { character = event_target:target_liege } }
