@@ -1339,7 +1339,12 @@ decisions = {
 			is_adult = yes
 			is_paladin_class_trigger = yes
 			NOT = { is_weak_paladin_class_trigger = yes }
-			NOT = { has_character_flag = wrote_libram }
+			
+			OR = {
+				ai = no
+				NOT = { has_character_flag = wrote_libram }		# Otherwise, AI create a ton of librams
+			}
+			
 			can_write_libram = yes
 		}
 		allow = {
@@ -1352,6 +1357,9 @@ decisions = {
 			piety = 500
 		}
 		effect = {
+			set_character_flag = do_not_disturb			# Otherwise, you can fire decision twice
+			set_character_flag = wrote_libram
+			
 			piety = -500
 			character_event = { id = WCCLS.10200 }
 		}
@@ -1713,6 +1721,11 @@ decisions = {
 				}
 				trait = creature_nathrezim
 			}
+			
+			OR = {
+				ai = no
+				NOT = { has_character_flag = forged_runeblade }		# Otherwise, AI create a ton of runeblades
+			}
 		}
 		allow = {
 			show_only_failed_conditions = yes
@@ -1721,28 +1734,25 @@ decisions = {
 				text = is_not_busy_trigger_tooltip
 				hidden_tooltip = { NOT = { has_character_flag = do_not_disturb } }
 			}
-			OR = {
-				AND = {
-					trait = creature_nathrezim
-					wealth = 500
-				}
-				AND = {
-					NOT = { trait = creature_nathrezim }
-					piety = 500
-				}
+			trigger_if = {
+				limit = { trait = creature_nathrezim }
+				wealth = 500
+			}
+			trigger_else = {
+				piety = 500
 			}
 		}
 		effect = {
+			set_character_flag = do_not_disturb				# Otherwise, you can fire decision twice
+			set_character_flag = forged_runeblade
+			
 			if = {
 				limit = {
 					trait = creature_nathrezim
 				}
 				wealth = -500
 			}
-			if = {
-				limit = {
-					NOT = { trait = creature_nathrezim }
-				}
+			else = {
 				piety = -500
 			}
 			character_event = { id = WCCLS.10300 }
