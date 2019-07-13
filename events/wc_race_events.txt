@@ -681,11 +681,20 @@ character_event = {
 			save_event_target_as = target_necromancer
 			character_event = { id = WCPOD.5013 }
 		}
+		
 		# Adds default traits when new character spawns
 		add_default_traits = yes
 		
 		# Fixes immortal age
 		add_age_back_effect = yes
+		
+		# Delay infertile trait... or gives it right now if it's needed
+		if = {
+			limit = {
+				need_delayed_infertile_trait_trigger = yes
+			}
+			delay_infertile_trait_effect = yes
+		}
 		
 		clr_character_flag = no_show_what_become_flag			# Works only during this event
 		clr_character_flag = no_religion_change_flag			# Works only during this event
@@ -838,18 +847,7 @@ character_event = {
 		true_father = {
 			if = {
 				limit = {
-					is_alive = yes
-					is_dying = no
-					
-					is_dragon_race_trigger = no
-					
-					trigger_if = {
-						limit = { immortal = yes }
-						num_of_children = 7
-					}
-					trigger_else = {
-						age = 70
-					}
+					need_infertile_trait_trigger = yes
 				}
 				character_event = { id = WCRAC.400 }
 			}
@@ -857,18 +855,7 @@ character_event = {
 		mother = {
 			if = {
 				limit = {
-					is_alive = yes
-					is_dying = no
-					
-					is_dragon_race_trigger = no
-					
-					trigger_if = {
-						limit = { immortal = yes }
-						num_of_children = 5
-					}
-					trigger_else = {
-						age = 50
-					}
+					need_infertile_trait_trigger = yes
 				}
 				character_event = { id = WCRAC.400 }
 			}
@@ -884,7 +871,17 @@ character_event = {
 	
 	is_triggered_only = yes
 	
+	trigger = {
+		need_infertile_trait_trigger = yes
+	}
+	
+	fail_trigger_effect = {
+		clr_character_flag = delayed_infertility_flag
+	}
+	
 	immediate = {
+		clr_character_flag = delayed_infertility_flag
+		
 		add_trait = infertile
 	}
 	
