@@ -462,11 +462,15 @@ character_event = {
 
 ### Sea Invasion
 # Spawns ravager group
-province_event = {
+character_event = {
 	id = WCWAR.705
-
+	
+	is_triggered_only = yes
 	hide_window = yes
-
+	
+	only_playable = yes
+	only_independent = yes
+	
 	trigger = {
 		NOT = {
 			has_game_rule = {
@@ -475,169 +479,177 @@ province_event = {
 			}
 		}
 		
-		port = yes
-	}
-
-	mean_time_to_happen = {
-		months = 2400
-		
-		modifier = {
-			factor = 0.5
-			has_global_flag = naga_resurfaced_flag
+		OR = {
+			ai = yes
+			realm_size = 30
 		}
-		
+		any_realm_province = {
+			port = yes
+		}
+	}
+	
+	weight_multiplier = {
+		days = 1
 		modifier = {
 			factor = 2
-			top_liege = { ai = no }
+			has_global_flag = naga_resurfaced_flag
 		}
-		
 		modifier = {
-			factor = 50
+			factor = 0.5
+			ai = no
+		}
+		modifier = {
+			factor = 0.02
 			has_game_rule = {
 				name = adventurers
 				value = rare
 			}
 		}
 	}
-
+	
 	immediate = {
-		save_event_target_as = target_province
-		
-		random_list = {
-			# Naga
-			50 = {
-				trigger = {
-					NOT = { religion = old_gods_worship }
-					NOT = { culture_group = naga_group }
-					holder_scope = {
+		random_realm_province = {
+			limit = {
+				port = yes
+			}
+			save_event_target_as = target_province
+			
+			random_list = {
+				# Naga
+				50 = {
+					trigger = {
 						NOT = { religion = old_gods_worship }
 						NOT = { culture_group = naga_group }
-						top_liege = {
+						holder_scope = {
 							NOT = { religion = old_gods_worship }
 							NOT = { culture_group = naga_group }
+							top_liege = {
+								NOT = { religion = old_gods_worship }
+								NOT = { culture_group = naga_group }
+							}
 						}
+						
+						has_global_flag = naga_resurfaced_flag
 					}
 					
-					has_global_flag = naga_resurfaced_flag
-				}
-				
-				random_list = {
-					# Male naga
-					50 = {
-						create_character = {
-							female = no
-							dynasty = none
-							culture = naga religion = old_gods_worship
-							trait = ambitious trait = zealous
-							random_traits = yes
-							age = 300
+					random_list = {
+						# Male naga
+						50 = {
+							create_character = {
+								female = no
+								dynasty = none
+								culture = naga religion = old_gods_worship
+								trait = ambitious trait = zealous
+								random_traits = yes
+								age = 300
+							}
+							new_character = {
+								remove_education_effect = yes
+								add_random_martial_education_effect = yes
+								ai_add_warrior_class_effect = yes
+								
+								save_event_target_as = target_ravager
+							}
 						}
-						new_character = {
-							remove_education_effect = yes
-							add_random_martial_education_effect = yes
-							ai_add_warrior_class_effect = yes
-							
-							save_event_target_as = target_ravager
-						}
-					}
-					# Female naga
-					50 = {
-						create_character = {
-							female = yes
-							dynasty = none
-							culture = naga religion = old_gods_worship
-							trait = ambitious trait = zealous
-							random_traits = yes
-							age = 300
-						}
-						new_character = {
-							remove_education_effect = yes
-							add_random_learning_education_effect = yes
-							ai_add_mage_class_effect = yes
-							
-							save_event_target_as = target_ravager
+						# Female naga
+						50 = {
+							create_character = {
+								female = yes
+								dynasty = none
+								culture = naga religion = old_gods_worship
+								trait = ambitious trait = zealous
+								random_traits = yes
+								age = 300
+							}
+							new_character = {
+								remove_education_effect = yes
+								add_random_learning_education_effect = yes
+								ai_add_mage_class_effect = yes
+								
+								save_event_target_as = target_ravager
+							}
 						}
 					}
 				}
-			}
-			# Male kvaldir
-			50 = {
-				trigger = {
-					NOT = { religion = helya }
-					holder_scope = {
+				# Male kvaldir
+				50 = {
+					trigger = {
 						NOT = { religion = helya }
-						top_liege = {
+						holder_scope = {
 							NOT = { religion = helya }
+							top_liege = {
+								NOT = { religion = helya }
+							}
 						}
 					}
-				}
-				
-				create_character = {
-					female = no
-					dynasty = none
-					culture = kvaldir religion = helya
-					trait = ambitious trait = zealous
-					random_traits = yes
-					age = 300
-				}
-				new_character = {
-					remove_education_effect = yes
-					add_random_martial_education_effect = yes
-					ai_add_warrior_class_effect = yes
 					
-					save_event_target_as = target_ravager
+					create_character = {
+						female = no
+						dynasty = none
+						culture = kvaldir religion = helya
+						trait = ambitious trait = zealous
+						random_traits = yes
+						age = 300
+					}
+					new_character = {
+						remove_education_effect = yes
+						add_random_martial_education_effect = yes
+						ai_add_warrior_class_effect = yes
+						
+						save_event_target_as = target_ravager
+					}
 				}
-			}
-			# Male murloc
-			50 = {
-				trigger = {
-					NOT = { culture_group = murloc_group }
-					holder_scope = {
+				# Male murloc
+				50 = {
+					trigger = {
 						NOT = { culture_group = murloc_group }
-						top_liege = {
+						holder_scope = {
 							NOT = { culture_group = murloc_group }
+							top_liege = {
+								NOT = { culture_group = murloc_group }
+							}
 						}
 					}
-				}
-				
-				create_character = {
-					female = no
-					dynasty = none
-					culture = murloc religion = water_deities
-					trait = ambitious trait = zealous
-					random_traits = yes
-					age = 25
-				}
-				new_character = {
-					remove_education_effect = yes
-					add_random_martial_education_effect = yes
-					ai_add_warrior_class_effect = yes
 					
-					save_event_target_as = target_ravager
+					create_character = {
+						female = no
+						dynasty = none
+						culture = murloc religion = water_deities
+						trait = ambitious trait = zealous
+						random_traits = yes
+						age = 25
+					}
+					new_character = {
+						remove_education_effect = yes
+						add_random_martial_education_effect = yes
+						ai_add_warrior_class_effect = yes
+						
+						save_event_target_as = target_ravager
+					}
+				}
+				# Fallback - male murloc
+				1 = {
+					create_character = {
+						female = no
+						dynasty = none
+						culture = murloc religion = water_deities
+						trait = ambitious trait = zealous
+						random_traits = yes
+						age = 25
+					}
+					new_character = {
+						remove_education_effect = yes
+						add_random_martial_education_effect = yes
+						ai_add_warrior_class_effect = yes
+						
+						save_event_target_as = target_ravager
+					}
 				}
 			}
-			# Fallback - male murloc
-			1 = {
-				create_character = {
-					female = no
-					dynasty = none
-					culture = murloc religion = water_deities
-					trait = ambitious trait = zealous
-					random_traits = yes
-					age = 25
-				}
-				new_character = {
-					remove_education_effect = yes
-					add_random_martial_education_effect = yes
-					ai_add_warrior_class_effect = yes
-					
-					save_event_target_as = target_ravager
-				}
+			
+			event_target:target_ravager = {
+				character_event = { id = WCWAR.707 }
 			}
-		}
-		
-		event_target:target_ravager = {
-			character_event = { id = WCWAR.707 }
 		}
 	}
 }
@@ -681,7 +693,6 @@ character_event = {
 		else = {
 			spawn_heavy_sea_ravagers_effect = yes
 		}
-
 		
 		event_target:target_province = {
 			county = {
