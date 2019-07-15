@@ -375,45 +375,76 @@ province_event = {
 }
 
 # Creates pack leader and pick province
-province_event = {
+character_event = {
 	id = WCDRU.350
-
+	
+	is_triggered_only = yes
 	hide_window = yes
 	
+	only_playable = yes
+	only_independent = yes
 	has_global_flag = worgens_in_azeroth_flag
 	
 	trigger = {
-		OR = {
-			terrain = forest
-			terrain = woods
+		NOT = {
+			has_game_rule = {
+				name = adventurers
+				value = none
+			}
+		}
+		
+		any_realm_province = {
+			OR = {
+				terrain = forest
+				terrain = woods
+			}
 		}
 	}
 	
-	mean_time_to_happen = {
-		years = 600
+	weight_multiplier = {
+		modifier = {
+			factor = 0.02
+			has_game_rule = {
+				name = adventurers
+				value = rare
+			}
+		}
 	}
 	
 	immediate = {
-		save_event_target_as = target_province
-		create_character = {
-			dynasty = none
-			religion = wolf_cult_religion
-			culture = night_elf
-			age = 12000
-			attributes = {
-				martial=5 diplomacy=5 stewardship=5 intrigue=5 learning=5
+		random_realm_province = {
+			limit = {
+				OR = {
+					terrain = forest
+					terrain = woods
+				}
 			}
-			trait = creature_night_elf
-			trait = worgen
-			trait = wroth
-			random_traits = yes
-		}
-		new_character = {
-			remove_education_effect = yes
-			add_random_martial_education_effect = yes
-			ai_add_druid_class_effect = yes
+			preferred_limit = {
+				is_susceptible_to_worgen_curse_province_trigger = yes
+			}
 			
-			character_event = { id = WCDRU.365 }
+			save_event_target_as = target_province
+			
+			create_character = {
+				dynasty = none
+				religion = wolf_cult_religion
+				culture = night_elf
+				age = 300
+				attributes = {
+					martial=5 diplomacy=5 stewardship=5 intrigue=5 learning=5
+				}
+				trait = creature_night_elf
+				trait = worgen
+				trait = wroth
+				random_traits = yes
+			}
+			new_character = {
+				remove_education_effect = yes
+				add_random_martial_education_effect = yes
+				ai_add_druid_class_effect = yes
+				
+				character_event = { id = WCDRU.365 }
+			}
 		}
 	}
 }
@@ -459,22 +490,7 @@ character_event = {
 		spawn_great_commander_effect = yes
 		spawn_great_commander_effect = yes
 		
-		spawn_unit = {
-			province = event_target:target_province
-			home = event_target:target_province
-			owner = ROOT
-			troops = {
-				light_infantry = { 1250 1250 }
-			}
-			cannot_inherit = yes
-			attrition = 1.0
-			scaled_by_biggest_garrison = 1.5
-			merge = yes
-			can_toggle_looting = no
-			is_looter = yes
-			reinforces = yes
-			maintenance = no
-		}
+		spawn_pack_troops_effect = yes
 		
 		character_event = { id = WCDRU.370 days = 1825 } # Finishes hunting after 5 years
 	}
@@ -848,25 +864,12 @@ character_event = {
 	immediate = {
 		FROM = {
 			location = {
+				save_event_target_as = target_province
+				
 				if = {
 					limit = { is_susceptible_to_worgen_curse_province_trigger = yes }
 					ROOT = {
-						spawn_unit = {
-							province = PREV
-							home = PREV
-							owner = ROOT
-							troops = {
-								light_infantry = { 1 1 }
-							}
-							cannot_inherit = yes
-							attrition = 1.0
-							scaled_by_biggest_garrison = 0.2
-							merge = yes
-							can_toggle_looting = no
-							is_looter = yes
-							reinforces = yes
-							maintenance = no
-						}
+						spawn_bitten_troops_effect = yes
 					}
 					holder_scope = {
 						character_event = { id = WCDRU.5005 }
