@@ -13,7 +13,6 @@ narrative_event = {
 	picture = GFX_evt_stormwind_champion
 	border = GFX_event_narrative_frame_war
 
-	hide_from = yes
 	is_triggered_only = yes
 
 	major = yes
@@ -21,16 +20,40 @@ narrative_event = {
 		ai = no
 	}
 	show_root = yes
+	hide_from = yes
+	
+	immediate = {
+		d_brotherhood_of_the_horse = {
+			activate_title = { title = THIS status = no }
+			destroy_landed_title = THIS
+		}
+	}
+	
+	option = {
+		trigger = {
+			evil_true_religion_trigger = yes
+		}
+		name = FOOLS
+	}
 
 	option = {
-		name = {
-			trigger = { culture = azerothian }
-			text = EVTOPTA_WCORD_2_azerothian
+		trigger = {
+			NOT = {
+				evil_true_religion_trigger = yes
+			}
+			culture = azerothian
 		}
-		name = {
-			trigger = { NOT = { culture = azerothian } }
-			text = OK
+		name = EVTOPTA_WCORD_2_azerothian
+	}
+	
+	option = {
+		trigger = {
+			NOT = {
+				evil_true_religion_trigger = yes
+				culture = azerothian
+			}
 		}
+		name = INTERESTING
 	}
 }
 # The Creation of the Order of the Silver Hand
@@ -763,12 +786,34 @@ narrative_event = {
 			trait = class_mage_5
 		}
 		new_character = {
+			save_event_target_as = target_order_leader
+			# Used in scripted effects
+			save_event_target_as = target_settler
+			
 			activate_title = { title = d_nethergarde status = yes }
 			d_nethergarde = { grant_title = PREV }
 			set_defacto_liege = ROOT
-			wealth = 500
+			wealth = 1000
+			
+			# Builds Nethergarde Keep
+			67 = {		# Nether Hill
+				# target_settler build new holding or usurp existing one
+				build_or_give_holding_to_target_settler_effect = yes
+				
+				# Rename one holding as Nethergarde
+				random_province_holding = {
+					limit = { holding_type = castle }
+					# Prefer when order leader is holder
+					preferred_limit = { holder_scope = { character = event_target:target_order_leader } }
+					set_name = d_nethergarde
+				}
+			}
+			
+			# The Nethergarde requires lands around the Dark Portal
 			character_event = { id = WCORD.220 days = 5 }
-			character_event = { id = WCORD.225 days = 5 }
+			
+			# Clear settler flags and other stuff
+			character_event = { id = WCRLM.700 year = 1 }
 		}
 	}
 
@@ -784,46 +829,129 @@ character_event = {
 	hide_window = yes
 
 	immediate = {
-		save_event_target_as = target_order_leader
 		d_black_morass = {
 			save_event_target_as = target_desired_title
+			
 			any_direct_de_jure_vassal_title = {
 				holder_scope = {
-					limit = { NOT = { character = event_target:target_ruler } }
-					letter_event = { id = WCORD.9035 }
+					if = {
+						limit = {
+							NOT = { has_character_flag = land_request_sent@event_target:target_desired_title }
+							
+							has_alliance_religion_trigger = yes
+							has_alliance_culture_trigger = yes
+							trigger_if = {
+								limit = { independent = no }
+								top_liege = {
+									has_alliance_religion_trigger = yes
+									has_alliance_culture_trigger = yes
+								}
+							}
+						}
+						save_event_target_as = target_ruler
+
+						set_character_flag = land_request_sent@event_target:target_desired_title
+					
+						letter_event = { id = WCORD.9035 days = 1 }
+					}
 				}
 			}
 		}
-	}
-}
-# The Nethergarde requires the Tainted Forest
-character_event = {
-	id = WCORD.225
-
-	is_triggered_only = yes
-	hide_window = yes
-
-	immediate = {
-		save_event_target_as = target_order_leader
 		d_tainted_forest = {
 			save_event_target_as = target_desired_title
+			
 			any_direct_de_jure_vassal_title = {
 				holder_scope = {
-					limit = { NOT = { character = event_target:target_ruler } }
-					letter_event = { id = WCORD.9035 }
+					if = {
+						limit = {
+							NOT = { has_character_flag = land_request_sent@event_target:target_desired_title }
+							
+							has_alliance_religion_trigger = yes
+							has_alliance_culture_trigger = yes
+							trigger_if = {
+								limit = { independent = no }
+								top_liege = {
+									has_alliance_religion_trigger = yes
+									has_alliance_culture_trigger = yes
+								}
+							}
+						}
+						save_event_target_as = target_ruler
+
+						set_character_flag = land_request_sent@event_target:target_desired_title
+					
+						letter_event = { id = WCORD.9035 days = 1 }
+					}
+				}
+			}
+		}
+		d_dulzin = {
+			save_event_target_as = target_desired_title
+			
+			any_direct_de_jure_vassal_title = {
+				holder_scope = {
+					if = {
+						limit = {
+							NOT = { has_character_flag = land_request_sent@event_target:target_desired_title }
+							
+							has_alliance_religion_trigger = yes
+							has_alliance_culture_trigger = yes
+							trigger_if = {
+								limit = { independent = no }
+								top_liege = {
+									has_alliance_religion_trigger = yes
+									has_alliance_culture_trigger = yes
+								}
+							}
+						}
+						save_event_target_as = target_ruler
+
+						set_character_flag = land_request_sent@event_target:target_desired_title
+					
+						letter_event = { id = WCORD.9035 days = 1 }
+					}
+				}
+			}
+		}
+		d_shindun = {
+			save_event_target_as = target_desired_title
+			
+			any_direct_de_jure_vassal_title = {
+				holder_scope = {
+					if = {
+						limit = {
+							NOT = { has_character_flag = land_request_sent@event_target:target_desired_title }
+							
+							has_alliance_religion_trigger = yes
+							has_alliance_culture_trigger = yes
+							trigger_if = {
+								limit = { independent = no }
+								top_liege = {
+									has_alliance_religion_trigger = yes
+									has_alliance_culture_trigger = yes
+								}
+							}
+						}
+						save_event_target_as = target_ruler
+
+						set_character_flag = land_request_sent@event_target:target_desired_title
+					
+						letter_event = { id = WCORD.9035 days = 1 }
+					}
 				}
 			}
 		}
 	}
 }
-# The Order asks permission to build a castle on your land
+
+# Asks permission to build a castle
 character_event = {
 	id = WCORD.9000
 
 	is_triggered_only = yes
 	hide_window = yes
 	
-	only_rulers = yes
+	only_playable = yes
 
 	trigger = {
 		is_alive = yes
@@ -884,11 +1012,12 @@ character_event = {
 				limit = { has_empty_holding = yes }
 				save_event_target_as = target_castle_location
 			}
+			
 			letter_event = { id = WCORD.9015 }
 		}
 	}
 }
-
+# FROM asks for permission to build a castle on your land
 letter_event = {
 	id = WCORD.9015
 	desc = EVTDESC_WCORD_9015
@@ -903,7 +1032,7 @@ letter_event = {
 			piety = 200
 		}
 		else = {
-			prestige = 100
+			prestige = 200
 		}
 
 		event_target:target_castle_location = {
@@ -912,7 +1041,7 @@ letter_event = {
 				holder = FROMFROM
 			}
 		}
-		wealth = 100
+		wealth = 200
 
 		ai_chance = {
 			factor = 80
@@ -933,76 +1062,18 @@ letter_event = {
 	}
 }
 
-# # The Order asks for land
-# character_event = {
-	# id = WCORD.9020
-
-	# hide_window = yes
-
-	# trigger = {
-		# holy_order = yes
-		# wealth = 300
-		# NOT = { realm_size = 10 }
-		# NOT = { num_of_count_titles = 1 }
-
-		# NOT = { has_landed_title = d_nethergarde }
-
-		# any_playable_ruler = {
-			# is_tribal = no
-			# OR = {
-				# opinion = { who = ROOT value = 5 }
-				# religion = ROOT
-			# }
-			# any_demesne_province = {
-			# }
-		# }
-	# }
-
-	# weight_multiplier = {
-		# days = 1
-
-		# modifier = {
-			# factor = 2
-			# NOT = { demesne_size = 1 }
-		# }
-		# modifier = {
-			# factor = 2
-			# NOT = { demesne_size = 2 }
-		# }
-		# modifier = {
-			# factor = 0.5
-			# realm_size = 5
-		# }
-	# }
-
-	# immediate = {
-		# random_playable_ruler = {
-			# limit = {
-				# is_tribal = no
-				# OR = {
-					# opinion = { who = ROOT value = 5 }
-					# religion = ROOT
-				# }
-			# }
-			# random_demesne_province = {
-				# limit = { has_empty_holding = yes }
-				# save_event_target_as = target_desired_title
-			# }
-			# letter_event = { id = WCORD.9035 }
-		# }
-	# }
-# }
-
+# target_order_leader asks for permission to buy your land
 letter_event = {
 	id = WCORD.9035
 	desc = EVTDESC_WCORD_9035
+	portrait = event_target:target_order_leader
 
 	is_triggered_only = yes
 
 	immediate = {
 		if = {
-			limit = { NOT = { event_target:target_ruler = { always = yes } } }
-			save_event_target_as = target_ruler
+			limit = { character = event_target:target_ruler }
+			clr_character_flag = land_request_sent@event_target:target_desired_title
 		}
 	}
 
@@ -1011,156 +1082,42 @@ letter_event = {
 		name = EVTOPTA_WCORD_9035
 
 		tooltip = {
-			event_target:target_ruler = {
-				if = {
-					limit = { event_target:target_desired_title = { tier = COUNTY } }
-					if = {
-						limit = { religion = event_target:target_order_leader }
-						piety = 400
-					}
-					else = { prestige = 200 }
-					wealth = 200
-
-					event_target:target_desired_title = {
-						grant_title = event_target:target_order_leader
-						event_target:target_order_leader = {
-							gain_settlements_under_title = {
-								title = PREV
-								enemy = event_target:target_ruler
-							}
-						}
-						hidden_tooltip = {
-							location = {
-								if = {
-									limit = { province_id = 67 }
-									random_province_holding = {
-										set_name = d_nethergarde
-										convert_to = CASTLE
-										refill_holding_levy = yes
-									}
-								}
-							}
-						}
-					}
-				}
-				else = {
-					if = {
-						limit = { religion = event_target:target_order_leader }
-						piety = 1600
-					}
-					else = { prestige = 800 }
-					wealth = 800
-
-					event_target:target_desired_title = {
-						any_direct_de_jure_vassal_title = {
-							limit = { holder_scope = { character = event_target:target_ruler } }
-							grant_title = event_target:target_order_leader
-							event_target:target_order_leader = {
-								gain_settlements_under_title = {
-									title = PREV
-									enemy = event_target:target_ruler
-								}
-							}
-							hidden_tooltip = {
-								location = {
-									if = {
-										limit = { province_id = 67 }
-										random_province_holding = {
-											set_name = d_nethergarde
-											convert_to = CASTLE
-											refill_holding_levy = yes
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
+			ruler_sell_land_to_holy_order_effect = yes
 		}
-		hidden_tooltip = {
-			liege = { letter_event = { id = WCORD.9035 } }
-		}
+		
+		liege = { letter_event = { id = WCORD.9035 } }
 	}
 
 	option = {
 		trigger = { independent = yes }
 		name = ACCEPT
 
-		event_target:target_ruler = {
-			if = {
-				limit = { event_target:target_desired_title = { tier = COUNTY } }
-				if = {
-					limit = { religion = event_target:target_order_leader }
-					piety = 400
-				}
-				else = { prestige = 200 }
-				wealth = 200
-
-				event_target:target_desired_title = {
-					grant_title = event_target:target_order_leader
-					event_target:target_order_leader = {
-						gain_settlements_under_title = {
-							title = PREV
-							enemy = event_target:target_ruler
-						}
-					}
-					hidden_tooltip = {
-						location = {
-							if = {
-								limit = { province_id = 67 }
-								random_province_holding = {
-									set_name = d_nethergarde
-									convert_to = CASTLE
-									refill_holding_levy = yes
-								}
-							}
-						}
-					}
-				}
-			}
-			else = {
-				if = {
-					limit = { religion = event_target:target_order_leader }
-					piety = 1600
-				}
-				else = { prestige = 800 }
-				wealth = 800
-
-				event_target:target_desired_title = {
-					any_direct_de_jure_vassal_title = {
-						limit = { holder_scope = { character = event_target:target_ruler } }
-						grant_title = event_target:target_order_leader
-						event_target:target_order_leader = {
-							gain_settlements_under_title = {
-								title = PREV
-								enemy = event_target:target_ruler
-							}
-						}
-						hidden_tooltip = {
-							location = {
-								if = {
-									limit = { province_id = 67 }
-									random_province_holding = {
-										set_name = d_nethergarde
-										convert_to = CASTLE
-										refill_holding_levy = yes
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
+		ruler_sell_land_to_holy_order_effect = yes
 	}
 
 	option = {
 		name = DECLINE
+		
+		event_target:target_ruler = { letter_event = { id = WCORD.9036 } }
 
 		ai_chance = {
 			factor = 0
 		}
+	}
+	
+	after = {
+	
+	}
+}
+# Liege says no
+letter_event = {
+	id = WCORD.9036
+	desc = EVTDESC_WCORD_9036
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = ALAS
 	}
 }
 
