@@ -6338,19 +6338,52 @@ character_event = { # Fix adventurers turning Tribal land Feudal
 		# There's feudals that can have no castles
 		government = feudal_government
 		# is_feudal = yes
+		
+		# Warcraft
+		trigger_if = {		# Adventurers still have feudal_government when county is transferred
+			limit = { trait = adventurer }
+			num_of_titles = 3
+			NOT = { num_of_titles = 4 }
+		}
+		trigger_else = {
+			num_of_titles = 2
+			NOT = { num_of_titles = 3 }
+		}
 	}
 
 	immediate = {
+		# Warcraft
+		log = "539 fired for [Root.GetBestName], [From.GetFullBaseName] is FROM title"
+	
+		# Warcraft
 		if = {
+			limit = { religion = death_god }
+			set_scourge_government_effect = yes
+		}
+		else_if = {
+			limit = { religion = burning_legion_religion }
+			set_legion_government_effect = yes
+		}
+		else_if = {
+			limit = { religion = old_gods_worship }
+			set_black_pact_government_effect = yes
+		}
+		else_if = {
 			limit = {
-				NOT = {
-					any_realm_province = {
-						any_province_holding = {
-							holding_type = castle
-						}
+				any_demesne_province = {
+					any_province_holding = {
+						holding_type = castle
 					}
 				}
-				any_realm_province = {
+			}
+			if = {
+				limit = { can_be_feudal_trigger = no }
+				set_tribal_monarchy_government_effect = yes
+			}
+		}
+		else_if = {
+			limit = {
+				any_demesne_province = {
 					any_province_holding = {
 						holding_type = tribal
 					}
