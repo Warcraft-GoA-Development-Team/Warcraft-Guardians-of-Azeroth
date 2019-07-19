@@ -4,23 +4,31 @@ society_decisions = {
 
 		ai_check_interval = 24
 
+		ai = no
 		only_playable = yes
 
 		potential = {
 			is_adult = yes
 			is_incapable = no
 			prisoner = no
+			
 			society_member_of = sisterhood_of_elune
 			society_rank > 2
 		}
 
 		allow = {
 			is_inaccessible_trigger = no
+			
+			NOT = { has_character_modifier = train_disciple_cooldown }
+			
 			society_currency >= 500
 		}
 
 		effect = {
+			add_character_modifier = { name = train_disciple_cooldown years = 1 }
+			
 			change_society_currency = -500
+			
 			create_random_priest = {
 			  dynasty = none
 			  religion = ROOT
@@ -38,7 +46,7 @@ society_decisions = {
 		}
 
 		ai_will_do = {
-			factor = 1
+			factor = 0			# AI spawns a lot of characters
 		}
 	}
 	vows_of_purity = {
@@ -52,6 +60,7 @@ society_decisions = {
 			is_adult = yes
 			is_incapable = no
 			prisoner = no
+			society_rank > 1
 			society_member_of = sisterhood_of_elune
 		}
 
@@ -97,6 +106,7 @@ society_decisions = {
 			is_adult = yes
 			is_incapable = no
 			prisoner = no
+			society_rank > 1
 			society_member_of = sisterhood_of_elune
 			trait = celibate
 		}
@@ -133,6 +143,7 @@ society_decisions = {
 			is_adult = yes
 			is_incapable = no
 			prisoner = no
+			society_rank > 1
 			society_member_of = sisterhood_of_elune
 			trait = celibate
 		}
@@ -155,6 +166,50 @@ society_decisions = {
 
 		ai_will_do = {
 			factor = 0
+		}
+	}
+	study_at_temple = {
+
+		ai_check_interval = 120
+
+		only_playable = yes
+
+		potential = {
+			is_adult = yes
+			is_incapable = no
+			prisoner = no
+			society_member_of = sisterhood_of_elune
+			is_weak_priest_class_trigger = yes
+			can_level_up_trigger = yes
+		}
+
+		allow = {
+			is_inaccessible_trigger = no
+			society_currency >= 2000
+			custom_tooltip = {
+				text = has_not_used_decision_10_years_tooltip
+				hidden_tooltip = {
+					OR = {
+						NOT = { has_character_flag = study_at_temple_cooldown_flag }
+						had_character_flag = { flag = study_at_temple_cooldown_flag years = 10 }
+					}
+				}
+			}
+		}
+
+		effect = {
+			change_society_currency = -2000
+			character_event = { id = WCCLS.7999 }
+			set_character_flag = study_at_temple_cooldown_flag
+			
+		}
+
+		revoke_allowed = {
+			always = no
+		}
+
+		ai_will_do = {
+			factor = 0.8
 		}
 	}
 }
