@@ -2274,23 +2274,65 @@ build_or_give_holding_to_target_settler_effect = {
 		}
 	}
 }
+# Sets culture and religion, upgrade holdings
+cleanup_province_as_target_settler_effect = {
+	hidden_effect = {
+		location = {
+			show_scope_change = no
+			
+			if = {
+				limit = {
+					has_province_modifier = undead_province
+					event_target:target_settler = {
+						NOT = {
+							trait = undead
+							
+							religion_group = necromancy_group
+						}
+					}
+				}
+				remove_province_modifier = undead_province
+			}
+			remove_province_modifier = sold_off_land
+            remove_province_modifier = thieves_guild
+            remove_province_modifier = incompetent_rule
+            remove_province_modifier = smugglers_ring
+            remove_province_modifier = highway_robber_band
+            remove_province_modifier = excessive_bureaucracy
+            remove_province_modifier = peasant_unrest
+            any_province_holding = {
+                remove_holding_modifier = new_administration
+                remove_holding_modifier = recently_conquered
+                refill_holding_levy = yes
+            }
+			
+			# Upgrade tribal if there's one
+			upgrade_province_as_target_settler_effect = yes
+		
+			culture = event_target:target_settler
+			religion = event_target:target_settler
+		}
+	}
+}
 # Upgrade tribal if there's one as target_settler prefer
 upgrade_province_as_target_settler_effect = {
-	if = {
-		limit = { any_province_holding = { holding_type = tribal } }
-		random_province_holding = {
-			limit = { holding_type = tribal }
-			make_capital_holding = yes
-			if = {
-				limit = { event_target:target_settler = { has_character_flag = prefer_temples_flag } }
-				convert_tribal_to_temple_effect = yes
-			}
-			else_if = {
-				limit = { event_target:target_settler = { has_character_flag = prefer_cities_flag } }
-				convert_tribal_to_city_effect = yes
-			}
-			else = {
-				convert_tribal_to_castle_effect = yes
+	hidden_effect = {
+		if = {
+			limit = { any_province_holding = { holding_type = tribal } }
+			random_province_holding = {
+				limit = { holding_type = tribal }
+				make_capital_holding = yes
+				if = {
+					limit = { event_target:target_settler = { has_character_flag = prefer_temples_flag } }
+					convert_tribal_to_temple_effect = yes
+				}
+				else_if = {
+					limit = { event_target:target_settler = { has_character_flag = prefer_cities_flag } }
+					convert_tribal_to_city_effect = yes
+				}
+				else = {
+					convert_tribal_to_castle_effect = yes
+				}
 			}
 		}
 	}
@@ -2310,34 +2352,14 @@ settle_as_target_settler_effect = {
 		# Give claim to event_target:target_settler if title holder is player or title if holder is AI
 		give_claim_or_title_to_target_settler_effect = yes
 		
-		location = {
-			show_scope_change = no
-			
-			if = {
-				limit = {
-					has_province_modifier = undead_province
-					event_target:target_settler = {
-						NOT = {
-							trait = undead
-							
-							religion_group = necromancy_group
-						}
-					}
-				}
-				remove_province_modifier = undead_province
-			}
-			
-			# Upgrade tribal if there's one
-			upgrade_province_as_target_settler_effect = yes
-		
-			culture = event_target:target_settler
-			religion = event_target:target_settler
-		}
+		# Sets culture and religion, upgrade holdings
+		cleanup_province_as_target_settler_effect = yes
 		
 		# Used in scripted effects
 		set_title_flag = new_title_flag	# Note: this flag isn't removed
 	}
 }
+# Clear settler flags and other stuff
 clear_settler_flag_effect = {
 	hidden_effect = {
 		event_target:target_settler = {
@@ -2733,4 +2755,65 @@ add_age_back_effect = {
 			set_variable = { which = "myNegativeAge" value = 0 }
 		}
 	}
+}
+
+ruler_sell_land_to_holy_order_effect = {
+	event_target:target_ruler = {
+		if = {
+			limit = {
+				event_target:target_desired_title = { tier = DUKE }
+				# Has more then 2 provinces in this duchy
+				any_demesne_province = {
+					count = 2
+					de_jure_liege = event_target:target_desired_title
+				}
+			}
+			if = {
+				limit = { religion = event_target:target_order_leader }
+				piety = 1000
+			}
+			else = { prestige = 1000 }
+			wealth = 800
+
+			event_target:target_desired_title = {
+				show_scope_change = no
+				any_direct_de_jure_vassal_title = {
+					limit = { holder_scope = { character = event_target:target_ruler } }
+					show_scope_change = no
+					
+					ruler_grant_land_to_holy_order_effect = yes
+				}
+			}
+		}
+		else = {
+			if = {
+				limit = { religion = event_target:target_order_leader }
+				piety = 500
+			}
+			else = { prestige = 500 }
+			wealth = 400
+
+			event_target:target_desired_title = {
+				show_scope_change = no
+
+				ruler_grant_land_to_holy_order_effect = yes
+			}
+		}
+	}
+}
+ruler_grant_land_to_holy_order_effect = {
+	event_target:target_order_leader = {
+		show_scope_change = no
+
+		hidden_effect = {
+			gain_settlements_under_title = {
+				title = PREV
+				enemy = event_target:target_ruler
+			}
+		}
+		grant_title_no_opinion = PREV
+	}
+	
+	# Sets culture and religion, upgrade holdings
+	cleanup_province_as_target_settler_effect = yes
 }
