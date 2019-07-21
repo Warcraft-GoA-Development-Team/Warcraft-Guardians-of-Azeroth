@@ -53,22 +53,19 @@ total_invasion_cb_rev_effect = {
 				limit = { ai = no }
 				set_defacto_liege = THIS	# Gives players a chance
 			}
-			any_realm_lord = {
-				limit = { higher_tier_than = BARON }
-				any_demesne_title = {
-					limit = {
-						title_can_be_lost_trigger = yes
-						tier = COUNT
-					}
-					give_to_claimant_effect = yes
-				}
-			}
-			any_demesne_title = {
+			any_realm_province = {
 				limit = {
-					title_can_be_lost_trigger = yes
-					tier = COUNT
+					county = {
+						title_can_be_lost_trigger = yes
+						holder_scope = {
+							OR = {
+								character = PREVPREVPREV
+								is_liege_or_above = PREVPREVPREV
+							}
+						}
+					}
 				}
-				give_to_claimant_effect = yes
+				county = { give_to_claimant_effect = yes }
 			}
 
 			# Stops invasions
@@ -117,6 +114,22 @@ total_invasion_cb_rev_effect = {
 
 }
 
+# Gives holdings under title even if it's occupated unlike gain_settlements_under_title
+give_holdings_under_title_effect = {
+	event_target:target_title = {
+		any_direct_de_jure_vassal_title = {
+			limit = {
+				holder_scope = {
+					OR = {
+						character = event_target:target_attacker 
+						is_liege_or_above = event_target:target_attacker 
+					}
+				}
+			}
+			grant_title_no_opinion = { target = event_target:target_new_ruler type = claim }
+		}
+	}
+}
 # Effects to give county to claimant. If there's no claimant, creates it
 give_to_claimant_effect = {
 	if = {
@@ -146,9 +159,6 @@ give_to_claimant_effect = {
 					give_to_holder_claimant_effect = yes
 				}
 				else = {
-					limit = {
-						has_landless_claimant_trigger = yes
-					}
 					give_to_landless_claimant_effect = yes
 				}
 			}
@@ -182,12 +192,7 @@ give_to_holder_claimant_effect = {
 		log = "(Great War) [This.GetBestName] was chosen as new king of [target_title.GetFullBaseName]"
 		save_event_target_as = target_new_ruler
 		
-		gain_settlements_under_title = {
-			title = event_target:target_title
-			enemy = event_target:target_attacker
-			is_crusade = yes # Even if the title holder is not participating in the war, gain holdings occupied by all Crusade participants
-			type = invasion
-		}
+		give_holdings_under_title_effect = yes
 		grant_title_no_opinion = { target = event_target:target_title type = claim }
 		
 		if = {
@@ -203,20 +208,7 @@ give_to_holder_claimant_effect = {
 give_to_landless_claimant_effect = {
 	any_claimant = {
 		limit = {
-			is_untouchable_trigger = no
-			evil_public_religion_trigger = no
-			NAND = {
-				draenor_culture_trigger = yes
-				has_global_flag = orcish_invasion_flag
-			}
-
-			NOR = {
-				character = event_target:target_attacker
-				same_realm = event_target:target_attacker
-			}
-
-			is_lowborn = no
-			NOT = { has_landed_title = event_target:target_title }
+			is_landless_claimant_trigger = yes
 		}
 		if = {
 			limit = {
@@ -246,12 +238,7 @@ give_to_landless_claimant_effect = {
 			# target_settler build new holding or usurp existing one
 			event_target:target_title = { location = { build_or_give_holding_to_target_settler_effect = yes } }
 
-			gain_settlements_under_title = {
-				title = event_target:target_title
-				enemy = event_target:target_attacker
-				is_crusade = yes # Even if the title holder is not participating in the war, gain holdings occupied by all Crusade participants
-				type = invasion
-			}
+			give_holdings_under_title_effect = yes
 			grant_title_no_opinion = { target = event_target:target_title type = claim }
 
 			event_target:target_new_realm = {
@@ -308,12 +295,7 @@ give_to_spawned_claimant_effect = {
 			# target_settler build new holding or usurp existing one
 			event_target:target_title = { location = { build_or_give_holding_to_target_settler_effect = yes } }
 
-			gain_settlements_under_title = {
-				title = event_target:target_title
-				enemy = event_target:target_attacker
-				is_crusade = yes # Even if the title holder is not participating in the war, gain holdings occupied by all Crusade participants
-				type = invasion
-			}
+			give_holdings_under_title_effect = yes
 			grant_title_no_opinion = { target = event_target:target_title type = claim }
 
 			event_target:target_new_realm = {
