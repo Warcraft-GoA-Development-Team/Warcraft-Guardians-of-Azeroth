@@ -175,7 +175,7 @@ decisions = {
 		}
 
 	}
-	
+
 	market_buy_cape = {
 		ai = no
 
@@ -215,36 +215,33 @@ targetted_decisions = {
 		filter = self
 
 		potential = {
-			char_can_buy_artifacts_no_flag_potential_trigger = yes
-			NOT = { has_character_flag = market_open }
+			OR = {
+				AND = {
+					char_can_buy_artifacts_no_flag_potential_trigger = yes
+					NOT = { has_character_flag = market_open }
+				}
+				has_character_flag = market_open
+			}
 		}
 
 		allow = {
-			char_can_buy_artifacts_allow_trigger = yes
+			OR = {
+				AND = {
+					char_can_buy_artifacts_allow_trigger = yes
+					NOT = { has_character_flag = market_open }
+				}
+				has_character_flag = market_open
+			}
 		}
 
 		effect = {
-			set_character_flag = market_open
-		}
-
-	}
-
-	market_close_market = {
-		ai = no
-
-		filter = self
-		#is_high_prio = yes
-
-		potential = {
-			has_character_flag = market_open
-		}
-
-		allow = {
-			always = yes
-		}
-
-		effect = {
-			clr_character_flag = market_open
+			if = {
+				limit = { has_character_flag = market_open }
+				clr_character_flag = market_open
+			}
+			else = {
+				set_character_flag = market_open
+			}
 		}
 
 	}
@@ -295,7 +292,7 @@ targetted_decisions = {
 					has_artifact_flag = can_be_upgrated
 				}
 				artifact_owner = { wealth = local_third_party_score }
-				
+
 				is_artifact_active = yes
 				is_artifact_equipped = no
 			}
@@ -362,7 +359,7 @@ targetted_decisions = {
 				factor = 1.5
 				FROM = {	stewardship < 2		}
 			}
-			modifier = { 
+			modifier = {
 				factor = 0.95
 				FROM = {	diplomacy = 12		}
 			}
@@ -450,7 +447,7 @@ targetted_decisions = {
 		}
 
 	}
-	
+
 	market_sell_artifacts = {
 		ai = no
 
@@ -609,14 +606,14 @@ targetted_decisions = {
 		}
 
 	}
-	
+
 	market_open_chest = {
 		ai = no
 
 		filter = self
 		third_party_filter = artifacts
 		show_third_party_potential = yes
-		
+
 		potential = { #WAD
 			char_can_buy_artifacts_allow_trigger = yes
 			has_character_flag = market_open
@@ -664,6 +661,6 @@ targetted_decisions = {
 				lootbox_open_effect = yes
 			}
 		}
-		
+
 	}
 }
