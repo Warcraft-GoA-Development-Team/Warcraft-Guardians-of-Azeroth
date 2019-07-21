@@ -194,6 +194,7 @@ character_event = {
 		mother_even_if_dead = { save_event_target_as = target_mother }
 		
 		set_character_flag = no_show_what_become_flag		# Cancel show_close_people_what_this_become_effect if character spawned as undead, demon, void being
+		set_character_flag = no_religion_change_flag		# Cancel event religion change
 
 		# Picks graphical culture
 		if = {
@@ -283,7 +284,7 @@ character_event = {
 			}
 			else = {
 				random = {
-					chance = 10
+					chance = 5
 					add_trait = twoheaded
 					set_graphical_culture = twoheadedogre
 				}
@@ -680,6 +681,7 @@ character_event = {
 			save_event_target_as = target_necromancer
 			character_event = { id = WCPOD.5013 }
 		}
+		
 		# Adds default traits when new character spawns
 		add_default_traits = yes
 		
@@ -687,6 +689,9 @@ character_event = {
 		add_age_back_effect = yes
 		
 		clr_character_flag = no_show_what_become_flag			# Works only during this event
+		clr_character_flag = no_religion_change_flag			# Works only during this event
+
+		clr_character_flag = race_delay_flag					# Race trait is added, so no longer needed
 	}
 }
 
@@ -819,5 +824,72 @@ character_event = {
 
 	immediate = {
 		destroy_artifact = ancient_kernel
+	}
+}
+
+# on_marriage
+# Marriages make infertile :3
+character_event = {
+	id = WCRAC.395
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	trigger = {
+		FROM = { need_infertile_trait_trigger = yes }
+	}
+	
+	immediate = {
+		FROM = { character_event = { id = WCRAC.400 } }
+	}
+}
+# on_birth
+# Child makes parents infertile :3
+character_event = {
+	id = WCRAC.399
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
+		true_father = {
+			if = {
+				limit = {
+					need_infertile_trait_trigger = yes
+				}
+				character_event = { id = WCRAC.400 }
+			}
+		}
+		mother = {
+			if = {
+				limit = {
+					need_infertile_trait_trigger = yes
+				}
+				character_event = { id = WCRAC.400 }
+			}
+		}
+	}
+}
+# Becomes infertile
+character_event = {
+	id = WCRAC.400
+	desc = EVTDESC_WCRAC_400
+	picture = GFX_evt_marriage
+	border = GFX_event_normal_frame_religion
+	
+	is_triggered_only = yes
+	
+	hide_from = yes
+	
+	immediate = {
+		add_trait = infertile
+	}
+	
+	option = {
+		name = ALAS
+		
+		tooltip = {
+			add_trait = infertile
+		}
 	}
 }

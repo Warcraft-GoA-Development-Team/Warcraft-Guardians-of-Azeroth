@@ -75,20 +75,29 @@ decisions = {
 			# AI join only if it prefers faction more
 			OR = {
 				ai = no
-				leader_of_alliance_trait = {
-					leader_of_horde_trait = {
-						ROOT = {
-							OR = {
-								likes_better_than = { who = PREV than = PREVPREV }
-								AND = {	# Exception during First/Second war
-									has_global_flag = orcish_invasion_flag
-									has_horde_religion_trigger = yes
-									has_horde_culture_trigger = yes
-									NOT = { culture = frostwolf }	# They're peaceful
+				trigger_if = {
+					limit = {
+						leader_of_alliance_trait = { always = yes }
+						leader_of_horde_trait = { always = yes }
+					}
+					leader_of_alliance_trait = {
+						leader_of_horde_trait = {
+							ROOT = {
+								OR = {
+									likes_better_than = { who = PREV than = PREVPREV }
+									AND = {	# Exception during First/Second war
+										has_global_flag = orcish_invasion_flag
+										has_horde_religion_trigger = yes
+										has_horde_culture_trigger = yes
+										NOT = { culture = frostwolf }	# They're peaceful
+									}
 								}
 							}
 						}
 					}
+				}
+				trigger_else = {
+					always = yes
 				}
 			}
 			# Only AI in EK joins faction before 603 year
@@ -130,7 +139,10 @@ decisions = {
 			}
 
 			leader_of_horde_trait = {
-				is_within_diplo_range = ROOT
+				trigger_if = {
+					limit = { ROOT = { ai = no } }
+					is_within_diplo_range = ROOT
+				}
 				ROOT = { has_opinion_to_join_prev_faction_leader_trigger = yes }
 			}
 		}
@@ -177,6 +189,8 @@ decisions = {
 		# only_independent = yes
 
 		potential = {
+			is_playable = yes
+			
 			trigger_if = {
 				limit = { independent = yes }
 				is_tributary = { type = political_faction suzerain = suzerain }
@@ -193,7 +207,7 @@ decisions = {
 		}
 
 		allow = {
-			war = no
+			rebel = no
 
 			custom_tooltip = {
 				text = has_not_tried_to_join_faction_recently_tooltip
@@ -221,10 +235,7 @@ decisions = {
 			factor = 1
 			modifier = {
 				factor = 0
-				OR = {
-					ongoing_invasion_trigger = yes
-					leader_of_horde_trait = { ROOT = { has_good_opinion_with_prev_faction_leader_trigger = yes } }
-				}
+				leader_of_horde_trait = { ROOT = { has_good_opinion_with_prev_faction_leader_trigger = yes } }
 			}
 		}
 	}
@@ -253,6 +264,11 @@ decisions = {
 			has_alliance_culture_trigger = yes
 			higher_real_tier_than = DUKE
 
+			# Before 603, can be found only in EK
+			OR = {
+				capital_scope = { region = world_eastern_kingdoms }
+				year = 603
+			}
 			OR = {
 				ai = no
 				leader_of_horde_trait = { always = yes }
@@ -294,46 +310,39 @@ decisions = {
 				narrative_event = { id = WCPLF.200 }
 			}
 			if = {
-				limit = { 
-					has_dlc = "Holy Fury"
-					character = 60001
-					has_landed_title = e_lordaeron
-					year = 583
-					NOT = {	
-						year = 590
-					}
-				}
-				create_bloodline = {
-					type = terenas
-				}
-			}
-			else_if = {
 				limit = {
 					has_dlc = "Holy Fury"
-					is_female = yes
-					year = 583
-					NOT = {	
-						year = 590
+					has_global_flag = orcish_invasion_flag
+					e_horde = { has_holder = yes }
+				}
+				
+				if = {
+					limit = {
+						character = 60001
+						has_landed_title = e_lordaeron
+					}
+					create_bloodline = {
+						type = terenas
 					}
 				}
-				create_bloodline = {
-					type = alliance_of_lordaeron_founder
-					inheritance = matrilineal
+				else_if = {
+					limit = {
+						is_female = yes
+					}
+					create_bloodline = {
+						type = alliance_of_lordaeron_founder
+						inheritance = matrilineal
+					}
+				}
+				else_if = {
+					limit = {
+						is_female = no
+					}
+					create_bloodline = {
+						type = alliance_of_lordaeron_founder
+					}
 				}
 			}
-			else_if = {
-				limit = {
-					has_dlc = "Holy Fury"
-					is_female = no
-					year = 583
-					NOT = {	
-						year = 590
-					}
-				}
-				create_bloodline = {
-					type = alliance_of_lordaeron_founder
-				}
-			}			
 		}
 
 		revoke_allowed = {
@@ -361,18 +370,27 @@ decisions = {
 			# AI join only if it prefers faction more
 			OR = {
 				ai = no
-				leader_of_horde_trait = {
-					leader_of_alliance_trait = {
-						ROOT = {
-							likes_better_than = { who = PREV than = PREVPREV }
-							NAND = {	# Exception during First/Second war
-								has_global_flag = orcish_invasion_flag
-								has_horde_religion_trigger = yes
-								has_horde_culture_trigger = yes
-								NOT = { culture = frostwolf }	# They're peaceful
+				trigger_if = {
+					limit = {
+						leader_of_alliance_trait = { always = yes }
+						leader_of_horde_trait = { always = yes }
+					}
+					leader_of_horde_trait = {
+						leader_of_alliance_trait = {
+							ROOT = {
+								likes_better_than = { who = PREV than = PREVPREV }
+								NAND = {	# Exception during First/Second war
+									has_global_flag = orcish_invasion_flag
+									has_horde_religion_trigger = yes
+									has_horde_culture_trigger = yes
+									NOT = { culture = frostwolf }	# They're peaceful
+								}
 							}
 						}
 					}
+				}
+				trigger_else = {
+					always = yes
 				}
 			}
 			# Only AI in EK joins faction before 603 year
@@ -414,7 +432,10 @@ decisions = {
 			}
 
 			leader_of_alliance_trait = {
-				is_within_diplo_range = ROOT
+				trigger_if = {
+					limit = { ROOT = { ai = no } }
+					is_within_diplo_range = ROOT
+				}
 				ROOT = { has_opinion_to_join_prev_faction_leader_trigger = yes }
 			}
 		}
@@ -461,6 +482,8 @@ decisions = {
 		# only_independent = yes
 
 		potential = {
+			is_playable = yes
+			
 			trigger_if = {
 				limit = { independent = yes }
 				is_tributary = { type = political_faction suzerain = suzerain }
@@ -477,7 +500,7 @@ decisions = {
 		}
 
 		allow = {
-			war = no
+			rebel = no
 
 			custom_tooltip = {
 				text = has_not_tried_to_join_faction_recently_tooltip
@@ -505,10 +528,7 @@ decisions = {
 			factor = 1
 			modifier = {
 				factor = 0
-				OR = {
-					ongoing_invasion_trigger = yes
-					leader_of_alliance_trait = { ROOT = { has_good_opinion_with_prev_faction_leader_trigger = yes } }
-				}
+				leader_of_alliance_trait = { ROOT = { has_good_opinion_with_prev_faction_leader_trigger = yes } }
 			}
 		}
 	}

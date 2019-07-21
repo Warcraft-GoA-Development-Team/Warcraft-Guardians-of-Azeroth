@@ -1,6 +1,48 @@
 namespace = WCTHW
 
-# When shit happens, Medivh tries to fix it
+### When shit happens, Medivh tries to fix it
+# Special event that fires if some game rules are active
+character_event = {
+	id = WCTHW.49
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	ai = no
+	
+	trigger = {
+		OR = {
+			multiplayer = no
+			is_multiplayer_host_character = yes
+		}
+		
+		NOT = { has_global_flag = medivh_saved_world_flag }
+		
+		OR = {
+			has_game_rule = {
+				name = scourge_invasion
+				value = off
+			}
+			has_game_rule = {
+				name = legion_invasion
+				value = off
+			}
+			has_game_rule = {
+				name = black_empire_invasion
+				value = off
+			}
+		}
+		
+		year = 605
+	}
+	
+	immediate = {
+		set_global_flag = medivh_saved_world_flag
+		
+		73 = { province_event = { id = WCTHW.50 } }
+	}
+}
+# Regular event that fires when other events happen
 province_event = {
 	id = WCTHW.50
 
@@ -12,10 +54,10 @@ province_event = {
 		province_event = { id = WCTHW.99 days = 3 }
 
 		# Terror of the Tides (the naga)
-		holder_scope = { narrative_event = { id = WCVOD.700 days = 10 } }
+		province_event = { id = WCVOD.699 days = 10 }
 
 		# Foundation of Theramore
-		province_event = { id = WCTHW.145 days = 30 }
+		province_event = { id = WCTHW.145 days = 120 }
 	}
 }
 #######################
@@ -43,24 +85,7 @@ province_event = {
 		# Selects a new warchief
 		random_character = {
 			limit = {
-				is_untouchable_trigger = no
-
-				is_alive = yes
-				is_adult = yes
-				is_incapable = no
-				prisoner = no
-				is_inaccessible_trigger = no
-				
-				NOT = { has_character_flag = do_not_disturb }
-				NOT = { has_character_flag = exodus_horde_declined_flag }
-
-				trait = creature_orc
-				religion_group = shamanism_group
-				culture_group = orc_group
-				
-				can_resettle_trigger = yes
-				is_in_political_faction_trigger = no
-				location = { region = world_eastern_kingdoms }
+				horde_exodus_warchief_trigger = yes
 			}
 			preferred_limit = {
 				has_character_flag = is_thrall
@@ -83,6 +108,9 @@ province_event = {
 			preferred_limit = {
 				prestige = 250
 			}
+			
+			add_trait = travelling
+			
 			narrative_event = { id = WCTHW.100 }
 			break = yes
 		}
@@ -101,8 +129,6 @@ narrative_event = {
 
 	immediate = {
 		log = "WCTHW.100 fired for [Root.GetBestName]"
-		
-		add_trait = travelling
 		
 		if = {
 			limit = { is_ruler = yes }
@@ -223,9 +249,20 @@ province_event = {
 			break = yes
 		}
 		if = {
-			limit = { event_target:target_primary_title = { has_holder = yes } }
+			limit = {
+				event_target:target_primary_title = {
+					has_holder = yes
+					holder_scope = {
+						horde_exodus_warchief_trigger = yes
+					}
+				}
+			}
 			event_target:target_primary_title = {
-				holder_scope = { narrative_event = { id = WCTHW.110 } }
+				holder_scope = {
+					add_trait = travelling
+					
+					narrative_event = { id = WCTHW.110 }
+				}
 			}
 			break = yes
 		}
@@ -246,22 +283,14 @@ narrative_event = {
 		3625 = {
 			holder_scope = {
 				top_liege = {
-					is_untouchable_trigger = no
-					can_rule_peacefully_trigger = yes
-					evil_public_religion_trigger = no
-					
-					NOT = { tier = EMPEROR }
-					
-					culture_group = troll_group
-				
-					can_resettle_trigger = yes
-					has_landed_title = d_darkspear
+					horde_exodus_trolls_trigger = yes
 				}
 			}
 		}
 	}
 
 	fail_trigger_effect = {
+		# Skip event
 		73 = { province_event = { id = WCTHW.119 days = 10 } }
 	}
 
@@ -311,9 +340,20 @@ province_event = {
 			break = yes
 		}
 		if = {
-			limit = { event_target:target_primary_title = { has_holder = yes } }
+			limit = {
+				event_target:target_primary_title = {
+					has_holder = yes
+					holder_scope = {
+						horde_exodus_warchief_trigger = yes
+					}
+				}
+			}
 			event_target:target_primary_title = {
-				holder_scope = { narrative_event = { id = WCTHW.115 } }
+				holder_scope = {
+					add_trait = travelling
+					
+					narrative_event = { id = WCTHW.115 }
+				}
 			}
 			break = yes
 		}
@@ -334,22 +374,14 @@ narrative_event = {
 		3625 = {
 			holder_scope = {
 				top_liege = {
-					is_untouchable_trigger = no
-					can_rule_peacefully_trigger = yes
-					evil_public_religion_trigger = no
-					
-					NOT = { tier = EMPEROR }
-					
-					culture_group = troll_group
-
-					can_resettle_trigger = yes
-					has_landed_title = d_darkspear
+					horde_exodus_trolls_trigger = yes
 				}
 			}
 		}
 	}
 
 	fail_trigger_effect = {
+		# Skip event
 		73 = { province_event = { id = WCTHW.119 days = 10 } }
 	}
 
@@ -359,10 +391,18 @@ narrative_event = {
 
 		add_trait_silently_brave_effect = yes
 		remove_trait_silently_craven_effect = yes
+		
+		prestige = 100
 
 		3625 = {
+			show_scope_change = no
+			
 			holder_scope = {
+				show_scope_change = no
+				
 				top_liege = {
+					show_scope_change = no
+					
 					opinion = { modifier = opinion_very_grateful who = ROOT years = 10 }
 					event_target:target_trolls = { set_title_flag = trolls_sailed_to_kalimdor_flag }
 				}
@@ -372,10 +412,18 @@ narrative_event = {
 	# Retreat to the ships!
 	option = {
 		name = EVTOPTB_WCTHW_115
+		
+		prestige = -100
 
 		3625 = {
+			show_scope_change = no
+			
 			holder_scope = {
+				show_scope_change = no
+				
 				top_liege = {
+					show_scope_change = no
+					
 					opinion = { modifier = opinion_hate who = ROOT years = 10 }
 				}
 			}
@@ -447,9 +495,20 @@ province_event = {
 			break = yes
 		}
 		if = {
-			limit = { event_target:target_primary_title = { has_holder = yes } }
+			limit = {
+				event_target:target_primary_title = {
+					has_holder = yes
+					holder_scope = {
+						horde_exodus_warchief_trigger = yes
+					}
+				}
+			}
 			event_target:target_primary_title = {
-				holder_scope = { narrative_event = { id = WCTHW.120 } }
+				holder_scope = {
+					add_trait = travelling
+					
+					narrative_event = { id = WCTHW.120 }
+				}
 			}
 			break = yes
 		}
@@ -515,7 +574,7 @@ narrative_event = {
 		}
 		
 		# If you're not independent ruler, gives old titles to liege
-		give_old_titles_to_liege_effect = yes
+		give_old_titles_to_heir_effect = yes
 		
 		d_orgrimmar = {
 			any_direct_de_jure_vassal_title = {
@@ -547,8 +606,10 @@ narrative_event = {
 		# Spawns army for start
 		spawn_colonial_troops_effect = yes
 		
+		e_horde = { set_preferred_capital = c_orgrimmar }	# Orgrimmar
+		capital = c_orgrimmar									# Orgrimmar
+		
 		narrative_event = { id = WCPLF.100 }			# Foundation of the Horde (faction)
-		e_horde = { set_preferred_capital = 3043 }	# Orgrimmar
 		
 		# Grant titles to trolls
 		event_target:target_trolls = {
@@ -573,7 +634,7 @@ narrative_event = {
 					}
 					
 					# If you're not independent ruler, gives old titles to liege
-					give_old_titles_to_liege_effect = yes
+					give_old_titles_to_heir_effect = yes
 					
 					c_echo_isle = {
 						# Declares war against player
@@ -633,7 +694,7 @@ narrative_event = {
 					event_target:target_naga = {
 						if = {
 							limit = { is_government_potential = black_pact_government }
-							set_government_type = black_pact_government
+							set_black_pact_government_effect = yes
 						}
 
 						set_defacto_liege = THIS
@@ -646,6 +707,7 @@ narrative_event = {
 		event_target:target_clan = {
 			if = {
 				limit = { has_title_flag = clan_sailed_to_kalimdor_flag }
+				
 				clr_title_flag = clan_sailed_to_kalimdor_flag
 				
 				holder_scope = {
@@ -733,22 +795,7 @@ province_event = {
 		# Selects a leader of Theramore
 		random_character = {
 			limit = {
-				is_untouchable_trigger = no
-
-				is_alive = yes
-				is_adult = yes
-				is_incapable = no
-				prisoner = no
-				is_inaccessible_trigger = no
-				
-				NOT = { has_character_flag = do_not_disturb }
-				NOT = { has_character_flag = foundation_theramore_declined_flag }
-
-				has_alliance_religion_trigger = yes
-				has_alliance_culture_trigger = yes
-				
-				can_resettle_trigger = yes
-				location = { region = world_eastern_kingdoms }
+				theramore_founding_leader_trigger = yes
 			}
 			preferred_limit = {
 				has_character_flag = is_jaina
@@ -771,6 +818,8 @@ province_event = {
 			preferred_limit = {
 				prestige = 250
 			}
+			add_trait = travelling
+			
 			narrative_event = { id = WCTHW.150 }
 			break = yes
 		}
@@ -789,8 +838,6 @@ narrative_event = {
 
 	immediate = {
 		log = "WCTHW.150 fired for [Root.GetBestName]"
-		
-		add_trait = travelling
 		
 		if = {
 			limit = { is_ruler = yes }
@@ -909,9 +956,20 @@ province_event = {
 			break = yes
 		}
 		if = {
-			limit = { event_target:target_primary_title = { has_holder = yes } }
+			limit = {
+				event_target:target_primary_title = {
+					has_holder = yes
+					holder_scope = {
+						theramore_founding_leader_trigger = yes
+					}
+				}
+			}
 			event_target:target_primary_title = {
-				holder_scope = { narrative_event = { id = WCTHW.155 } }
+				holder_scope = {
+					add_trait = travelling
+					
+					narrative_event = { id = WCTHW.155 }
+				}
 			}
 			break = yes
 		}
@@ -970,13 +1028,16 @@ narrative_event = {
 			# event_target:target_settler and its people settle here
 			settle_as_target_settler_effect = yes
 		}
-		c_alcaz = {
-			# event_target:target_settler and its people settle here
-			settle_as_target_settler_effect = yes
-		}
 		
 		# If you're not independent ruler, gives old titles to liege
-		give_old_titles_to_liege_effect = yes
+		give_old_titles_to_heir_effect = yes
+		
+		d_theramore = {
+			any_direct_de_jure_vassal_title = {
+				# event_target:target_settler and its people settle here
+				settle_as_target_settler_effect = yes
+			}
+		}
 		
 		c_theramore = {
 			# Declares war against player
@@ -1004,7 +1065,7 @@ narrative_event = {
 					}
 					
 					# If you're not independent ruler, gives old titles to liege
-					give_old_titles_to_liege_effect = yes
+					give_old_titles_to_heir_effect = yes
 					
 					c_fray = {
 						# Declares war against player
