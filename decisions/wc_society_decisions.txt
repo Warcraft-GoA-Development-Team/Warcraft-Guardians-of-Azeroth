@@ -439,3 +439,70 @@ targeted_decisions = {
 #		}
 #	}
 #}
+society_decisions = {
+	invite_student_society = {
+		is_high_prio = yes
+
+		ai_check_interval = 24
+
+		ai = no
+		only_playable = yes
+
+		potential = {
+			is_adult = yes
+			is_incapable = no
+			prisoner = no
+			OR = {
+				society_member_of = sisterhood_of_elune
+				society_member_of = cenarion_circle
+			}
+			society_rank > 2
+		}
+
+		allow = {
+			is_inaccessible_trigger = no
+			
+			NOT = { has_character_modifier = invited_student_society_cooldown }
+			
+			society_currency >= 500
+		}
+
+		effect = {
+			add_character_modifier = { name = invited_student_society_cooldown years = 1 }
+			
+			change_society_currency = -500
+			
+			if = {
+				limit = { society_member_of = sisterhood_of_elune }
+				create_random_priest = {
+					dynasty = none
+					religion = ROOT
+					culture = ROOT
+					female = yes
+					age = 18
+					random_traits = yes
+					trait = class_priest_2
+					trait = subclass_moon_priest
+				}
+			}
+			else = {
+				create_random_priest = {
+					dynasty = none
+					religion = ROOT
+					culture = ROOT
+					age = 18
+					random_traits = yes
+					trait = class_druid_2
+				}
+			}
+		}
+
+		revoke_allowed = {
+			always = no
+		}
+
+		ai_will_do = {
+			factor = 0			# AI spawns a lot of characters
+		}
+	}
+}
