@@ -96,6 +96,7 @@ province_event = {
 			spawn_scourge_troops_effect = yes
 			spawn_scourge_troops_effect = yes
 			spawn_scourge_troops_effect = yes
+			spawn_scourge_troops_effect = yes
 
 			c_icecrown = {
 				# Declares war against player
@@ -118,8 +119,6 @@ character_event = {
 	hide_window = yes
 
 	immediate = {
-		set_global_flag = the_scourge_is_under_the_legion_control_flag
-		character_event = { id = WCUND.109 days = 35 }		# Must be fired for Ner'zhul
 		# Creates Tichondrius
 		create_character = {
 			name = Tichondrius
@@ -265,6 +264,19 @@ character_event = {
 				}
 			}
 		}
+		
+		if = {
+			limit = {
+				NOT = {
+					has_game_rule = {
+						name = legion_invasion
+						value = off
+					}
+				}
+			}
+			set_global_flag = scourge_is_under_legion_control_flag
+			character_event = { id = WCUND.109 days = 35 }		# Must be fired for Ner'zhul
+		}
 	}
 }
 # Warning about the timing of the Lich King/kills poor Ner'zhul
@@ -279,14 +291,14 @@ character_event = {
 	only_playable = yes
 	only_independent = yes
 	has_character_flag = is_nerzhul
-	has_global_flag = the_scourge_is_under_the_legion_control_flag
+	has_global_flag = scourge_is_under_legion_control_flag
 
 	trigger = {
 		ai = no
 		is_playable = yes
 		independent = yes
 		has_character_flag = is_nerzhul
-		has_global_flag = the_scourge_is_under_the_legion_control_flag
+		has_global_flag = scourge_is_under_legion_control_flag
 		
 		is_alive = yes
 		is_dying = no
@@ -413,7 +425,7 @@ narrative_event = {
 	is_triggered_only = yes
 	
 	immediate = {
-		clr_global_flag = the_scourge_is_under_the_legion_control_flag
+		clr_global_flag = scourge_is_under_legion_control_flag
 	}
 
 	option = {
@@ -434,7 +446,7 @@ character_event = {
 	is_triggered_only = yes
 	hide_window = yes
 	
-	has_global_flag = the_scourge_is_under_the_legion_control_flag
+	has_global_flag = scourge_is_under_legion_control_flag
 
 	trigger = {
 		FROM = {
@@ -469,7 +481,7 @@ narrative_event = {
 
 	trigger = {
 		e_burning_legion = { has_holder = yes }
-		has_global_flag = the_scourge_is_under_the_legion_control_flag
+		has_global_flag = scourge_is_under_legion_control_flag
 	}
 
 	# Form an alliance
@@ -573,7 +585,7 @@ narrative_event = {
 	}
 
 	after = {
-		clr_global_flag = the_scourge_is_under_the_legion_control_flag
+		clr_global_flag = scourge_is_under_legion_control_flag
 		
 		e_burning_legion = { holder_scope = { narrative_event = { id = WCUND.135 } } }
 	}
@@ -583,11 +595,11 @@ narrative_event = {
 	id = WCUND.135
 	title = EVTTITLE_WCUND_130
 	desc = {
-		trigger = { has_global_flag = the_scourge_is_under_the_legion_control_flag }
+		trigger = { has_global_flag = scourge_is_under_legion_control_flag }
 		text = EVTDESC_WCUND_135_case_01
 	}
 	desc = {
-		trigger = { NOT = { has_global_flag = the_scourge_is_under_the_legion_control_flag } }
+		trigger = { NOT = { has_global_flag = scourge_is_under_legion_control_flag } }
 		text = EVTDESC_WCUND_135_case_02
 	}
 	picture = GFX_evt_icecrown
@@ -597,11 +609,11 @@ narrative_event = {
 
 	option = {
 		name = {
-			trigger = { has_global_flag = the_scourge_is_under_the_legion_control_flag }
+			trigger = { has_global_flag = scourge_is_under_legion_control_flag }
 			text = EXCELLENT
 		}
 		name = {
-			trigger = { NOT = { has_global_flag = the_scourge_is_under_the_legion_control_flag } }
+			trigger = { NOT = { has_global_flag = scourge_is_under_legion_control_flag } }
 			text = ALAS
 		}
 	}
@@ -1559,6 +1571,7 @@ character_event = {
 	}
 
 	after = {
+		clr_character_flag = ongoing_turning_into_monstrous_undead_flag
 		clr_character_flag = being_raised_flag
 	}
 }
@@ -1822,6 +1835,8 @@ character_event = {
 	trigger = {
 		FROM = {
 			holder_scope = {
+				NOT = { same_realm = ROOT }
+				
 				trait = creature_lich
 				NOT = { has_landed_title = e_scourge }
 				capital_holding = { title = FROM }
@@ -2542,10 +2557,7 @@ character_event = {
 	# I'll serve the Lich King!
 	option = {
 		trigger = {
-			OR = {
 				has_global_flag = lich_king_happened
-				start_date = 603.1.1
-			}
 		}
 		name = EVTOPTB_WCUND_1301
 
