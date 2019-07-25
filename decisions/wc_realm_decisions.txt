@@ -211,15 +211,34 @@ decisions = {
 	}
 	# Ability to get rid of all evil characters without penalties
 	burn_evil_beings = {
-		ai_check_interval = 36
+		ai_check_interval = 60
 
 		only_playable = yes
 
 		potential = {
-			ROOT = {
-				any_courtier_or_vassal = {
-					is_burnable_potential_trigger = yes
-					is_burnable_allow_trigger = yes
+			any_courtier = {
+				is_alive = yes
+				is_dying = no
+				
+				is_adult = yes
+				is_inaccessible_trigger = no
+
+				is_ruler = no
+
+				host = { character = ROOT }
+				is_unholy_creature_to_prev_trigger = yes
+
+				# AI, plz, stop killing your relatives
+				OR = {
+					ROOT = { ai = no }
+					NAND = {
+						ROOT = { trait = kind }
+						OR = {
+							is_close_relative = ROOT
+							is_friend = ROOT
+							is_lover = ROOT
+						}
+					}
 				}
 			}
 		}
@@ -228,18 +247,34 @@ decisions = {
 		}
 
 		effect = {
-			ROOT = {
-				show_scope_change = no
-
-				any_courtier_or_vassal = {
-					limit = {
-						is_burnable_potential_trigger = yes
-						is_burnable_allow_trigger = yes
-					}
-					show_scope_change = no
+			any_courtier = {
+				limit = {
+					is_alive = yes
+					is_dying = no
 					
-					prev_burn_evil_being_this_effect = yes
+					is_adult = yes
+					is_inaccessible_trigger = no
+
+					is_ruler = no
+
+					host = { character = ROOT }
+					is_unholy_creature_to_prev_trigger = yes
+
+					# AI, plz, stop killing your relatives
+					OR = {
+						ROOT = { ai = no }
+						NAND = {
+							ROOT = { trait = kind }
+							OR = {
+								is_close_relative = ROOT
+								is_friend = ROOT
+								is_lover = ROOT
+							}
+						}
+					}
 				}
+				show_scope_change = no
+				prev_burn_evil_being_this_effect = yes
 			}
 		}
 
@@ -512,7 +547,7 @@ decisions = {
 targeted_decisions = {
 	# Ability to get rid of evil character without penalties
 	burn_evil_being = {
-		filter = vassals
+		filter = court
 		ai_target_filter = court
 		ai_check_interval = 24
 
@@ -520,26 +555,43 @@ targeted_decisions = {
 		only_playable = yes
 
 		from_potential = {
+			OR = {
+				ai = no
+				NAND = {
+					trait = kind
+					OR = {
+						is_close_relative = ROOT
+						is_friend = ROOT
+						is_lover = ROOT
+					}
+				}
+			}
 		}
 
 		potential = {
+			is_alive = yes
+			is_dying = no
+			
+			is_adult = yes
+
+			is_ruler = no
+
+			host = { character = FROM }
 			FROM = {
 				ROOT = {
-					is_burnable_potential_trigger = yes
+					is_unholy_creature_to_prev_trigger = yes
 				}
 			}
 		}
 
 		allow = {
 			show_only_failed_conditions = yes
+			is_inaccessible_trigger = no
 
-			FROM = {
+			top_liege = {
 				show_scope_change = no
-
 				ROOT = {
-					show_scope_change = no
-					
-					is_burnable_allow_trigger = yes
+					is_unholy_creature_to_prev_trigger = yes
 				}
 			}
 		}
@@ -547,10 +599,8 @@ targeted_decisions = {
 		effect = {
 			FROM = {
 				show_scope_change = no
-				
 				ROOT = {
 					show_scope_change = no
-					
 					prev_burn_evil_being_this_effect = yes
 				}
 			}
@@ -997,8 +1047,6 @@ title_decisions = {
 			tier = COUNT
 
 			location = {
-				from_can_switch_religion_province_trigger = yes
-				
 				NOT = { religion = FROM }
 				culture_group = high_elf_group
 			}

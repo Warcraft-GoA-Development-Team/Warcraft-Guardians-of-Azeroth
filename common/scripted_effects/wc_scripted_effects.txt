@@ -869,54 +869,78 @@ destroy_xalatath_effect = {
 	}
 }
 prev_burn_evil_being_this_effect = {
-	# If THIS is not ruler then execute
-	# If THIS and PREV are AI then execute
-	if = {
-		limit = {
-			OR = {
-				is_ruler = no
-				AND = {
-					ai = yes
-					PREV = { ai = yes }
-				}
-			}
-		}
-		custom_tooltip = {
-			text = burn_evil_being_effect_tooltip
-			hidden_tooltip = {
-				if = {
-					limit = { is_ruler = no }
-					random_list = {
-						80 = {
-							death = { death_reason = death_execution_burning killer = PREV }
-						}
-						20 = {
-							banish = yes
-							
-							is_good_intrigue_character_score = yes
-							
-							modifier = {
-								factor = 0
-								PREV = { ai = yes }		# AI always kill
-							}
-						}
-					}
-				}
-				else = {
-					any_demesne_title = {
-						limit = {
-							title_can_be_lost_trigger = yes
-							lower_tier_than = DUKE
-						}
-						grant_title_no_opinion = { target = PREVPREV type = claim }
-					}
+	custom_tooltip = {
+		text = burn_evil_being_effect_tooltip
+		hidden_tooltip = {
+			random_list = {
+				80 = {
 					death = { death_reason = death_execution_burning killer = PREV }
+					modifier = {
+						factor = 0.8
+						intrigue = 30
+					}
+					modifier = {
+						factor = 0.8
+						intrigue = 25
+					}
+					modifier = {
+						factor = 0.8
+						intrigue = 20
+					}
+					modifier = {
+						factor = 0.8
+						intrigue = 15
+					}
+					modifier = {
+						factor = 0.8
+						intrigue = 10
+					}
+					modifier = {
+						factor = 0.8
+						intrigue = 5
+					}
+					modifier = {
+						factor = 0.8
+						combat_rating = 80
+					}
+					modifier = {
+						factor = 0.8
+						combat_rating = 70
+					}
+					modifier = {
+						factor = 0.8
+						combat_rating = 60
+					}
+					modifier = {
+						factor = 0.8
+						combat_rating = 50
+					}
+					modifier = {
+						factor = 0.8
+						combat_rating = 40
+					}
+					modifier = {
+						factor = 0.8
+						combat_rating = 30
+					}
+					modifier = {
+						factor = 0.8
+						combat_rating = 20
+					}
+					modifier = {
+						factor = 0.8
+						combat_rating = 10
+					}
+				}
+				20 = {
+					banish = yes
+					modifier = {
+						factor = 0
+						PREV = { ai = yes }		# AI always kill
+					}
 				}
 			}
 		}
-	}
-	else = {
-		reverse_opinion = { modifier = opinion_accused_apostate who = PREV years = 20 }
 	}
 }
 drink_demon_blood_effect = {
@@ -1282,6 +1306,7 @@ spawn_small_scourge_troops_effect = {
 			golems = { 500 500 }
 		}
 		attrition = 0
+		reinforces = yes
 		maintenance = no
 	}
 	spawn_fleet = {
@@ -1290,20 +1315,6 @@ spawn_small_scourge_troops_effect = {
 		troops = {
 			galleys = { 75 75 }
 		}
-	}
-}
-spawn_plague_troops_effect = {
-	spawn_unit = {
-		province = ROOT
-		home = ROOT
-		owner = THIS
-		scaled_by_biggest_garrison = 1
-		troops = {
-			archers = { 3 3 }
-			scourgehorde = { 7 7 }
-		}
-		attrition = 0
-		maintenance = no
 	}
 }
 
@@ -1319,7 +1330,9 @@ spawn_colonial_troops_effect = {
 			light_cavalry = { 200 200 }
 			knights = { 300 300 }
 		}
+		cannot_inherit = no
 		attrition = 1.0
+		reinforces = yes
 		maintenance = no
 	}
 	spawn_fleet = {
@@ -1373,13 +1386,6 @@ clear_evil_laws_effect = {
 		}
 		add_law = { law = status_of_magic_1 cooldown = no opinion_effect = no }
 	}
-}
-
-set_tribal_government_effect = {
-	set_government_type = tribal_government
-}
-set_tribal_monarchy_government_effect = {
-	set_government_type = tribal_monarchy_government
 }
 
 add_5_mind_control_power_effect = {
@@ -2311,25 +2317,25 @@ cleanup_province_as_target_settler_effect = {
 # Upgrade tribal if there's one as target_settler prefer
 upgrade_province_as_target_settler_effect = {
 	hidden_effect = {
-	if = {
-		limit = { any_province_holding = { holding_type = tribal } }
-		random_province_holding = {
-			limit = { holding_type = tribal }
-			make_capital_holding = yes
-			if = {
-				limit = { event_target:target_settler = { has_character_flag = prefer_temples_flag } }
-				convert_tribal_to_temple_effect = yes
-			}
-			else_if = {
-				limit = { event_target:target_settler = { has_character_flag = prefer_cities_flag } }
-				convert_tribal_to_city_effect = yes
-			}
-			else = {
-				convert_tribal_to_castle_effect = yes
+		if = {
+			limit = { any_province_holding = { holding_type = tribal } }
+			random_province_holding = {
+				limit = { holding_type = tribal }
+				make_capital_holding = yes
+				if = {
+					limit = { event_target:target_settler = { has_character_flag = prefer_temples_flag } }
+					convert_tribal_to_temple_effect = yes
+				}
+				else_if = {
+					limit = { event_target:target_settler = { has_character_flag = prefer_cities_flag } }
+					convert_tribal_to_city_effect = yes
+				}
+				else = {
+					convert_tribal_to_castle_effect = yes
+				}
 			}
 		}
 	}
-}
 }
 # target_settler and its people settle here
 settle_as_target_settler_effect = {
@@ -2348,7 +2354,7 @@ settle_as_target_settler_effect = {
 		
 		# Sets culture and religion, upgrade holdings
 		cleanup_province_as_target_settler_effect = yes
-			
+		
 		# Used in scripted effects
 		set_title_flag = new_title_flag	# Note: this flag isn't removed
 	}
@@ -2363,7 +2369,7 @@ clear_settler_flag_effect = {
 	}
 }
 # If you're not independent ruler, gives old titles to liege
-give_old_titles_to_heir_effect = {
+give_old_titles_to_liege_effect = {
 	hidden_effect = {
 		if = {
 			limit = {
@@ -2371,95 +2377,31 @@ give_old_titles_to_heir_effect = {
 				independent = no
 			}
 			liege = { save_event_target_as = target_liege }
-			# Picks who should be target_heir
-			if = {
-				limit = {
-					any_dynasty_member = {
-						is_alive = yes
-						is_dying = no
-						
-						is_ruler = no
-						
-						religion = PREV
-						culture = PREV
-						
-						can_resettle_trigger = yes
-						same_sex = PREV
-						is_heir = no
-					}
-				}
-				random_dynasty_member = {
-					limit = {
-						is_alive = yes
-						is_dying = no
-						
-						is_ruler = no
-						
-						religion = PREV
-						culture = PREV
-						
-						can_resettle_trigger = yes
-						same_sex = PREV
-						is_heir = no
-					}
-					preferred_limit = {
-						is_30_age_trigger = no
-					}
-					preferred_limit = {
-						is_40_age_trigger = no
-					}
-
-					save_event_target_as = target_heir
-				}
+			any_vassal = {
+				limit = { dejure_liege_title = { NOT = { has_title_flag = new_title_flag } } }
+				set_defacto_liege = event_target:target_liege
 			}
-			else = {
-				liege = { save_event_target_as = target_heir }
-			}
-			
-			# Gives titles
 			any_demesne_title = {
 				limit = {
-					controls_religion = no 		# You still guide your people
-					is_titular = no				# No one cares about titular titles, take them
-					title_can_be_lost_trigger = yes
+					lower_tier_than = DUKE
 					NOT = { has_title_flag = new_title_flag }
 					trigger_if = {
 						limit = { tier = BARON }
 						county = { NOT = { has_title_flag = new_title_flag } }
 					}
 				}
-				grant_title_no_opinion = event_target:target_heir
+				grant_title_no_opinion = event_target:target_liege
 				if = {
 					limit = { tier = COUNT }
 					location = {
-						culture = event_target:target_heir
-						religion = event_target:target_heir
+						culture = event_target:target_liege
+						religion = event_target:target_liege
 					}
 				}
 			}
-			# Transfers remaining vassals
-			any_vassal = {
-				limit = { dejure_liege_title = { NOT = { has_title_flag = new_title_flag } } }
-				if = {
-					limit = { lower_tier_than = event_target:target_heir }
-					set_defacto_liege = event_target:target_heir
-				}
-				else = {
-					set_defacto_liege = event_target:target_liege
-				}
-			}
-			# Makes you independent
-			set_defacto_liege = THIS
-			# Enslave target_heir
-			event_target:target_heir = {
-				if = {
-					limit = { NOT = { character = event_target:target_liege } }
-					set_defacto_liege = event_target:target_liege
-				}
-			}
-			
 			clear_event_target = target_liege
-			clear_event_target = target_heir
+			
+			set_defacto_liege = THIS
 		}
 	}
 }
@@ -2817,7 +2759,6 @@ add_age_back_effect = {
 
 ruler_sell_land_to_holy_order_effect = {
 	event_target:target_ruler = {
-		# Gives gold, piety or prestige
 		if = {
 			limit = {
 				event_target:target_desired_title = { tier = DUKE }
@@ -2833,48 +2774,6 @@ ruler_sell_land_to_holy_order_effect = {
 			}
 			else = { prestige = 1000 }
 			wealth = 800
-		}
-		else = {
-			if = {
-				limit = { religion = event_target:target_order_leader }
-				piety = 500
-			}
-			else = { prestige = 500 }
-			wealth = 400
-		}
-		
-		# Free vassals
-		if = {
-			limit = { is_ruler = yes }
-			any_vassal = {
-				limit = {
-					any_demesne_title = {
-						OR = {
-							title = event_target:target_desired_title
-							de_jure_liege_or_above = event_target:target_desired_title
-						}
-					}
-				}
-				show_scope_change = no
-
-				# If ruler isn't independent, transfers vassals to top liege...
-				if = {
-					limit = {
-						event_target:target_ruler = { independent = no }
-					}
-					set_defacto_liege = top_liege
-				}
-				# ...otherwise, make vassals independent
-				else = {
-					set_defacto_liege = THIS
-				}
-			}
-		}
-		
-		if = {
-			limit = {
-				event_target:target_desired_title = { tier = DUKE }
-			}
 
 			event_target:target_desired_title = {
 				show_scope_change = no
@@ -2887,13 +2786,17 @@ ruler_sell_land_to_holy_order_effect = {
 			}
 		}
 		else = {
+			if = {
+				limit = { religion = event_target:target_order_leader }
+				piety = 500
+			}
+			else = { prestige = 500 }
+			wealth = 400
+
 			event_target:target_desired_title = {
 				show_scope_change = no
 
-				if = {
-					limit = { limit = { holder_scope = { character = event_target:target_ruler } } }
-					ruler_grant_land_to_holy_order_effect = yes
-				}
+				ruler_grant_land_to_holy_order_effect = yes
 			}
 		}
 	}
@@ -2913,358 +2816,4 @@ ruler_grant_land_to_holy_order_effect = {
 	
 	# Sets culture and religion, upgrade holdings
 	cleanup_province_as_target_settler_effect = yes
-}
-
-add_libram_of_justice_effect = {
-	add_artifact = libram_of_justice
-	new_artifact = {
-		set_description = libram_of_justice_key
-	}
-	if = {
-		limit = {
-			has_dlc = "Holy Fury"
-		}
-		create_bloodline = {
-			type = silver_hand_justice
-		}
-	}
-}
-add_libram_of_retribution_effect = {
-	add_artifact = libram_of_retribution
-	new_artifact = {
-		set_description = libram_of_retribution_key
-	}
-	if = {
-		limit = {
-			has_dlc = "Holy Fury"
-		}
-		create_bloodline = {
-			type = silver_hand_retribution
-		}
-	}
-}
-add_libram_of_protection_effect = {
-	add_artifact = libram_of_protection
-	new_artifact = {
-		set_description = libram_of_protection_key
-	}
-	if = {
-		limit = {
-			has_dlc = "Holy Fury"
-		}
-		create_bloodline = {
-			type = silver_hand_protection
-		}
-	}
-}
-add_libram_of_holiness_effect = {
-	add_artifact = libram_of_holiness
-	new_artifact = {
-		set_description = libram_of_holiness_key
-	}
-	if = {
-		limit = {
-			has_dlc = "Holy Fury"
-		}
-		create_bloodline = {
-			type = silver_hand_holiness
-		}
-	}
-}
-add_libram_of_compassion_effect = {
-	add_artifact = libram_of_compassion
-	new_artifact = {
-		set_description = libram_of_compassion_key
-	}
-	if = {
-		limit = {
-			has_dlc = "Holy Fury"
-		}
-		create_bloodline = {
-			type = silver_hand_compassion
-		}
-	}
-}
-
-add_random_martial_education_effect = {
-	random_list = {
-		15 = {
-			add_trait = misguided_warrior
-		}
-		35 = {
-			add_trait = tough_soldier
-		}
-		35 = {
-			add_trait = skilled_tactician
-		}
-		15 = {
-			add_trait = brilliant_strategist
-		}
-	}
-}
-add_random_learning_education_effect = {
-	random_list = {
-		15 = {
-			add_trait = detached_priest
-		}
-		35 = {
-			add_trait = martial_cleric
-		}
-		35 = {
-			add_trait = scholarly_theologian
-		}
-		15 = {
-			add_trait = mastermind_theologian
-		}
-	}
-}
-
-spawn_heavy_sea_ravagers_effect = {
-	random_list = {
-		25 = {
-			spawn_unit = {
-				province = event_target:target_province
-				home = event_target:target_province
-				owner = ROOT
-				troops = {
-					light_infantry = { 300 300 }
-					heavy_infantry = { 400 400 }
-					archers = { 300 300 }
-				}
-				attrition = 0
-				scaled_by_biggest_garrison = 1.5
-				maintenance = no
-			}
-		}
-		40 = {
-			spawn_unit = {
-				province = event_target:target_province
-				home = event_target:target_province
-				owner = ROOT
-				troops = {
-					light_infantry = { 300 300 }
-					heavy_infantry = { 400 400 }
-					archers = { 300 300 }
-				}
-				attrition = 0
-				scaled_by_biggest_garrison = 2.25
-				maintenance = no
-			}
-		}
-		25 = {
-			modifier = {
-				factor = 5
-				realm_size = 100
-			}
-			spawn_unit = {
-				province = event_target:target_province
-				home = event_target:target_province
-				owner = ROOT
-				troops = {
-					light_infantry = { 300 300 }
-					heavy_infantry = { 400 400 }
-					archers = { 300 300 }
-				}
-				attrition = 0
-				scaled_by_biggest_garrison = 3
-				maintenance = no
-			}
-		}
-		10 = {
-			modifier = {
-				factor = 12.5
-				realm_size = 100
-			}
-			spawn_unit = {
-				province = event_target:target_province
-				home = event_target:target_province
-				owner = ROOT
-				troops = {
-					light_infantry = { 300 300 }
-					heavy_infantry = { 400 400 }
-					archers = { 300 300 }
-				}
-				attrition = 0
-				scaled_by_biggest_garrison = 3.75
-				maintenance = no
-			}
-		}
-	}
-	spawn_fleet = {
-		province = closest # closest sea zone
-		owner = ROOT
-		cannot_inherit = yes
-		troops = {
-			galleys = { 150 150 }
-		}
-	}
-}
-spawn_light_sea_ravagers_effect = {
-	random_list = {
-		25 = {
-			spawn_unit = {
-				province = event_target:target_province
-				home = event_target:target_province
-				owner = ROOT
-				troops = {
-					light_infantry = { 700 700 }
-					archers = { 300 300 }
-				}
-				attrition = 0
-				scaled_by_biggest_garrison = 1.5
-				maintenance = no
-			}
-		}
-		40 = {
-			spawn_unit = {
-				province = event_target:target_province
-				home = event_target:target_province
-				owner = ROOT
-				troops = {
-					light_infantry = { 700 700 }
-					archers = { 300 300 }
-				}
-				attrition = 0
-				scaled_by_biggest_garrison = 2.25
-				maintenance = no
-			}
-		}
-		25 = {
-			modifier = {
-				factor = 5
-				realm_size = 100
-			}
-			spawn_unit = {
-				province = event_target:target_province
-				home = event_target:target_province
-				owner = ROOT
-				troops = {
-					light_infantry = { 700 700 }
-					archers = { 300 300 }
-				}
-				attrition = 0
-				scaled_by_biggest_garrison = 3
-				maintenance = no
-			}
-		}
-		10 = {
-			modifier = {
-				factor = 12.5
-				realm_size = 100
-			}
-			spawn_unit = {
-				province = event_target:target_province
-				home = event_target:target_province
-				owner = ROOT
-				troops = {
-					light_infantry = { 700 700 }
-					archers = { 300 300 }
-				}
-				attrition = 0
-				scaled_by_biggest_garrison = 3.75
-				maintenance = no
-			}
-		}
-	}
-	spawn_fleet = {
-		province = closest # closest sea zone
-		owner = ROOT
-		cannot_inherit = yes
-		troops = {
-			galleys = { 150 150 }
-		}
-	}
-}
-
-spawn_qiraji_troops_effect = {
-	spawn_small_qiraji_troops_effect = yes
-	if = {
-		limit = {
-			has_game_rule = {
-				name = invaders_strength
-				value = default
-			}
-		}
-		spawn_small_qiraji_troops_effect = yes
-	}
-	if = {
-		limit = {
-			has_game_rule = {
-				name = invaders_strength
-				value = x1_5
-			}
-		}
-		spawn_small_qiraji_troops_effect = yes
-		spawn_small_qiraji_troops_effect = yes
-	}
-	if = {
-		limit = {
-			has_game_rule = {
-				name = invaders_strength
-				value = x2
-			}
-		}
-		spawn_small_qiraji_troops_effect = yes
-		spawn_small_qiraji_troops_effect = yes
-		spawn_small_qiraji_troops_effect = yes
-	}
-}
-spawn_small_qiraji_troops_effect = {
-	spawn_unit = {
-		owner = THIS
-		province = event_target:target_province
-		home = event_target:target_province
-		troops = {
-			insectoidswarm = { 2150 2150 }
-		}
-		attrition = 0
-		maintenance = no
-	}
-	spawn_unit = {
-		owner = THIS
-		province = event_target:target_province
-		home = event_target:target_province
-		troops = {
-			insectoidguard = { 350 350 }
-		}
-		attrition = 0
-		maintenance = no
-	}
-}
-
-spawn_pack_troops_effect = {
-	spawn_unit = {
-		province = event_target:target_province
-		home = event_target:target_province
-		owner = THIS
-		troops = {
-			light_infantry = { 1250 1250 }
-		}
-		cannot_inherit = yes
-		attrition = 0
-		scaled_by_biggest_garrison = 1.5
-		merge = yes
-		can_toggle_looting = no
-		is_looter = yes
-		reinforces = yes
-		maintenance = no
-	}
-}
-spawn_bitten_troops_effect = {
-	spawn_unit = {
-		province = event_target:target_province
-		home = event_target:target_province
-		owner = THIS
-		troops = {
-			light_infantry = { 1 1 }
-		}
-		cannot_inherit = yes
-		attrition = 0
-		scaled_by_biggest_garrison = 0.2
-		merge = yes
-		can_toggle_looting = no
-		is_looter = yes
-		reinforces = yes
-		maintenance = no
-	}
 }

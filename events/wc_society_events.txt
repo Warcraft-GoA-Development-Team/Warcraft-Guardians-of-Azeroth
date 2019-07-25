@@ -734,14 +734,34 @@ character_event = {
 
 			# Turn into undead
 			20 = {
-				trigger = {
-					ai = no
-					is_playable = yes
-					
-					society_rank > 1
-					society_member_of = cult_of_the_damned
-					any_courtier = {
-						is_potential_turn_into_undead_target_trigger = yes
+				modifier = {
+					factor = 0
+					is_playable = no
+				}
+				modifier = {
+					factor = 0
+					NOT = { society_member_of = cult_of_the_damned }
+				}
+				modifier = {
+					factor = 0
+					society_rank == 1
+				}
+				modifier = {
+					factor = 0
+					NOT = {
+						any_courtier = {
+							ai = yes
+							is_adult = yes
+							is_incapable = no
+							prisoner = no
+
+							NOT = { character = ROOT }
+							NOT = { has_character_flag = being_raised_flag }
+
+							is_dark_being_trigger = no
+							is_humanoid_trigger = yes
+							is_in_society = no
+						}
 					}
 				}
 				event_target:grandmaster = {
@@ -766,17 +786,37 @@ character_event = {
 
 			# Mind Control
 			20 = {
-				trigger = {
-					ai = no
-					is_playable = yes
-					
-					society_rank > 2
-					OR = {
-						society_member_of = shadow_council
-						society_member_of = twilights_hammer_cult
-					}
-					any_courtier = {
-						is_potential_mind_control_target_trigger = yes
+				modifier = {
+					factor = 0
+					is_playable = no
+				}
+				modifier = {
+					factor = 0
+					NOT = { society_member_of = shadow_council }
+					NOT = { society_member_of = twilights_hammer_cult }
+				}
+				modifier = {
+					factor = 0
+					society_rank < 3
+				}
+				modifier = {
+					factor = 0
+					NOT = {
+						any_courtier = {
+							ai = yes
+							is_adult = yes
+							is_incapable = no
+							prisoner = no
+
+							NOT = { character = ROOT }
+							NOT = { has_character_flag = mind_control_attempt_flag }
+
+							is_dark_being_trigger = yes
+							is_humanoid_trigger = yes
+							is_in_society = no
+							NOT = { has_opinion_modifier = { who = ROOT modifier = opinion_loyal_servant } }
+							has_weak_character_trigger = yes
+						}
 					}
 				}
 				event_target:grandmaster = {

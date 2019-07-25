@@ -233,29 +233,21 @@ total_invasion = {
 						limit = { ai = no }
 						set_defacto_liege = THIS	# Gives players a chance
 					}
-					any_realm_province = {
-						limit = {
-							county = {
+					any_realm_lord = {
+						any_demesne_title = {
+							limit = {
 								title_can_be_lost_trigger = yes
-								holder_scope = {
-									OR = {
-										character = PREVPREVPREV
-										is_liege_or_above = PREVPREVPREV
-									}
-								}
+								lower_tier_than = DUKE
 							}
+							ROOT = { grant_title_no_opinion = { target = PREV type = invasion } }
 						}
-						county = {
-							ROOT = {
-								gain_settlements_under_title = {
-									title = PREV
-									enemy = FROM
-									is_crusade = yes # Even if the title holder is not participating in the war, gain holdings occupied by all Crusade participants
-									type = invasion
-								}
-								grant_title_no_opinion = { target = PREV type = invasion }
-							}
+					}
+					any_demesne_title = {
+						limit = {
+							title_can_be_lost_trigger = yes
+							lower_tier_than = DUKE
 						}
+						ROOT = { grant_title_no_opinion = { target = PREV type = invasion } }
 					}
 				}
 			}
@@ -371,18 +363,7 @@ stop_invader = {
 			is_landed = yes
 			independent = yes
 			
-			OR = {
-				is_azeroth_invader_trigger = yes
-				AND = {
-					can_rule_peacefully_trigger = no
-					
-					OR = {
-						tier = EMPEROR
-						
-						realm_size = 150
-					}
-				}
-			}
+			is_azeroth_invader_trigger = yes
 			NOT = {
 				any_war = {
 					OR = {
@@ -401,7 +382,7 @@ stop_invader = {
 		ROOT = {
 			can_rule_peacefully_trigger = yes
 			
-			# is_landed = yes
+			is_landed = yes
 			independent = yes
 			NOT = { same_realm = FROM }
 		}
@@ -683,21 +664,19 @@ scourge_subjugation = {
 							occupy_minors_of_occupied_settlements = FROM
 							gain_all_occupied_titles = { who = FROM type = invasion }
 						}
-						# Conquers infected provinces of FROM's vassals
-						any_realm_province = {
-							limit = {
-								OR = {
-									religion = ROOT
-									has_province_modifier = undead_province
-								}
-								county = {
+						any_realm_lord = {
+							any_demesne_title = {
+								limit = {
 									title_can_be_lost_trigger = yes
-									holder_scope = {
-										is_liege_or_above = PREVPREVPREV
+
+									tier = COUNT
+									location = {
+										OR = {
+											religion = ROOT
+											has_province_modifier = undead_province
+										}
 									}
 								}
-							}
-							county = {
 								ROOT = {
 									gain_settlements_under_title = {
 										title = PREV
@@ -705,8 +684,8 @@ scourge_subjugation = {
 										is_crusade = yes # Even if the title holder is not participating in the war, gain holdings occupied by all Crusade participants
 										type = invasion
 									}
-									grant_title_no_opinion = { target = PREV type = invasion }
 								}
+								grant_title_no_opinion = { target = ROOT type = invasion }
 							}
 						}
 						any_vassal = {
@@ -1531,5 +1510,9 @@ change_religion_cb = {
 
 	ai_will_do = {
 		factor = 1
+		modifier = {
+			factor = 0
+			FROM = { is_forbidden_war_target_for_ai_root_trigger = yes }
+		}
 	}
 }
