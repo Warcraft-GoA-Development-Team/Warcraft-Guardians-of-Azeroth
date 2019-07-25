@@ -1502,80 +1502,117 @@ society_decisions = {
 	#Monastic Orders
 
 	#Switch Celibate
+	# Warcraft
 	monastic_orders_go_celibate = {
-		ai = no
+		is_high_prio = yes
+
+		ai_check_interval = 60
+
+		only_playable = yes
 
 		potential = {
 			# Warcraft
-			always = no
-			is_untouchable_trigger = no
-			
-			OR = {
-				is_dharmic_monastic_member_trigger = yes
-				is_christian_monastic_member_trigger = yes
-				
-				# Warcraft
-				# society_member_of = monastic_order_stoics
-			}
-			society_rank >= 2
-			NOT = { has_character_modifier = promise_of_celibacy }
+			is_adult = yes
+			is_incapable = no
+			prisoner = no
+			society_rank > 1
+			society_member_of = sisterhood_of_elune
 			NOT = { trait = celibate }
 		}
 
 		allow = {
-			NOT = {
-				trait = celibate
-				trait = hedonist
-				trait = seducer
-				trait = seductress
-			}
+			is_inaccessible_trigger = no
+			NOT = { trait = celibate }
 		}
 
 		effect = {
-			tooltip = {
-				add_trait = celibate
-			}
-			character_event = {
-				id = MNM.4090
-			}
+			change_society_currency = 150
+			add_trait = celibate
+			add_character_modifier = { name = keeping_vows_purity years = 10 }
 		}
 		
 		ai_will_do = {
-			factor = 0
+			factor = 0.25
+			modifier = {
+				factor = 0
+				is_married = yes
+			}
+			modifier = {
+				factor = 2
+				trait = chaste
+			}
+			modifier = {
+				factor = 0.3
+				trait = lustful
+			}
 		}
 	}
 
 	monastic_orders_stop_celibate = {
-		ai = no
+		is_high_prio = yes
+
+		ai_check_interval = 24
+
+		only_playable = yes
 
 		potential = {
-			OR = {
-				is_christian_monastic_member_trigger = yes
-				is_dharmic_monastic_member_trigger = yes
-				
-				# Warcraft
-				# society_member_of = monastic_order_stoics
-			}
-			society_rank >= 2
+			is_adult = yes
+			is_incapable = no
+			prisoner = no
+			society_rank > 1
+			society_member_of = sisterhood_of_elune
 			trait = celibate
-			NOT = {
-				has_character_flag = flag_papal_celibacy #No weaseling.
-			}
 		}
 
 		allow = {
-			trait = celibate
+			is_inaccessible_trigger = no
+			NOT = { has_character_modifier = keeping_vows_purity}
 		}
 
 		effect = {
-			tooltip = {
-				remove_trait = celibate
-			}
-			character_event = {
-				id = MNM.4091
-			}
+			remove_trait = celibate
 		}
 		
+		ai_will_do = {
+			factor = 0.1
+			modifier = {
+				factor = 1
+				is_married = yes
+			}
+		}
+	}
+	monastic_orders_break_celibate = {
+		is_high_prio = yes
+
+		ai_check_interval = 24
+
+		only_playable = yes
+
+		potential = {
+			is_adult = yes
+			is_incapable = no
+			prisoner = no
+			society_rank > 1
+			society_member_of = sisterhood_of_elune
+			trait = celibate
+		}
+
+		allow = {
+			is_inaccessible_trigger = no
+			has_character_modifier = keeping_vows_purity
+		}
+
+		effect = {
+			remove_trait = celibate
+			remove_character_modifier = keeping_vows_purity
+			change_society_currency = -500
+			piety = -200
+		}
+
+		revoke_allowed = {
+			always = no
+		}
+
 		ai_will_do = {
 			factor = 0
 		}
