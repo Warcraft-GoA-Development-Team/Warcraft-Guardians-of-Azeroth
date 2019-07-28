@@ -298,7 +298,7 @@ offmap_decisions = {
 						FROM = { has_character_modifier = follower_of_nzoth}
 					}
 					FROM = {
-						has_character_modifier = follower_of_nzoth
+						hidden_tooltip = { has_character_modifier = follower_of_nzoth }
 						has_offmap_currency = { offmap = offmap_nzoth value = 1000 }
 					}
 				}
@@ -307,7 +307,7 @@ offmap_decisions = {
 						FROM = { has_character_modifier = follower_of_yogg_saron }
 					}
 					FROM = {
-						has_character_modifier = follower_of_yogg_saron
+						hidden_tooltip = { has_character_modifier = follower_of_yogg_saron }
 						has_offmap_currency = { offmap = offmap_yoggsaron value = 1000 }
 					}
 				}
@@ -784,14 +784,18 @@ offmap_decisions = {
 			}
 		}
 	}
-	request_power_offmap_cthun = {
+	request_power_offmap = {
 		only_playable = yes
 		button_name = offmap_boons
 		
 		ai_check_interval = 36
 
 		potential = {
-			is_offmap_tag = offmap_cthun
+			OR = {
+				is_offmap_tag = offmap_cthun
+				is_offmap_tag = offmap_nzoth
+				is_offmap_tag = offmap_yoggsaron
+			}
 		}
 		from_potential = {
 			has_dlc = "Jade Dragon"
@@ -800,8 +804,34 @@ offmap_decisions = {
 			is_landed = yes
 		}
 		allow = {
-			FROM = {
-				has_offmap_currency = { offmap = offmap_cthun value = 750 }
+			OR = {
+				conditional_tooltip = {
+					trigger = {
+						FROM = { has_character_modifier = follower_of_cthun }
+					}
+					FROM = {
+						hidden_tooltip = { has_character_modifier = follower_of_cthun }
+						has_offmap_currency = { offmap = offmap_cthun value = 750 }
+					}
+				}
+				conditional_tooltip = {
+					trigger = {
+						FROM = { has_character_modifier = follower_of_nzoth}
+					}
+					FROM = {
+						hidden_tooltip = { has_character_modifier = follower_of_nzoth }
+						has_offmap_currency = { offmap = offmap_nzoth value = 750 }
+					}
+				}
+				conditional_tooltip = {
+					trigger = {
+						FROM = { has_character_modifier = follower_of_yogg_saron }
+					}
+					FROM = {
+						hidden_tooltip = { has_character_modifier = follower_of_yogg_saron}
+						has_offmap_currency = { offmap = offmap_yoggsaron value = 750 }
+					}
+				}
 			}
 		}
 		effect = {
@@ -818,89 +848,56 @@ offmap_decisions = {
 				}
 				
 			}
-		}
-		ai_will_do = {
-			factor = 1
-			modifier = {
-				factor = 0.3 # slow down
-			}
-		}
-	}
-	request_power_offmap_nzoth = {
-		only_playable = yes
-		button_name = offmap_boons
-		
-		ai_check_interval = 36
-
-		potential = {
-			is_offmap_tag = offmap_nzoth
-		}
-		from_potential = {
-			has_dlc = "Jade Dragon"
-			mercenary = no
-			holy_order = no
-			is_landed = yes
-		}
-		allow = {
-			FROM = {
-				has_offmap_currency = { offmap = offmap_nzoth value = 750 }
-			}
-		}
-		effect = {
-			FROM = {
-				add_offmap_currency = {
-					offmap = offmap_nzoth
-					value = -750
+			if = {
+				limit = {
+					is_offmap_tag = offmap_cthun
 				}
-				hidden_effect = {
-					random_list = {
-						90 = { character_event = { id = WCOME.32 } }
-						10 = { character_event = { id = WCOME.33 } }
+				FROM = {
+					add_offmap_currency = {
+						offmap = offmap_cthun
+						value = -750
+					}
+					hidden_effect = {
+						random_list = {
+							90 = { character_event = { id = WCOME.30 } }
+							10 = { character_event = { id = WCOME.31 } }
+						}
 					}
 				}
-				
 			}
-		}
-		ai_will_do = {
-			factor = 1
-			modifier = {
-				factor = 0.3 # slow down
-			}
-		}
-	}
-	request_power_offmap_yoggsaron = {
-		only_playable = yes
-		button_name = offmap_boons
-		
-		ai_check_interval = 36
-
-		potential = {
-			is_offmap_tag = offmap_yoggsaron
-		}
-		from_potential = {
-			has_dlc = "Jade Dragon"
-			mercenary = no
-			holy_order = no
-			is_landed = yes
-		}
-		allow = {
-			FROM = {
-				has_offmap_currency = { offmap = offmap_yoggsaron value = 750 }
-			}
-		}
-		effect = {
-			FROM = {
-				add_offmap_currency = {
-					offmap = offmap_yoggsaron
-					value = -750
+			if = {
+				limit = {
+					is_offmap_tag = offmap_nzoth
 				}
-				hidden_effect = {
-					random_list = {
-						90 = { character_event = { id = WCOME.34 } }
-						10 = { character_event = { id = WCOME.35 } }
+				FROM = {
+					add_offmap_currency = {
+						offmap = offmap_nzoth
+						value = -750
+					}
+					hidden_effect = {
+						random_list = {
+							90 = { character_event = { id = WCOME.32 } }
+							10 = { character_event = { id = WCOME.33 } }
+						}
 					}
 				}
-				
+			}
+			if = {
+				limit = {
+					is_offmap_tag = offmap_yoggsaron
+				}
+				FROM = {
+					add_offmap_currency = {
+						offmap = offmap_yoggsaron
+						value = -750
+					}
+					hidden_effect = {
+						random_list = {
+							90 = { character_event = { id = WCOME.34 } }
+							10 = { character_event = { id = WCOME.35 } }
+						}
+					}
+				}
 			}
 		}
 		ai_will_do = {
@@ -910,4 +907,88 @@ offmap_decisions = {
 			}
 		}
 	}
+	# request_power_offmap_nzoth = {
+		# only_playable = yes
+		# button_name = offmap_boons
+		
+		# ai_check_interval = 36
+
+		# potential = {
+			# is_offmap_tag = offmap_nzoth
+		# }
+		# from_potential = {
+			# has_dlc = "Jade Dragon"
+			# mercenary = no
+			# holy_order = no
+			# is_landed = yes
+		# }
+		# allow = {
+			# FROM = {
+				# has_offmap_currency = { offmap = offmap_nzoth value = 750 }
+			# }
+		# }
+		# effect = {
+			# FROM = {
+				# add_offmap_currency = {
+					# offmap = offmap_nzoth
+					# value = -750
+				# }
+				# hidden_effect = {
+					# random_list = {
+						# 90 = { character_event = { id = WCOME.32 } }
+						# 10 = { character_event = { id = WCOME.33 } }
+					# }
+				# }
+				
+			# }
+		# }
+		# ai_will_do = {
+			# factor = 1
+			# modifier = {
+				# factor = 0.3 # slow down
+			# }
+		# }
+	# }
+	# request_power_offmap_yoggsaron = {
+		# only_playable = yes
+		# button_name = offmap_boons
+		
+		# ai_check_interval = 36
+
+		# potential = {
+			# is_offmap_tag = offmap_yoggsaron
+		# }
+		# from_potential = {
+			# has_dlc = "Jade Dragon"
+			# mercenary = no
+			# holy_order = no
+			# is_landed = yes
+		# }
+		# allow = {
+			# FROM = {
+				# has_offmap_currency = { offmap = offmap_yoggsaron value = 750 }
+			# }
+		# }
+		# effect = {
+			# FROM = {
+				# add_offmap_currency = {
+					# offmap = offmap_yoggsaron
+					# value = -750
+				# }
+				# hidden_effect = {
+					# random_list = {
+						# 90 = { character_event = { id = WCOME.34 } }
+						# 10 = { character_event = { id = WCOME.35 } }
+					# }
+				# }
+				
+			# }
+		# }
+		# ai_will_do = {
+			# factor = 1
+			# modifier = {
+				# factor = 0.3 # slow down
+			# }
+		# }
+	# }
 }
