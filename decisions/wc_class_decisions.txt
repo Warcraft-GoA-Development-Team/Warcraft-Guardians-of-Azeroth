@@ -2076,15 +2076,12 @@ targetted_decisions = {
 				is_paladin_class_trigger = yes
 				is_priest_class_trigger = yes
 			}
-			NOT = { trait = subclass_moon_priest }
 		}
 
 		potential = {
 			is_untouchable_trigger = no
 
 			is_within_diplo_range = FROM
-			NOT = { has_character_modifier = light_mark_good }
-			NOT = { has_character_modifier = light_mark_bad }
 
 			OR = {
 				character = FROM
@@ -2104,9 +2101,10 @@ targetted_decisions = {
 			show_only_failed_conditions = yes
 			
 			is_inaccessible_trigger = no
-
-			is_humanoid_trigger = yes
-
+			
+			NOT = { has_character_modifier = light_mark_good }
+			NOT = { has_character_modifier = light_mark_bad }
+			NOT = { has_character_modifier = touch_of_elune }
 			custom_tooltip = {
 				text = has_not_used_decision_3_years_tooltip
 				hidden_tooltip = {
@@ -2116,8 +2114,12 @@ targetted_decisions = {
 					}
 				}
 			}
+
+			is_humanoid_trigger = yes
+
 			FROM = {
 				show_scope_change = no
+				
 				is_inaccessible_trigger = no
 
 				has_3_4_magic_class_or_higher_trigger = yes
@@ -2126,8 +2128,11 @@ targetted_decisions = {
 		}
 
 		effect = {
+			FROM = { save_event_target_as = target_priest }
+			
 			ROOT = {
 				show_scope_change = no
+				
 				set_character_flag = light_mark_cooldown_flag
 
 				if = {
@@ -2140,7 +2145,15 @@ targetted_decisions = {
 					hidden_effect = { character_event = { id = WCCLS.305 } }
 				}
 				else = {
-					tooltip = { add_character_modifier = { name = light_mark_good years = 2 } }
+					tooltip = {
+						if = {
+							limit = { FROM = { trait = subclass_moon_priest } }
+							add_character_modifier = { name = touch_of_elune years = 2 }
+						}
+						else = {
+							add_character_modifier = { name = light_mark_good years = 2 }
+						}
+					}
 					if = {
 						limit = { NOT = { character = FROM } }
 						opinion = { modifier = opinion_grateful who = FROM year = 5 }
@@ -2150,6 +2163,7 @@ targetted_decisions = {
 			}
 			FROM = {
 				show_scope_change = no
+				
 				remove_2_mana_effect = yes
 			}
 		}
@@ -2194,94 +2208,6 @@ targetted_decisions = {
 	}
 
 	### Priest ###
-	touch_of_elune_dec = {
-		filter = realm_including_me
-		ai_target_filter = court_including_me
-		ai_check_interval = 24
-
-		only_playable = yes
-
-		from_potential = {
-			is_untouchable_trigger = no
-
-			is_adult = yes
-			is_incapable = no
-			prisoner = no
-
-			is_priest_class_trigger = yes
-			trait = subclass_moon_priest
-		}
-
-		potential = {
-			is_untouchable_trigger = no
-
-			is_within_diplo_range = FROM
-			NOT = { has_character_modifier = touch_of_elune }
-		}
-
-		allow = {
-			show_only_failed_conditions = yes
-			
-			is_inaccessible_trigger = no
-
-			custom_tooltip = {
-				text = has_not_used_decision_3_years_tooltip
-				hidden_tooltip = {
-					OR = {
-						NOT = { has_character_flag = touch_of_elune_cooldown_flag }
-						had_character_flag = { flag = touch_of_elune_cooldown_flag years = 3 }
-					}
-				}
-			}
-
-			is_dark_being_trigger = no
-			is_humanoid_trigger = yes
-
-			FROM = {
-				is_inaccessible_trigger = no
-
-				is_3_4_magic_class_trigger = yes
-				has_2_mana_trigger = yes
-			}
-		}
-
-		effect = {
-			ROOT = {
-				show_scope_change = no
-				set_character_flag = touch_of_elune_cooldown_flag
-				if = {
-					limit = { NOT = { character = FROM } }
-					opinion = { modifier = opinion_grateful who = FROM year = 5 }
-				}
-				add_character_modifier = { name = touch_of_elune years = 2 }
-			}
-			FROM = {
-				show_scope_change = no
-				remove_2_mana_effect = yes
-			}
-		}
-
-		revoke_allowed = { always = no }
-
-		ai_will_do = {
-			factor = 0.1
-			modifier = {
-				factor = 10
-				character = FROM
-			}
-			modifier = {
-				factor = 4
-				FROM = { is_benevolent_trigger = yes }
-			}
-			modifier = {
-				factor = 2
-				reverse_opinion = {
-					who = FROM
-					value = 30
-				}
-			}
-		}
-	}
 
 	### Rogue ###
 	# Gives a chance to make ROOT incapable for a while

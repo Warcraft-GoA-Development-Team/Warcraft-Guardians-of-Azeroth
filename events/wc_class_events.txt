@@ -1049,24 +1049,35 @@ narrative_event = {
 character_event = {
 	id = WCCLS.305
 	desc = {
-		trigger = { character = FROMFROM }
+		trigger = { character = event_target:target_priest }
 		text = EVTDESC_WCCLS_305_self
 	}
 	desc = {
 		trigger = {
-			NOT = { character = FROMFROM }
+			NOT = { character = event_target:target_priest }
 			is_dark_being_trigger = yes
 		}
 		text = EVTDESC_WCCLS_305_other
 	}
 	desc = {
 		trigger = {
-			NOT = { character = FROMFROM }
+			NOT = { character = event_target:target_priest }
 			is_dark_being_trigger = no
 		}
 		text = EVTDESC_WCCLS_305_bad
 	}
-	picture = GFX_evt_priest_human
+	picture = {
+		trigger = {
+			event_target:target_priest = { NOT = { trait = subclass_moon_priest } }
+		}
+		picture = GFX_evt_priest_human
+	}
+	picture = {
+		trigger = {
+			event_target:target_priest = { trait = subclass_moon_priest }
+		}
+		picture = GFX_evt_elune
+	}
 	border = GFX_event_normal_frame_religion
 
 	is_triggered_only = yes
@@ -1075,7 +1086,13 @@ character_event = {
 		trigger = { is_dark_being_trigger = no }
 		name = EXCELLENT
 
-		add_character_modifier = { name = light_mark_good years = 2 }
+		if = {
+			limit = { event_target:target_priest = { trait = subclass_moon_priest } }
+			add_character_modifier = { name = touch_of_elune years = 2 }
+		}
+		else = {
+			add_character_modifier = { name = light_mark_good years = 2 }
+		}
 	}
 
 	option = {
