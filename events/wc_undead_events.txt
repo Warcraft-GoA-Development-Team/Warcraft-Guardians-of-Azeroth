@@ -1086,23 +1086,26 @@ character_event = {
 	}
 	picture = GFX_evt_cemetery
 	border = GFX_event_normal_frame_religion
+	portrait = event_target:target_necromancer
 
 	is_triggered_only = yes
 
 	# Just an undead
 	option = {
 		trigger = {
-			OR = {
-				NOT = {
-					event_target:target_undead = {
-						has_class_trait_trigger = yes
-						is_alternative_class_trigger = no
+			event_target:target_necromancer = {
+				OR = {
+					NOT = {
+						event_target:target_undead = {
+							has_class_trait_trigger = yes
+							is_alternative_class_trigger = no
+						}
 					}
-				}
-				NOR = {
-					event_target:target_undead = { is_paladin_class_trigger = yes }
-					is_7_8_magic_class_trigger = yes
-					trait = lich_king
+					NOR = {
+						event_target:target_undead = { is_paladin_class_trigger = yes }
+						is_7_8_magic_class_trigger = yes
+						trait = lich_king
+					}
 				}
 			}
 		}
@@ -1127,49 +1130,15 @@ character_event = {
 		}
 	}
 
-	# Ghost
-	option = {
-		trigger = {
-			always = no
-
-			event_target:target_undead = { NOT = { character = ROOT } }
-			NOR = {
-				event_target:target_undead = { is_paladin_class_trigger = yes }
-				is_7_8_magic_class_trigger = yes
-				trait = lich_king
-			}
-		}
-		name = EVTOPTB_WCUND_300
-
-		event_target:target_undead = {
-			set_character_flag = transition_into_wraith_flag
-			tooltip = {
-				remove_racial_traits_effect = yes
-				add_trait = creature_wraith
-				add_trait_undead_effect = yes
-				if = {
-					limit = { event_target:target_undead = { NOT = { character = ROOT } } }
-					opinion = {
-						modifier = opinion_loyal_servant
-						who = ROOT
-					}
-				}
-			}
-		}
-		hidden_effect = { event_target:target_undead = { character_event = { id = WCPOD.5013 } } }
-
-		ai_chance = {
-			factor = 5
-		}
-	}
-
 	# Vampire
 	option = {
 		trigger = {
 			NOT = { event_target:target_undead = { is_paladin_class_trigger = yes } }
-			OR = {
-				is_7_8_magic_class_trigger = yes
-				trait = lich_king
+			event_target:target_necromancer = {
+				OR = {
+					is_7_8_magic_class_trigger = yes
+					trait = lich_king
+				}
 			}
 		}
 		name = EVTOPTD_WCUND_300
