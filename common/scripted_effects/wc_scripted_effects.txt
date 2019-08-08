@@ -1137,27 +1137,30 @@ spawn_horde_troops_effect = {
 }
 # DON'T USE it outside of spawn_horde_troops_effect
 spawn_small_horde_troops_effect = {
-	spawn_unit = {
-		owner = THIS
-		province = 73
-		home = 73
-		troops = {
-			archers = { 500 500 }
-			light_infantry = { 750 750 }
-			heavy_infantry = { 1000 1000 }
-			light_cavalry = { 200 200 }
-			knights = { 50 50 }
+	custom_tooltip = {
+		text = spawn_small_horde_troops_tooltip
+		spawn_unit = {
+			owner = THIS
+			province = 73
+			home = 73
+			troops = {
+				archers = { 500 500 }
+				light_infantry = { 750 750 }
+				heavy_infantry = { 1000 1000 }
+				light_cavalry = { 200 200 }
+				knights = { 50 50 }
+			}
+			attrition = 0
+			maintenance = no
+			earmark = horde_forces
 		}
-		attrition = 0
-		maintenance = no
-		earmark = horde_forces
-	}
-	spawn_fleet = {
-		province = closest
-		owner = THIS
-		earmark = horde_forces
-		troops = {
-			galleys = { 50 50 }
+		spawn_fleet = {
+			province = closest
+			owner = THIS
+			earmark = horde_forces
+			troops = {
+				galleys = { 50 50 }
+			}
 		}
 	}
 }
@@ -1195,46 +1198,49 @@ spawn_legion_troops_effect = {
 	}
 }
 spawn_small_legion_troops_effect = {
-	spawn_unit = {
-		owner = THIS
-		province = event_target:target_summoning_location
-		home = event_target:target_summoning_location
-		troops = {
-			light_infantry = { 2000 2000 }
-			demonicshock = { 2250 2250 }
+	custom_tooltip = {
+		text = spawn_small_legion_troops_tooltip
+		spawn_unit = {
+			owner = THIS
+			province = event_target:target_summoning_location
+			home = event_target:target_summoning_location
+			troops = {
+				light_infantry = { 2000 2000 }
+				demonicshock = { 2250 2250 }
+			}
+			attrition = 0
+			maintenance = no
+			earmark = legion_forces
 		}
-		attrition = 0
-		maintenance = no
-		earmark = legion_forces
-	}
-	spawn_unit = {
-		owner = THIS
-		province = event_target:target_summoning_location
-		home = event_target:target_summoning_location
-		troops = {
-			golems = { 250 250 }
+		spawn_unit = {
+			owner = THIS
+			province = event_target:target_summoning_location
+			home = event_target:target_summoning_location
+			troops = {
+				golems = { 250 250 }
+			}
+			attrition = 0
+			maintenance = no
+			earmark = legion_forces
 		}
-		attrition = 0
-		maintenance = no
-		earmark = legion_forces
-	}
-	spawn_unit = {
-		owner = THIS
-		province = event_target:target_summoning_location
-		home = event_target:target_summoning_location
-		troops = {
-			artillery = { 500 500 }
+		spawn_unit = {
+			owner = THIS
+			province = event_target:target_summoning_location
+			home = event_target:target_summoning_location
+			troops = {
+				artillery = { 500 500 }
+			}
+			attrition = 0
+			maintenance = no
+			earmark = legion_forces
 		}
-		attrition = 0
-		maintenance = no
-		earmark = legion_forces
-	}
-	spawn_fleet = {
-		province = closest
-		owner = THIS
-		earmark = legion_forces
-		troops = {
-			galleys = { 75 75 }
+		spawn_fleet = {
+			province = closest
+			owner = THIS
+			earmark = legion_forces
+			troops = {
+				galleys = { 75 75 }
+			}
 		}
 	}
 }
@@ -1272,23 +1278,26 @@ spawn_scourge_troops_effect = {
 	}
 }
 spawn_small_scourge_troops_effect = {
-	spawn_unit = {
-		province = 695
-		home = 695
-		owner = THIS
-		troops = {
-			archers = { 1875 1875 }
-			light_infantry = { 2625 2625 }
-			golems = { 500 500 }
+	custom_tooltip = {
+		text = spawn_small_scourge_troops_tooltip
+		spawn_unit = {
+			province = event_target:target_province
+			home = event_target:target_province
+			owner = THIS
+			troops = {
+				archers = { 1875 1875 }
+				light_infantry = { 2625 2625 }
+				golems = { 500 500 }
+			}
+			attrition = 0
+			maintenance = no
 		}
-		attrition = 0
-		maintenance = no
-	}
-	spawn_fleet = {
-		province = closest
-		owner = THIS
-		troops = {
-			galleys = { 75 75 }
+		spawn_fleet = {
+			province = closest
+			owner = THIS
+			troops = {
+				galleys = { 75 75 }
+			}
 		}
 	}
 }
@@ -1380,6 +1389,9 @@ set_tribal_government_effect = {
 }
 set_tribal_monarchy_government_effect = {
 	set_government_type = tribal_monarchy_government
+}
+set_feudal_government_effect = {
+	set_government_type = feudal_government
 }
 
 add_5_mind_control_power_effect = {
@@ -2027,6 +2039,24 @@ add_default_traits = {
 						}
 					} 
 					add_trait = zealous
+				}
+			}
+		}
+		
+		# cannibal_trait
+		if = {
+			limit = { prefer_cannibal_trait_trigger = yes }
+			random = {
+				chance = 35
+				
+				additive_modifier = {
+					value = 50
+					evil_public_religion_trigger = yes
+				}
+				
+				if = {
+					limit = { NOT = { trait = cannibal_trait } } 
+					add_trait = cannibal_trait
 				}
 			}
 		}
@@ -2842,7 +2872,7 @@ ruler_sell_land_to_holy_order_effect = {
 			else = { prestige = 500 }
 			wealth = 400
 		}
-		
+
 		# Free vassals
 		if = {
 			limit = { is_ruler = yes }
@@ -2892,11 +2922,11 @@ ruler_sell_land_to_holy_order_effect = {
 
 				if = {
 					limit = { limit = { holder_scope = { character = event_target:target_ruler } } }
-					ruler_grant_land_to_holy_order_effect = yes
-				}
+				ruler_grant_land_to_holy_order_effect = yes
 			}
 		}
 	}
+}
 }
 ruler_grant_land_to_holy_order_effect = {
 	event_target:target_order_leader = {
@@ -3210,25 +3240,28 @@ spawn_qiraji_troops_effect = {
 	}
 }
 spawn_small_qiraji_troops_effect = {
-	spawn_unit = {
-		owner = THIS
-		province = event_target:target_province
-		home = event_target:target_province
-		troops = {
-			insectoidswarm = { 2150 2150 }
+	custom_tooltip = {
+		text = spawn_small_qiraji_troops_tooltip
+		spawn_unit = {
+			owner = THIS
+			province = event_target:target_province
+			home = event_target:target_province
+			troops = {
+				insectoidswarm = { 2150 2150 }
+			}
+			attrition = 0
+			maintenance = no
 		}
-		attrition = 0
-		maintenance = no
-	}
-	spawn_unit = {
-		owner = THIS
-		province = event_target:target_province
-		home = event_target:target_province
-		troops = {
-			insectoidguard = { 350 350 }
+		spawn_unit = {
+			owner = THIS
+			province = event_target:target_province
+			home = event_target:target_province
+			troops = {
+				insectoidguard = { 350 350 }
+			}
+			attrition = 0
+			maintenance = no
 		}
-		attrition = 0
-		maintenance = no
 	}
 }
 
@@ -3266,5 +3299,87 @@ spawn_bitten_troops_effect = {
 		is_looter = yes
 		reinforces = yes
 		maintenance = no
+	}
+}
+
+# Based of leave_council_position_effect
+leave_council_position_no_opinion_effect = {
+	liege = {
+		set_character_flag = swapping_councillors
+		add_character_modifier = {
+			name = councillors_changed_jobs
+			duration = 365
+			hidden = yes
+		}
+	}
+
+	if = {
+		limit = { has_job_title = job_chancellor }
+		remove_title = job_chancellor
+	}
+	if = {
+		limit = { has_job_title = job_marshal }
+		remove_title = job_marshal
+	}
+	if = {
+		limit = { has_job_title = job_treasurer }
+		remove_title = job_treasurer
+	}
+	if = {
+		limit = { has_job_title = job_spymaster }
+		remove_title = job_spymaster
+	}
+	if = {
+		limit = { has_job_title = job_spiritual }
+		remove_title = job_spiritual
+	}
+	if = {
+		limit = { has_minor_title = title_councilmember_king }
+		remove_title = title_councilmember_king
+	}
+	if = {
+		limit = { has_minor_title = title_councilmember_emperor }
+		remove_title = title_councilmember_emperor
+	}
+	
+	# Warcraft
+	if = {
+		limit = { has_minor_title = title_shadow_council_member_1 }
+		remove_title = title_shadow_council_member_1
+	}
+	if = {
+		limit = { has_minor_title = title_shadow_council_member_2 }
+		remove_title = title_shadow_council_member_2
+	}
+	if = {
+		limit = { has_minor_title = title_shadow_council_member_3 }
+		remove_title = title_shadow_council_member_3
+	}
+
+	liege = {
+		clr_character_flag = swapping_councillors
+	}
+}
+# Gives cannibal_trait to your courtiers
+court_share_cannibal_trait_effect = {
+	hidden_effect = {
+		any_courtier = {
+			limit = {
+				is_adult = yes
+				is_incapable = no
+				prisoner = no
+				is_inaccessible_trigger = no
+
+				is_ruler = no
+
+				religion = ROOT
+
+				NOT = { trait = cannibal_trait }
+			}
+			random = {
+				chance = 50
+				add_trait = cannibal_trait
+			}
+		}
 	}
 }
