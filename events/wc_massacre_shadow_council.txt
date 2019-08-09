@@ -4,7 +4,7 @@ namespace = WCMSC
 narrative_event = {
 	id = WCMSC.1
 	title = EVTTITLE_WCMSC_1
-	picture = GFX_evt_orcish_horde
+	picture = GFX_evt_orgrim_warchief
 	desc =  EVTDESC_WCMSC_1
 	border = GFX_event_narrative_frame_war
 
@@ -18,6 +18,12 @@ narrative_event = {
 		religion = orcish_shamanism
 		true_religion = orcish_shamanism
 		trait = ambitious
+		
+		NOT = { has_character_flag = new_warchief_old_horde }
+	}
+	
+	immediate = {
+		set_character_flag = new_warchief_old_horde
 	}
 	
 	option = {
@@ -30,6 +36,7 @@ narrative_event = {
 					prisoner = no
 					society_member_of = shadow_council
 				}
+				set_character_flag = shadow_council_hiding
 				character_event = { id = WCMSC.2 }
 			}
 		}
@@ -40,6 +47,8 @@ narrative_event = {
 		trigger = {
 			NOT = { character = ROOT }
 			culture_group = orc_group
+			culture_group = ogre_group
+			NOT = { society_member_of = shadow_council }
 		}
 	}
 
@@ -48,10 +57,9 @@ narrative_event = {
 #Hiding Shadow Council Member
 character_event = {
 	id = WCMSC.2
-	picture = GFX_evt_orcish_horde
+	picture = GFX_evt_orgrim_warchief2
 	desc =  EVTDESC_WCMSC_2
-	picture = GFX_evt_orc_city
-	border = GFX_event_narrative_frame_war
+	border = GFX_event_normal_frame_war
 
 	is_triggered_only = yes
 	
@@ -60,7 +68,7 @@ character_event = {
 		is_incapable = no
 		prisoner = no
 		society_member_of = shadow_council
-		
+		has_character_flag = shadow_council_hiding
 	}
 	
 	option = {
@@ -72,10 +80,12 @@ character_event = {
 	
 	option = {
 		name = "EVTOPTB_WCMSC.2"
+		tooltip_info = brave
 		trigger = {
 			trait = brave
 		}
 		prestige = 100
+		clear_character_flag = shadow_council_hiding
 	}
 
 }
@@ -85,7 +95,7 @@ narrative_event = {
 	id = WCMSC.100
 	title = EVTTITLE_WCMSC_100
 	desc = EVTDESC_WCMSC_100
-	picture = GFX_evt_orc_city
+	picture = GFX_evt_orc_glory
 	border = GFX_event_narrative_frame_war
 
 	is_triggered_only = yes
@@ -98,6 +108,7 @@ narrative_event = {
 
 	option = {
 		name = EVTOPTA_WCMSC.100
+		custom_tooltip = { text = EVTOPTA_WCMSC_1_tooltip }
 		prestige = 50
 		#Start tracking
 		character_event = {
@@ -108,8 +119,19 @@ narrative_event = {
 
 	option = {
 		name = EVTOPTB_WCMSC.100
+		custom_tooltip = { text = EVTOPTB_WCMSC_1_tooltip }
 		prestige = 10
 		#Shadow councilor are cowards
+		hidden_tooltip = {
+		any_realm_character = {
+				limit = {
+					prisoner = no
+					society_member_of = shadow_council
+					has_character_flag = shadow_council_hiding
+				}
+				clear_character_flag = shadow_council_hiding
+			}
+	}
 	}
 }
 
@@ -117,8 +139,8 @@ narrative_event = {
 character_event = {
 	id = WCMSC.101
 	desc = EVTDESC_WCMSC_101
-	picture = GFX_evt_orc_city
-	border = GFX_event_narrative_frame_war
+	picture = GFX_evt_spymaster
+	border = GFX_event_normal_frame_war
 
 	is_triggered_only = yes
 	
@@ -130,104 +152,104 @@ character_event = {
 
 	option = {
 		name = EVTOPTA_WCMSC.101
-		c_10015 = {
+		any_society_member = {
 			limit = {
 					society_rank = 4
 					society_member_of = shadow_council
 				}
 				job_spymaster = {
 					imprison = FROM
-			#		hidden_tooltip = {
-			#			random_list = {
-			#			#Normal torture options
-			#				10 = { 
-			#					random_list = {
-			#						10 = {
-			#							# Racks
-			#							FROM = { character_event = { id = RIP.20001 } }
-			#							character_event = { id = RIP.20002 } 
-			#					
-			#						}
-			#
-			#				10 = {
-			#					# Whipping
-			#					FROM = { character_event = { id = RIP.20003 } }
-			#					character_event = { id = RIP.20004 } 
-			#
-			#				}
-			#
-			#				10 = {
-			#					# Rats
-			#					FROM = { character_event = { id = RIP.20005} }
-			#					character_event = { id = RIP.20006 } 
-			#				}
-			#			}
-			#			hidden_tooltip = {
-			#
-			#				opinion = {
-			#					modifier = opinion_tortured_me
-			#					who = FROM
-			#				}
-			#
-			#				mother = {
-			#					opinion = {
-			#						modifier = opinion_tortured_close_kin
-			#						who = FROM
-			#					}
-			#				}
-			#				father = {
-			#					opinion = {
-			#						modifier = opinion_tortured_close_kin
-			#						who = FROM
-			#					}
-			#				}
-			#				spouse = {
-			#					opinion = {
-			#						modifier = opinion_tortured_close_kin
-			#						who = FROM
-			#					}
-			#				}
-			#				any_child = {
-			#					opinion = {
-			#						modifier = opinion_tortured_close_kin
-			#						who = FROM
-			#					}
-			#				}
-			#				if = {
-			#					limit = {
-			#						FROM = {
-			#							NOT = { dynasty = ROOT }
-			#							NOT = { sibling = ROOT }
-			#						}
-			#					}
-			#					any_sibling = {
-			#						opinion = {
-			#							modifier = opinion_tortured_close_kin
-			#							who = FROM
-			#						}
-			#					}
-			#					any_dynasty_member = {
-			#						opinion = {
-			#							modifier = opinion_tortured_family
-			#							who = FROM
-			#						}
-			#					}
-			#				}
-			#			}
-			#		}
-			#
-			#		20 = {
-			#			# Lunatic option
-			#			modifier = {
-			#				factor = 0
-			#				NOT = { FROM = { trait = lunatic } }
-			#			}
-			#
-			#			FROM = { character_event = { id = RIP.20007 } }
-			#			character_event = { id = RIP.20008 } 
-			#		}
-			#	}	
-			#}
+					hidden_tooltip = {
+						random_list = {
+						#Normal torture options
+							10 = { 
+								random_list = {
+									10 = {
+										# Racks
+										FROM = { character_event = { id = RIP.20001 } }
+										character_event = { id = RIP.20002 } 
+								
+									}
+			
+							10 = {
+								# Whipping
+								FROM = { character_event = { id = RIP.20003 } }
+								character_event = { id = RIP.20004 } 
+			
+							}
+			
+							10 = {
+								# Rats
+								FROM = { character_event = { id = RIP.20005} }
+								character_event = { id = RIP.20006 } 
+							}
+						}
+						hidden_tooltip = {
+			
+							opinion = {
+								modifier = opinion_tortured_me
+								who = FROM
+							}
+			
+							mother = {
+								opinion = {
+									modifier = opinion_tortured_close_kin
+									who = FROM
+								}
+							}
+							father = {
+								opinion = {
+									modifier = opinion_tortured_close_kin
+									who = FROM
+								}
+							}
+							spouse = {
+								opinion = {
+									modifier = opinion_tortured_close_kin
+									who = FROM
+								}
+							}
+							any_child = {
+								opinion = {
+									modifier = opinion_tortured_close_kin
+									who = FROM
+								}
+							}
+							if = {
+								limit = {
+									FROM = {
+										NOT = { dynasty = ROOT }
+										NOT = { sibling = ROOT }
+									}
+								}
+								any_sibling = {
+									opinion = {
+										modifier = opinion_tortured_close_kin
+										who = FROM
+									}
+								}
+								any_dynasty_member = {
+									opinion = {
+										modifier = opinion_tortured_family
+										who = FROM
+									}
+								}
+							}
+						}
+					}
+			
+					20 = {
+						# Lunatic option
+						modifier = {
+							factor = 0
+							NOT = { FROM = { trait = lunatic } }
+						}
+			
+						FROM = { character_event = { id = RIP.20007 } }
+						character_event = { id = RIP.20008 } 
+					}
+				}	
+			}
 				}
 		}
 		
@@ -243,8 +265,8 @@ character_event = {
 character_event = {
 	id = WCMSC.102
 	desc = EVTDESC_WCMSC_102
-	picture = GFX_evt_orc_city
-	border = GFX_event_narrative_frame_war
+	picture = GFX_evt_shadow_council
+	border = GFX_event_normal_frame_war
 
 	is_triggered_only = yes
 
@@ -262,12 +284,13 @@ character_event = {
 	id = WCMSC.103
 	desc = EVTDESC_WCMSC_103
 	picture = GFX_evt_blackrock_mountain
-	border = GFX_event_narrative_frame_war
+	border = GFX_event_normal_frame_war
 
 	is_triggered_only = yes
 
 	option = {
 		name = EVTOPTA_WCMSC.103
+		tooltip_info = brave
 		#LOK'TAR OGAR
 		prestige = 20
 		trigger = {
@@ -297,10 +320,6 @@ narrative_event = {
 	
 	trigger = {
 		has_landed_title = e_horde
-		OR = {
-			society_member_of = shadow_council
-			trait = in_hiding
-			}
 	}
 
 	option = {
@@ -311,12 +330,12 @@ narrative_event = {
 				society_member_of = shadow_council
 				trait = in_hiding
 				NOT =  { has_character_flag = is_guldan }
-				OR = { NOT =  { has_character_flag = is_chogall } }
+				NOT =  { has_character_flag = is_chogall }
 			}
 			random_list = {
 				80 = {
 					death = {
-						death_reason = death_battle
+						death_reason = death_massacred
 						killer = FROM
 					}
 				}
@@ -366,11 +385,6 @@ narrative_event = {
 	border = GFX_event_narrative_frame_war
 
 	is_triggered_only = yes
-	
-	trigger = {
-		has_landed_title = e_horde
-		OR = { has_character_flag = is_chogall }
-	}
 
 	option = {
 		name = EVTOPTA_WCMSC.106
@@ -392,16 +406,16 @@ narrative_event = {
 		trigger = { has_character_flag = is_chogall }
 		#Fight to the death
 		random_list = {
-			70 = {
+			80 = {
 				death = {
 					death_reason = death_duel
 					killer = FROM
 				}
 			}
-			20 = {
+			15 = {
 				add_trait = severely_injured
 			}
-			10 = {
+			5 = {
 				add_trait = wounded
 			}
 		}
@@ -418,12 +432,12 @@ narrative_event = {
 }
 
 #Cho'gall surrender
-narrative_event = {
+character_event = {
 	id = WCMSC.107
 	title = EVTTITLE_WCMSC_107
 	desc = EVTDESC_WCMSC_107
 	picture = GFX_evt_orcish_horde
-	border = GFX_event_narrative_frame_war
+	border = GFX_event_normal_frame_war
 
 	is_triggered_only = yes
 
