@@ -4,7 +4,7 @@ create_artifact_craftsman_effect = {
 		dynasty = none
 		random_traits = yes
 		historical = yes
-		flag = race_delay_flag
+		#flag = race_delay_flag
 	}
 
 	give_artifact_craftsman_stats_effect = yes
@@ -17,7 +17,6 @@ create_artifact_craftsman_with_random_culture_effect = {
 		culture = random
 		random_traits = yes
 		historical = yes
-		flag = race_delay_flag
 	}
 
 	give_artifact_craftsman_stats_effect = yes
@@ -41,9 +40,14 @@ give_artifact_craftsman_stats_effect = {
 		#Stats
 		health = 1
 
-		# Race
-		set_prev_gfx_effect = yes
-		character_event = { id = WCRAC.10 }
+		# # Race
+		# if = {
+			# limit = {
+				# has_character_flag = race_delay_flag
+			# }
+			# set_prev_gfx_effect = yes
+			# character_event = { id = WCRAC.10 }
+		# }
 
 		# Age
 		if = {
@@ -61,21 +65,52 @@ give_artifact_craftsman_stats_effect = {
 				5 = { add_age = 100 }
 			}
 		}
-		
+
+		# LvL
+		add_character_modifier = {
+			name = modifier_artifact_craftsman_level_1
+			duration = -1
+		}
+
 		# Will not marry
 		set_character_flag = ai_flag_refuse_marriage
 		set_character_flag = ai_flag_refuse_concubinage
 		set_character_flag = cannot_marry
-		add_character_modifier = {
-			modifier = will_not_marry
-			duration = -1
-		}
-		add_trait = cannot_marry
 		set_character_flag = no_court_invites
+		add_character_modifier = { modifier = will_not_marry duration = -1 }
+		add_trait = cannot_marry
+		add_trait = cannot_marry_trait
+
 	}
 }
 
+remove_artifact_craftsman_will_not_marry_effect = {
+	clr_character_flag = ai_flag_refuse_marriage
+	clr_character_flag = ai_flag_refuse_concubinage
+	clr_character_flag = cannot_marry
+	clr_character_flag = no_court_invites
+	remove_character_modifier = { modifier = will_not_marry }
+	remove_trait = cannot_marry
+	remove_trait = cannot_marry_trait
+}
+
 upgrade_artifact_craftsman_stats_effect = {
+
+	random_list = {
+		500 = {
+			trigger = {
+				NOT = { trait = midas_touched }
+			}
+
+			upgrade_education_effect = yes
+		}
+		100 = {
+			
+		}
+	}
+}
+
+chance_to_upgrade_artifact_craftsman_stats_effect = {
 	random = { # Stewardship
 		chance = 10
 		artisan_craftsmen_bloodline_increase_score = yes
@@ -103,6 +138,7 @@ upgrade_artifact_craftsman_stats_effect = {
 	}
 
 	random = { # Education
+
 		chance = 10
 		modifier = {
 			factor = 2
@@ -122,7 +158,7 @@ upgrade_artifact_craftsman_stats_effect = {
 	}
 }
 
-random_spawn_craftsman_candidates_effect = {
+random_spawn_craftsman_candidate_effect = {
 	random_list = {
 		95 = { # Craftsman
 			event_target:target_artifact_craftsman_employer = {
