@@ -752,7 +752,7 @@ character_event = {
 
 						set_character_flag = land_request_sent@event_target:target_desired_title
 
-						letter_event = { id = WCORD.9035 days = 3 }
+						letter_event = { id = WCORD.9035 days = 1 }
 					}
 				}
 			}
@@ -780,7 +780,7 @@ character_event = {
 
 						set_character_flag = land_request_sent@event_target:target_desired_title
 
-						letter_event = { id = WCORD.9035 days = 3 }
+						letter_event = { id = WCORD.9035 days = 1 }
 					}
 				}
 			}
@@ -808,7 +808,7 @@ character_event = {
 
 						set_character_flag = land_request_sent@event_target:target_desired_title
 
-						letter_event = { id = WCORD.9035 days = 3 }
+						letter_event = { id = WCORD.9035 days = 1 }
 					}
 				}
 			}
@@ -836,7 +836,7 @@ character_event = {
 
 						set_character_flag = land_request_sent@event_target:target_desired_title
 
-						letter_event = { id = WCORD.9035 days = 3 }
+						letter_event = { id = WCORD.9035 days = 1 }
 					}
 				}
 			}
@@ -970,34 +970,7 @@ letter_event = {
 
 	is_triggered_only = yes
 
-	trigger = {
-		is_playable = yes
-		
-		OR = {
-			character = event_target:target_ruler
-			is_vassal_or_below = event_target:target_ruler
-		}
-	}
-	
-	fail_trigger_effect = {
-		log = "(ORDER) WCORD.9035 couldn't fire for [Root.GetBestName], [target_ruler.GetBestName] is target_ruler"
-		
-		if = {
-			limit = { character = event_target:target_ruler }
-			clr_character_flag = land_request_sent@event_target:target_desired_title
-		}
-		else_if = {	# Liege (who got this letter) isn't liege or isn't landed anymore, so sends letter again to actual top liege
-			limit = { event_target:target_ruler = { independent = no } }
-			event_target:target_ruler = { top_liege = { letter_event = { id = WCORD.9035 days = 3 } } }
-		}
-		else = { # Ruler somehow became independent, so... just sells lands
-			ruler_sell_land_to_holy_order_effect = yes
-		}
-	}
-
 	immediate = {
-		log = "(ORDER) WCORD.9035 fired for [Root.GetBestName], [target_ruler.GetBestName] is target_ruler"
-		
 		if = {
 			limit = { character = event_target:target_ruler }
 			clr_character_flag = land_request_sent@event_target:target_desired_title
@@ -1012,8 +985,7 @@ letter_event = {
 			ruler_sell_land_to_holy_order_effect = yes
 		}
 
-		# Sends this event to top liege
-		top_liege = { letter_event = { id = WCORD.9035 days = 3 } }
+		liege = { letter_event = { id = WCORD.9035 } }
 	}
 
 	option = {
@@ -1026,14 +998,15 @@ letter_event = {
 	option = {
 		name = DECLINE
 
-		if = {
-			limit = { NOT = { character = event_target:target_ruler } }
-			event_target:target_ruler = { letter_event = { id = WCORD.9036 days = 3 } }
-		}
+		event_target:target_ruler = { letter_event = { id = WCORD.9036 } }
 
 		ai_chance = {
 			factor = 0
 		}
+	}
+
+	after = {
+
 	}
 }
 # Liege says no
