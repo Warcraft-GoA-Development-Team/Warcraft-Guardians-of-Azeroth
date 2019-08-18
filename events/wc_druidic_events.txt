@@ -1,17 +1,19 @@
 namespace = WCDRU
 #####################################
 #
-#	WCDRU.1 - WCDRU.5999 - Worgens
+#	WCDRU.1 - WCDRU.5999 - Worgen
 #
 #####################################
 
+
 ### Fury of the Wolf ###
-### You got war troubles, help is needed, worgens seem legit
+
+### You got war troubles, help is needed, worgen seem legit - mage version
 # Picks characters
 character_event = {
-	id = WCDRU.299
+	id = WCDRU.298
 	
-	is_triggered_only = yes
+	#is_triggered_only = yes
 	hide_window = yes
 	
 	only_playable = yes
@@ -23,13 +25,25 @@ character_event = {
 	trigger = {
 		fury_of_wolf_human_event_trigger = yes
 		
-		NOT = { has_global_flag = ongoing_fury_of_wolf_chain_flag }
-		
-		is_primary_war_defender = yes
+		AND = { 
+			NOT = { has_global_flag = ongoing_fury_of_wolf_chain_flag }
+			OR = { 
+				any_courtier_or_vassal = { has_artifact = book_of_ur }
+				NOT = { has_dlc = "Mystics" }
+			}
+			OR = { 
+				is_primary_war_defender = yes
+				any_neighbor_independent_ruler = { culture = scourge }
+			}
+		}
 	}
 	
 	weight_multiplier = {
-		days = 1
+		days = 1800
+		modifier = {
+			factor = 10
+			any_neighbor_independent_ruler = { culture = scourge }
+		}
 		modifier = {
 			factor = 2
 			any_war = { war_score = -50 }
@@ -45,7 +59,7 @@ character_event = {
 		
 		set_global_flag = ongoing_fury_of_wolf_chain_flag
 		
-		# If you're mage, fires for you
+		# If you're a mage, fires for you
 		if = {
 			limit = {
 				OR = {
@@ -55,6 +69,10 @@ character_event = {
 					is_loa_priest_class_trigger = yes
 				}
 				is_5_6_magic_class_trigger = yes
+				OR = { 
+					NOT = { has_dlc = "Mystics" }
+					has_artifact = book_of_ur 
+				}
 			}
 			save_event_target_as = target_mage
 		}
@@ -85,7 +103,7 @@ character_event = {
 					is_5_6_magic_class_trigger = yes
 				}
 				preferred_limit = {
-					trait = cynical
+					has_artifact = book_of_ur 
 				}
 				
 				save_event_target_as = target_mage
@@ -111,7 +129,125 @@ character_event = {
 		73 = { province_event = { id = WCDRU.340 days = 365 } }
 	}
 }
-# Starts story
+### You got war troubles, help is needed, worgen seem legit - druid version
+# Picks characters
+character_event = {
+	id = WCDRU.299
+	
+	#is_triggered_only = yes
+	hide_window = yes
+	
+	only_playable = yes
+	min_age = 16
+	only_capable = yes
+	prisoner = no
+	only_independent = yes
+	
+	trigger = {
+		fury_of_wolf_human_event_trigger = yes
+		
+		AND = {
+			NOT = { has_global_flag = ongoing_fury_of_wolf_chain_flag }
+			OR = { 
+				any_courtier_or_vassal = { has_artifact = scythe_of_elune }
+				NOT = { has_dlc = "Mystics" }
+			}
+			is_primary_war_defender = yes
+		}
+	}
+	
+	weight_multiplier = {
+		days = 1800
+		modifier = {
+			factor = 10
+			has_artifact = scythe_of_elune
+		}
+		modifier = {
+			factor = 2
+			any_war = { war_score = -50 }
+		}
+		modifier = {
+			factor = 2
+			any_war = { war_score = -25 }
+		}
+	}
+	
+	immediate = {
+		save_event_target_as = target_liege
+		
+		set_global_flag = ongoing_fury_of_wolf_chain_flag
+		
+		# If you're a druid, fires for you
+		if = {
+			limit = {
+				OR = {
+					is_mage_class_trigger = yes
+					is_shaman_class_trigger = yes
+					is_druid_class_trigger = yes
+					is_loa_priest_class_trigger = yes
+				}
+				is_5_6_druid_class_trigger = yes
+				OR = { 
+					NOT = { has_dlc = "Mystics" }
+					has_artifact = scythe_of_elune 
+				}
+			}
+			save_event_target_as = target_mage
+		}
+		else_if = {
+			limit = {
+				any_courtier = {
+					fury_of_wolf_human_event_trigger = yes
+					
+					OR = {
+						is_mage_class_trigger = yes
+						is_shaman_class_trigger = yes
+						is_druid_class_trigger = yes
+						is_loa_priest_class_trigger = yes
+					}
+					is_5_6_druid_class_trigger = yes
+				}
+			}
+			random_courtier = {
+				limit = {
+					fury_of_wolf_human_event_trigger = yes
+					
+					OR = {
+						is_mage_class_trigger = yes
+						is_shaman_class_trigger = yes
+						is_druid_class_trigger = yes
+						is_loa_priest_class_trigger = yes
+					}
+					is_5_6_druid_class_trigger = yes
+				}
+				preferred_limit = {
+					has_artifact = scythe_of_elune
+				}
+				
+				save_event_target_as = target_mage
+			}
+		}
+		else = {
+			create_character = {
+				dynasty = none
+				religion = ROOT culture = ROOT
+				age = 50
+				trait = class_druid_7
+				trait = cynical trait = erudite trait = quick trait = arbitrary
+				random_traits = yes
+			}
+			new_character = {
+				save_event_target_as = target_mage
+			}
+		}
+		
+		event_target:target_mage = { narrative_event = { id = WCDRU.301 } }
+		
+		# Cleanup
+		73 = { province_event = { id = WCDRU.340 days = 365 } }
+	}
+}
+# Starts story - mage version
 narrative_event = {
 	id = WCDRU.300
 	title = EVTTITLE_WCDRU_300
@@ -148,7 +284,44 @@ narrative_event = {
 		}
 	}
 }
-# Suggests liege use worgens against enemies
+# Starts story - druid version
+narrative_event = {
+	id = WCDRU.301
+	title = EVTTITLE_WCDRU_300
+	desc = EVTDESC_WCDRU_301
+	picture = GFX_evt_emerald_dream
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+
+	option = {
+		trigger = { independent = no }
+		name = EVTOPTA_WCDRU_300
+
+		top_liege = { narrative_event = { id = WCDRU.305 days = 3 } }
+	}
+	option = {
+		trigger = { independent = yes }
+		name = EVTOPTB_WCDRU_300
+
+		narrative_event = { id = WCDRU.320 days = 7 }
+	}
+	option = {
+		name = EVTOPTC_WCDRU_300
+		
+		custom_tooltip = {
+			text = stops_the_event_chain
+			hidden_effect = {
+				clr_global_flag = ongoing_fury_of_wolf_chain_flag
+			}
+		}
+		
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+# Suggests liege use worgen against enemies
 narrative_event = {
 	id = WCDRU.305
 	title = EVTTITLE_WCDRU_300
@@ -239,7 +412,7 @@ narrative_event = {
 		}
 	}
 }
-# You summoned worgens...
+# You summoned worgen...
 narrative_event = {
 	id = WCDRU.320
 	title = EVTTITLE_WCDRU_300
@@ -286,7 +459,7 @@ narrative_event = {
 			location = { save_event_target_as = target_province }
 		}
 		
-		set_global_flag = worgens_in_azeroth_flag
+		set_global_flag = worgen_in_azeroth_flag
 		
 		create_character = {
 			name = "Ralaar"
@@ -368,7 +541,7 @@ province_event = {
 	
 	immediate = {
 		if = {
-			limit = { NOT = { has_global_flag = worgens_in_azeroth_flag } }
+			limit = { NOT = { has_global_flag = worgen_in_azeroth_flag } }
 			clr_global_flag = ongoing_fury_of_wolf_chain_flag
 		}
 	}
@@ -383,7 +556,7 @@ character_event = {
 	
 	only_playable = yes
 	only_independent = yes
-	has_global_flag = worgens_in_azeroth_flag
+	has_global_flag = worgen_in_azeroth_flag
 	
 	trigger = {
 		# Warcraft
@@ -851,7 +1024,7 @@ character_event = {
 }
 
 # on_siege_over_winner
-# Mindless worgens occupies a holding
+# Mindless worgen occupies a holding
 character_event = {
 	id = WCDRU.5000
 	
@@ -910,7 +1083,7 @@ character_event = {
 		}
 	}
 }
-# Notification about worgens in province
+# Notification about worgen in province
 character_event = {
 	id = WCDRU.5005
 	desc = EVTDESC_WCDRU_5005
