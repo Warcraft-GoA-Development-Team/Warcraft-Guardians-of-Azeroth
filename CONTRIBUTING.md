@@ -10,7 +10,7 @@ events.
 5. **ALWAYS** add a list of changes (Changelog:) of your branch in the pull request.
 6. Describe commits clearly, so that the commit can be used to compile larger logs and patch notes.
 7. If you want to commit changes that **aren't yours**, **completely generated**, or are moved from one place to another, please write in "(GDC)" at the end of your commit message and label your pull request appropriately.
-8. CK2 KofA.xml is a language file that can be used in the Notepad++ to help you with the language syntax
+8. CK2 Language.xml is a language file that can be used in the Notepad++ to help you with the language syntax
       - If you are using Atom editor in conjunction with Git/GitHub Desktop, install the language pack (https://atom.io/package/language-crusader-kings--i-i)
         
 ### Rules for Adding Flags and Coat of Arms:
