@@ -8,126 +8,7 @@ namespace = WCDRU
 
 ### Fury of the Wolf ###
 
-### You got war troubles, help is needed, worgen seem legit - mage version
-# Picks characters
-character_event = {
-	id = WCDRU.298
-	
-	is_triggered_only = yes
-	hide_window = yes
-	
-	only_playable = yes
-	min_age = 16
-	only_capable = yes
-	prisoner = no
-	only_independent = yes
-	
-	trigger = {
-		fury_of_wolf_human_event_trigger = yes
-		
-		NOT = { has_global_flag = ongoing_fury_of_wolf_chain_flag }
-		OR = { 
-			any_courtier_or_vassal = { has_artifact = book_of_ur }
-			NOT = { has_dlc = "Mystics" }
-		}
-		OR = { 
-			is_primary_war_defender = yes
-			any_neighbor_independent_ruler = { religion = death_god }
-		}
-	}
-	
-	weight_multiplier = {
-		days = 1800
-		modifier = {
-			factor = 10
-			any_neighbor_independent_ruler = { religion = death_god }
-		}
-		modifier = {
-			factor = 2
-			any_war = { war_score = -50 }
-		}
-		modifier = {
-			factor = 2
-			any_war = { war_score = -25 }
-		}
-	}
-	
-	immediate = {
-		save_event_target_as = target_liege
-		
-		set_global_flag = ongoing_fury_of_wolf_chain_flag
-		
-		# If you're a mage, fires for you
-		if = {
-			limit = {
-				OR = {
-					is_mage_class_trigger = yes
-					is_shaman_class_trigger = yes
-					is_druid_class_trigger = yes
-					is_loa_priest_class_trigger = yes
-				}
-				is_5_6_magic_class_trigger = yes
-				OR = { 
-					NOT = { has_dlc = "Mystics" }
-					has_artifact = book_of_ur 
-				}
-			}
-			save_event_target_as = target_mage
-		}
-		else_if = {
-			limit = {
-				any_courtier = {
-					fury_of_wolf_human_event_trigger = yes
-					
-					OR = {
-						is_mage_class_trigger = yes
-						is_shaman_class_trigger = yes
-						is_druid_class_trigger = yes
-						is_loa_priest_class_trigger = yes
-					}
-					is_5_6_magic_class_trigger = yes
-				}
-			}
-			random_courtier = {
-				limit = {
-					fury_of_wolf_human_event_trigger = yes
-					
-					OR = {
-						is_mage_class_trigger = yes
-						is_shaman_class_trigger = yes
-						is_druid_class_trigger = yes
-						is_loa_priest_class_trigger = yes
-					}
-					is_5_6_magic_class_trigger = yes
-				}
-				preferred_limit = {
-					has_artifact = book_of_ur 
-				}
-				
-				save_event_target_as = target_mage
-			}
-		}
-		else = {
-			create_character = {
-				dynasty = none
-				religion = ROOT culture = dalaranian
-				age = 50
-				trait = class_mage_7
-				trait = cynical trait = erudite trait = quick trait = arbitrary
-				random_traits = yes
-			}
-			new_character = {
-				save_event_target_as = target_mage
-			}
-		}
-		
-		event_target:target_mage = { narrative_event = { id = WCDRU.300 } }
-		
-		# Cleanup
-		73 = { province_event = { id = WCDRU.340 days = 365 } }
-	}
-}
-### You got war troubles, help is needed, worgen seem legit - druid version
+### You got war troubles, help is needed, worgen seem legit
 # Picks characters
 character_event = {
 	id = WCDRU.299
@@ -146,16 +27,24 @@ character_event = {
 		
 		NOT = { has_global_flag = ongoing_fury_of_wolf_chain_flag }
 		OR = { 
+			any_courtier_or_vassal = { has_artifact = book_of_ur }
 			any_courtier_or_vassal = { has_artifact = scythe_of_elune }
 			NOT = { has_dlc = "Mystics" }
 		}
-		is_primary_war_defender = yes
+		OR = { 
+			is_primary_war_defender = yes
+			any_neighbor_independent_ruler = { religion = death_god }
+		}
 	}
 	
 	weight_multiplier = {
 		days = 1800
 		modifier = {
-			factor = 10
+			factor = 2
+			has_artifact = book_of_ur
+		}
+		modifier = {
+			factor = 2
 			has_artifact = scythe_of_elune
 		}
 		modifier = {
@@ -165,6 +54,10 @@ character_event = {
 		modifier = {
 			factor = 2
 			any_war = { war_score = -25 }
+		}
+		modifier = {
+			factor = 10
+			any_neighbor_independent_ruler = { religion = death_god }
 		}
 	}
 	
@@ -182,9 +75,13 @@ character_event = {
 					is_druid_class_trigger = yes
 					is_loa_priest_class_trigger = yes
 				}
-				is_5_6_druid_class_trigger = yes
+				OR = { 
+					is_5_6_mage_class_trigger = yes 
+					is_5_6_druid_class_trigger = yes 
+				}
 				OR = { 
 					NOT = { has_dlc = "Mystics" }
+					has_artifact = book_of_ur 
 					has_artifact = scythe_of_elune 
 				}
 			}
@@ -201,7 +98,10 @@ character_event = {
 						is_druid_class_trigger = yes
 						is_loa_priest_class_trigger = yes
 					}
-					is_5_6_druid_class_trigger = yes
+					OR = { 
+						is_5_6_mage_class_trigger = yes 
+						is_5_6_druid_class_trigger = yes 
+					}
 				}
 			}
 			random_courtier = {
@@ -214,10 +114,16 @@ character_event = {
 						is_druid_class_trigger = yes
 						is_loa_priest_class_trigger = yes
 					}
-					is_5_6_druid_class_trigger = yes
+					OR = { 
+						is_5_6_mage_class_trigger = yes 
+						is_5_6_druid_class_trigger = yes 
+					}
 				}
 				preferred_limit = {
-					has_artifact = scythe_of_elune
+					OR = { 
+						has_artifact = scythe_of_elune 
+						has_artifact = book_of_ur 
+					}
 				}
 				
 				save_event_target_as = target_mage
@@ -228,7 +134,7 @@ character_event = {
 				dynasty = none
 				religion = ROOT culture = ROOT
 				age = 50
-				trait = class_druid_7
+				trait = class_mage_7
 				trait = cynical trait = erudite trait = quick trait = arbitrary
 				random_traits = yes
 			}
