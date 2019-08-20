@@ -318,7 +318,7 @@ offmap_decisions = {
 			trigger_else = {
 				FROM = {
 					has_offmap_currency = { offmap = offmap_yoggsaron value = 1000 }
-					yoggsaron_offmap_decisions_enabled_trigger = yes
+					yogg_saron_offmap_decisions_enabled_trigger = yes
 				}
 			}
 		}
@@ -443,14 +443,6 @@ offmap_decisions = {
 				FROM = {
 					has_offmap_currency = { offmap = offmap_cthun value = 1000 }
 					cthun_offmap_decisions_enabled_trigger = yes
-					OR = {
-						offmap_cthun = {
-							has_policy = old_god_working
-						}
-						offmap_cthun = {
-							has_policy = old_god_black_empire
-						}
-					}
 				}
 			}
 			trigger_else_if = {
@@ -458,28 +450,12 @@ offmap_decisions = {
 				FROM = {
 					has_offmap_currency = { offmap = offmap_nzoth value = 1000 }
 					nzoth_offmap_decisions_enabled_trigger = yes
-					OR = {
-						offmap_nzoth = {
-							has_policy = old_god_working
-						}
-						offmap_nzoth = {
-							has_policy = old_god_black_empire
-						}
-					}
 				}
 			}
 			trigger_else = {
 				FROM = {
 					has_offmap_currency = { offmap = offmap_yoggsaron value = 1000 }
-					yoggsaron_offmap_decisions_enabled_trigger = yes
-					OR = {
-						offmap_yoggsaron = {
-							has_policy = old_god_working
-						}
-						offmap_yoggsaron = {
-							has_policy = old_god_black_empire
-						}
-					}
+					yogg_saron_offmap_decisions_enabled_trigger = yes
 				}
 			}
 		}
@@ -496,7 +472,7 @@ offmap_decisions = {
 					if = {
 						limit = {
 							offmap_cthun = {
-								has_policy = old_god_working
+								has_policy = old_god_plotting
 							}
 						}
 						character_event = { id = WCOME.20 }
@@ -518,7 +494,7 @@ offmap_decisions = {
 					if = {
 						limit = {
 							offmap_nzoth = {
-								has_policy = old_god_working
+								has_policy = old_god_plotting
 							}
 						}
 						character_event = { id = WCOME.21 }
@@ -537,7 +513,7 @@ offmap_decisions = {
 					if = {
 						limit = {
 							offmap_yoggsaron = {
-								has_policy = old_god_working
+								has_policy = old_god_plotting
 							}
 						}
 						character_event = { id = WCOME.22 }
@@ -594,7 +570,7 @@ offmap_decisions = {
 			trigger_else = {
 				FROM = {
 					has_offmap_currency = { offmap = offmap_yoggsaron value = 750 }
-					yoggsaron_offmap_decisions_enabled_trigger = yes
+					yogg_saron_offmap_decisions_enabled_trigger = yes
 					lacks_offmap_power_trigger = yes
 				}
 			}
@@ -650,6 +626,93 @@ offmap_decisions = {
 				}
 			}
 			FROM = { hidden_effect = { set_character_flag = requested_offmap_power } }
+		}
+		ai_will_do = {
+			factor = 1
+			modifier = {
+				factor = 0.3 # slow down
+			}
+		}
+	}
+	request_elementium_offmap = {
+		only_playable = yes
+		button_name = offmap_boons
+		
+		ai_check_interval = 36
+
+		potential = {
+			OR = {
+				is_offmap_tag = offmap_cthun
+				is_offmap_tag = offmap_nzoth
+				is_offmap_tag = offmap_yoggsaron
+			}
+		}
+		from_potential = {
+			has_dlc = "Jade Dragon"
+			mercenary = no
+			holy_order = no
+			is_landed = yes
+		}
+		allow = {
+			trigger_if = {
+				limit = { is_offmap_tag = offmap_cthun }
+				FROM = {
+					has_offmap_currency = { offmap = offmap_cthun value = 1000 }
+					cthun_offmap_decisions_enabled_trigger = yes
+				}
+			}
+			trigger_else_if = {
+				limit = { is_offmap_tag = offmap_nzoth }
+				FROM = {
+					has_offmap_currency = { offmap = offmap_nzoth value = 1000 }
+					nzoth_offmap_decisions_enabled_trigger = yes
+				}
+			}
+			trigger_else = {
+				FROM = {
+					has_offmap_currency = { offmap = offmap_yoggsaron value = 1000 }
+					yogg_saron_offmap_decisions_enabled_trigger = yes
+				}
+			}
+			FROM = {
+				NOT = { has_character_modifier = twilight_architecture }
+				religion = old_gods_worship
+			}
+		}
+		effect = {
+			if = {
+				limit = {
+					is_offmap_tag = offmap_cthun
+				}
+				FROM = {
+					add_offmap_currency = {
+						offmap = offmap_cthun
+						value = -1000
+					}
+					add_character_modifier = { name = twilight_architecture years = 5 }
+				}
+			}
+			else_if = {
+				limit = {
+					is_offmap_tag = offmap_nzoth
+				}
+				FROM = {
+					add_offmap_currency = {
+						offmap = offmap_nzoth
+						value = -1000
+					}
+					add_character_modifier = { name = twilight_architecture years = 5 }
+				}
+			}
+			else = {
+				FROM = {
+					add_offmap_currency = {
+						offmap = offmap_yoggsaron
+						value = -1000
+					}
+					add_character_modifier = { name = twilight_architecture years = 5 }
+				}
+			}
 		}
 		ai_will_do = {
 			factor = 1
