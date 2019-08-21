@@ -96,6 +96,13 @@ total_invasion_cb_rev_effect = {
 		}
 	}
 
+
+	if = {
+		limit = { has_landed_title = e_burning_legion }
+		narrative_event = { id = WCFEL.1010 }
+	}
+
+
 	# Just for sure
 	hidden_effect = {
 		any_demesne_title = {
@@ -121,8 +128,8 @@ give_holdings_under_title_effect = {
 			limit = {
 				holder_scope = {
 					OR = {
-						character = event_target:target_attacker 
-						is_liege_or_above = event_target:target_attacker 
+						character = event_target:target_attacker
+						is_liege_or_above = event_target:target_attacker
 					}
 				}
 			}
@@ -144,6 +151,43 @@ give_to_claimant_effect = {
 			limit = {
 				kingdom = {
 					OR = {
+						holder_scope = {
+							is_untouchable_trigger = no
+
+							NOR = {
+								character = event_target:target_attacker
+								same_realm = event_target:target_attacker
+							}
+
+							NOT = { has_landed_title = event_target:target_title }
+						}
+						any_claimant = {
+							is_untouchable_trigger = no
+							evil_public_religion_trigger = no
+							NAND = {
+								draenor_culture_trigger = yes
+								has_global_flag = orcish_invasion_flag
+							}
+
+							NOR = {
+								character = event_target:target_attacker
+								same_realm = event_target:target_attacker
+							}
+
+							is_lowborn = no
+							NOT = { has_landed_title = event_target:target_title }
+
+							# To make sure
+							event_target:target_title = {
+								holder_scope = {
+									OR = {
+										character = event_target:target_attacker
+										same_realm = event_target:target_attacker
+									}
+								}
+							}
+						}
+
 						has_holder_claimant_trigger = yes
 						has_landless_claimant_trigger = yes
 					}
@@ -151,7 +195,7 @@ give_to_claimant_effect = {
 			}
 			kingdom = {
 				save_event_target_as = target_new_realm
-				
+
 				if = {
 					limit = {
 						has_holder_claimant_trigger = yes
@@ -173,7 +217,7 @@ give_to_claimant_effect = {
 			}
 			dejure_liege_title = {
 				save_event_target_as = target_new_realm
-				
+
 				if = {
 					limit = {
 						has_holder_claimant_trigger = yes
@@ -191,15 +235,15 @@ give_to_holder_claimant_effect = {
 	holder_scope = {
 		log = "(Great War) [This.GetBestName] was chosen as new king of [target_title.GetFullBaseName]"
 		save_event_target_as = target_new_ruler
-		
+
 		give_holdings_under_title_effect = yes
 		grant_title_no_opinion = { target = event_target:target_title type = claim }
-		
+
 		if = {
 			limit = { primary_title = { capital_scope = { province = event_target:target_location } } }
 			capital = event_target:target_title
 		}
-		
+
 		spawn_target_new_ruler_troops_effect = yes
 
 		# set_defacto_liege = THIS
@@ -226,6 +270,48 @@ give_to_landless_claimant_effect = {
 			save_event_target_as = target_new_ruler
 			save_event_target_as = target_settler
 
+						grant_title_no_opinion = { target = event_target:target_title type = claim }
+						gain_settlements_under_title = {
+							title = event_target:target_title
+							enemy = event_target:target_attacker
+							is_crusade = yes # Even if the title holder is not participating in the war, gain holdings occupied by all Crusade participants
+							type = invasion
+						}
+
+						event_target:target_title = {
+							kingdom = {
+								if = {
+									limit = {
+										has_holder = yes
+										holder_scope = { NOT = { character = event_target:target_new_ruler } }
+									}
+									destroy_landed_title = THIS
+								}
+								grant_title_no_opinion = { target = event_target:target_new_ruler type = claim }
+							}
+						}
+
+						if = {
+							limit = {
+								NOT = { government = feudal_government }
+								is_government_potential = feudal_government
+							}
+							set_government_type = feudal_government
+						}
+
+						spawn_unit = {
+							owner = event_target:target_new_ruler
+							province = event_target:target_location
+							home = event_target:target_location
+							troops = {
+								archers = { 70 70 }
+								heavy_infantry = { 275 275 }
+								light_cavalry = { 40 40 }
+							}
+							attrition = 1.0
+							reinforces = no
+							maintenance = no
+						}
 			if = {
 				limit = {
 					is_ruler = yes
@@ -234,7 +320,7 @@ give_to_landless_claimant_effect = {
 				}
 				abdicate = yes
 			}
-		
+
 			# target_settler build new holding or usurp existing one
 			event_target:target_title = { location = { build_or_give_holding_to_target_settler_effect = yes } }
 
@@ -252,6 +338,48 @@ give_to_landless_claimant_effect = {
 				grant_title_no_opinion = { target = event_target:target_new_ruler type = claim }
 			}
 
+						grant_title_no_opinion = { target = event_target:target_title type = claim }
+						gain_settlements_under_title = {
+							title = event_target:target_title
+							enemy = event_target:target_attacker
+							is_crusade = yes # Even if the title holder is not participating in the war, gain holdings occupied by all Crusade participants
+							type = invasion
+						}
+
+						event_target:target_title = {
+							kingdom = {
+								if = {
+									limit = {
+										has_holder = yes
+										holder_scope = { NOT = { character = event_target:target_new_ruler } }
+									}
+									destroy_landed_title = THIS
+								}
+								grant_title_no_opinion = { target = event_target:target_new_ruler type = claim }
+							}
+						}
+
+						if = {
+							limit = {
+								NOT = { government = feudal_government }
+								is_government_potential = feudal_government
+							}
+							set_government_type = feudal_government
+						}
+
+						spawn_unit = {
+							owner = event_target:target_new_ruler
+							province = event_target:target_location
+							home = event_target:target_location
+							troops = {
+								archers = { 70 70 }
+								heavy_infantry = { 275 275 }
+								light_cavalry = { 40 40 }
+							}
+							attrition = 1.0
+							reinforces = no
+							maintenance = no
+						}
 			spawn_target_new_ruler_troops_effect = yes
 
 			set_defacto_liege = THIS
@@ -274,12 +402,12 @@ give_to_spawned_claimant_effect = {
 			log = "(Great War) [This.GetBestName] was chosen as new king of [target_title.GetFullBaseName]"
 			save_event_target_as = target_new_ruler
 			save_event_target_as = target_settler
-			
+
 			if = {
 				limit = { evil_public_religion_trigger = yes }
 				random = {
 					chance = 66
-					
+
 					if = {
 						limit = { religion = burning_legion_religion }
 						religion = illidari
@@ -294,7 +422,7 @@ give_to_spawned_claimant_effect = {
 					}
 				}
 			}
-			
+
 			# target_settler build new holding or usurp existing one
 			event_target:target_title = { location = { build_or_give_holding_to_target_settler_effect = yes } }
 
@@ -325,10 +453,9 @@ spawn_target_new_ruler_troops_effect = {
 		home = event_target:target_location
 		troops = {
 			archers = { 65 65 }
-			light_infantry = { 100 100 }
-			heavy_infantry = { 125 125 }
+			heavy_infantry = { ‭475‬ ‭475‬ }
 			light_cavalry = { 15 15 }
-			knights = { 25 25 }
+			light_infantry = { 25 25 }
 		}
 		attrition = 1.0
 		maintenance = no
