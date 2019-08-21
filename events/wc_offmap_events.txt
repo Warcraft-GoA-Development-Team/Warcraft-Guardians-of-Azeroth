@@ -1488,7 +1488,8 @@ character_event = {
 				b_ahnqiraj = {
 					add_building = ca_old_god_1
 				}
-				2956 = { province_event = { id = WCVOD.1000 } }
+				set_global_flag = reawakening_of_cthun_flag
+				2956 = { province_event = { id = WCOME.350 } }
 				break = yes
 			}
 			if = {
@@ -1499,6 +1500,169 @@ character_event = {
 				}
 			}
 		}
-		
+		if = {
+			limit = { nzoth_offmap_decisions_enabled_trigger = yes }
+			if = {
+				limit = { offmap_nzoth = { has_status = old_god_imprisoned } }
+				offmap_nzoth = { set_status = old_god_partly_imprisoned }
+				break = yes
+			}
+			if = {
+				limit = { offmap_nzoth = { has_status = old_god_partly_imprisoned } }
+				offmap_nzoth = { set_status = old_god_partly_free }
+				b_sagehold = {
+					add_building = ca_old_god_1
+				}
+				set_global_flag = reawakening_of_nzoth_flag
+				2956 = { province_event = { id = WCOME.350 } }
+				break = yes
+			}
+			if = {
+				limit = { offmap_nzoth = { has_status = old_god_partly_free } }
+				offmap_nzoth = { set_status = old_god_free }
+				b_sagehold = {
+					add_building = ca_old_god_2
+				}
+			}
+		}
+	}
+}
+### The Reawakening of C'thun ###
+# Ping event
+province_event = {
+	id = WCOME.350
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	trigger = {
+	}
+
+	immediate = {
+		# if = {
+			# limit = { has_global_flag = reawakening_of_cthun_flag }
+			# b_ahnqiraj = {
+					# holder_scope = { narrative_event = { id = WCOME.360 } }
+			# }
+		# }
+		if = {
+			limit = { has_global_flag = reawakening_of_nzoth_flag }
+			b_sagehold = {
+					holder_scope = { narrative_event = { id = WCOME.360 } }
+			}
+		}
+	}
+}
+# Main event
+narrative_event = {
+	id = WCOME.360
+	title = EVTTITLE_WCOME.360
+	desc = {
+       trigger = { ROOT = { has_character_modifier = follower_of_cthun } }
+       text = EVTDESC_WCOME.360
+       picture = GFX_evt_cthun
+    }
+	desc = {
+       trigger = { ROOT = { has_character_modifier = follower_of_yogg_saron } }
+       text = EVTDESC_WCOME.360
+       picture = GFX_evt_yogg_saron
+    }
+	desc = {
+       trigger = { ROOT = { has_character_modifier = follower_of_nzoth } }
+       text = EVTDESC_WCOME.360
+       picture = GFX_evt_nzoth
+    }
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+
+	major = yes
+	major_trigger = {
+		ai = no
+	}
+	show_root = yes
+
+	immediate = {
+		2956 = { save_event_target_as = target_province }
+	}
+
+	# The Qiraji will devour them all!
+	option = {
+		trigger = { true_religion = old_gods_worship }
+		name = EVTOPTA_WCOME.360
+
+		if = {
+			limit = {
+				character = ROOT
+				cthun_offmap_decisions_enabled_trigger = yes
+			}
+			
+			# Gives gold
+			wealth = 1000
+			
+			# Spawns troops
+			spawn_qiraji_troops_effect = yes
+			spawn_qiraji_troops_effect = yes
+			spawn_qiraji_troops_effect = yes
+			spawn_qiraji_troops_effect = yes
+			if = {		# Gives troops and gold to another Twin Emperor
+				limit = {
+					k_ahnqiraj = {
+						holder_scope = {
+							reawakening_of_cthun_qiraji_event_trigger = yes
+						}
+					}
+				}
+				k_ahnqiraj = {
+					holder_scope = {
+						# Gives gold
+						wealth = 500
+						
+						# Spawns troops
+						spawn_qiraji_troops_effect = yes
+						spawn_qiraji_troops_effect = yes
+					}
+				}
+			}
+			else = {
+				spawn_qiraji_troops_effect = yes
+				spawn_qiraji_troops_effect = yes
+			}
+			
+		}
+		if = {
+			limit = {
+				character = ROOT
+				nzoth_offmap_decisions_enabled_trigger = yes
+			}
+			
+			# Gives gold
+			wealth = 1000
+			# Spawns troops
+			spawn_unit = {
+				owner = ROOT
+				province = capital_scope
+				home = capital_scope
+				troops = {
+					light_infantry = { 5000 5000 }
+					heavy_infantry = { 2000 2000 }
+					casters = { 1000 1000 }
+				}
+				attrition = 0
+				maintenance_multiplier = 0
+			}
+			spawn_fleet = {
+				province = closest
+				owner = ROOT
+				troops = {
+					galleys = { 150 150 }
+				}
+			}	
+		}
+	}
+	# The ancient evil must remain in confinement!
+	option = {
+		trigger = { NOT = { true_religion = old_gods_worship } }
+		name = EVTOPTB_WCFEL_1005
 	}
 }
