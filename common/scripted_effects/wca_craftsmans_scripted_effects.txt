@@ -1,0 +1,419 @@
+create_artifact_craftsman_effect = {
+	create_random_steward = {
+		female = no
+		dynasty = none
+		random_traits = yes
+		historical = yes
+	}
+	new_character = {
+		give_artifact_craftsman_stats_effect = yes
+	}
+}
+
+create_artifact_craftsman_with_random_culture_effect = {
+	create_random_steward = {
+		female = no
+		dynasty = none
+		culture = random
+		random_traits = yes
+		historical = yes
+	}
+	new_character = {
+		give_artifact_craftsman_stats_effect = yes
+
+		upgrade_artifact_craftsman_stats_effect = yes
+	}
+}
+
+give_artifact_craftsman_stats_effect = {
+	new_character = {
+
+		#Stats
+		health = 1
+
+		# Age
+		if = {
+			limit = {
+				immortal = yes
+			}
+
+			random_list = {
+				5 = { add_age = 40 }
+				5 = { add_age = 50 }
+				5 = { add_age = 60 }
+				5 = { add_age = 70 }
+				5 = { add_age = 80 }
+				5 = { add_age = 90 }
+				5 = { add_age = 100 }
+			}
+		}
+
+		# Traits
+		remove_trait = imbecile
+		remove_trait = slow
+		remove_trait = dull
+		remove_lifestyle_trait_effect = yes
+
+		#Type
+		event_target:target_artifact_craftsman_employer = {
+			trigger_switch = {
+				on_trigger = has_character_flag
+
+				bought_from_blacksmith = {
+					new_character = {
+						set_character_flag = is_blacksmith_craftsman_flag
+						add_trait = craftsman_blacksmith_1
+					}
+				}
+				bought_from_tailor = {
+					new_character = {
+						set_character_flag = is_tailor_craftsman_flag
+						add_trait = craftsman_tailor_1
+					}
+				}
+				bought_from_jeweler = {
+					new_character = {
+						set_character_flag = is_jeweler_craftsman_flag
+						add_trait = craftsman_jeweler_1
+					}
+				}
+				bought_from_engineer = {
+					new_character = {
+						set_character_flag = is_engineer_craftsman_flag
+						add_trait = craftsman_engineer_1
+					}
+				}
+			}
+		}
+
+		# LvL
+		set_variable = { which = wc_artifact_craftsman_experience_variable value = 1 } # Base LvL
+
+		if = {
+			limit = {
+				is_dumb_trigger = no
+			}
+
+			if = { # Immortals are retarded - made by mortal gang
+				limit = {
+					immortal = no
+				}
+
+				chance_to_upgrade_artifact_craftsman_stats_effect = yes
+			}
+
+			# LvLs for Smartasses
+			chance_to_upgrade_artifact_craftsman_stats_effect = yes
+			chance_to_upgrade_artifact_craftsman_stats_effect = yes
+		}
+
+		## LvL from personality
+		if = { # Hard worker - Diligent
+			limit ={
+				trait = diligent
+			}
+
+			chance_to_upgrade_artifact_craftsman_stats_effect = yes
+		}
+
+		if = { # Hard worker - Ambitious
+			limit ={
+				trait = ambitious
+				NOT = { trait = slothful }
+			}
+
+			chance_to_upgrade_artifact_craftsman_stats_effect = yes
+		}
+		### Special cases
+		if = { # Crazy Genius
+			limit = {
+				trait = lunatic
+				trait = genius
+			}
+
+			upgrade_artifact_craftsman_stats_effect = yes
+		}
+
+		if = { # Obsessed with work
+			limit = {
+				trait = possessed
+				OR = {
+					trait = diligent
+					trait = ambitious
+				}
+				NOT = {
+					trait = slothful
+					trait = content
+				}
+			}
+
+			upgrade_artifact_craftsman_stats_effect = yes
+		}
+
+		if = { # Drunken Master
+			limit ={
+				trait = drunkard
+				trait = diligent
+			}
+
+			upgrade_artifact_craftsman_stats_effect = yes
+		}
+
+		# Will not marry
+		set_character_flag = ai_flag_refuse_marriage
+		set_character_flag = ai_flag_refuse_concubinage
+		set_character_flag = cannot_marry
+		set_character_flag = no_court_invites
+		add_character_modifier = { modifier = will_not_marry duration = -1 }
+		add_trait = cannot_marry
+		add_trait = cannot_marry_trait
+	}
+}
+
+upgrade_artifact_craftsman_stats_effect = {
+
+	if = {
+		limit = { check_variable = { which = wc_artifact_craftsman_experience_variable value <= 5 } }
+
+		actual_craftsman_lvlup_effect = yes
+	}
+
+}
+
+chance_to_upgrade_artifact_craftsman_stats_effect = {
+	if = {
+		limit = { check_variable = { which = wc_artifact_craftsman_experience_variable value <= 5 } }
+
+		random = {
+			chance = 10
+
+			modifier = {
+				factor = 2.5
+				trait = genius
+			}
+			modifier = {
+				factor = 1.5
+				trait = quick
+			}
+			modifier = {
+				factor = 1.5
+				trait = twoheaded
+			}
+			modifier = {
+				factor = 1.25
+				trait = shrewd
+			}
+			modifier = {
+				factor = 1.1
+				trait = diligent
+			}
+			modifier = {
+				factor = 1.1
+				trait = ambitious
+			}
+
+			actual_craftsman_lvlup_effect = yes
+		}
+	}
+}
+
+actual_craftsman_lvlup_effect = {
+	count_craftsman_lvl_effect = yes
+	remove_craftsman_lvl_effect = yes
+	change_variable = { which = wc_artifact_craftsman_experience_variable value = 1 }
+	recalc_craftsman_lvl_effect = yes
+}
+
+recalc_craftsman_lvl_effect = {
+	if = {
+		limit = { check_variable = { which = wc_artifact_craftsman_experience_variable value == 5 } }
+		
+		trigger_switch = {
+			on_trigger = has_character_flag
+			is_blacksmith_craftsman_flag = { add_trait = craftsman_blacksmith_5 }
+			is_tailor_craftsman_flag = { add_trait = craftsman_tailor_5 }
+			is_jeweler_craftsman_flag = { add_trait = craftsman_jeweler_5 }
+			is_engineer_craftsman_flag = { add_trait = craftsman_engineer_5 }
+		}
+	}
+	else_if = {
+		limit = { check_variable = { which = wc_artifact_craftsman_experience_variable value == 4 } }
+
+		trigger_switch = {
+			on_trigger = has_character_flag
+			is_blacksmith_craftsman_flag = { add_trait = craftsman_blacksmith_4 }
+			is_tailor_craftsman_flag = { add_trait = craftsman_tailor_4 }
+			is_jeweler_craftsman_flag = { add_trait = craftsman_jeweler_4 }
+			is_engineer_craftsman_flag = { add_trait = craftsman_engineer_4 }
+		}
+	}
+	else_if = {
+		limit = { check_variable = { which = wc_artifact_craftsman_experience_variable value == 3 } }
+
+		trigger_switch = {
+			on_trigger = has_character_flag
+			is_blacksmith_craftsman_flag = { add_trait = craftsman_blacksmith_3 }
+			is_tailor_craftsman_flag = { add_trait = craftsman_tailor_3 }
+			is_jeweler_craftsman_flag = { add_trait = craftsman_jeweler_3 }
+			is_engineer_craftsman_flag = { add_trait = craftsman_engineer_3 }
+		}
+	}
+	else_if = {
+		limit = { check_variable = { which = wc_artifact_craftsman_experience_variable value == 2 } }
+
+		trigger_switch = {
+			on_trigger = has_character_flag
+			is_blacksmith_craftsman_flag = { add_trait = craftsman_blacksmith_2 }
+			is_tailor_craftsman_flag = { add_trait = craftsman_tailor_2 }
+			is_jeweler_craftsman_flag = { add_trait = craftsman_jeweler_2 }
+			is_engineer_craftsman_flag = { add_trait = craftsman_engineer_2 }
+		}
+	}
+	else = {
+		trigger_switch = {
+			on_trigger = has_character_flag
+			is_blacksmith_craftsman_flag = { add_trait = craftsman_blacksmith_1 }
+			is_tailor_craftsman_flag = { add_trait = craftsman_tailor_1 }
+			is_jeweler_craftsman_flag = { add_trait = craftsman_jeweler_1 }
+			is_engineer_craftsman_flag = { add_trait = craftsman_engineer_1 }
+		}
+	}
+}
+
+count_craftsman_lvl_effect = {
+	if = {
+		limit = { check_variable = { which = wc_artifact_craftsman_experience_variable value < 1 } }
+		reset_craftsman_lvl_effect = yes
+
+		if = {
+			limit = { character_is_1_lvl_craftsman_trigger = yes }
+			set_variable = { which = wc_artifact_craftsman_experience_variable value = 1 }
+		}
+		else_if = {
+			limit = { character_is_2_lvl_craftsman_trigger = yes }
+			set_variable = { which = wc_artifact_craftsman_experience_variable value = 2 }
+		}
+		else_if = {
+			limit = { character_is_3_lvl_craftsman_trigger = yes }
+			set_variable = { which = wc_artifact_craftsman_experience_variable value = 3 }
+		}
+		else_if = {
+			limit = { character_is_4_lvl_craftsman_trigger = yes }
+			set_variable = { which = wc_artifact_craftsman_experience_variable value = 4 }
+		}
+		else = {
+			limit = { character_is_5_lvl_craftsman_trigger = yes }
+			set_variable = { which = wc_artifact_craftsman_experience_variable value = 5 }
+		}
+	}
+}
+
+remove_craftsman_lvl_effect = {
+	if = { limit = { trait = craftsman_blacksmith_1 }	remove_trait = craftsman_blacksmith_1	}
+	if = { limit = { trait = craftsman_blacksmith_2 }	remove_trait = craftsman_blacksmith_2	}
+	if = { limit = { trait = craftsman_blacksmith_3 }	remove_trait = craftsman_blacksmith_3	}
+	if = { limit = { trait = craftsman_blacksmith_4 }	remove_trait = craftsman_blacksmith_4	}
+	if = { limit = { trait = craftsman_blacksmith_5 }	remove_trait = craftsman_blacksmith_5	}
+
+	if = { limit = { trait = craftsman_tailor_1		}	remove_trait = craftsman_tailor_1		}
+	if = { limit = { trait = craftsman_tailor_2		}	remove_trait = craftsman_tailor_2		}
+	if = { limit = { trait = craftsman_tailor_3		}	remove_trait = craftsman_tailor_3		}
+	if = { limit = { trait = craftsman_tailor_4 	}	remove_trait = craftsman_tailor_4		}
+	if = { limit = { trait = craftsman_tailor_5		}	remove_trait = craftsman_tailor_5		}
+
+	if = { limit = { trait = craftsman_jeweler_1	}	remove_trait = craftsman_jeweler_1		}
+	if = { limit = { trait = craftsman_jeweler_2	}	remove_trait = craftsman_jeweler_2		}
+	if = { limit = { trait = craftsman_jeweler_3	}	remove_trait = craftsman_jeweler_3 		}
+	if = { limit = { trait = craftsman_jeweler_4	}	remove_trait = craftsman_jeweler_4 		}
+	if = { limit = { trait = craftsman_jeweler_5	}	remove_trait = craftsman_jeweler_5 		}
+
+	if = { limit = { trait = craftsman_engineer_1	}	remove_trait = craftsman_engineer_1		}
+	if = { limit = { trait = craftsman_engineer_2	}	remove_trait = craftsman_engineer_2		}
+	if = { limit = { trait = craftsman_engineer_3	}	remove_trait = craftsman_engineer_3		}
+	if = { limit = { trait = craftsman_engineer_4	}	remove_trait = craftsman_engineer_4		}
+	if = { limit = { trait = craftsman_engineer_5	}	remove_trait = craftsman_engineer_5		}
+}
+
+reset_craftsman_lvl_effect = {
+	set_variable = { which = wc_artifact_craftsman_experience_variable value = 0 }
+	if = {
+		limit = { character_is_blacksmith_craftsman_trigger = yes }
+		set_character_flag = is_blacksmith_craftsman_flag
+	}
+	else_if = {
+		limit = { character_is_tailor_craftsman_trigger = yes }
+		set_character_flag = is_tailor_craftsman_flag
+	}
+	else_if = {
+		limit = { character_is_jeweler_craftsman_trigger = yes }
+		set_character_flag = is_jeweler_craftsman_flag
+	}
+	else_if = {
+		limit = { character_is_engineer_craftsman_trigger = yes }
+		set_character_flag = is_engineer_craftsman_flag
+	}
+}
+
+spawn_random_craftsman_candidate_effect = {
+	random_list = {
+		95 = { # Craftsman
+			artifact_craftsman_employer_is_bad_target_for_thievery_score = yes
+
+			create_artifact_craftsman_with_random_culture_effect = yes
+		}
+		5 = { # Fraud
+			artifact_craftsman_employer_is_good_target_for_thievery_score = yes
+
+			create_artifact_craftsman_with_random_culture_effect = yes
+			new_character = {
+				set_character_flag = craftsman_is_fake
+				random = {
+					chance = 25
+
+					add_trait = deceitful
+				}
+				random_list = {
+					100 = {  }
+					50 = { change_intrigue = 1 }
+					250 = { change_intrigue = 3 }
+					50 = { change_intrigue = 5 }
+					25 = { change_intrigue = 8 }
+					5 = { change_intrigue = 10 }
+				}
+			}
+		}
+	}
+	new_character = {
+		event_target:target_artifact_craftsman_employer = {
+			export_to_variable = {
+				which = wc_artifact_craftsman_finding_realm_size_to_stats_variable
+				value = wc_artifact_craftsman_finding_realm_size_variable
+				who = PREV
+			}
+		}
+		while = {
+			limit = {
+				check_variable = {
+					which = wc_artifact_craftsman_finding_realm_size_to_stats_variable
+					value = 10
+				}
+			}
+			subtract_variable = {
+				which = wc_artifact_craftsman_finding_realm_size_to_stats_variable
+				value = 10
+			}
+			upgrade_artifact_craftsman_stats_effect = yes
+		}
+		#set_variable = { which = wc_artifact_craftsman_finding_realm_size_to_stats_variable value = 0 }
+	}
+}
+
+remove_artifact_craftsman_will_not_marry_effect = {
+	clr_character_flag = ai_flag_refuse_marriage
+	clr_character_flag = ai_flag_refuse_concubinage
+	clr_character_flag = cannot_marry
+	clr_character_flag = no_court_invites
+	remove_character_modifier = will_not_marry
+	remove_trait = cannot_marry
+	remove_trait = cannot_marry_trait
+}
