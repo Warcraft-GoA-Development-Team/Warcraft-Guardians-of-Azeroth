@@ -377,6 +377,8 @@ character_event = {
 	trigger = {
 		is_alive = yes
 		is_dying = no
+		
+		NOT = { has_character_flag = void_mutation_ongoing_flag } # Prevents multiple firing
 
 		NOT = { trait = being_void }
 
@@ -414,6 +416,8 @@ character_event = {
 	}
 
 	immediate = {
+		set_character_flag = void_mutation_ongoing_flag # Prevents multiple firing
+		
 		if = {
 			limit = { NOT = { check_variable = { which = void_mutations value = 3 } } }
 			change_variable = { which = void_mutations value = 1 }
@@ -518,7 +522,6 @@ character_event = {
 			character_event = { id = WCVOD.305 }
 		}
 		else = {
-			set_character_flag = transformation_into_nraqi_flag
 			long_character_event = { id = WCVOD.310 }
 		}
 	}
@@ -599,17 +602,29 @@ character_event = {
 		if = {
 			limit = { has_character_flag = scales_mutation_flag }
 			clr_character_flag = scales_mutation_flag
+			if = {
+				limit = { trait = maimed }
+				remove_trait = maimed
+			}
+			if = {
+				limit = { trait = mangled }
+				remove_trait = mangled
+			}
 			add_trait = scales_mutation
 		}
 		if = {
 			limit = { has_character_flag = eyes_mutation_flag }
 			clr_character_flag = eyes_mutation_flag
 			if = {
-				limit = { has_character_flag = removed_one_eyed }
+				limit = { trait = one_eyed }
 				remove_trait = one_eyed
 			}
 			add_trait = eyes_mutation
 		}
+	}
+	
+	after = {
+		clr_character_flag = void_mutation_ongoing_flag
 	}
 }
 
@@ -625,7 +640,6 @@ long_character_event = {
 	option = {
 		name = EVTOPTA_WCVOD_310
 
-		clr_character_flag = transformation_into_nraqi_flag
 		remove_racial_traits_effect = yes
 		add_trait = creature_nraqi
 		add_trait_void_creature_effect = yes
@@ -637,6 +651,10 @@ long_character_event = {
 		if = { limit = { NOT = { religion = old_gods_worship } } religion = old_gods_worship }
 		if = { limit = { NOT = { culture = nraqi } } culture = nraqi }
 		hidden_effect = { set_graphical_culture = nraqi }
+	}
+	
+	after = {
+		clr_character_flag = void_mutation_ongoing_flag
 	}
 }
 
@@ -663,6 +681,10 @@ long_character_event = {
 		if = { limit = { has_secret_religion = yes } clear_secret_religion = yes }
 		if = { limit = { NOT = { culture = nraqi } } culture = nraqi }
 		hidden_effect = { set_graphical_culture = cthraxxi }
+	}
+	
+	after = {
+		clr_character_flag = transformation_into_cthraxxi_ongoing_flag
 	}
 }
 
