@@ -25,7 +25,7 @@ narrative_event = {
 		character_event = { id = WCCLS.2152 }
 		narrative_event = {
 			id = WCCLS.100
-			days = 1460
+			years = 5
 		}
 	}
 
@@ -45,41 +45,8 @@ character_event = {
 		is_alive = yes
 		is_dying = no
 
-		OR = {
-			AND = {
-				is_1_2_magic_class_trigger = yes
-				OR = {
-					NOR = {
-						has_character_modifier = mana_1
-						has_character_modifier = mana_2
-						has_character_modifier = mana_3
-						has_character_modifier = mana_4
-						has_character_modifier = mana_5
-					}
-					has_character_flag = completely_restored_mana_flag
-				}
-			}
-			AND = {
-				is_1_2_magic_class_trigger = yes
-				has_character_modifier = mana_0
-			}
-			AND = {
-				is_3_4_magic_class_trigger = yes
-				has_character_modifier = mana_1
-			}
-			AND = {
-				is_5_6_magic_class_trigger = yes
-				has_character_modifier = mana_2
-			}
-			AND = {
-				is_7_8_magic_class_trigger = yes
-				has_character_modifier = mana_3
-			}
-			AND = {
-				is_9_10_magic_class_trigger = yes
-				has_character_modifier = mana_4
-			}
-		}
+		has_1_2_magic_class_or_higher_trigger = yes
+		mana_is_full_trigger = no
 	}
 
 	immediate = {
@@ -121,34 +88,34 @@ character_event = {
 				remove_character_modifier = mana_5
 			}
 			if = {
-				limit = { is_9_10_magic_class_trigger = yes }
+				limit = { has_9_10_magic_class_trigger = yes }
 				add_character_modifier = { name = mana_5 duration = -1 }
 				break = yes
 			}
 			if = {
-				limit = { is_7_8_magic_class_trigger = yes }
+				limit = { has_7_8_magic_class_or_higher_trigger = yes }
 				add_character_modifier = { name = mana_4 duration = -1 }
 				break = yes
 			}
 			if = {
-				limit = { is_5_6_magic_class_trigger = yes }
+				limit = { has_5_6_magic_class_or_higher_trigger = yes }
 				add_character_modifier = { name = mana_3 duration = -1 }
 				break = yes
 			}
 			if = {
-				limit = { is_3_4_magic_class_trigger = yes }
+				limit = { has_3_4_magic_class_or_higher_trigger = yes }
 				add_character_modifier = { name = mana_2 duration = -1 }
 				break = yes
 			}
 			if = {
-				limit = { is_1_2_magic_class_trigger = yes }
+				limit = { has_1_2_magic_class_or_higher_trigger = yes }
 				add_character_modifier = { name = mana_1 duration = -1 }
 			}
 			break = yes
 		}
 		if = {
 			limit = {
-				is_1_2_magic_class_trigger = yes
+				has_1_2_magic_class_or_higher_trigger = yes
 				has_character_modifier = mana_0
 			}
 			remove_character_modifier = mana_0
@@ -157,7 +124,7 @@ character_event = {
 		}
 		if = {
 			limit = {
-				is_3_4_magic_class_trigger = yes
+				has_3_4_magic_class_or_higher_trigger = yes
 				has_character_modifier = mana_1
 			}
 			remove_character_modifier = mana_1
@@ -166,7 +133,7 @@ character_event = {
 		}
 		if = {
 			limit = {
-				is_5_6_magic_class_trigger = yes
+				has_5_6_magic_class_or_higher_trigger = yes
 				has_character_modifier = mana_2
 			}
 			remove_character_modifier = mana_2
@@ -175,7 +142,7 @@ character_event = {
 		}
 		if = {
 			limit = {
-				is_7_8_magic_class_trigger = yes
+				has_7_8_magic_class_or_higher_trigger = yes
 				has_character_modifier = mana_3
 			}
 			remove_character_modifier = mana_3
@@ -184,7 +151,7 @@ character_event = {
 		}
 		if = {
 			limit = {
-				is_9_10_magic_class_trigger = yes
+				has_9_10_magic_class_trigger = yes
 				has_character_modifier = mana_4
 			}
 			remove_character_modifier = mana_4
@@ -833,7 +800,7 @@ narrative_event = {
 		character_event = { id = WCCLS.2152 }
 		narrative_event = {
 			id = WCCLS.200
-			days = 1460
+			years = 5
 		}
 	}
 
@@ -1005,7 +972,7 @@ narrative_event = {
 		character_event = { id = WCCLS.2152 }
 		narrative_event = {
 			id = WCCLS.300
-			days = 1460
+			years = 5
 		}
 	}
 
@@ -1068,7 +1035,7 @@ narrative_event = {
 		character_event = { id = WCCLS.2152 }
 		narrative_event = {
 			id = WCCLS.400
-			days = 1460
+			years = 5
 		}
 	}
 
@@ -1082,24 +1049,35 @@ narrative_event = {
 character_event = {
 	id = WCCLS.305
 	desc = {
-		trigger = { character = FROMFROM }
+		trigger = { character = event_target:target_priest }
 		text = EVTDESC_WCCLS_305_self
 	}
 	desc = {
 		trigger = {
-			NOT = { character = FROMFROM }
+			NOT = { character = event_target:target_priest }
 			is_dark_being_trigger = yes
 		}
 		text = EVTDESC_WCCLS_305_other
 	}
 	desc = {
 		trigger = {
-			NOT = { character = FROMFROM }
+			NOT = { character = event_target:target_priest }
 			is_dark_being_trigger = no
 		}
 		text = EVTDESC_WCCLS_305_bad
 	}
-	picture = GFX_evt_priest_human
+	picture = {
+		trigger = {
+			event_target:target_priest = { NOT = { trait = subclass_moon_priest } }
+		}
+		picture = GFX_evt_priest_human
+	}
+	picture = {
+		trigger = {
+			event_target:target_priest = { trait = subclass_moon_priest }
+		}
+		picture = GFX_evt_elune
+	}
 	border = GFX_event_normal_frame_religion
 
 	is_triggered_only = yes
@@ -1108,7 +1086,13 @@ character_event = {
 		trigger = { is_dark_being_trigger = no }
 		name = EXCELLENT
 
-		add_character_modifier = { name = light_mark_good years = 2 }
+		if = {
+			limit = { event_target:target_priest = { trait = subclass_moon_priest } }
+			add_character_modifier = { name = touch_of_elune years = 2 }
+		}
+		else = {
+			add_character_modifier = { name = light_mark_good years = 2 }
+		}
 	}
 
 	option = {
@@ -1186,7 +1170,7 @@ narrative_event = {
 		character_event = { id = WCCLS.2152 }
 		narrative_event = {
 			id = WCCLS.500
-			days = 1460
+			years = 5
 		}
 	}
 
@@ -1271,7 +1255,7 @@ narrative_event = {
 		character_event = { id = WCCLS.2152 }
 		narrative_event = {
 			id = WCCLS.600
-			days = 1460
+			years = 5
 		}
 	}
 
@@ -1435,7 +1419,7 @@ narrative_event = {
 		character_event = { id = WCCLS.2152 }
 		narrative_event = {
 			id = WCCLS.700
-			days = 1460
+			years = 5
 		}
 	}
 
@@ -1593,19 +1577,19 @@ character_event = {
 					}
 					modifier = {
 						factor = 2
-						is_3_4_magic_class_trigger = yes
+						has_3_4_magic_class_or_higher_trigger = yes
 					}
 					modifier = {
 						factor = 2
-						is_5_6_magic_class_trigger = yes
+						has_5_6_magic_class_or_higher_trigger = yes
 					}
 					modifier = {
 						factor = 2
-						is_7_8_magic_class_trigger = yes
+						has_7_8_magic_class_or_higher_trigger = yes
 					}
 					modifier = {
 						factor = 2
-						is_9_10_magic_class_trigger = yes
+						has_9_10_magic_class_trigger = yes
 					}
 					character_event = { id = WCCLS.616 }	# Success
 				}
@@ -1767,7 +1751,7 @@ narrative_event = {
 		character_event = { id = WCCLS.2152 }
 		narrative_event = {
 			id = WCCLS.800
-			days = 1460
+			years = 5
 		}
 	}
 
@@ -1822,7 +1806,7 @@ narrative_event = {
 		character_event = { id = WCCLS.2152 }
 		narrative_event = {
 			id = WCCLS.900
-			days = 1460
+			years = 5
 		}
 	}
 
@@ -2209,7 +2193,7 @@ narrative_event = {
 		character_event = { id = WCCLS.2152 }
 		narrative_event = {
 			id = WCCLS.1000
-			days = 1460
+			years = 5
 		}
 	}
 
@@ -2470,7 +2454,7 @@ narrative_event = {
 		# character_event = { id = WCCLS.2152 }
 		# narrative_event = {
 			# id = WCCLS.1100
-			# days = 1460
+			# years = 5
 		# }
 	# }
 
@@ -2527,7 +2511,7 @@ narrative_event = {
 		character_event = { id = WCCLS.2152 }
 		narrative_event = {
 			id = WCCLS.1200
-			days = 1460
+			years = 5
 		}
 	}
 
@@ -2615,7 +2599,7 @@ narrative_event = {
 		character_event = { id = WCCLS.2152 }
 		narrative_event = {
 			id = WCCLS.1300
-			days = 1460
+			years = 5
 		}
 	}
 
@@ -3618,7 +3602,7 @@ character_event = {
 	immediate = {
 		event_target:mentor = {
 			opinion = { who = event_target:student modifier = opinion_student years = 5 }
-			character_event = { id = WCCLS.2151 days = 1095 }				# Removes opinion when the training is done
+			character_event = { id = WCCLS.2151 years = 5 }				# Removes opinion when the training is done
 		}
 		opinion = { who = event_target:mentor modifier = opinion_wc_mentor years = 5 }
 
@@ -3631,7 +3615,7 @@ character_event = {
 				duration = -1
 			}
 			clr_character_flag = training_mentor_mage_flag
-			narrative_event = { id = WCCLS.100 days = 1095 }
+			narrative_event = { id = WCCLS.100 years = 5 }
 		}
 		if = {
 			limit = {
@@ -3639,7 +3623,7 @@ character_event = {
 			}
 			add_character_modifier = { name = training_mentor_hunter duration = -1 }
 			clr_character_flag = training_mentor_hunter_flag
-			narrative_event = { id = WCCLS.200 days = 1095 }
+			narrative_event = { id = WCCLS.200 years = 5 }
 		}
 		if = {
 			limit = {
@@ -3650,7 +3634,7 @@ character_event = {
 				duration = -1
 			}
 			clr_character_flag = training_mentor_warrior_flag
-			narrative_event = { id = WCCLS.300 days = 1095 }
+			narrative_event = { id = WCCLS.300 years = 5 }
 		}
 		if = {
 			limit = {
@@ -3661,7 +3645,7 @@ character_event = {
 				duration = -1
 			}
 			clr_character_flag = training_mentor_paladin_flag
-			narrative_event = { id = WCCLS.400 days = 1095 }
+			narrative_event = { id = WCCLS.400 years = 5 }
 		}
 		if = {
 			limit = {
@@ -3672,7 +3656,7 @@ character_event = {
 				duration = -1
 			}
 			clr_character_flag = training_mentor_priest_flag
-			narrative_event = { id = WCCLS.500 days = 1095 }
+			narrative_event = { id = WCCLS.500 years = 5 }
 		}
 		if = {
 			limit = {
@@ -3683,7 +3667,7 @@ character_event = {
 				duration = -1
 			}
 			clr_character_flag = training_mentor_rogue_flag
-			narrative_event = { id = WCCLS.600 days = 1095 }
+			narrative_event = { id = WCCLS.600 years = 5 }
 		}
 		if = {
 			limit = {
@@ -3694,7 +3678,7 @@ character_event = {
 				duration = -1
 			}
 			clr_character_flag = training_mentor_warlock_flag
-			narrative_event = { id = WCCLS.700 days = 1095 }
+			narrative_event = { id = WCCLS.700 years = 5 }
 		}
 		if = {
 			limit = {
@@ -3705,7 +3689,7 @@ character_event = {
 				duration = -1
 			}
 			clr_character_flag = training_mentor_shaman_flag
-			narrative_event = { id = WCCLS.800 days = 1095 }
+			narrative_event = { id = WCCLS.800 years = 5 }
 		}
 		if = {
 			limit = {
@@ -3716,7 +3700,7 @@ character_event = {
 				duration = -1
 			}
 			clr_character_flag = training_mentor_druid_flag
-			narrative_event = { id = WCCLS.900 days = 1095 }
+			narrative_event = { id = WCCLS.900 years = 5 }
 		}
 		if = {
 			limit = {
@@ -3727,7 +3711,7 @@ character_event = {
 				duration = -1
 			}
 			clr_character_flag = training_mentor_loa_priest_flag
-			narrative_event = { id = WCCLS.1000 days = 1095 }
+			narrative_event = { id = WCCLS.1000 years = 5 }
 		}
 		if = {
 			limit = {
@@ -3738,7 +3722,7 @@ character_event = {
 				duration = -1
 			}
 			clr_character_flag = training_mentor_death_knight_flag
-			narrative_event = { id = WCCLS.1100 days = 1095 }
+			narrative_event = { id = WCCLS.1100 years = 5 }
 		}
 		if = {
 			limit = {
@@ -3749,7 +3733,7 @@ character_event = {
 				duration = -1
 			}
 			clr_character_flag = training_mentor_necromancer_flag
-			narrative_event = { id = WCCLS.1200 days = 1095 }
+			narrative_event = { id = WCCLS.1200 years = 5 }
 		}
 		if = {
 			limit = {
@@ -3760,7 +3744,7 @@ character_event = {
 				duration = -1
 			}
 			clr_character_flag = training_mentor_shadow_priest_flag
-			narrative_event = { id = WCCLS.1300 days = 1095 }
+			narrative_event = { id = WCCLS.1300 years = 5 }
 		}
 		character_event = { id = WCCLS.2152 }
 	}
