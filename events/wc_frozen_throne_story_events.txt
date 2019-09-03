@@ -127,11 +127,7 @@ narrative_event = {
 		piety = -250
 		name = EVTOPTA_WCTFT_100
 		ai_chance = {
-			factor = 0
-			modifier = {
-				factor = 2
-				trait = ambitious
-			}
+			factor = 1
 		}
 	}
 
@@ -154,7 +150,7 @@ narrative_event = {
 		prestige = 250
 		name = EVTOPTB_WCTFT_100
 		ai_chance = {
-			factor = 1
+			factor = 0
 		}
 	}
 	
@@ -530,18 +526,8 @@ narrative_event = {
 			}
 		}
 		
-		#Kick out Garithos from faction and inform Alliance Leader
+		#Kick out Garithos from faction
 		event_target:target_garithos = { leave_alliance_faction_effect = yes }
-		
-		any_playable_ruler = {
-			has_trait = {
-				trait = leader_of_the_alliance
-			}
-			save_event_target_as = target_alliance_leader
-		}
-		event_target:target_alliance_leader = { 
-			narrative_event = { id = WCTFT.121 days = 1 } 
-		}
 		
 		#Ping General Abbendis to begin secession
 		if = {
@@ -558,7 +544,7 @@ narrative_event = {
 			}
 			c_60560 = { 
 				save_event_target_as = target_scarlet_general 
-				narrative_event = { id = WCTFT.123 days = 7 }
+				narrative_event = { id = WCTFT.121 days = 7 }
 			}
 		}
 		#If James is dead/MIA, ping his daughter instead
@@ -576,7 +562,7 @@ narrative_event = {
 			}
 			c_60561 = { 
 				save_event_target_as = target_scarlet_general 
-				narrative_event = { id = WCTFT.123 days = 7 }
+				narrative_event = { id = WCTFT.121 days = 7 }
 			}
 		}
 		#Otherwise, create a High General
@@ -593,7 +579,7 @@ narrative_event = {
 			}
 			new_character = { 
 				save_event_target_as = target_scarlet_general
-				narrative_event = { id = WCTFT.123 days = 7 }
+				narrative_event = { id = WCTFT.121 days = 7 }
 			}
 		}
 	}
@@ -643,184 +629,11 @@ narrative_event = {
 	}
 }
 
-# Resistance Garithos Path: The Alliance's Chosen Candidate
+# Resistance Garithos Path: The Abbendis Schism
 narrative_event = {
 	id = WCTFT.121
 	title = EVTTITLE_WCTFT_121
 	desc = EVTDESC_WCTFT_121
-	picture = GFX_evt_paladin_human
-	border = GFX_event_narrative_frame_diplomacy
-
-	is_triggered_only = yes
-	
-	show_root = yes
-	
-	trigger = {
-		NOT = { 
-			has_game_rule = {
-				name = frozen_throne_story
-				value = off
-			}
-		}
-	}
-	
-	option = { #Weldon Barov
-		trigger = { 
-			c_60013 = {	
-				is_alive = yes
-				is_dark_being_trigger = no
-			}
-		}
-		c_60013 = {
-			save_event_target_as = alliance_supported_claimant
-			narrative_event = { id = WCTFT.122 }
-		}
-		set_global_flag = alliance_supports_barov
-		name = EVTOPTA_WCTFT_121
-	}
-	
-	option = { #Bolvar Fordragon
-		trigger = { 
-			c_60686 = {	
-				is_alive = yes
-				is_dark_being_trigger = no
-			}
-		}
-		c_60686 = {
-			save_event_target_as = alliance_supported_claimant
-			narrative_event = { id = WCTFT.122 }
-		}
-		set_global_flag = alliance_supports_fordragon
-		name = EVTOPTB_WCTFT_121
-	}
-	
-	option = { #Alexandros Mograine
-		trigger = { 
-			c_60017 = {	
-				is_alive = yes
-				is_dark_being_trigger = no
-			}
-		}
-		c_60017 = {
-			save_event_target_as = alliance_supported_claimant
-			narrative_event = { id = WCTFT.122 }
-		}
-		set_global_flag = alliance_supports_mograine
-		name = EVTOPTC_WCTFT_121
-	}
-	
-	option = { #A local noble
-		create_character = {
-			female = no
-			dynasty = none
-			culture = lordaeronian religion = holy_light
-			trait=brilliant_strategist
-			trait=creature_human
-			age = 30
-		}
-		new_character = {
-			save_event_target_as = alliance_supported_claimant
-			narrative_event = { id = WCTFT.122 }
-		}
-		set_global_flag = alliance_supports_local
-		name = EVTOPTD_WCTFT_121
-	}
-}
-
-# Resistance Garithos Path: The Alliance announces their Anti-King
-narrative_event = {
-	id = WCTFT.122
-	title = EVTTITLE_WCTFT_122
-	desc = {
-		trigger = { has_global_flag = alliance_supports_barov }
-		text = EVTDESC_WCTFT_122_barov
-	}
-	desc = {
-		trigger = { has_global_flag = alliance_supports_fordragon }
-		text = EVTDESC_WCTFT_122_fordragon
-	}
-	desc = {
-		trigger = { has_global_flag = alliance_supports_mograine }
-		text = EVTDESC_WCTFT_122_mograine
-	}
-	desc = {
-		trigger = { has_global_flag = alliance_supports_local }
-		text = EVTDESC_WCTFT_122_local
-	}
-	picture = GFX_evt_paladin_human
-	border = GFX_event_narrative_frame_diplomacy
-
-	is_triggered_only = yes
-
-	major = yes
-	major_trigger = {
-		ai = no
-	}
-	
-	show_root = yes
-	
-	trigger = {
-		NOT = { 
-			has_game_rule = {
-				name = frozen_throne_story
-				value = off
-			}
-		}
-	}
-	
-	immediate = {
-		clr_global_flag = alliance_supports_barov
-		clr_global_flag = alliance_supports_fordragon
-		clr_global_flag = alliance_supports_mograine
-		clr_global_flag = alliance_supports_local
-	}
-	
-	option = { #k_lordaeron holder reaction
-		trigger = { 
-			has_landed_title = k_lordaeron
-			religion = holy_light
-		}
-		name = EVTOPTA_WCTFT_122
-	}
-	
-	option = { #Holy Light reaction
-		trigger = { 
-			NOT = {
-				has_landed_title = k_lordaeron
-			}
-			religion = holy_light
-		}
-		name = EVTOPTB_WCTFT_122
-	}
-	
-	option = { #Evil reaction
-		trigger = { 
-			religion = death_god
-			religion = burning_legion_religion
-			religion = old_gods_worship
-		}
-		name = EVTOPTC_WCTFT_122
-	}
-	option = { #Everyone else's reaction
-		trigger = { 
-			NOT = {
-				has_landed_title = k_lordaeron
-				religion = holy_light
-				religion = scarlet_light
-				religion = death_god
-				religion = burning_legion_religion
-				religion = old_gods_worship
-			}
-		}
-		name = EVTOPTD_WCTFT_122
-	}
-}
-
-# Resistance Garithos Path: The Abbendis Schism
-narrative_event = {
-	id = WCTFT.123
-	title = EVTTITLE_WCTFT_123
-	desc = EVTDESC_WCTFT_123
 	picture = GFX_evt_paladin_human
 	border = GFX_event_narrative_frame_diplomacy
 
@@ -912,7 +725,7 @@ narrative_event = {
 			}
 			c_60625 = { 
 				save_event_target_as = target_argent_highlord 
-				#narrative_event = { id = WCTFT.124 days = 7 }
+				#narrative_event = { id = WCTFT.122 days = 7 }
 			}
 		}
 		# If Raymond is dead/MIA, ping Maxwell Tyrosus instead
@@ -929,7 +742,7 @@ narrative_event = {
 			}
 			c_60650 = { 
 				save_event_target_as = target_argent_highlord
-				#narrative_event = { id = WCTFT.124 days = 7 }				
+				#narrative_event = { id = WCTFT.122 days = 7 }				
 			}
 		}
 		else = {
@@ -945,7 +758,7 @@ narrative_event = {
 			}
 			new_character = { 
 				save_event_target_as = target_argent_highlord
-				#narrative_event = { id = WCTFT.124 days = 7 }				
+				#narrative_event = { id = WCTFT.122 days = 7 }				
 			}
 		}
 	}
@@ -956,7 +769,7 @@ narrative_event = {
 			religion = holy_light
 		}
 		religion = scarlet_light
-		name = EVTOPTA_WCTFT_123
+		name = EVTOPTA_WCTFT_121
 	}
 	
 	option = { #Holy Light reaction
@@ -966,14 +779,14 @@ narrative_event = {
 				has_landed_title = k_lordaeron
 			}
 		}
-		name = EVTOPTB_WCTFT_123
+		name = EVTOPTB_WCTFT_121
 	}
 	
 	option = { #Scarlet Light reaction
 		trigger = { 
 			religion = scarlet_light
 		}
-		name = EVTOPTC_WCTFT_123
+		name = EVTOPTC_WCTFT_121
 	}
 	
 	option = { #Evil reaction
@@ -982,7 +795,7 @@ narrative_event = {
 			religion = burning_legion_religion
 			religion = old_gods_worship
 		}
-		name = EVTOPTD_WCTFT_123
+		name = EVTOPTD_WCTFT_121
 	}
 	option = { #Everyone else's reaction
 		trigger = { 
@@ -995,17 +808,11 @@ narrative_event = {
 				religion = old_gods_worship
 			}
 		}
-		name = EVTOPTE_WCTFT_123
+		name = EVTOPTE_WCTFT_121
 	}
 }
 
 # Resistance Garithos Path: Raymond abandons the Silver Hand
-
-# Resistance Garithos Path: Check if the claimant is alive
-
-# Resistance Garithos Path: Claimant dead
-
-# Resistance Garithos Path: Alliance pushes to install its claimant
 
 # Forsaken Path: Sylvanas victorious
 narrative_event = {
@@ -1121,9 +928,7 @@ narrative_event = {
 
 ### War of the Frozen Throne ###
 
-# Illidari Victory: Containment
-
-# Illidari Victory: Rampant Undead
+# Illidari Victory: Scourge Collapse
 
 # Illidari Victory: The Prince's Return
 
