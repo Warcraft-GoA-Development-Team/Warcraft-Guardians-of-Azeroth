@@ -675,6 +675,7 @@ narrative_event = {
 			}
 			set_defacto_liege = event_target:target_garithos
 			wealth = 500
+			narrative_event = { id = WCTFT.122 }
 		}
 		#Grand Inquisitor
 		if = {
@@ -714,9 +715,9 @@ narrative_event = {
 
 		}
 	
-	option = { #k_lordaeron holder reaction
+	option = { #Garithos reaction
 		trigger = { 
-			has_landed_title = k_lordaeron
+			character = c_60030
 			religion = holy_light
 		}
 		religion = scarlet_light
@@ -760,6 +761,255 @@ narrative_event = {
 			}
 		}
 		name = EVTOPTE_WCTFT_121
+	}
+}
+
+# Resistance Garithos Path: The Schism
+narrative_event = {
+	id = WCTFT.122
+	title = EVTTITLE_WCTFT_122
+	desc = EVTDESC_WCTFT_122
+	picture = GFX_evt_high_commander
+	portrait = event_target:target_grand_crusader
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+
+	major = yes
+	major_trigger = {
+		OR = {
+			ai = no
+			religion_group = light_group
+		}
+	}
+	show_root = yes
+
+	# Support the True Faith
+	option = {
+		trigger = { true_religion = holy_light }
+		name = EVTOPTA_WCTFT_122
+
+		piety = 100
+		tooltip = {
+			d_order_of_the_silver_hand = {
+				show_scope_change = no
+				holder_scope = {
+					show_scope_change = no
+					religion_authority = {
+						modifier = religious_split_bad
+						years = 10
+					}
+				}
+			}
+			d_scarlet_crusade = {
+				show_scope_change = no
+				holder_scope = {
+					show_scope_change = no
+					religion_authority = {
+						modifier = religious_split_good
+						years = 10
+					}
+				}
+			}
+		}
+
+		ai_chance = {
+			factor = 33
+			modifier = {
+				factor = 20
+				NOT = { culture = lordaeronian }
+			}
+			modifier = {
+				factor = 2
+				trait = kind
+			}
+			modifier = {
+				factor = 1.32
+				trait = just
+			}
+			modifier = {
+				factor = 1.32
+				has_benevolent_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.32
+				has_pleasant_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.32
+				has_pious_trait_trigger = yes
+			}
+		}
+	}
+
+	# Support the Scarlet Church
+	option = {
+		trigger = {
+			OR = {
+				AND = {
+					trait = creature_human
+					true_religion = holy_light
+				}
+				true_religion = scarlet_light
+			}
+
+			OR = {
+				AND = {
+					controls_religion = no
+					holy_order = no
+				}
+				true_religion = scarlet_light
+			}
+		}
+		name = EVTOPTB_WCTFT_122
+		
+		tooltip = {
+			d_order_of_the_silver_hand = {
+				show_scope_change = no
+				holder_scope = {
+					show_scope_change = no
+					religion_authority = {
+						modifier = religious_split_bad
+						years = 10
+					}
+				}
+			}
+			d_scarlet_crusade = {
+				show_scope_change = no
+				holder_scope = {
+					show_scope_change = no
+					religion_authority = {
+						modifier = religious_split_good
+						years = 10
+					}
+				}
+			}
+		}
+
+		religion = scarlet_light
+		if = {
+			limit = { has_secret_religion = yes }
+			clear_secret_religion = yes
+		}
+		if = {
+			limit = { NOT = { trait = zealous } }
+			if = {
+				limit = { trait = cynical }
+				remove_trait = cynical
+			}
+			add_trait = zealous
+		}
+
+		if = {
+			limit = {
+				is_ruler = yes
+				higher_real_tier_than = BARON
+			}
+			capital_scope = { 
+				if = {
+					limit = {
+						holder_scope = { character = PREVPREV }
+						NOT = { religion = scarlet_light }
+					}
+					religion = scarlet_light
+				}
+			}
+			
+			hidden_effect = {
+				any_close_relative = {
+					limit = {
+						is_ruler = no
+						host = { character = ROOT }
+						
+						religion = holy_light
+						NOT = { religion = scarlet_light }
+					}
+					religion = scarlet_light
+					clear_secret_religion = yes
+				}
+				any_courtier_or_vassal = {
+					limit = {
+						OR = {
+							is_ruler = no
+							tier = BARON
+						}
+						
+						religion = holy_light
+						NOT = { religion = scarlet_light }
+						OR = {
+							trait = zealous
+							has_evil_trait_trigger = yes
+							has_unpleasant_trait_trigger = yes
+							has_impious_trait_trigger = yes
+						}
+					}
+					religion = scarlet_light
+					clear_secret_religion = yes
+				}
+			}
+		}
+
+		ai_chance = {
+			factor = 66
+			modifier = {
+				factor = 2
+				trait = zealous
+			}
+			modifier = {
+				factor = 1.09
+				trait = cruel
+			}
+			modifier = {
+				factor = 1.09
+				trait = arbitrary
+			}
+			modifier = {
+				factor = 1.09
+				has_evil_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.09
+				has_unpleasant_trait_trigger = yes
+			}
+			modifier = {
+				factor = 1.09
+				has_impious_trait_trigger = yes
+			}
+		}
+	}
+
+	# Fools!
+	option = {
+		trigger = {
+			NOR = {
+				true_religion = holy_light
+				true_religion = scarlet_light
+			}
+		}
+		name = FOOLS
+		
+		tooltip = {
+			d_order_of_the_silver_hand = {
+				show_scope_change = no
+				holder_scope = {
+					show_scope_change = no
+					religion_authority = {
+						modifier = religious_split_bad
+						years = 10
+					}
+				}
+			}
+			d_scarlet_crusade = {
+				show_scope_change = no
+				holder_scope = {
+					show_scope_change = no
+					religion_authority = {
+						modifier = religious_split_good
+						years = 10
+					}
+				}
+			}
+		}
 	}
 }
 
@@ -874,6 +1124,4 @@ narrative_event = {
 
 # Illidari Victory: The Prince's Return
 
-# Illidari Victory: Jailor of the Damned
-
-# Illidari Defeat: Cleanup
+# Illidari Defeat: Illidari Collapse
