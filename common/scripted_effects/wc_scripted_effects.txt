@@ -1,8 +1,4 @@
 set_cannot_marry_flag_effect = {
-	if = {
-		limit = { can_marry_trigger = no }
-		log = "[This.GetBestName] can't marry"
-	}
 	add_trait = cannot_marry_trait
 	if = {
 		limit = {
@@ -10,7 +6,21 @@ set_cannot_marry_flag_effect = {
 			is_theocracy = no
 			tier = BARON
 		}
-		set_government_type = theocracy_government
+		if = {
+			limit = {
+				is_government_potential = theocracy_government
+			}
+			set_government_type = theocracy_government
+		}
+		else_if = {
+			limit = {
+				is_government_potential = republic_government
+			}
+			set_government_type = republic_government
+		}
+		else = {
+			log = "(IMPORTANT) Can't block marriage of [This.GetBestName]"
+		}
 	}
 }
 remove_racial_traits_effect = {
@@ -1601,8 +1611,6 @@ find_right_spouse_effect = {
 	if = {
 		limit = {
 			ai = yes
-			can_marry = yes
-			can_marry_trigger = yes
 			host = {
 				OR = {
 					ai = yes
