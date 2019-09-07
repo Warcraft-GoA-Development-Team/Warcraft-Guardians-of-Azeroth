@@ -86,6 +86,7 @@ character_event = {
 	
 	immediate = {
 		log = "WCPLF.40 fired for [Root.GetBestName]"
+		
 		if = {
 			limit = {
 				FROMFROM = {
@@ -114,14 +115,26 @@ character_event = {
 			trigger_switch = {
 				on_trigger = trait
 				leader_of_horde_trait = {
+					remove_trait = leader_of_horde_trait
+					# Transfers tributaries now since the game do it when the last title is transferred
+					any_tributary = {
+						limit = { is_tributary = { type = political_faction suzerain = suzerain } }
+						suzerain = { remove_tributary = PREV }
+						ROOT = { make_tributary = { who = PREV tributary_type = political_faction } }
+					}
 					ROOT = { become_leader_of_horde_faction_effect = yes }
 					break_alliances_with_horde_faction_effect = yes
-					remove_trait = leader_of_horde_trait
 				}
 				leader_of_alliance_trait = {
+					remove_trait = leader_of_alliance_trait
+					# Transfers tributaries now since the game do it when the last title is transferred
+					any_tributary = {
+						limit = { is_tributary = { type = political_faction suzerain = suzerain } }
+						suzerain = { remove_tributary = PREV }
+						ROOT = { make_tributary = { who = PREV tributary_type = political_faction } }
+					}
 					ROOT = { become_leader_of_alliance_faction_effect = yes }
 					break_alliances_with_alliance_faction_effect = yes
-					remove_trait = leader_of_alliance_trait
 				}
 			}
 		}
@@ -159,6 +172,7 @@ character_event = {
 	trigger = {
 		is_alive = yes
 		is_dying = no
+		
 		is_in_political_faction_trigger = yes
 	}
 	
@@ -235,13 +249,8 @@ character_event = {
 
 	immediate = {
 		log = "WCPLF.52 fired for [Root.GetBestName]..."
-		primary_title = {
-			log = "...[This.GetName] is primary title"
-		}
-		any_tributary = {
-			log = "...[This.GetBestName] is tributary"
-		}
 		
+		# Clear alliances
 		if = {
 			limit = { is_in_political_faction_trigger = no }
 			break_alliances_with_horde_faction_effect = yes
@@ -262,6 +271,7 @@ character_event = {
 		}
 	}
 }
+
 # One of members takes faction under control
 narrative_event = {
 	id = WCPLF.60

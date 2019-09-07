@@ -93,20 +93,46 @@ narrative_event = {
 	}
 
 	option = {
-		name = {
-			trigger = {
-				NOT = { character = ROOT }
-				is_aggressive_trigger = no
+		trigger = {
+			OR = {
+				true_religion = death_god
+				AND = {
+					has_global_flag = scourge_is_under_legion_control_flag
+					true_religion = burning_legion_religion
+				}
 			}
-			text = ALAS
 		}
-		name = {
-			trigger = {
-				NOT = { character = ROOT }
-				is_aggressive_trigger = yes
+		name = DEATH_IS_COMING
+	}
+	option = {
+		trigger = {
+			NOT = {
+				true_religion = death_god
+				AND = {
+					has_global_flag = scourge_is_under_legion_control_flag
+					true_religion = burning_legion_religion
+				}
 			}
-			text = EXCELLENT
+			evil_true_religion_trigger = yes
 		}
+		name = FOOLS
+	}
+	option = {
+		trigger = {
+			NOT = {
+				evil_true_religion_trigger = yes
+			}
+		}
+		name = ALAS
+	}
+	option = {
+		trigger = {
+			NOT = {
+				evil_true_religion_trigger = yes
+			}
+			NOT = { character = ROOT }
+		}
+		name = INTERESTING
 	}
 }
 
@@ -370,23 +396,13 @@ province_event = {
 	hide_window = yes
 
 	immediate = {
+		save_event_target_as = target_province
+		
 		e_scourge = { holder_scope = { save_event_target_as = target_province_holder } }	# Used in convert_to_target_undead_province_effect
 
 		e_scourge = {
 			holder_scope = {
-				spawn_unit = {
-					province = ROOT
-					home = ROOT
-					owner = THIS
-					scaled_by_biggest_garrison = 0.75
-					troops = {
-						archers = { 3 3 }
-						scourgehorde = { 7 7 }
-					}
-					attrition = 0
-					maintenance = no
-					reinforces = no
-				}
+				spawn_plague_troops_effect = yes
 			}
 		}
 		convert_to_target_undead_province_effect = yes
@@ -469,7 +485,6 @@ character_event = {
 
 	# No
 	option = {
-		trigger = { num_of_count_titles = 2 }
 		name = EVTOPTB_WCPOD_10001
 
 		e_scourge = {
