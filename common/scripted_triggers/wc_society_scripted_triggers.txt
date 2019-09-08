@@ -6,8 +6,54 @@ is_startup_member_trigger = {
 	mercenary = no
 	NOT = { higher_tier_than = DUKE }
 }
+# Blocks recruit decision
+from_recruit_block_trigger = {
+	custom_tooltip = {
+		text = recruit_block_tooltip
+		trigger_if = {
+			limit = { FROM = { society_member_of = cult_of_the_damned } }
+			OR = {
+				NOT = { has_character_flag = cult_of_the_damned_attempted_recruitment }
+				interested_in_society = cult_of_the_damned
+			}
+		}
+		trigger_else_if = {
+			limit = { FROM = { society_member_of = shadow_council  } }
+			OR = {
+				NOT = { has_character_flag = shadow_council_attempted_recruitment }
+				interested_in_society = shadow_council
+			}
+		}
+		trigger_else = {
+			OR = {
+				NOT = { has_character_flag = twilights_hammer_cult_attempted_recruitment }
+				interested_in_society = twilights_hammer_cult
+			}
+		}
+		
+		has_society_recruitment_flags_trigger = no
+	}
+}
+has_society_recruitment_flags_trigger = {
+	OR = {
+		has_character_flag = being_recruited_by_cult_of_the_damned
+		has_character_flag = being_recruited_by_shadow_council
+		has_character_flag = being_recruited_by_twilights_hammer_cult
+	}
+}
 
-# _prerequisites triggers mean that character can join society
+# _preferences triggers mean that character prefers to join this society
+has_common_dark_cult_preferences = {
+	OR = {
+		evil_true_religion_trigger = yes
+		has_impious_trait_trigger = yes
+		has_unpleasant_trait_trigger = yes
+		trait = drunkard
+		trait = lunatic
+	}
+}
+
+# _prerequisites triggers mean that character can join this society
 has_common_society_prerequisites = {
 	is_untouchable_trigger = no
 	has_invader_title_trigger = no
@@ -27,15 +73,6 @@ has_common_dark_cult_prerequisites = {
 	has_common_society_prerequisites = yes
 
 	has_common_dark_cult_preferences = yes
-}
-has_common_dark_cult_preferences = {
-	OR = {
-		evil_true_religion_trigger = yes
-		has_impious_trait_trigger = yes
-		has_unpleasant_trait_trigger = yes
-		trait = drunkard
-		trait = lunatic
-	}
 }
 has_cult_of_the_damned_prerequisites = {
 	has_common_dark_cult_prerequisites = yes
