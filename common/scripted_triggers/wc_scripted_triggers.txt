@@ -315,8 +315,19 @@ title_can_be_lost_trigger = {
 character_can_lose_title_trigger = {
 	is_untouchable_trigger = no
 
+	is_offmap_governor = no
+	
 	has_invader_title_trigger = no
 	has_dragonflight_title_trigger = no
+}
+character_can_be_vassalized_trigger = {
+	is_landed = yes
+	# independent = yes
+	mercenary = no
+	holy_order = no
+	is_offmap_governor = no
+	is_nomadic = no
+	in_revolt = no
 }
 # CAN'T GET SICK IF IT'S NOT TRUE
 # Associated with text_effect_can_not_get_diseases
@@ -345,6 +356,7 @@ can_be_eaten_trigger = {
 #Titanforged not afflicted by the Curse of Flesh, Earthen, Mechagnome, etc.
 is_uncursed_titanforged_trigger = {
 	OR = {
+		trait = creature_watcher
 		trait = creature_mechagnome
 		trait = creature_earthen
 		trait = creature_iron_dwarf
@@ -372,55 +384,31 @@ can_has_children_trait_trigger = {
 	NOR = {
 		trait = celibate
 
+		is_completely_infertile_trigger = yes
+	}
+}
+# Don't get infertile trait since it's forever infertile
+is_completely_infertile_trigger = {
+	OR = {
 		trait = eunuch
-
+		trait = infertile
+		
 		trait = being_undead
 		trait = being_demon
-
-		trait = creature_red_whelp
-		trait = creature_red_drake
-		trait = creature_red_dragon
-
-		trait = creature_blue_whelp
-		trait = creature_blue_drake
-		trait = creature_blue_dragon
-
-		trait = creature_green_whelp
-		trait = creature_green_drake
-		trait = creature_green_dragon
-
-		trait = creature_black_whelp
-		trait = creature_black_drake
-		trait = creature_black_dragon
-
-		trait = creature_air_elemental
-		trait = creature_earth_elemental
-		trait = creature_fire_elemental
-		trait = creature_flamewaker
-		trait = creature_water_elemental
-
-		trait = creature_iron_dwarf
-		trait = creature_watcher
+		
+		is_whelp_trigger = yes
+		is_drake_trigger = yes
+		is_dragon_trigger = yes
+		
+		is_elemental_trigger = yes
+		
+		is_uncursed_titanforged_trigger = yes
 		trait = creature_harpy
-		trait = creature_mechagnome
-		trait = creature_earthen
-
-		trait = creature_bronze_whelp
-		trait = creature_bronze_drake
-		trait = creature_bronze_dragon
-
-		trait = creature_nraqi
-		trait = creature_cthraxxi
+		
+		is_nraqi_trigger = yes
 		trait = creature_qiraji
-
-		trait = creature_infinite_whelp
-		trait = creature_infinite_drake
-		trait = creature_infinite_dragon
-
-		trait = creature_protector
-		trait = creature_ancient_war
-		trait = creature_ancient_lore
-		trait = creature_ancient_wind
+		
+		is_plant_race_trigger = yes
 	}
 }
 # CAN'T HAS ROMANCES, MARRIAGES WITH CHARACTER IF IT'S NOT TRUE
@@ -2216,6 +2204,7 @@ is_elemental_trigger = {
 		trait = creature_air_elemental
 		trait = creature_earth_elemental
 		trait = creature_fire_elemental
+		trait = creature_flamewaker
 		trait = creature_water_elemental
 	}
 }
@@ -2846,15 +2835,10 @@ is_completely_immortal_trigger = {
 		is_bronze_dragon_trigger = yes
 		is_infinite_dragon_trigger = yes
 		is_eredar_trigger = yes
-		trait = creature_air_elemental
-		trait = creature_earth_elemental
-		trait = creature_fire_elemental
-		trait = creature_flamewaker
-		trait = creature_water_elemental
+		is_elemental_trigger = yes
 		is_uncursed_titanforged_trigger = yes
 		trait = creature_watcher
-		trait = creature_nraqi
-		trait = creature_cthraxxi
+		is_nraqi_trigger = yes
 		AND = {
 			NOT = { has_global_flag = night_elves_lost_immortality_flag }
 			trait = creature_night_elf
@@ -2865,14 +2849,11 @@ is_completely_immortal_trigger = {
 		trait = creature_old_god
 		trait = creature_titan_keeper
 		trait = creature_titan
-		trait = creature_protector
-		trait = creature_ancient_war
-		trait = creature_ancient_lore
-		trait = creature_ancient_wind
+		is_plant_race_trigger = yes
 	}
 }
 
-plant_race = {
+is_plant_race_trigger = {
 	OR = {
 		trait = creature_protector
 		trait = creature_ancient_war
@@ -4040,6 +4021,9 @@ has_prev_blood_trigger = {
 
 has_important_empire_titles = {
 	OR = {
+		is_offmap_governor = yes
+		is_nomadic = yes
+		
 		has_invader_title_trigger = yes
 		has_dragonflight_title_trigger = yes
 		has_faction_title_trigger = yes
@@ -4080,7 +4064,7 @@ horde_exodus_clan_trigger = {
 	
 	lower_real_tier_than = EMPEROR
 
-	NOT = { has_character_flag = invitation_to_sail_is_sent_flag }
+	# NOT = { has_character_flag = invitation_to_sail_is_sent_flag }
 	NOT = { has_character_flag = exodus_horde_declined_flag }
 
 	trait = creature_orc
@@ -4147,7 +4131,7 @@ theramore_founding_refugees_trigger = {
 	
 	independent = no
 
-	NOT = { has_character_flag = invitation_to_sail_is_sent_flag }
+	# NOT = { has_character_flag = invitation_to_sail_is_sent_flag }
 	NOT = { has_character_flag = foundation_theramore_declined_flag }
 
 	evil_public_religion_trigger = no
@@ -4350,7 +4334,7 @@ need_infertile_trait_trigger = {
 	is_alive = yes
 	is_dying = no
 	
-	NOT = { trait = infertile }
+	NOT = { is_completely_infertile_trigger = yes }
 	
 	is_dragon_race_trigger = no
 	
@@ -4399,4 +4383,12 @@ create_titular_empire_common_trigger = {
 
 religion_has_pilgrimage_trigger = {
 	always = no
+}
+religion_has_heaven_and_hell_trigger = {
+	OR = {
+		religion = kaldorei_religion
+		religion = holy_light
+		religion = scarlet_light
+		religion = odyn
+	}
 }
