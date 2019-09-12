@@ -17,8 +17,8 @@ To instal:
 ### [Conditions](https://ck2.paradoxwikis.com/Conditions)
 1. `has_dlc`, `is_untouchable_trigger`, `can_rule_peacefully_trigger`
 2. `ai`, `is_playable`, `is_adult`, `is_incapable`, `prisoner`, `is_inaccessible_trigger`
-3. `is_ruler`, `is_landed`, `independent`, `same_realm`, `mercenary`, `holy_order`, `is_tributary`, `government`, `tier`, `war`
-4. `character`, `is_within_diplo_range`, cooldowns, limit of attempts or flags/traits/modifiers that are set if an event/decision is ongoing or happened.
+3. `is_ruler`, `is_landed`, `independent`, `is_tributary`, `mercenary`, `holy_order`, `controls_religion`, `is_offmap_governor` `government`, `tier`, `war`, `in_revolt`
+4. `character`, `is_within_diplo_range`, `same_realm`, cooldowns, limit of attempts or flags/traits/modifiers that are set if an event/decision is ongoing or happened.
 5. Being type (_`being_` trait_) , race (_`creature_` trait_), class (_`class_` trait_), mana triggers (`has_5_mana_trigger`, `has_4_mana_trigger` etc) religion, culture, +other traits
 6. Wealth, piety, prestige, and user variables
 7. Other conditions
