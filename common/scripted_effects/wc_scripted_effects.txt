@@ -1,8 +1,4 @@
 set_cannot_marry_flag_effect = {
-	if = {
-		limit = { can_marry_trigger = no }
-		log = "[This.GetBestName] can't marry"
-	}
 	add_trait = cannot_marry_trait
 	if = {
 		limit = {
@@ -10,9 +6,39 @@ set_cannot_marry_flag_effect = {
 			is_theocracy = no
 			tier = BARON
 		}
-		set_government_type = theocracy_government
+		if = {
+			limit = {
+				is_government_potential = theocracy_government
+			}
+			set_government_type = theocracy_government
+		}
+		else_if = {
+			limit = {
+				is_government_potential = republic_government
+			}
+			set_government_type = republic_government
+		}
+		else = {
+			log = "(IMPORTANT) Can't block marriage of [This.GetBestName]"
+		}
 	}
 }
+find_right_spouse_effect = {
+	if = {
+		limit = {
+			ai = yes
+			host = {
+				OR = {
+					ai = yes
+					NOT = { is_parent_of = PREV }
+					NOT = { is_grandparent_of = PREV }
+				}
+			}
+		}
+		character_event = { id = WCCLN.130 }		# Finds right spouse
+	}
+}
+
 remove_racial_traits_effect = {
 	# Fixes immortal age
 	rejuvenate_effect = yes
@@ -139,7 +165,7 @@ remove_racial_traits_effect = {
 	if = { limit = { trait = creature_infinite_whelp			} remove_trait = creature_infinite_whelp		}
 	if = { limit = { trait = creature_infinite_drake			} remove_trait = creature_infinite_drake		}
 	if = { limit = { trait = creature_infinite_dragon			} remove_trait = creature_infinite_dragon		}
-	if = { limit = { trait = creature_infinitee_wyrm			} remove_trait = creature_infinite_wyrm			}
+	if = { limit = { trait = creature_infinite_wyrm			} remove_trait = creature_infinite_wyrm			}
 
 	# Race-related traits
 	if = { limit = { trait = twoheaded 						} remove_trait = twoheaded					}
@@ -1103,36 +1129,39 @@ convert_to_target_undead_province_effect = {
 	religion = event_target:target_province_holder
 }
 spawn_horde_troops_effect = {
-	spawn_small_horde_troops_effect = yes
-	if = {
-		limit = {
-			has_game_rule = {
-				name = invaders_strength
-				value = default
+	custom_tooltip = {
+		text = spawn_small_horde_troops_tooltip
+		spawn_small_horde_troops_effect = yes
+		if = {
+			limit = {
+				has_game_rule = {
+					name = invaders_strength
+					value = default
+				}
 			}
+			spawn_small_horde_troops_effect = yes
 		}
-		spawn_small_horde_troops_effect = yes
-	}
-	if = {
-		limit = {
-			has_game_rule = {
-				name = invaders_strength
-				value = x1_5
+		if = {
+			limit = {
+				has_game_rule = {
+					name = invaders_strength
+					value = x1_5
+				}
 			}
+			spawn_small_horde_troops_effect = yes
+			spawn_small_horde_troops_effect = yes
 		}
-		spawn_small_horde_troops_effect = yes
-		spawn_small_horde_troops_effect = yes
-	}
-	if = {
-		limit = {
-			has_game_rule = {
-				name = invaders_strength
-				value = x2
+		if = {
+			limit = {
+				has_game_rule = {
+					name = invaders_strength
+					value = x2
+				}
 			}
+			spawn_small_horde_troops_effect = yes
+			spawn_small_horde_troops_effect = yes
+			spawn_small_horde_troops_effect = yes
 		}
-		spawn_small_horde_troops_effect = yes
-		spawn_small_horde_troops_effect = yes
-		spawn_small_horde_troops_effect = yes
 	}
 }
 # DON'T USE it outside of spawn_horde_troops_effect
@@ -1162,36 +1191,39 @@ spawn_small_horde_troops_effect = {
 	}
 }
 spawn_legion_troops_effect = {
-	spawn_small_legion_troops_effect = yes
-	if = {
-		limit = {
-			has_game_rule = {
-				name = invaders_strength
-				value = default
+	custom_tooltip = {
+		text = spawn_small_legion_troops_tooltip
+		spawn_small_legion_troops_effect = yes
+		if = {
+			limit = {
+				has_game_rule = {
+					name = invaders_strength
+					value = default
+				}
 			}
+			spawn_small_legion_troops_effect = yes
 		}
-		spawn_small_legion_troops_effect = yes
-	}
-	if = {
-		limit = {
-			has_game_rule = {
-				name = invaders_strength
-				value = x1_5
+		if = {
+			limit = {
+				has_game_rule = {
+					name = invaders_strength
+					value = x1_5
+				}
 			}
+			spawn_small_legion_troops_effect = yes
+			spawn_small_legion_troops_effect = yes
 		}
-		spawn_small_legion_troops_effect = yes
-		spawn_small_legion_troops_effect = yes
-	}
-	if = {
-		limit = {
-			has_game_rule = {
-				name = invaders_strength
-				value = x2
+		if = {
+			limit = {
+				has_game_rule = {
+					name = invaders_strength
+					value = x2
+				}
 			}
+			spawn_small_legion_troops_effect = yes
+			spawn_small_legion_troops_effect = yes
+			spawn_small_legion_troops_effect = yes
 		}
-		spawn_small_legion_troops_effect = yes
-		spawn_small_legion_troops_effect = yes
-		spawn_small_legion_troops_effect = yes
 	}
 }
 spawn_small_legion_troops_effect = {
@@ -1239,42 +1271,45 @@ spawn_small_legion_troops_effect = {
 	}
 }
 spawn_scourge_troops_effect = {
-	spawn_small_scourge_troops_effect = yes
-	if = {
-		limit = {
-			has_game_rule = {
-				name = invaders_strength
-				value = default
+	custom_tooltip = {
+		text = spawn_small_scourge_troops_tooltip
+		spawn_small_scourge_troops_effect = yes
+		if = {
+			limit = {
+				has_game_rule = {
+					name = invaders_strength
+					value = default
+				}
 			}
+			spawn_small_scourge_troops_effect = yes
 		}
-		spawn_small_scourge_troops_effect = yes
-	}
-	if = {
-		limit = {
-			has_game_rule = {
-				name = invaders_strength
-				value = x1_5
+		if = {
+			limit = {
+				has_game_rule = {
+					name = invaders_strength
+					value = x1_5
+				}
 			}
+			spawn_small_scourge_troops_effect = yes
+			spawn_small_scourge_troops_effect = yes
 		}
-		spawn_small_scourge_troops_effect = yes
-		spawn_small_scourge_troops_effect = yes
-	}
-	if = {
-		limit = {
-			has_game_rule = {
-				name = invaders_strength
-				value = x2
+		if = {
+			limit = {
+				has_game_rule = {
+					name = invaders_strength
+					value = x2
+				}
 			}
+			spawn_small_scourge_troops_effect = yes
+			spawn_small_scourge_troops_effect = yes
+			spawn_small_scourge_troops_effect = yes
 		}
-		spawn_small_scourge_troops_effect = yes
-		spawn_small_scourge_troops_effect = yes
-		spawn_small_scourge_troops_effect = yes
 	}
 }
 spawn_small_scourge_troops_effect = {
 	spawn_unit = {
-		province = 695
-		home = 695
+		province = event_target:target_province
+		home = event_target:target_province
 		owner = THIS
 		troops = {
 			archers = { 1875 1875 }
@@ -1585,24 +1620,6 @@ remove_has_magical_withdrawal_trait_effect = {
 	if = {
 		limit = { trait = has_magical_withdrawal }
 		remove_trait = has_magical_withdrawal
-	}
-}
-
-find_right_spouse_effect = {
-	if = {
-		limit = {
-			ai = yes
-			can_marry = yes
-			can_marry_trigger = yes
-			host = {
-				OR = {
-					ai = yes
-					NOT = { is_parent_of = PREV }
-					NOT = { is_grandparent_of = PREV }
-				}
-			}
-		}
-		character_event = { id = WCCLN.130 }		# Finds right spouse
 	}
 }
 
@@ -2039,6 +2056,24 @@ add_default_traits = {
 				}
 			}
 		}
+		
+		# cannibal_trait
+		if = {
+			limit = { prefer_cannibal_trait_trigger = yes }
+			random = {
+				chance = 35
+				
+				additive_modifier = {
+					value = 50
+					evil_public_religion_trigger = yes
+				}
+				
+				if = {
+					limit = { NOT = { trait = cannibal_trait } } 
+					add_trait = cannibal_trait
+				}
+			}
+		}
 	}
 }
 
@@ -2310,7 +2345,10 @@ cleanup_province_as_target_settler_effect = {
             }
 			
 			# Upgrade tribal if there's one
-			upgrade_province_as_target_settler_effect = yes
+			if = {
+				limit = { holder_scope = { character = event_target:target_settler } }
+				upgrade_province_as_target_settler_effect = yes
+			}
 		
 			culture = event_target:target_settler
 			religion = event_target:target_settler
@@ -2320,25 +2358,25 @@ cleanup_province_as_target_settler_effect = {
 # Upgrade tribal if there's one as target_settler prefer
 upgrade_province_as_target_settler_effect = {
 	hidden_effect = {
-	if = {
-		limit = { any_province_holding = { holding_type = tribal } }
-		random_province_holding = {
-			limit = { holding_type = tribal }
-			make_capital_holding = yes
-			if = {
-				limit = { event_target:target_settler = { has_character_flag = prefer_temples_flag } }
-				convert_tribal_to_temple_effect = yes
-			}
-			else_if = {
-				limit = { event_target:target_settler = { has_character_flag = prefer_cities_flag } }
-				convert_tribal_to_city_effect = yes
-			}
-			else = {
-				convert_tribal_to_castle_effect = yes
+		if = {
+			limit = { any_province_holding = { holding_type = tribal } }
+			random_province_holding = {
+				limit = { holding_type = tribal }
+				make_capital_holding = yes
+				if = {
+					limit = { event_target:target_settler = { has_character_flag = prefer_temples_flag } }
+					convert_tribal_to_temple_effect = yes
+				}
+				else_if = {
+					limit = { event_target:target_settler = { has_character_flag = prefer_cities_flag } }
+					convert_tribal_to_city_effect = yes
+				}
+				else = {
+					convert_tribal_to_castle_effect = yes
+				}
 			}
 		}
 	}
-}
 }
 # target_settler and its people settle here
 settle_as_target_settler_effect = {
@@ -2487,11 +2525,11 @@ target_settler_declare_war_effect = {
 					# If has 2 or more claims, claims all
 					if = {
 						limit = {
-							event_target:target_velen = {
-								total_claims = {
-									who = PREV
-									strong = yes
-									value = 2
+							event_target:target_settler = {
+								can_use_cb = {
+									target = PREV
+									casus_belli = claim_all
+									only_check_triggers = yes
 								}
 							}
 						}
@@ -2851,7 +2889,7 @@ ruler_sell_land_to_holy_order_effect = {
 			else = { prestige = 500 }
 			wealth = 400
 		}
-		
+
 		# Free vassals
 		if = {
 			limit = { is_ruler = yes }
@@ -2901,11 +2939,11 @@ ruler_sell_land_to_holy_order_effect = {
 
 				if = {
 					limit = { limit = { holder_scope = { character = event_target:target_ruler } } }
-					ruler_grant_land_to_holy_order_effect = yes
-				}
+				ruler_grant_land_to_holy_order_effect = yes
 			}
 		}
 	}
+}
 }
 ruler_grant_land_to_holy_order_effect = {
 	event_target:target_order_leader = {
@@ -3186,36 +3224,39 @@ spawn_light_sea_ravagers_effect = {
 }
 
 spawn_qiraji_troops_effect = {
-	spawn_small_qiraji_troops_effect = yes
-	if = {
-		limit = {
-			has_game_rule = {
-				name = invaders_strength
-				value = default
+	custom_tooltip = {
+		text = spawn_small_qiraji_troops_tooltip
+		spawn_small_qiraji_troops_effect = yes
+		if = {
+			limit = {
+				has_game_rule = {
+					name = invaders_strength
+					value = default
+				}
 			}
+			spawn_small_qiraji_troops_effect = yes
 		}
-		spawn_small_qiraji_troops_effect = yes
-	}
-	if = {
-		limit = {
-			has_game_rule = {
-				name = invaders_strength
-				value = x1_5
+		if = {
+			limit = {
+				has_game_rule = {
+					name = invaders_strength
+					value = x1_5
+				}
 			}
+			spawn_small_qiraji_troops_effect = yes
+			spawn_small_qiraji_troops_effect = yes
 		}
-		spawn_small_qiraji_troops_effect = yes
-		spawn_small_qiraji_troops_effect = yes
-	}
-	if = {
-		limit = {
-			has_game_rule = {
-				name = invaders_strength
-				value = x2
+		if = {
+			limit = {
+				has_game_rule = {
+					name = invaders_strength
+					value = x2
+				}
 			}
+			spawn_small_qiraji_troops_effect = yes
+			spawn_small_qiraji_troops_effect = yes
+			spawn_small_qiraji_troops_effect = yes
 		}
-		spawn_small_qiraji_troops_effect = yes
-		spawn_small_qiraji_troops_effect = yes
-		spawn_small_qiraji_troops_effect = yes
 	}
 }
 spawn_small_qiraji_troops_effect = {
@@ -3403,6 +3444,29 @@ build_all_evil_buildings_province_effect = {
 				}
 			}
 			build_all_evil_buildings_title_effect = yes
+		}
+	}
+}
+# Gives cannibal_trait to your courtiers
+court_share_cannibal_trait_effect = {
+	hidden_effect = {
+		any_courtier = {
+			limit = {
+				is_adult = yes
+				is_incapable = no
+				prisoner = no
+				is_inaccessible_trigger = no
+
+				is_ruler = no
+
+				religion = ROOT
+
+				NOT = { trait = cannibal_trait }
+			}
+			random = {
+				chance = 50
+				add_trait = cannibal_trait
+			}
 		}
 	}
 }
