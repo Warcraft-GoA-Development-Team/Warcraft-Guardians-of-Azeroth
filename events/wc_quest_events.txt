@@ -1,4 +1,4 @@
-namespace = WCCSO
+namespace = WCQUE
 
 ### Mission Tombola ###
 character_event = {
@@ -92,7 +92,7 @@ character_event = {
 					NOT = { society_member_of = cult_of_the_damned }
 				}
 				event_target:grandmaster = {
-					character_event = { id = WCDAC.7040 }
+					character_event = { id = WCQUE.400 }
 				}
 			}
 
@@ -109,7 +109,7 @@ character_event = {
 					}
 				}
 				event_target:grandmaster = {
-					character_event = { id = WCDAC.7050 }
+					character_event = { id = WCQUE.500 }
 				}
 			}
 
@@ -124,7 +124,7 @@ character_event = {
 					NOT = { society_member_of = shadow_council }
 				}
 				event_target:grandmaster = {
-					character_event = { id = WCDAC.8000 }
+					character_event = { id = WCQUE.600 }
 				}
 			}
 
@@ -144,7 +144,7 @@ character_event = {
 					}
 				}
 				event_target:grandmaster = {
-					character_event = { id = WCDAC.8010 }
+					character_event = { id = WCQUE.700 }
 				}
 			}
 
@@ -624,5 +624,254 @@ character_event = {
 				minor_soul_corruption_effect = yes
 			}
 		}
+	}
+}
+
+### Disembowel character ###
+# Ping event
+character_event = {
+	id = WCQUE.400
+	hide_window = yes
+
+	is_triggered_only = yes
+
+	immediate = { FROM = { society_quest_event = { id = WCQUE.405 days = 7 random = 7 } } }
+}
+#Assign event
+society_quest_event = {
+	id = WCQUE.405
+	desc = EVTDESC_WCDAC_7041
+	border = GFX_event_letter_frame_intrigue
+
+	is_triggered_only = yes
+
+	immediate = {
+		random_list = {
+			10 = { set_character_flag = disembowel_small_humanoid_flag }
+			10 = { set_character_flag = disembowel_medium_humanoid_flag }
+			5 = { set_character_flag = disembowel_large_humanoid_flag }
+		}
+	}
+
+	option = {
+		name = ACCEPT
+
+		if = {
+			limit = { has_character_flag = disembowel_small_humanoid_flag }
+			set_quest = quest_disembowel_small_humanoid
+		}
+		if = {
+			limit = { has_character_flag = disembowel_medium_humanoid_flag }
+			set_quest = quest_disembowel_medium_humanoid
+		}
+		if = {
+			limit = { has_character_flag = disembowel_large_humanoid_flag }
+			set_quest = quest_disembowel_large_humanoid
+		}
+	}
+
+	option = {
+		name = DECLINE
+		custom_tooltip = { text = decline_quest_tooltip }
+
+		add_character_modifier = {
+			name = quest_cooldown_timer
+			hidden = yes
+			days = 1000
+		}
+
+		ai_chance = { factor = 0 }
+	}
+
+	after = {
+		hidden_effect = {
+			clr_character_flag = disembowel_small_humanoid_flag
+			clr_character_flag = disembowel_medium_humanoid_flag
+			clr_character_flag = disembowel_large_humanoid_flag
+		}
+	}
+}
+
+### Turn into undead ###
+#Ping event
+character_event = {
+	id = WCQUE.500
+	hide_window = yes
+
+	is_triggered_only = yes
+
+	immediate = { FROM = { society_quest_event = { id = WCQUE.505 days = 7 random = 7 } } }
+}
+#Assign event
+society_quest_event = {
+	id = WCQUE.505
+	desc = EVTDESC_WCDAC_7051
+
+	is_triggered_only = yes
+
+	immediate = {
+		random_courtier = {
+			limit = {
+				ai = yes
+				is_adult = yes
+				is_incapable = no
+				prisoner = no
+
+				NOT = { character = ROOT }
+				NOT = { has_character_flag = being_raised_flag }
+
+				is_dark_being_trigger = no
+				is_humanoid_trigger = yes
+				is_in_society = no
+			}
+			save_event_target_as = target_future_undead
+		}
+	}
+
+	quest_target = event_target:target_future_undead
+
+	option = {
+		name = ACCEPT
+		event_target:target_future_undead = {
+			set_quest_target = {
+				id = quest_turn_into_undead
+				holder = ROOT
+			}
+		}
+	}
+	option  = {
+		name = DECLINE
+		custom_tooltip = { text = decline_quest_tooltip }
+
+		add_character_modifier = {
+			name = quest_cooldown_timer
+			hidden = yes
+			days = 1000
+		}
+
+		ai_chance = { factor = 0 }
+	}
+}
+
+### Drain a soul ###
+# Ping event
+character_event = {
+	id = WCQUE.600
+	hide_window = yes
+
+	is_triggered_only = yes
+
+	immediate = { FROM = { society_quest_event = { id = WCQUE.605 days = 7 random = 7 } } }
+}
+#Assign event
+society_quest_event = {
+	id = WCQUE.605
+	desc = EVTDESC_WCDAC_8001
+	border = GFX_event_letter_frame_intrigue
+
+	is_triggered_only = yes
+
+	immediate = {
+		random_list = {
+			5 = { set_character_flag = drain_soul_ruler_flag }
+			10 = { set_character_flag = drain_soul_holy_person_flag }
+			10 = { set_character_flag = drain_soul_virgin_flag }
+		}
+	}
+
+	option = {
+		name = ACCEPT
+
+		if = {
+			limit = { has_character_flag = drain_soul_ruler_flag }
+			set_quest = quest_drain_soul_ruler
+		}
+		if = {
+			limit = { has_character_flag = drain_soul_holy_person_flag }
+			set_quest = quest_drain_soul_holy_person
+		}
+		if = {
+			limit = { has_character_flag = drain_soul_virgin_flag }
+			set_quest = quest_drain_soul_virgin
+		}
+	}
+
+	option = {
+		name = DECLINE
+		custom_tooltip = { text = decline_quest_tooltip }
+
+		add_character_modifier = {
+			name = quest_cooldown_timer
+			hidden = yes
+			days = 1000
+		}
+
+		ai_chance = { factor = 0 }
+	}
+
+	after = {
+		hidden_effect = {
+			clr_character_flag = drain_soul_ruler_flag
+			clr_character_flag = drain_soul_holy_person_flag
+			clr_character_flag = drain_soul_virgin_flag
+		}
+	}
+}
+
+### Mind Control ###
+#Ping event
+character_event = {
+	id = WCQUE.700
+	hide_window = yes
+
+	is_triggered_only = yes
+
+	immediate = { FROM = { society_quest_event = { id = WCQUE.705 days = 7 random = 7 } } }
+}
+#Assign event
+society_quest_event = {
+	id = WCQUE.705
+	desc = {
+		trigger = { society_member_of = shadow_council }
+		text = EVTDESC_WCDAC_8011_council
+	}
+	desc = {
+		trigger = { society_member_of = twilights_hammer_cult }
+		text = EVTDESC_WCDAC_8011_cult
+	}
+
+	is_triggered_only = yes
+
+	immediate = {
+		random_courtier = {
+			limit = {
+				is_potential_mind_control_target_trigger = yes
+			}
+			save_event_target_as = target_mind
+		}
+	}
+
+	quest_target = event_target:target_mind
+
+	option = {
+		name = ACCEPT
+		event_target:target_mind = {
+			set_quest_target = {
+				id = quest_control_mind
+				holder = ROOT
+			}
+		}
+	}
+	option  = {
+		name = DECLINE
+		custom_tooltip = { text = decline_quest_tooltip }
+
+		add_character_modifier = {
+			name = quest_cooldown_timer
+			hidden = yes
+			days = 1000
+		}
+
+		ai_chance = { factor = 0 }
 	}
 }
