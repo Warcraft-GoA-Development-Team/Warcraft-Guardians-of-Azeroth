@@ -202,15 +202,31 @@ character_event = {
 			}
 			
 			# Build Barrow Den
-			10 = {
+			20 = {
 				trigger = {
 					is_landed = yes
 					
 					society_member_of = cenarion_circle
 					NOT = { has_character_flag = barrow_den_completed }
 				}
-				
 				set_character_flag = quest_build_barrow_den_flag
+				event_target:grandmaster = { character_event = { id = WCQUE.105 } }
+			}
+			
+			# Build Hospital
+			20 = {
+				trigger = {
+					is_playable = yes
+					
+					OR = {
+						society_member_of = cenarion_circle
+						society_member_of = sisterhood_of_elune
+					}
+					num_of_count_titles = 1
+					any_demesne_province = { has_hospital = no }
+				}
+				set_character_flag = quest_build_hospital_flag
+				event_target:grandmaster = { character_event = { id = WCQUE.105 } }
 			}
 
 			75 = { # AI bypasses missions at times
@@ -280,6 +296,7 @@ character_event = {
 				quest_control_mind_flag = { clr_character_flag = quest_control_mind_flag society_quest_event = { id = WCQUE.705 days = 7 random = 7 } }
 				quest_enter_emerald_dream_flag = { clr_character_flag = quest_enter_emerald_dream_flag society_quest_event = { id = WCQUE.800 days = 7 random = 7 } }
 				quest_build_barrow_den_flag = { clr_character_flag = quest_build_barrow_den_flag society_quest_event = { id = WCQUE.900 days = 7 random = 7 } }
+				quest_build_hospital_flag = { clr_character_flag = quest_build_hospital_flag society_quest_event = { id = WCQUE.1000 days = 7 random = 7 } }
 			}
 		}
 	}
@@ -1336,5 +1353,72 @@ character_event = {
 				piety = 300
 			}
 		}
+	}
+}
+
+### Build Hospital ###
+society_quest_event = {
+	id = WCQUE.1000
+	border = GFX_event_letter_frame_religion
+
+	desc = {
+		text = EVTDESC_WCCC.214
+	}
+	is_triggered_only = yes
+
+	option = {
+		name = ACCEPT
+		set_quest = quest_build_hospital
+	}
+
+	option = {
+		name = DECLINE
+		custom_tooltip = { text = decline_quest_tooltip }
+
+		add_character_modifier = {
+			name = quest_cooldown_timer
+			hidden = yes
+			days = 1000
+		}
+
+		ai_chance = { factor = 0 }
+	}
+}
+# on_hospital_construction_completed
+# Hospital is done
+letter_event = {
+	id = WCQUE.1005
+	desc = EVTDESC_WCCC.222
+	border = GFX_event_letter_frame_religion
+	portrait = event_target:target_grandmaster
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		NOT = { has_character_flag = hospital_construction_ongoing_flag }
+		
+		has_quest = quest_build_hospital
+	}
+	
+	immediate = {
+		set_character_flag = hospital_construction_ongoing_flag
+		
+		random_society_member = {
+			limit = {
+				same_society_as = ROOT
+				is_society_grandmaster = yes
+			}
+			save_event_target_as = target_grandmaster
+		}
+	}
+	
+	option = {
+		name = EVTOPTA_WCCC.222
+		clr_quest = quest_build_hospital
+		add_society_currency_tiny_effect = yes
+	}
+	
+	after = {
+		clr_character_flag = hospital_construction_ongoing_flag
 	}
 }
