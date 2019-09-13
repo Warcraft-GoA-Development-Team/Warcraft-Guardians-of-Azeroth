@@ -200,6 +200,18 @@ character_event = {
 				set_character_flag = quest_enter_emerald_dream_flag
 				event_target:grandmaster = { character_event = { id = WCQUE.105 } }
 			}
+			
+			# Build Barrow Den
+			10 = {
+				trigger = {
+					is_landed = yes
+					
+					society_member_of = cenarion_circle
+					NOT = { has_character_flag = barrow_den_completed }
+				}
+				
+				set_character_flag = quest_build_barrow_den_flag
+			}
 
 			75 = { # AI bypasses missions at times
 				modifier = {
@@ -267,6 +279,7 @@ character_event = {
 				quest_drain_soul_flag = { clr_character_flag = quest_drain_soul_flag society_quest_event = { id = WCQUE.605 days = 7 random = 7 } }
 				quest_control_mind_flag = { clr_character_flag = quest_control_mind_flag society_quest_event = { id = WCQUE.705 days = 7 random = 7 } }
 				quest_enter_emerald_dream_flag = { clr_character_flag = quest_enter_emerald_dream_flag society_quest_event = { id = WCQUE.800 days = 7 random = 7 } }
+				quest_build_barrow_den_flag = { clr_character_flag = quest_build_barrow_den_flag society_quest_event = { id = WCQUE.900 days = 7 random = 7 } }
 			}
 		}
 	}
@@ -859,6 +872,7 @@ society_quest_event = {
 		ai_chance = { factor = 0 }
 	}
 }
+
 ### Enter Emerald Dream ###
 #Assign event
 society_quest_event = {
@@ -886,5 +900,441 @@ society_quest_event = {
 		}
 
 		ai_chance = { factor = 0 }
+	}
+}
+
+### Build Barrow Den ###
+# Assign event
+society_quest_event = {
+	id = WCQUE.900
+	border = GFX_event_letter_frame_religion
+
+	desc = {
+		text = EVTDESC_WCCC.213
+	}
+	is_triggered_only = yes
+
+	option = {
+		name = ACCEPT
+		set_quest = quest_build_barrow_den
+		character_event = { id = WCQUE.905 days = 30 }
+	}
+
+	option = {
+		name = DECLINE
+		custom_tooltip = { text = decline_quest_tooltip }
+
+		add_character_modifier = {
+			name = quest_cooldown_timer
+			hidden = yes
+			days = 1000
+		}
+
+		ai_chance = { factor = 0 }
+	}
+}
+# Introductory event
+character_event = {
+	id = WCQUE.905
+	desc = EVTDESC_WCCC.230
+	picture = GFX_evt_ritual_scroll
+	border = GFX_event_normal_frame_religion
+	
+	is_triggered_only = yes
+
+	
+	option = {
+		name = EVTOPTA_WCCC.230
+		character_event = { id = WCQUE.910 days = 30}
+	}
+}
+# Size picking
+character_event = {
+	id = WCQUE.910
+	desc = EVTDESC_WCCC.231
+	picture = GFX_evt_ritual_scroll
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+
+	option = {
+		name = EVTOPTA_WCCC.231
+		custom_tooltip = { text = barrow_den_cost_200 }
+		
+		set_character_flag = barrow_den_small
+		
+		character_event = { id = WCQUE.915 days = 60 }
+	}
+	option = {
+		trigger = {
+			OR = {
+				ai = no
+				wealth = 100
+			}
+		}
+		name = EVTOPTB_WCCC.231
+		custom_tooltip = { text = barrow_den_cost_300 }
+		
+		set_character_flag = barrow_den_medium
+		
+		character_event = { id = WCQUE.915 days = 60 }
+	}
+	option = {
+		trigger = {
+			OR = {
+				ai = no
+				wealth = 300
+			}
+		}
+		name = EVTOPTC_WCCC.231
+		custom_tooltip = { text = barrow_den_cost_500 }
+		
+		set_character_flag = barrow_den_large
+		
+		character_event = { id = WCQUE.915 days = 60 }
+	}
+	# option = {
+		# name = EVTOPTD_WCCC.231
+		# trigger = { is_society_grandmaster = yes }
+		# set_character_flag = barrow_den_enormous
+		# character_event = { id = WCQUE.915 days = 60 }
+	# }
+}
+# You have found a perfect place... now pay gold or piety
+character_event = {
+	id = WCQUE.915
+	desc = EVTDESC_WCCC.232
+	picture = GFX_evt_ritual_scroll
+	border = GFX_event_normal_frame_religion
+	
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCCC.232
+		trigger = {
+			has_character_flag = barrow_den_small
+		}
+		character_event = { id = WCQUE.920 days = 120 }
+	}
+	option = {
+		name = EVTOPTB_WCCC.232
+		trigger = {
+			is_society_grandmaster = no
+			OR = {
+				has_character_flag = barrow_den_medium
+				has_character_flag = barrow_den_large
+			}
+		}
+		if = {
+			limit = {
+				has_character_flag = barrow_den_medium
+			}
+			wealth = -100
+			character_event = { id = WCQUE.920 days = 120 }
+		}
+		if = {
+			limit = {
+				has_character_flag = barrow_den_large
+			}
+			wealth = -300
+			character_event = { id = WCQUE.920 days = 120 }
+		}
+	}
+	option = {
+		name = EVTOPTC_WCCC.232
+		trigger = {
+			has_character_flag = barrow_den_medium
+			piety = 100
+			is_society_grandmaster = no
+		}
+		piety = -100
+		character_event = { id = WCQUE.920 days = 120 }
+	}
+	option = {
+		name = EVTOPTC_WCCC.232
+		trigger = {
+			has_character_flag = barrow_den_large
+			piety = 300
+			is_society_grandmaster = no
+		}
+		piety = -300
+		character_event = { id = WCQUE.920 days = 120 }
+	}
+	# option = {
+		# name = EVTOPTD_WCCC.232
+		# trigger = { is_society_grandmaster = yes }
+		# cenarion_circle = { any_society_member = { letter_event = { id = WCQUE.955 } } }
+	# }
+}
+# Early event tombola: satyr trickster, slow growth, corrupted land
+character_event = {
+	id = WCQUE.920
+	hide_window = yes
+	
+	is_triggered_only = yes
+	immediate = {
+		random_list = {
+			33 = {
+				character_event = { id = WCQUE.925 } # Satyr trickster
+			}
+			33 = {
+				character_event = { id = WCQUE.930 } # Slow growth
+			}
+			33 = {
+				character_event = { id = WCQUE.935 } # Corrupted land
+			}
+		}
+	}
+}
+# Satyr trickster
+character_event = {
+	id = WCQUE.925
+	desc = EVTDESC_WCCC.234
+	picture = GFX_evt_ritual_scroll
+	border = GFX_event_normal_frame_religion
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = EVTOPTA_WCCC.234
+		character_event = { id = WCQUE.940 days = 360 }
+	}
+	option = {
+		name = EVTOPTB_WCCC.234
+		trigger = { wealth = 100 }
+		wealth = -100
+		character_event = { id = WCQUE.940 days = 240 }
+	}
+	option = {
+		name = EVTOPTC_WCCC.234
+		tooltip_info = intrigue
+		trigger = {
+			intrigue = 12
+		}
+		character_event = { id = WCQUE.940 days = 120 }
+	}
+}
+# Slow growth
+character_event = {
+	id = WCQUE.930
+	desc = EVTDESC_WCCC.235
+	picture = GFX_evt_ritual_scroll
+	border = GFX_event_normal_frame_religion
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = EVTOPTA_WCCC.234
+		character_event = { id = WCQUE.940 days = 360 }
+	}
+	option = {
+		name = EVTOPTB_WCCC.235
+		trigger = { wealth = 100 }
+		wealth = -100
+		character_event = { id = WCQUE.940 days = 240 }
+	}
+	option = {
+		name = EVTOPTC_WCCC.235
+		tooltip_info = diplomacy
+		trigger = {
+			diplomacy = 12
+		}
+		character_event = { id = WCQUE.940 days = 120 }
+	}
+}
+# Corrupted land
+character_event = {
+	id = WCQUE.935
+	desc = EVTDESC_WCCC.236
+	picture = GFX_evt_ritual_scroll
+	border = GFX_event_normal_frame_religion
+	
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCCC.234
+		character_event = { id = WCQUE.940 days = 360 }
+	}
+	option = {
+		name = EVTOPTB_WCCC.236
+		trigger = { wealth = 100 }
+		wealth = -100
+		character_event = { id = WCQUE.940 days = 240 }
+	}
+	option = {
+		name = EVTOPTC_WCCC.236
+		tooltip_info = learning
+		trigger = {
+			learning = 12
+		}
+		character_event = { id = WCQUE.940 days = 120 }
+	}
+}
+# Start digging
+character_event = {
+	id = WCQUE.940
+	desc = EVTDESC_WCCC.237
+	picture = GFX_evt_ritual_scroll
+	border = GFX_event_normal_frame_religion
+	
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCCC.237
+		character_event = { id = WCQUE.945 days = 120 }
+	}
+}
+# Late event tombola: kobolds, creating tunnels takes a long time, earth Elemental complains
+character_event = {
+	id = WCQUE.945
+	hide_window = yes
+	
+	is_triggered_only = yes
+	immediate = {
+		random_list = {
+			33 = {
+				character_event = { id = WCQUE.950 } # Kobolds
+			}
+			33 = {
+				character_event = { id = WCQUE.955 } # Creating tunnels takes a long time
+			}
+			33 = {
+				character_event = { id = WCQUE.960 } # Earth Elemental complains
+			}
+		}
+	}
+}
+# Kobolds
+character_event = {
+	id = WCQUE.950
+	desc = EVTDESC_WCCC.239
+	picture = GFX_evt_ritual_scroll
+	border = GFX_event_normal_frame_religion
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = EVTOPTA_WCCC.239
+		character_event = { id = WCQUE.965 days = 360 }
+	}
+	option = {
+		name = EVTOPTB_WCCC.239
+		trigger = { wealth = 100 }
+		wealth = -100
+		character_event = { id = WCQUE.965 days = 240 }
+	}
+	option = {
+		name = EVTOPTC_WCCC.239
+		tooltip_info = martial
+		trigger = {
+			martial = 12
+		}
+		character_event = { id = WCQUE.965 days = 120 }
+	}
+}
+# Creating tunnels takes a long time
+character_event = {
+	id = WCQUE.955
+	desc = EVTDESC_WCCC.240
+	picture = GFX_evt_ritual_scroll
+	border = GFX_event_normal_frame_religion
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = EVTOPTA_WCCC.240
+		character_event = { id = WCQUE.965 days = 360 }
+	}
+	option = {
+		name = EVTOPTB_WCCC.240
+		trigger = { wealth = 100 }
+		wealth = -100
+		character_event = { id = WCQUE.965 days = 240 }
+	}
+	option = {
+		name = EVTOPTC_WCCC.240
+		tooltip_info = stewardship
+		trigger = {
+			stewardship = 12
+		}
+		character_event = { id = WCQUE.965 days = 120 }
+	}
+}
+# Earth Elemental complains
+character_event = {
+	id = WCQUE.960
+	desc = EVTDESC_WCCC.241
+	picture = GFX_evt_ritual_scroll
+	border = GFX_event_normal_frame_religion
+	
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCCC.241
+		character_event = { id = WCQUE.965 days = 360 }
+	}
+	option = {
+		name = EVTOPTB_WCCC.241
+		trigger = { wealth = 100 }
+		wealth = -100
+		character_event = { id = WCQUE.965 days = 240 }
+	}
+	option = {
+		name = EVTOPTC_WCCC.241
+		tooltip_info = learning
+		trigger = {
+			learning = 12
+		}
+		character_event = { id = WCQUE.965 days = 120 }
+	}
+}
+# Decoration time!
+character_event = {
+	id = WCQUE.965
+	desc = EVTDESC_WCCC.242
+	picture = GFX_evt_ritual_scroll
+	border = GFX_event_normal_frame_religion
+	
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCCC.242
+		character_event = { id = WCQUE.970 days = 120 }
+	}
+}
+# Barrow Den is done!
+character_event = {
+	id = WCQUE.970
+	desc = EVTDESC_WCCC.243
+	picture = GFX_evt_ritual_scroll
+	border = GFX_event_normal_frame_religion
+	
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCCC.243
+		clr_quest = quest_build_barrow_den
+		set_character_flag = barrow_den_completed
+		add_society_currency_medium_effect = yes
+		
+		trigger_switch = {	# trigger_switch is less CPU heavy
+			on_trigger = has_character_flag
+			barrow_den_small = {
+				clr_character_flag = barrow_den_small		# Always clear flags if they're not needed
+				add_character_modifier = { name = barrow_den_small duration = -1 }
+				piety = 100
+			}
+			barrow_den_medium = {
+				clr_character_flag = barrow_den_medium
+				add_character_modifier = { name = barrow_den_medium duration = -1 }
+				piety = 200
+			}
+			barrow_den_large = {
+				clr_character_flag = barrow_den_large
+				add_character_modifier = { name = barrow_den_large duration = -1 }
+				piety = 300
+			}
+		}
 	}
 }
