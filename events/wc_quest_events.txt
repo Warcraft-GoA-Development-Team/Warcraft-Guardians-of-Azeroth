@@ -1,6 +1,7 @@
 namespace = WCQUE
 
 ### Mission Tombola ###
+# Tombola itself
 character_event = {
 	id = WCQUE.100
 	
@@ -76,9 +77,8 @@ character_event = {
 						}
 					}
 				}
-				event_target:grandmaster = {
-					character_event = { id = WCQUE.300 }
-				}
+				set_character_flag = quest_infect_grain_flag
+				event_target:grandmaster = { character_event = { id = WCQUE.105 } }
 			}
 
 			# Disembowel character (mod)
@@ -91,9 +91,8 @@ character_event = {
 					factor = 0
 					NOT = { society_member_of = cult_of_the_damned }
 				}
-				event_target:grandmaster = {
-					character_event = { id = WCQUE.400 }
-				}
+				set_character_flag = quest_disembowel_flag
+				event_target:grandmaster = { character_event = { id = WCQUE.105 } }
 			}
 
 			# Turn into undead (mod)
@@ -108,9 +107,8 @@ character_event = {
 						is_potential_turn_into_undead_target_trigger = yes
 					}
 				}
-				event_target:grandmaster = {
-					character_event = { id = WCQUE.500 }
-				}
+				set_character_flag = quest_turn_into_undead_flag
+				event_target:grandmaster = { character_event = { id = WCQUE.105 } }
 			}
 
 			# Drain a soul (mod)
@@ -123,9 +121,8 @@ character_event = {
 					factor = 0
 					NOT = { society_member_of = shadow_council }
 				}
-				event_target:grandmaster = {
-					character_event = { id = WCQUE.600 }
-				}
+				set_character_flag = quest_drain_soul_flag
+				event_target:grandmaster = { character_event = { id = WCQUE.105 } }
 			}
 
 			# Mind Control (mod)
@@ -143,9 +140,8 @@ character_event = {
 						is_potential_mind_control_target_trigger = yes
 					}
 				}
-				event_target:grandmaster = {
-					character_event = { id = WCQUE.700 }
-				}
+				set_character_flag = quest_control_mind_flag
+				event_target:grandmaster = { character_event = { id = WCQUE.105 } }
 			}
 
 			# Desecrate temple (vanilla)
@@ -191,6 +187,16 @@ character_event = {
 				event_target:grandmaster = {
 					character_event = { id = MNM.7024 }
 				}
+			}
+			
+			# Enter Emerald Dream
+			10 = {
+				trigger = {
+					NOT = { trait = in_emerald_dream }
+					
+					society_member_of = cenarion_circle
+				}
+				set_character_flag = cenarion_circle_enter_emerald_dream
 			}
 
 			75 = { # AI bypasses missions at times
@@ -242,17 +248,28 @@ character_event = {
 		}
 	}
 }
+# Tombola ping event
+character_event = {
+	id = WCQUE.105
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
+		FROM = {
+			trigger_switch = {
+				on_trigger = has_character_flag
+				quest_infect_grain_flag = { clr_character_flag = quest_infect_grain_flag society_quest_event = { id = WCQUE.305 } }
+				quest_disembowel_flag = { clr_character_flag = quest_disembowel_flag society_quest_event = { id = WCQUE.405 } }
+				quest_turn_into_undead_flag = { clr_character_flag = quest_turn_into_undead_flag society_quest_event = { id = WCQUE.505 } }
+				quest_drain_soul_flag = { clr_character_flag = quest_drain_soul_flag society_quest_event = { id = WCQUE.605 } }
+				quest_control_mind_flag = { clr_character_flag = quest_control_mind_flag society_quest_event = { id = WCQUE.705 } }
+			}
+		}
+	}
+}
 
 ### Infect grain ###
-#Ping event
-character_event = {
-	id = WCQUE.300
-	hide_window = yes
-
-	is_triggered_only = yes
-
-	immediate = { FROM = { society_quest_event = { id = WCQUE.305 days = 7 random = 7 } } }
-}
 #Assign event
 society_quest_event = {
 	id = WCQUE.305
@@ -628,15 +645,6 @@ character_event = {
 }
 
 ### Disembowel character ###
-# Ping event
-character_event = {
-	id = WCQUE.400
-	hide_window = yes
-
-	is_triggered_only = yes
-
-	immediate = { FROM = { society_quest_event = { id = WCQUE.405 days = 7 random = 7 } } }
-}
 #Assign event
 society_quest_event = {
 	id = WCQUE.405
@@ -693,15 +701,6 @@ society_quest_event = {
 }
 
 ### Turn into undead ###
-#Ping event
-character_event = {
-	id = WCQUE.500
-	hide_window = yes
-
-	is_triggered_only = yes
-
-	immediate = { FROM = { society_quest_event = { id = WCQUE.505 days = 7 random = 7 } } }
-}
 #Assign event
 society_quest_event = {
 	id = WCQUE.505
@@ -754,15 +753,6 @@ society_quest_event = {
 }
 
 ### Drain a soul ###
-# Ping event
-character_event = {
-	id = WCQUE.600
-	hide_window = yes
-
-	is_triggered_only = yes
-
-	immediate = { FROM = { society_quest_event = { id = WCQUE.605 days = 7 random = 7 } } }
-}
 #Assign event
 society_quest_event = {
 	id = WCQUE.605
@@ -819,15 +809,6 @@ society_quest_event = {
 }
 
 ### Mind Control ###
-#Ping event
-character_event = {
-	id = WCQUE.700
-	hide_window = yes
-
-	is_triggered_only = yes
-
-	immediate = { FROM = { society_quest_event = { id = WCQUE.705 days = 7 random = 7 } } }
-}
 #Assign event
 society_quest_event = {
 	id = WCQUE.705
