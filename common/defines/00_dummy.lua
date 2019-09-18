@@ -64,3 +64,6 @@ NDefines.NEndGame.DYN15_SCORE = 86000
 NDefines.NEndGame.DYN15_ID = 0
 
 NDefines.NRulerDesigner.MAX_AGE = 30
+
+NDefines.NAI.AI_EMPEROR_CREATES_KINGDOMS = 1
+NDefines.NAI.MAX_KING_TITLES_TO_CREATE = 3
