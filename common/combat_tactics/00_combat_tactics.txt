@@ -858,9 +858,11 @@ fient_tactic = {
 	archers_offensive = 1.5
 	siege_machines_offensive = 1.5
 	
-	# knights # replaces vanilla knights except defence debuff
+	# knights # replaces vanilla knights
 	knights_offensive = -0.5
 	dragons_offensive = -0.5
+	knights_defensive = -0.5
+	dragons_defensive = -0.5
 }
 
 
@@ -1549,8 +1551,8 @@ barrage_tactic = {
 	trigger = {
 		phase = melee
 		OR = {
-			light_infantry_units_010_tactic_trigger = yes
-			archers_units_010_tactic_trigger = yes
+			light_infantry_units_020_tactic_trigger = yes
+			archers_units_020_tactic_trigger = yes
 		}
 	}
 
@@ -1558,36 +1560,45 @@ barrage_tactic = {
 		days = 3
 		modifier = {
 			factor = 3
-            flank_has_leader = yes
+			flank_has_leader = yes
 			leader = {
-				martial = 8
+				martial = 12
 			}
-			archers_troops_020_tactic_trigger = yes
-			light_infantry_troops_020_tactic_trigger = yes
+			OR = {
+				light_cavalry_troops_030_tactic_trigger = yes
+				archers_troops_030_tactic_trigger = yes
+			}
 		}
-
 		modifier = {
 			factor = 3
-            flank_has_leader = yes
+			flank_has_leader = yes
 			leader = {
-				martial = 16
+				martial = 12
 			}
-			archers_troops_020_tactic_trigger = yes
-			light_infantry_troops_020_tactic_trigger = yes
+			light_troops = {
+				who = horse_archers
+				value = 0.3
+			}
 		}
 	}
-
-	archers_offensive = 1.8
-	siege_machines_offensive = 1.8
-	light_infantry_offensive = 1.2
-	archmage_offensive = 1.2
+	
+	# horse_archers
+	horse_archers_offensive = 2.4
+	
+	# light_infantry # get modifiers of archers
+	light_infantry_offensive = 2.4
+	archmage_offensive = 2.4
+	
+	# archers
+	archers_offensive = 2.4
+	siege_machines_offensive = 2.4
 }
 
 raid_tactic = {
 	days = 6
 	sprite = 1
 	group = defensive
-
+	
 	trigger = {
 		phase = melee
 		light_cavalry_units_020_tactic_trigger = yes
@@ -1612,27 +1623,27 @@ raid_tactic = {
 			leader = {
 				martial = 12
 			}
-			light_infantry_troops_030_tactic_trigger = yes
+			heavy_infantry_troops_030_tactic_trigger = yes
 		}
 	}
-
+	
+	# heavy_infantry # 0.5 of vanilla light_infantry
+	heavy_infantry_offensive = 1.2
+	undead_offensive = 1.2
+	elite_infantry_offensive = 1.2
+	swarm_offensive = 1.2
+	thralls_offensive = 1.2
+	
 	# light_cavalry
 	light_cavalry_offensive = 2.4
-	# horse_archers_offensive = 2.4
 	animals_offensive = 2.4
-	
-	heavy_infantry_offensive = 2.4
-	undead_offensive = 2.4
-	swarm_offensive = 2.4
-	thralls_offensive = 2.4
-	elite_infantry_offensive = 2.4
 }
 
 pursue_tactic = {
 	days = 15
 	sprite = 4
 	group = charge
-
+	
 	trigger = {
 		phase = pursue
 	}
@@ -1652,7 +1663,7 @@ reckless_charge_tactic = {
 	days = 6
 	sprite = 9 # index of icon
 	group = charge
-
+	
 	trigger = {
 		phase = skirmish
 		is_flanking = no
@@ -1663,20 +1674,20 @@ reckless_charge_tactic = {
 				trait = aggressive_leader
 				trait = wroth
 			}
-		}
+		}		
 	}
 
 	mean_time_to_happen = {
 		days = 10 # this has nothing to do with days, it just represents relative chance of selecting this tactic, higher is better
 		modifier = {
-			factor = 4
+			factor = 3
 			flank_has_leader = yes
 			leader = {
 				NOT = { martial = 7 }
 			}
 			light_troops = {
-				who = large_cavalry
-				value = 0.1
+				who = horse_archers
+				value = 0.3
 			}
 		}
 		modifier = {
@@ -1685,7 +1696,10 @@ reckless_charge_tactic = {
 			leader = {
 				NOT = { martial = 7 }
 			}
-			light_cavalry_troops_010_tactic_trigger = yes
+			OR = {
+				pikemen_troops_010_tactic_trigger = yes
+				knights_units_010_tactic_trigger = yes
+			}
 		}
 		modifier = {
 			factor = 3
@@ -1698,17 +1712,36 @@ reckless_charge_tactic = {
 	}
 
 	change_phase_to = melee
-
-	# pikemen
-	large_cavalry_offensive = 1.2
-	large_cavalry_defensive = -0.5
-
+	
+	# horse_archers
 	horse_archers_defensive = -0.5
-	heavy_infantry_defensive = -0.3
-
 	horse_archers_offensive = 1.2
+	
+	# heavy_infantry
 	heavy_infantry_offensive = 0.6
+	undead_offensive = 0.6
+	elite_infantry_offensive = 0.6
+	swarm_offensive = 0.6
+	thralls_offensive = 0.6
+	heavy_infantry_defensive = -0.3
+	undead_defensive = -0.3
+	elite_infantry_defensive = -0.3
+	swarm_defensive = -0.3
+	thralls_defensive = -0.3
+	
+	# pikemen # replaces vanilla knights
+	knights_defensive = -0.5
+	war_machines_defensive = -0.5
+	knights_offensive = 1.2
+	war_machines_offensive = 1.2
+
+	# knights # replaces vanilla knights
+	knights_defensive = -0.5
+	dragons_defensive = -0.5
+	knights_offensive = 1.2
+	dragons_offensive = 1.2
 }
+
 
 timid_advance_tactic = {
 	days = 18
@@ -1736,26 +1769,28 @@ timid_advance_tactic = {
 				NOT = { martial = 7 }
 			}
 			heavy_infantry_troops_050_tactic_trigger = yes
-		}
+		}	
 	}
-
-	# pikemen
-	pikemen_offensive = -2.1
-	large_cavalry_offensive = -2.1
-	war_machines_offensive = -2.1
 	
-	heavy_infantry_offensive = -2.1
-	undead_offensive = -2.1
-	swarm_offensive = -2.1
-	thralls_offensive = -2.1
-	elite_infantry_offensive = -2.1
+	# light_infantry # get modifiers of archers
 	light_infantry_offensive = 1.2
 	archmage_offensive = 1.2
 	
-	# knights
-	knights_offensive = 1.2
-	dragons_offensive = 1.2
-
+	# heavy_infantry
+	heavy_infantry_offensive = -2.1
+	undead_offensive = -2.1
+	elite_infantry_offensive = -2.1
+	swarm_offensive = -2.1
+	thralls_offensive = -2.1
+	
+	# pikemen # replaces vanilla knights
+	pikemen_offensive = -2.1
+	war_machines_offensive = -2.1
+	
+	# knights # replaces vanilla knights
+	knights_offensive = -2.1
+	dragons_offensive = -2.1
+	
 	enemy = {
 		group = stand_fast
 		factor = 1.2
@@ -1768,8 +1803,11 @@ confused_orders_tactic = {
 	group = volley
 
 	trigger = {
-		phase = skirmish
-		archers_units_005_tactic_trigger = yes
+		phase = skirmish  
+		OR = {
+			light_infantry_units_005_tactic_trigger = yes
+			archers_units_005_tactic_trigger = yes
+		}
 		flank_has_leader = yes
 		leader = {
 			OR = {
@@ -1787,14 +1825,24 @@ confused_orders_tactic = {
 			leader = {
 				NOT = { martial = 7 }
 			}
-			archers_troops_050_tactic_trigger = yes
+			OR = {
+				light_infantry_troops_050_tactic_trigger = yes
+				archers_troops_050_tactic_trigger = yes
+			}
 		}
 	}
+	
+	# horse_archers
+	horse_archers_offensive = -1.2
+	
+	# light_infantry # get modifiers of archers
+	light_infantry_offensive = -1.2
+	archmage_offensive = -1.2
 
+	# archers
 	archers_offensive = -1.2
 	siege_machines_offensive = -1.2
-	horse_archers_offensive = -1.2
-
+	
 	enemy = {
 		group = charge
 		factor = -1.2
@@ -1827,24 +1875,28 @@ hesitant_commander_tactic = {
 			}
 		}
 	}
-
-	# pikemen
-	pikemen_offensive = -1.5
-	large_cavalry_offensive = -1.5
-	war_machines_offensive = -1.5
 	
+	# heavy_infantry
 	heavy_infantry_offensive = -1.5
 	undead_offensive = -1.5
+	elite_infantry_offensive = -1.5
 	swarm_offensive = -1.5
 	thralls_offensive = -1.5
-	elite_infantry_offensive = -1.5
+	
+	# pikemen # replaces vanilla knights
+	pikemen_offensive = -1.5
+	war_machines_offensive = -1.5
+
+	# knights # replaces vanilla knights
+	knights_offensive = -1.5
+	dragons_offensive = -1.5
 }
 
 charging_own_skirmishers_tactic = {
 	days = 6
 	sprite = 9 # index of icon
 	group = charge
-
+	
 	trigger = {
 		phase = skirmish
 		is_flanking = no
@@ -1861,7 +1913,10 @@ charging_own_skirmishers_tactic = {
 			leader = {
 				NOT = { martial = 10 }
 			}
-			light_cavalry_troops_020_tactic_trigger = yes
+			OR = {
+				pikemen_troops_010_tactic_trigger = yes
+				knights_troops_010_tactic_trigger = yes
+			}
 		}
 		modifier = {
 			factor = 3
@@ -1874,21 +1929,34 @@ charging_own_skirmishers_tactic = {
 	}
 
 	change_phase_to = melee
-
-	# pikemen
+	
+	# horse_archers
+	horse_archers_defensive = -0.3
+	horse_archers_offensive = -1.2
+	
+	# light_infantry # get modifiers of archers
+	light_infantry_defensive = -0.5
+	archmage_defensive = -0.5
+	light_infantry_offensive = -4.2
+	archmage_offensive = -4.2
+	
+	# pikemen # replaces vanilla knights
 	pikemen_offensive = 3
-	large_cavalry_offensive = 3
 	war_machines_offensive = 3
 	
 	# light_cavalry
 	light_cavalry_offensive = 1.8
-	horse_archers_offensive = -1.2
 	animals_offensive = 1.8
-	horse_archers_defensive = -0.3
-
-	archers_offensive = -4.2
+	
+	# knights # replaces vanilla knights
+	knights_offensive = 3
+	dragons_offensive = 3
+	
+	# archers
 	archers_defensive = -0.5
-	# NO SIEGE MACHINES - IN BACK OF ARMY
+	# siege_machines_defensive = -0.5	# In back of army
+	archers_offensive = -4.2
+	# siege_machines_offensive = -4.2	# In back of army
 }
 
 # Good tactics
@@ -1927,32 +1995,40 @@ inspired_defense_tactic = {
 			}
 		}
 	}
-
-	# pikemen
-	pikemen_defensive = 1.5
+	
+	# horse_archers
+	horse_archers_defensive = 1.5
+	
+	# large_cavalry
 	large_cavalry_defensive = 1.5
-	war_machines_defensive = 1.5
-
+	
+	# light_infantry
+	light_infantry_defensive = 1.5
+	archmage_defensive = 1.5
+	
+	# heavy_infantry
 	heavy_infantry_defensive = 1.5
 	undead_defensive = 1.5
+	elite_infantry_defensive = 1.5
 	swarm_defensive = 1.5
 	thralls_defensive = 1.5
-	elite_infantry_defensive = 1.5
-	light_infantry_defensive = 1.5
+	
+	# pikemen
+	pikemen_defensive = 1.5
+	war_machines_defensive = 1.5
 	
 	# light_cavalry
 	light_cavalry_defensive = 1.5
-	horse_archers_defensive = 1.5
 	animals_defensive = 1.5
 	
 	# knights
 	knights_defensive = 1.5
 	dragons_defensive = 1.5
 	
+	# archers
 	archers_defensive = 1.5
 	siege_machines_defensive = 1.5
-	archmage_defensive = 1.5
-
+	
 	enemy = {
 		group = charge
 		factor = 1.2
@@ -1969,8 +2045,11 @@ heroic_countercharge_tactic = {
 	group = charge
 
 	trigger = {
-		phase = melee
-		knights_units_005_tactic_trigger = yes
+		phase = melee 
+		OR = {
+			pikemen_units_005_tactic_trigger = yes
+			knights_units_005_tactic_trigger = yes
+		}
 		light_cavalry_units_005_tactic_trigger = yes
 		flank_has_leader = yes
 		leader = {
@@ -1990,39 +2069,52 @@ heroic_countercharge_tactic = {
 			leader = {
 				martial = 14
 			}
-			knights_troops_010_tactic_trigger = yes
+			OR = {
+				pikemen_troops_010_tactic_trigger = yes
+				knights_troops_010_tactic_trigger = yes
+			}
 		}
 	}
 	
+	# light_infantry # replaces vanilla pikemen
+	light_infantry_offensive = 0.6
+	archmage_offensive = 0.6
+	
+	# heavy_infantry
+	heavy_infantry_offensive = 0.6
+	undead_offensive = 0.6
+	elite_infantry_offensive = 0.6
+	swarm_offensive = 0.6
+	thralls_offensive = 0.6
+	
+	# pikemen # replaces vanilla knights
+	pikemen_offensive = 3.6
+	war_machines_offensive = 3.6
+	
 	# light_cavalry
 	light_cavalry_offensive = 3.6
-	# horse_archers_offensive = 3.6
 	animals_offensive = 3.6
 	
-	# knights
+	# knights # replaces vanilla knights
 	knights_offensive = 3.6
 	dragons_offensive = 3.6
-	
-	heavy_infantry_offensive = 0.6
-	# knights_offensive = 0.6
 
 	enemy = {
 		group = charge
 		factor = 3
 	}
 }
-
 glorious_countercharge_tactic = { #Call to Glory tactic. - Generic
 	days = 18
 	sprite = 5
 	group = charge
 
 	trigger = {
-		phase = melee
+		phase = melee 
 		OR = {
 			light_cavalry_units_005_tactic_trigger = yes
+			heavy_infantry_units_005_tactic_trigger = yes
 			light_infantry_units_005_tactic_trigger = yes
-			knights_units_005_tactic_trigger = yes
 			horse_archers = 0.01
 		}
 		flank_has_leader = yes
@@ -2043,15 +2135,22 @@ glorious_countercharge_tactic = { #Call to Glory tactic. - Generic
 		}
 	}
 	
+	# horse_archers
+	horse_archers_offensive = 1.75
+	
 	# light_infantry
 	light_infantry_offensive = 1.75
 	archmage_offensive = 1.75
-
+	
+	# heavy_infantry
 	heavy_infantry_offensive = 1.75
+	undead_offensive = 1.75
+	elite_infantry_offensive = 1.75
+	swarm_offensive = 1.75
+	thralls_offensive = 1.75
 	
 	# light_cavalry
 	light_cavalry_offensive = 1.75
-	horse_archers_offensive = 1.75
 	animals_offensive = 1.75
 	
 	# knights
@@ -2091,9 +2190,9 @@ clever_ambush_tactic = {
 			}
 			NOR = {
 				any_current_enemy = { has_opinion_modifier = { who = PREV modifier = opinion_honorable_combat } }
-				AND = {
-					OR = {
-						is_ruler = no
+				AND = { 
+					OR = { 
+						is_ruler = no 
 						is_playable = no
 					}
 					liege = { any_current_enemy = { has_opinion_modifier = { who = PREV modifier = opinion_honorable_combat } } }
@@ -2131,14 +2230,29 @@ clever_ambush_tactic = {
 			heavy_infantry_troops_020_tactic_trigger = yes
 		}
 	}
-
+	
+	# horse_archers
+	horse_archers_offensive = 1.2
+	
+	# light_infantry
+	light_infantry_offensive = 1.2
+	archmage_offensive = 1.2
+	
+	# heavy_infantry # 0.5 of vanilla light_infantry
+	heavy_infantry_offensive = 0.6
+	undead_offensive = 0.6
+	elite_infantry_offensive = 0.6
+	swarm_offensive = 0.6
+	thralls_offensive = 0.6
+	
 	# light_cavalry
 	light_cavalry_offensive = 2.4
-	horse_archers_offensive = 1.2
 	animals_offensive = 2.4
-	
-	siege_machines_offensive = 1.2
+
+	# archers
 	archers_offensive = 1.2
+	siege_machines_offensive = 1.2
+	
 	enemy = {
 		group = advance
 		factor = 3
@@ -2173,34 +2287,39 @@ religious_fervour_tactic = {
 			}
 		}
 	}
+
+	# horse_archers
+	horse_archers_offensive = 1.5
+	
+	# large_cavalry
+	large_cavalry_offensive = 1.5
 	
 	# light_infantry
 	light_infantry_offensive = 1.5
 	archmage_offensive = 1.5
-
-	# pikemen
-	pikemen_offensive = 1.5
-	large_cavalry_offensive = 1.5
-	war_machines_offensive = 1.5
-
+	
+	# heavy_infantry
 	heavy_infantry_offensive = 1.5
 	undead_offensive = 1.5
+	elite_infantry_offensive = 1.5
 	swarm_offensive = 1.5
 	thralls_offensive = 1.5
-	elite_infantry_offensive = 1.5
+	
+	# pikemen
+	pikemen_offensive = 1.5
+	war_machines_offensive = 1.5
 	
 	# light_cavalry
 	light_cavalry_offensive = 1.5
-	# horse_archers_offensive = 1.5
 	animals_offensive = 1.5
 	
 	# knights
 	knights_offensive = 1.5
 	dragons_offensive = 1.5
 	
-	siege_machines_offensive = 1.5
+	# archers
 	archers_offensive = 1.5
-	horse_archers_offensive = 1.5
+	siege_machines_offensive = 1.5
 }
 
 ############################
