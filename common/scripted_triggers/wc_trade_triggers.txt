@@ -1,3 +1,33 @@
+### Trade posts conditions
+
+can_build_trade_post_trigger = {
+	#custom_tooltip = {
+		#text = cannotBuildTradePost
+		FROM = { 
+			NOR = {
+				government = tribal_government
+				evil_public_religion_trigger = yes
+			} 
+		}
+	#}
+}
+
+patrician_condition_trigger = {
+	OR = {
+		FROM = {
+			is_patrician = no
+		}
+		AND = {
+			port = no
+			FROM = {
+				is_patrician = yes
+			}
+		}
+	}
+}
+
+### Trade posts locations
+
 eastern_kingdoms_north_trade_post_trigger = {
 	OR = {
 		province_id = 269
@@ -13,7 +43,7 @@ eastern_kingdoms_north_trade_post_trigger = {
 		province_id = 216
 		province_id = 198
 		province_id = 203
-		province_id = 3554
+		# province_id = 3554 # Tol Barad
 		province_id = 3543
 		province_id = 3526
 		# province_id = 266 # Revantusk
@@ -29,7 +59,7 @@ eastern_kingdoms_south_trade_post_trigger = {
 		province_id = 21			
 		province_id = 44
 		province_id = 17
-		province_id = 91
+		# province_id = 91 # Wild Cape
 		province_id = 50
 		province_id = 103
 		province_id = 109
@@ -61,11 +91,11 @@ kalimdor_trade_post_trigger = {
 	}
 }
 
-kalimdor_east_sea_trade_post_trigger = {
-	OR = {
-		province_id = 3320 # Valaar
-		province_id = 3316 # Darnassus
-	}
+eastern_kingdoms_west_sea_trade_post_trigger = {
+	always = no
+	# # OR = {
+		# province_id = 237 # Southshore
+	# # }
 }
 
 great_sea_trade_post_trigger = {
@@ -74,56 +104,64 @@ great_sea_trade_post_trigger = {
 		province_id = 560 # Mount Kajaro
 		# province_id = 576 # Banana Forest
 		province_id = 3576 # Dazar'alor
+		province_id = 91 # Wild Cape
 	}
 }
 
-eastern_kingdoms_west_sea_trade_post_trigger = {
-	always = no
-	# # OR = {
-		# province_id = 237 # Southshore
-	# # }
-}
-
-
-can_build_trade_post_trigger = {
-	#custom_tooltip = {
-		#text = cannotBuildTradePost
-		FROM = { 
-			NOR = {
-				government = tribal_government
-				evil_public_religion_trigger = yes
-			} 
-		}
-	#}
-}
-
-patrician_condition_trigger = {
+kalimdor_east_sea_trade_post_trigger = {
 	OR = {
-		FROM = {
-			is_patrician = no
-		}
-		AND = {
-			port = no
-			FROM = {
-				is_patrician = yes
-			}
-		}
+		province_id = 3320 # Valaar
+		province_id = 3316 # Darnassus
 	}
 }
+
+### Trade route triggers
+
+in_eastern_kingdoms_north_trade_route_trigger = {
+	trade_route = eastern_kingdoms_north_trade_route
+	eastern_kingdoms_north_trade_post_trigger = yes
+}
+
+in_eastern_kingdoms_south_trade_route_trigger = {
+	trade_route = eastern_kingdoms_south_trade_route
+	eastern_kingdoms_south_trade_post_trigger = yes
+}
+
+in_kalimdor_trade_route_trigger = {
+	trade_route = kalimdor_trade_route
+	kalimdor_trade_post_trigger = yes
+}
+
+in_eastern_kingdoms_west_sea_trade_route_trigger = {
+	trade_route = eastern_kingdoms_west_sea_trade_route
+	eastern_kingdoms_west_sea_trade_post_trigger = yes
+}
+
+in_great_sea_trade_route_trigger = {
+	trade_route = great_sea_trade_route
+	great_sea_trade_post_trigger = yes
+}
+
+in_kalimdor_east_sea_trade_route_trigger = {
+	trade_route = kalimdor_east_sea_trade_route
+	kalimdor_east_sea_trade_post_trigger = yes
+}
+
+### Buildings triggers
 
 in_land_trade_route_trigger = {
 	OR = {
-		trade_route = eastern_kingdoms_south_trade_route
-		trade_route = eastern_kingdoms_north_trade_route
-		trade_route = kalimdor_trade_route
+		in_kalimdor_trade_route_trigger = yes
+		in_eastern_kingdoms_north_trade_route_trigger = yes
+		in_eastern_kingdoms_south_trade_route_trigger = yes
 	}
 }
 
 in_sea_trade_route_trigger = {
 	OR = {
-		trade_route = eastern_kingdoms_west_sea_trade_route
-		trade_route = kalimdor_east_sea_trade_route
-		trade_route = great_sea_trade_route
+		in_great_sea_trade_route_trigger = yes
+		in_eastern_kingdoms_west_sea_trade_route_trigger = yes
+		in_kalimdor_east_sea_trade_route_trigger = yes
 	}
 }
 
@@ -136,17 +174,13 @@ in_trade_route_trigger = {
 
 in_major_trade_route_trigger = {
 	OR = {
-		trade_route = eastern_kingdoms_north_trade_route
-		trade_route = great_sea_trade_route
-		trade_route = kalimdor_trade_route
+		in_eastern_kingdoms_north_trade_route_trigger = yes
+		in_great_sea_trade_route_trigger = yes
+		in_kalimdor_trade_route_trigger = yes
 	}
 }
 
-in_minor_trade_route_trigger = {
-	in_major_trade_route_trigger = no
-	OR = {
-		# trade_route = kalimdor_east_sea_trade_route
-		# trade_route = eastern_kingdoms_west_sea_trade_route
-		trade_route = eastern_kingdoms_south_trade_route
-	}
+in_medium_trade_route_trigger = {
+	NOT = { in_major_trade_route_trigger = yes }
+	in_eastern_kingdoms_south_trade_route_trigger = yes
 }
