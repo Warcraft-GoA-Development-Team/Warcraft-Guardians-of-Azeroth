@@ -315,7 +315,7 @@ title_can_be_lost_trigger = {
 character_can_lose_title_trigger = {
 	is_untouchable_trigger = no
 
-	is_offmap_governor = no
+	NOT = { is_offmap_governor = yes }
 	
 	has_invader_title_trigger = no
 	has_dragonflight_title_trigger = no
@@ -325,7 +325,7 @@ character_can_be_vassalized_trigger = {
 	# independent = yes
 	mercenary = no
 	holy_order = no
-	is_offmap_governor = no
+	NOT = { is_offmap_governor = yes }
 	is_nomadic = no
 	in_revolt = no
 }
@@ -886,6 +886,8 @@ is_large_humanoid_trigger = {
 
 can_have_shadow_council_member_trigger = {
 	higher_tier_than = DUKE
+	
+	public_religion_associated_with_shadow_council_trigger = yes
 
 	is_society_grandmaster = no
 	society_member_of = shadow_council
@@ -2180,22 +2182,24 @@ has_weak_character_trigger = {
 		}
 	}
 }
-is_in_prev_faction = {
-	OR = {
-		AND = {
-			OR = {
-				is_member_of_horde_faction_trigger = yes
-				suzerain = { is_member_of_horde_faction_trigger = yes }
-			}
-			PREV = { is_member_of_horde_faction_trigger = yes }
+can_fight_prev_trigger = {
+	trigger_if = {
+		limit = {
+			is_member_of_horde_faction_trigger = yes
 		}
-		AND = {
-			OR = {
-				is_member_of_alliance_faction_trigger = yes
-				suzerain = { is_member_of_alliance_faction_trigger = yes }
-			}
-			PREV = { is_member_of_alliance_faction_trigger = yes }
+		PREV = { is_member_of_horde_faction_trigger = no }
+	}
+	trigger_if = {
+		limit = {
+			is_member_of_alliance_faction_trigger = yes
 		}
+		PREV = { is_member_of_alliance_faction_trigger = no }
+	}
+	trigger_if = { # Blocks infighting even you got different suzerains, but I can't allow that due to Paradox scripting rules
+		limit = {
+			is_tributary = { type = part_of_society suzerain = suzerain }
+		}
+		PREV = { NOT = { is_tributary = { type = part_of_society suzerain = suzerain } } }
 	}
 }
 
@@ -3812,27 +3816,18 @@ public_religion_associated_with_twilights_hammer_cult_trigger = {
 true_religion_associated_with_twilights_hammer_cult_trigger = {
 	true_religion = old_gods_worship
 }
-society_associated_with_religion_trigger = {
+society_associated_with_public_religion_trigger = {
 	trigger_if = {
 		limit = { society_member_of = cult_of_the_damned }
-		OR = {
-			public_religion_associated_with_cult_of_the_damned_trigger = yes
-			true_religion_associated_with_cult_of_the_damned_trigger = yes
-		}
+		public_religion_associated_with_cult_of_the_damned_trigger = yes
 	}
 	trigger_else_if = {
 		limit = { society_member_of = shadow_council }
-		OR = {
-			public_religion_associated_with_shadow_council_trigger = yes
-			true_religion_associated_with_shadow_council_trigger = yes
-		}
+		public_religion_associated_with_shadow_council_trigger = yes
 	}
 	trigger_else_if = {
 		limit = { society_member_of = twilights_hammer_cult }
-		OR = {
-			public_religion_associated_with_twilights_hammer_cult_trigger = yes
-			true_religion_associated_with_twilights_hammer_cult_trigger = yes
-		}
+		public_religion_associated_with_twilights_hammer_cult_trigger = yes
 	}
 
 	# Fallback
