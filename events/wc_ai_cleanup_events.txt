@@ -51,23 +51,11 @@ character_event = {
 
 	immediate = {
 		new_character = {
-			if = {
-				limit = { is_female = no }
-				save_event_target_as = target_husband
-			}
-			if = {
-				limit = { is_female = yes }
-				save_event_target_as = target_wife
-			}
+			save_event_target_as = target_other_spouse
+			character_event = { id = WCRAC.10 }		# Adds race trait just for sure
 			FROM = {
-				if = {
-					limit = { is_female = no }
-					save_event_target_as = target_husband
-				}
-				if = {
-					limit = { is_female = yes }
-					save_event_target_as = target_wife
-				}
+				save_event_target_as = target_spouse
+				character_event = { id = WCRAC.10 }		# Adds race trait just for sure
 				if = {
 					limit = { can_has_sexual_relation_with_prev = no }
 					character_event = { id = WCCLN.101 days = 1 }
@@ -96,30 +84,16 @@ character_event = {
 			limit = { trait = cannot_marry_trait }
 			log = "(IMPORTANT) [This.GetBestName] cannot_marry, but tried to marry"
 		}
-		if = {
-			limit = { character = event_target:target_husband }
-			remove_spouse = event_target:target_wife
-			break_betrothal = event_target:target_wife
-		}
-		else = {
-			remove_spouse = event_target:target_husband
-			break_betrothal = event_target:target_husband
-		}
+		remove_spouse = event_target:target_other_spouse
+		break_betrothal = event_target:target_other_spouse
 		character_event = { id = WCCLN.102 }
 
-		if = {
-			limit = { character = event_target:target_husband }
-			opinion = { modifier = opinion_divorced who = event_target:target_wife }
-			any_close_relative = { opinion = { modifier = opinion_divorced_relative who = event_target:target_wife } }
-		}
-		else = {
-			opinion = { modifier = opinion_divorced who = event_target:target_husband }
-			any_close_relative = { opinion = { modifier = opinion_divorced_relative who = event_target:target_husband } }
-		}
+		opinion = { modifier = opinion_divorced who = event_target:target_other_spouse }
+		any_close_relative = { opinion = { modifier = opinion_divorced_relative who = event_target:target_other_spouse } }
 		if = {
 			limit = {
 				is_pregnant = yes 
-				father_of_unborn = { character = event_target:target_husband }
+				father_of_unborn = { character = event_target:target_other_spouse }
 			}
 			death = { death_reason = death_childbirth }
 			break = yes
@@ -240,8 +214,8 @@ character_event = {
 
 	trigger = {
 		ai = yes
-		can_marry = yes
-		can_marry_trigger = yes
+		is_married = no
+		is_betrothed = no
 	}
 
 	immediate = {
