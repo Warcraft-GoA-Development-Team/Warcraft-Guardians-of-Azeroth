@@ -2839,9 +2839,12 @@ targetted_decisions = {
 						}
 					}
 				}
-				AND = {
+				trigger_if = {
+					limit = {
+						FROM = { has_quest = quest_control_mind }
+						is_quest_target_of = FROM
+					}
 					is_quest_target_of = FROM
-					FROM = { has_quest = quest_control_mind }
 				}
 			}
 
@@ -2877,12 +2880,15 @@ targetted_decisions = {
 							}
 							society_rank > 2
 						}
-						OR = {
-							has_society_currency_medium_trigger = yes
-							AND = {
-								ROOT = { is_quest_target_of = FROM }
+						trigger_if = {
+							limit = {
 								has_quest = quest_control_mind
+								ROOT = { is_quest_target_of = FROM }
 							}
+							ROOT = { is_quest_target_of = FROM }
+						}
+						trigger_else = {
+							has_society_currency_medium_trigger = yes
 						}
 					}
 					trigger_if = {
@@ -3253,17 +3259,15 @@ targetted_decisions = {
 						limit = { has_quest = quest_disembowel_small_humanoid }
 						clr_quest = quest_disembowel_small_humanoid
 						add_society_currency_minor_effect = yes
-						break = yes
 					}
-					if = {
+					else_if = {
 						limit = { society_member_of = cult_of_the_damned }
 						add_society_currency_trivial_effect = yes
 					}
 				}
-				break = yes
 			}
 			# Medium Humanoid
-			if = {
+			else_if = {
 				limit = { is_medium_humanoid_trigger = yes }
 				FROM = {
 					show_scope_change = no
@@ -3271,17 +3275,15 @@ targetted_decisions = {
 						limit = { has_quest = quest_disembowel_medium_humanoid }
 						clr_quest = quest_disembowel_medium_humanoid
 						add_society_currency_minor_effect = yes
-						break = yes
 					}
-					if = {
+					else_if = {
 						limit = { society_member_of = cult_of_the_damned }
 						add_society_currency_trivial_effect = yes
 					}
 				}
-				break = yes
 			}
 			# Large Humanoid
-			if = {
+			else_if = {
 				limit = { is_large_humanoid_trigger = yes }
 				FROM = {
 					show_scope_change = no
@@ -3289,17 +3291,14 @@ targetted_decisions = {
 						limit = { has_quest = quest_disembowel_large_humanoid }
 						clr_quest = quest_disembowel_large_humanoid
 						add_society_currency_medium_effect = yes
-						break = yes
 					}
-					if = {
+					else_if = {
 						limit = { society_member_of = cult_of_the_damned }
 						add_society_currency_minor_effect = yes
 					}
 				}
-				break = yes
 			}
-			FROM = {
-				show_scope_change = no
+			else = {
 				if = {
 					limit = { society_member_of = cult_of_the_damned }
 					add_society_currency_trivial_effect = yes
@@ -3356,7 +3355,7 @@ targetted_decisions = {
 
 		# If you modify potential or allow, don't forget to change WCDAC.7050
 		allow = {
-			show_only_failed_conditions = yes
+			# show_only_failed_conditions = yes
 			
 			FROM = {
 				show_scope_change = no
@@ -3377,7 +3376,16 @@ targetted_decisions = {
 							society_member_of = cult_of_the_damned
 							society_rank > 1
 						}
-						has_society_currency_minor_trigger = yes
+						trigger_if = {
+							limit = {
+								has_quest = quest_turn_into_undead
+								ROOT = { is_quest_target_of = FROM }
+							}
+							ROOT = { is_quest_target_of = FROM }
+						}
+						trigger_else = {
+							has_society_currency_minor_trigger = yes
+						}
 					}
 					AND = {
 						wealth = 50
@@ -3507,7 +3515,16 @@ targetted_decisions = {
 							society_member_of = cult_of_the_damned
 							society_rank > 2
 						}
-						has_society_currency_minor_trigger = yes
+						trigger_if = {
+							limit = {
+								has_quest = quest_turn_into_undead
+								ROOT = { is_quest_target_of = FROM }
+							}
+							ROOT = { is_quest_target_of = FROM }
+						}
+						trigger_else = {
+							has_society_currency_medium_trigger = yes
+						}
 					}
 					
 					# Fallback
@@ -3541,7 +3558,6 @@ targetted_decisions = {
 					}
 					clr_quest = quest_turn_into_undead
 					add_society_currency_medium_effect = yes
-					break = yes
 				}
 				else_if = {
 					limit = {
@@ -3555,9 +3571,9 @@ targetted_decisions = {
 					limit = {
 						society_member_of = cult_of_the_damned
 						society_rank > 2
-						has_society_currency_minor_trigger = yes
+						has_society_currency_medium_trigger = yes
 					}
-					detract_society_currency_minor_effect = yes
+					detract_society_currency_medium_effect = yes
 				}
 			}
 		}
