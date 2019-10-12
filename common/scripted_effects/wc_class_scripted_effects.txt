@@ -378,13 +378,7 @@ add_class_trait_effect = {
 			# Remove mortal traits
 			clr_mortal_traits_effect = yes
 		}
-		if = {
-			limit = {
-				religion = kaldorei_religion
-				NOT = { trait = subclass_moon_priest }
-			}
-			add_trait = subclass_moon_priest
-		}
+		add_subclass_moon_priest_effect = yes
 	}
 	if = {
 		limit = { check_variable = { which = wc_experience_rogue value = 1 } }
@@ -1021,6 +1015,16 @@ add_class_trait_effect = {
 	remove_training_modifiers_effect = yes
 	remove_class_things_effect = yes
 }
+add_subclass_moon_priest_effect = {
+	if = {
+		limit = {
+			is_female = yes
+			
+			religion = kaldorei_religion
+		}
+		add_trait = subclass_moon_priest
+	}
+}
 
 # AI use these effects to get class instead of decisions
 ai_add_mage_class_effect = {
@@ -1312,15 +1316,7 @@ ai_add_priest_class_effect = {
 				50 = { add_trait = class_priest_1 }
 			}
 		}
-		if = {
-			limit = {
-				religion = kaldorei_religion
-				
-				is_female = yes
-				NOT = { trait = subclass_moon_priest }
-			}
-			add_trait = subclass_moon_priest
-		}
+		add_subclass_moon_priest_effect = yes
 	}
 }
 ai_add_rogue_class_effect = {
@@ -1880,11 +1876,6 @@ ai_add_random_class_effect = {
 					modifier = {
 						factor = 0
 						united_priest_trigger = no
-					}
-					modifier = {
-						factor = 0
-						is_female = no
-						religion = kaldorei_religion
 					}
 				}
 				10 = {
@@ -4029,11 +4020,17 @@ class_level_up_effect = {
 # Adds class trait related to some religion
 add_class_religion_trait_effect = {
 	if = {
-		limit = { light_public_religion_trigger = yes }
+		limit = {
+			united_priest_trigger = yes
+			light_public_religion_trigger = yes
+		}
 		ai_add_priest_class_effect = yes
 	}
 	else_if = {
-		limit = { religion_group = druidism_group }
+		limit = {
+			united_druid_trigger = yes
+			religion_group = druidism_group
+		}
 		ai_add_druid_class_effect = yes
 	}
 	else_if = {
