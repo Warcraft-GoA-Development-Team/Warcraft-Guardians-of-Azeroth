@@ -315,7 +315,7 @@ title_can_be_lost_trigger = {
 character_can_lose_title_trigger = {
 	is_untouchable_trigger = no
 
-	is_offmap_governor = no
+	NOT = { is_offmap_governor = yes }
 	
 	has_invader_title_trigger = no
 	has_dragonflight_title_trigger = no
@@ -325,7 +325,7 @@ character_can_be_vassalized_trigger = {
 	# independent = yes
 	mercenary = no
 	holy_order = no
-	is_offmap_governor = no
+	NOT = { is_offmap_governor = yes }
 	is_nomadic = no
 	in_revolt = no
 }
@@ -392,22 +392,22 @@ is_completely_infertile_trigger = {
 	OR = {
 		trait = eunuch
 		trait = infertile
-		
+
 		trait = being_undead
 		trait = being_demon
-		
+
 		is_whelp_trigger = yes
 		is_drake_trigger = yes
 		is_dragon_trigger = yes
-		
+
 		is_elemental_trigger = yes
-		
+
 		is_uncursed_titanforged_trigger = yes
 		trait = creature_harpy
-		
+
 		is_nraqi_trigger = yes
 		trait = creature_qiraji
-		
+
 		is_plant_race_trigger = yes
 	}
 }
@@ -886,6 +886,8 @@ is_large_humanoid_trigger = {
 
 can_have_shadow_council_member_trigger = {
 	higher_tier_than = DUKE
+	
+	public_religion_associated_with_shadow_council_trigger = yes
 
 	is_society_grandmaster = no
 	society_member_of = shadow_council
@@ -2029,62 +2031,6 @@ can_be_explorer_trigger = {
 
 	liege = { higher_real_tier_than = DUKE }
 }
-member_of_organization_trigger = {
-	OR = {
-		trait = member_of_the_brotherhood_of_the_horse
-		trait = member_of_the_order_of_the_silver_hand
-		is_in_society = yes
-	}
-}
-has_common_dark_cult_prerequisites = {
-	is_untouchable_trigger = no
-	has_invader_title_trigger = no
-
-	is_adult = yes
-	
-	OR = {
-		AND = {
-			OR = {
-				is_tribal = no
-				government = tribal_monarchy_government
-			}
-			is_nomadic = no
-		}
-		evil_true_religion_trigger = yes
-	}
-
-	is_humanoid_trigger = yes
-	OR = {
-		evil_true_religion_trigger = yes
-		has_impious_trait_trigger = yes
-		has_unpleasant_trait_trigger = yes
-		trait = drunkard
-		trait = lunatic
-	}
-}
-has_cult_of_the_damned_prerequisites = {
-	has_common_dark_cult_prerequisites = yes
-	NOR = {
-		true_religion = orcish_fel
-		true_religion = burning_legion_religion
-		true_religion = old_gods_worship
-	}
-}
-has_shadow_council_prerequisites = {
-	has_common_dark_cult_prerequisites = yes
-	NOR = {
-		true_religion = death_god
-		true_religion = old_gods_worship
-	}
-}
-has_twilights_hammer_cult_prerequisites = {
-	has_common_dark_cult_prerequisites = yes
-	NOR = {
-		true_religion = death_god
-		true_religion = orcish_fel
-		true_religion = burning_legion_religion
-	}
-}
 
 # YOU CAN'T GET THE PLAGUE IF IT'S NOT TRUE
 is_susceptible_to_plague_character_trigger = {
@@ -2180,22 +2126,24 @@ has_weak_character_trigger = {
 		}
 	}
 }
-is_in_prev_faction = {
-	OR = {
-		AND = {
-			OR = {
-				is_member_of_horde_faction_trigger = yes
-				suzerain = { is_member_of_horde_faction_trigger = yes }
-			}
-			PREV = { is_member_of_horde_faction_trigger = yes }
+can_fight_prev_trigger = {
+	trigger_if = {
+		limit = {
+			is_member_of_horde_faction_trigger = yes
 		}
-		AND = {
-			OR = {
-				is_member_of_alliance_faction_trigger = yes
-				suzerain = { is_member_of_alliance_faction_trigger = yes }
-			}
-			PREV = { is_member_of_alliance_faction_trigger = yes }
+		PREV = { is_member_of_horde_faction_trigger = no }
+	}
+	trigger_if = {
+		limit = {
+			is_member_of_alliance_faction_trigger = yes
 		}
+		PREV = { is_member_of_alliance_faction_trigger = no }
+	}
+	trigger_if = { # Blocks infighting even you got different suzerains, but I can't allow that due to Paradox scripting rules
+		limit = {
+			is_tributary = { type = part_of_society suzerain = suzerain }
+		}
+		PREV = { NOT = { is_tributary = { type = part_of_society suzerain = suzerain } } }
 	}
 }
 
@@ -2675,12 +2623,14 @@ light_public_religion_trigger = {
 	OR = {
 		religion_group = light_group
 		religion_group = arakkoa_religion_group
+		religion = kaldorei_religion
 	}
 }
 light_true_religion_trigger = {
 	OR = {
 		true_religion_group = light_group
 		true_religion_group = arakkoa_religion_group
+		true_religion = kaldorei_religion
 	}
 }
 shamanic_public_religion_trigger = {
@@ -2895,6 +2845,14 @@ is_member_of_dominican_trigger = {
 		# To be added
 		always = no
 		# society_member_of = monastic_order_dominican
+	}
+}
+# Analogs of the Stoics in the Warcraft universe
+is_member_of_stoics_trigger = {
+	OR = {
+		# To be added
+		always = no
+		# society_member_of = monastic_order_stoics
 	}
 }
 prevs_title_can_has_laws_trigger = {
@@ -3613,6 +3571,7 @@ like_christian_public_religion_trigger = {
 		light_public_religion_trigger = yes
 		religion = tidemother
 	}
+	NOT = { religion = kaldorei_religion }
 }
 
 # ...like buddhists...
@@ -3812,27 +3771,18 @@ public_religion_associated_with_twilights_hammer_cult_trigger = {
 true_religion_associated_with_twilights_hammer_cult_trigger = {
 	true_religion = old_gods_worship
 }
-society_associated_with_religion_trigger = {
+society_associated_with_public_religion_trigger = {
 	trigger_if = {
 		limit = { society_member_of = cult_of_the_damned }
-		OR = {
-			public_religion_associated_with_cult_of_the_damned_trigger = yes
-			true_religion_associated_with_cult_of_the_damned_trigger = yes
-		}
+		public_religion_associated_with_cult_of_the_damned_trigger = yes
 	}
 	trigger_else_if = {
 		limit = { society_member_of = shadow_council }
-		OR = {
-			public_religion_associated_with_shadow_council_trigger = yes
-			true_religion_associated_with_shadow_council_trigger = yes
-		}
+		public_religion_associated_with_shadow_council_trigger = yes
 	}
 	trigger_else_if = {
 		limit = { society_member_of = twilights_hammer_cult }
-		OR = {
-			public_religion_associated_with_twilights_hammer_cult_trigger = yes
-			true_religion_associated_with_twilights_hammer_cult_trigger = yes
-		}
+		public_religion_associated_with_twilights_hammer_cult_trigger = yes
 	}
 
 	# Fallback
@@ -4390,5 +4340,17 @@ religion_has_heaven_and_hell_trigger = {
 		religion = holy_light
 		religion = scarlet_light
 		religion = odyn
+	}
+}
+
+is_bad_priest_trigger = {
+	always = no
+}
+
+religion_has_no_gods_trigger = {
+	OR = {
+		secular_public_religion_trigger = yes
+		religion = old_ways
+		religion = druidism_beliefs
 	}
 }
