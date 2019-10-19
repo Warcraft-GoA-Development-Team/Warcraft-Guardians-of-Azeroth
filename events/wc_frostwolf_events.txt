@@ -1,8 +1,54 @@
 namespace = WCFW
-#Frost Wolf exile event chain 1-99
-# Delayer event
+# Frostwolf Chain
+# Delayer event = delayed event + 100
+# Reaction event = actual event + 200
+
+# Starting Chain 1-3
+# delayer event for starting chain
 province_event = {
 	id = WCFW.101
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		d_stormreaver = {
+			holder_scope = {
+				if = { # Only start this if there's a butcher alive, if not then.. nothing happens!
+					limit = { frostwolf_chain_butcher_exists = yes }
+					narrative_event = { id = WCFW.1 }
+				}
+			}
+		}
+	}
+}
+
+# Event to Stormreaver owner (Gul'dan or successors)
+narrative_event = {
+	id = WCFW.1
+	title = EVTTITLE_WCFW_1
+	desc = EVTDESC_WCFW_1
+	picture = GFX_evt_orc_city
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+	hide_from = yes
+
+	option = {
+		name = EVTOPT_WCFW_1
+		custom_tooltip = { text = EVTOPT_WCFW_1_tooltip }
+		73 = {
+			province_event = {
+				id = WCFW.200
+				days = 7
+			}
+		}
+	}
+}
+
+# Delayer event
+province_event = {
+	id = WCFW.200
 
 	is_triggered_only = yes
 	hide_window = yes
@@ -11,45 +57,30 @@ province_event = {
 		d_frostwolf = {
 			holder_scope = {
 				if = {
-					limit = { frostwolf_exodus_d_frostwolf_trigger = yes }
-					narrative_event = { id = WCFW.1 }
-				}
-				else = {
-					character_event = { id = WCFW.200 }
+					limit = { frostwolf_leader_exists = yes }
+					narrative_event = { id = WCFW.2 }
 				}
 			}
 		}
 	}
 }
-# Delayed event
+
+# Durotan's informing
 narrative_event = {
-	id = WCFW.1
-	title = EVTTITLE_WCFW_1
-	desc = EVTDESC_WCFW_1
+	id = WCFW.2
+	title = EVTTITLE_WCFW_2
+	desc = EVTDESC_WCFW_2
 	picture = GFX_evt_orc_city
 	border = GFX_event_narrative_frame_war
 
-	hide_from = yes
-
 	is_triggered_only = yes
 
-	trigger = {
-		is_adult = yes
-		is_incapable = no
-		has_landed_title = d_frostwolf
-	}
-	immediate = {
-		if = {
-			limit = { has_global_flag = full_report_flag }
-			log = "WCFW.1 fired for [Root.GetBestName]"
-		}
-	}
-
 	option = {
-		name = EVTOPTA_WCFW.1
-		custom_tooltip = { text = EVTOPTA_WCFW_1_tooltip }
+		name = EVTOPTA_WCFW_2
+		custom_tooltip = { text = EVTOPTA_WCFW_2_tooltip }
 		prestige = 10
-		#We have to go to North. Our home has always been in the North.
+		# We're heading north.
+		# Our home has always been in the north.
 		73 = {
 			province_event = {
 				id = WCFW.110
@@ -58,11 +89,11 @@ narrative_event = {
 		}
 	}
 	option = {
-		name = EVTOPTB_WCFW.1
-		custom_tooltip = { text = EVTDESB_WCFW.1 }
+		name = We will be heading south.
+		custom_tooltip = { text = EVTDESB_WCFW_2 }
 		prestige = -10
-		#We have to go south...
-		#Perhaps, the road is going to be challenging, but the Horde has no plans at south.
+		# We have to go to the south...
+		# The road is going to be challenging, but we can establish our home far from the threat.
 		73 = {
 			province_event = {
 				id = WCFW.120
@@ -71,12 +102,18 @@ narrative_event = {
 		}
 	}
 	option = {
-		name = EVTOPTC_WCFW.1
-		custom_tooltip = { text = EVTDESC_WCFW.1 } #We should stay here for a while and find allies among other clans... No doubt, Blackhand would give us a rocky stay here, but it may help us in the future.
+		name = EVTOPTC_WCFW_2
+		custom_tooltip = { text = EVTOPT_WCFW_2_tooltip } # You refuse to leave, ignoring forcer's (Gul'dan/successor) threats.
+		73 = {
+			province_event = {
+				id = WCFW.600
+				days = 7
+			}
+		}
 	}
 }
 
-#North chain 10-19 50-69
+# Go North Chain 10-12 (North) 20-24 (More North) 30-34 (West)
 # Delayer event
 province_event = {
 	id = WCFW.110
@@ -88,11 +125,11 @@ province_event = {
 		d_frostwolf = {
 			holder_scope = {
 				if = {
-					limit = { frostwolf_exodus_d_frostwolf_trigger = yes }
+					limit = { frostwolf_leader_exists = yes }
 					narrative_event = { id = WCFW.10 }
 				}
 				else = {
-					character_event = { id = WCFW.200 }
+					73 = { province_event = { id = WCFW.600 } }
 				}
 			}
 		}
@@ -102,55 +139,111 @@ province_event = {
 narrative_event = {
 	id = WCFW.10
 	title = EVTTITLE_WCFW_10
-	desc = EVTDESC_WCFW.10 #These lands remind us of the home, but they seems to be inhabited.
+	desc = EVTDESC_WCFW_10 # We went North, now what...
 	picture = GFX_evt_khazmodanroad
 	border = GFX_event_narrative_frame_war
 
 	is_triggered_only = yes
 
 	option = {
-		name = EVTOPTA_WCFW.10
+		name = EVTOPTA_WCFW_10 # We will continue north. (Alterac)
 		custom_tooltip = { text = EVTOPTA_WCFW_10_tooltip }
-		#Go Northern
+		# Go North
 		73 = {
 			province_event = {
-				id = WCFW.111 #Northern
+				id = WCFW.111 # North
 				days = 31
 			}
 		}
 	}
 	option = {
-		name = EVTOPTB_WCFW.10
+		name = EVTOPTB_WCFW_10 # We will go towards the west. (Ironforge)
 		custom_tooltip = { text = EVTOPTB_WCFW_10_tooltip }
-		#Go Western
+		# Go Western
 		73 = {
 			province_event = {
-				id = WCFW.112 #Western
+				id = WCFW.130 # West
 				days = 31
 			}
 		}
 	}
-	option = { # I stupid orc I no understand where me go (We go there, where the air blows!)
-		name = EVTOPTC_WCFW.10
+	option = {
+		name = EVTOPTC_WCFW_10 # Let the spirits guide us, we shall follow the winds! (either N or W)
 		piety = 50
 		random_list = {
 			50 = {
 				73 = {
 					province_event = {
-						id = WCFW.111 #Northern
+						id = WCFW.111 # North
 						days = 31
 					}
 				}
-				custom_tooltip = { text = EVTOPTA1_WCFW_10_tooltip } #we follow this path.
+				custom_tooltip = { text = EVTOPTA1_WCFW_10_tooltip } # and we travel towards the North.
 			}
 			50 = {
 				73 = {
 					province_event = {
-						id = WCFW.112 #Western
+						id = WCFW.130 # West
 						days = 31
 					}
 				}
-				custom_tooltip = { text = EVTOPTA2_WCFW_10_tooltip } #we follow another path.
+				custom_tooltip = { text = EVTOPTA2_WCFW_10_tooltip } # and we travel towards the West.
+			}
+		}
+	}
+}
+
+# Delayer event
+province_event = {
+	id = WCFW.111
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		d_frostwolf = {
+			holder_scope = {
+				if = {
+					limit = { frostwolf_leader_exists = yes }
+					narrative_event = { id = WCFW.11 }
+				}
+				else = {
+					73 = { province_event = { id = WCFW.600 } }
+				}
+			}
+		}
+	}
+}
+
+# Delayed event
+narrative_event = {
+	id = WCFW.11 #Alterac
+	title = EVTTITLE_WCFW_11
+	desc = EVTDESC_WCFW_11 # We arrive in Alterac...
+	picture = GFX_evt_alteracvalley
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCFW_11 # The Frostwolves will call this place home. (Settle Alterac)
+		prestige = 200
+
+		73 = {
+			province_event = {
+				id = WCFW.112
+				days = 7
+			}
+		}
+	}
+	option = {
+		name = EVTOPTB_WCFW_11 # There are not enough resources here for us. (further North)
+		custom_tooltip = { text = EVTOPTB_WCFW_11_tooltip }
+
+		73 = {
+			province_event = {
+				id = WCFW.113
+				days = 14
 			}
 		}
 	}
@@ -167,54 +260,60 @@ province_event = {
 		d_frostwolf = {
 			holder_scope = {
 				if = {
-					limit = { frostwolf_exodus_d_frostwolf_trigger = yes }
+					limit = { frostwolf_leader_exists = yes }
 					narrative_event = { id = WCFW.12 }
 				}
 				else = {
-					character_event = { id = WCFW.200 }
+					73 = { province_event = { id = WCFW.600 } }
 				}
 			}
 		}
 	}
 }
+
 # Delayed event
 narrative_event = {
-	id = WCFW.12
+	id = WCFW.12 #Settle in Alterac
 	title = EVTTITLE_WCFW_12
-	desc = EVTDESC_WCFW.12 #During our path we met stunted locals. And although some were friendly, most were afraid of us!  They never seen such terrible creatures as orcs. Timid animals!
-	picture = GFX_evt_dwarffortress
+	desc = EVTDESC_WCFW_12
+	picture = GFX_evt_alteracvalley2
 	border = GFX_event_narrative_frame_war
 
 	is_triggered_only = yes
 
-	option = {
-		name = EVTOPTA_WCFW.12
-		random_list = {
-			50 = {
-				73 = {
-					province_event = {
-						id = WCFW.113
-						days = 7
-					}
-				}
-				custom_tooltip = { text = EVTOPTA1_WCFW_12_tooltip } #we ran into problems.
-			}
-			50 = {
-				73 = {
-					province_event = {
-						id = WCFW.114
-						days = 14
-					}
-				}
-				custom_tooltip = { text = EVTOPTA2_WCFW_12_tooltip } #everything is good.
-			}
+
+	immediate = {
+		# Used in scripted effects
+		save_event_target_as = target_settler
+
+		c_alterac_valley = {
+			show_scope_change = no
+			
+			# event_target:target_settler and its people settle here
+			settle_as_target_settler_effect = yes
+			
+			# Declares war against player
+			target_settler_declare_war_effect = yes
 		}
+		
+		# If you're not independent ruler, gives old titles to liege
+		give_old_titles_to_heir_effect = yes
+		
+		clear_settler_flag_effect = yes
+	}
+
+	option = {
+		name = EVTOPTA_WCFW_12
+
+		#Settle in c_alterac_valley
+
+		narrative_event = { id = WCFW.50 }
 	}
 }
 
 # Delayer event
 province_event = {
-	id = WCFW.113
+	id = WCFW.120
 
 	is_triggered_only = yes
 	hide_window = yes
@@ -223,11 +322,183 @@ province_event = {
 		d_frostwolf = {
 			holder_scope = {
 				if = {
-					limit = { frostwolf_exodus_d_frostwolf_trigger = yes }
-					narrative_event = { id = WCFW.13 }
+					limit = { frostwolf_leader_exists = yes }
+					narrative_event = { id = WCFW.20 }
 				}
 				else = {
-					character_event = { id = WCFW.200 }
+					73 = { province_event = { id = WCFW.600 } }
+				}
+			}
+		}
+	}
+}
+
+# Delayed event
+narrative_event = {
+	id = WCFW.20 #Way to Dragon Isles
+	title = EVTTITLE_WCFW_20
+	desc = EVTDESC_WCFW_20 # You continue your journey through the mountains until they fall almost directly into the sea. Two choices..
+	picture = GFX_evt_lordaeron_coast
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCFW_20 # An ocean, you say? (Cross it)
+		custom_tooltip = { text = EVTOPTA_WCFW_20_tooltip } # You look for a way across the sea.
+
+		73 = {
+			province_event = {
+				id = WCFW.121
+				days = 14
+			}
+		}
+	}
+	option = {
+		name = EVTOPTB_WCFW_20 # Go back to the valley. (Settle Alterac)
+		custom_tooltip = { text = EVTOPTB_WCFW_20_tooltip } # You head south and settle in the Alterac Valley
+
+		73 = {
+			province_event = {
+				id = WCFW.112
+				days = 21
+			}
+		}
+	}
+}
+
+# Delayer event
+province_event = {
+	id = WCFW.121
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		d_frostwolf = {
+			holder_scope = {
+				if = {
+					limit = { frostwolf_leader_exists = yes }
+					narrative_event = { id = WCFW.21 }
+				}
+				else = {
+					73 = { province_event = { id = WCFW.600 } }
+				}
+			}
+		}
+	}
+}
+
+# Delayed event
+narrative_event = {
+	id = WCFW.21
+	title = EVTTITLE_WCFW_21
+	desc = EVTDESC_WCFW_21 # After scouting the coastline, we found a small, poorly protected port in which many merchant ships are moored
+	picture = GFX_evt_busy_trading_dock_republic
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCFW_21 # Go ahead!
+		custom_tooltip = { text = EVTOPTA_WCFW_21_tooltip } # We steal the ships.
+		
+		73 = {
+			province_event = {
+				id = WCFW.22
+				days = 3
+			}
+		}
+	}
+}
+
+# Delayed event
+narrative_event = {
+	id = WCFW.22
+	title = EVTTITLE_WCFW_22
+	desc = EVTDESC_WCFW_22 # We managed to steal the ships without loss among our clan!
+	picture = GFX_evt_merchant_ship_at_sea_republic
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+	
+	immediate = {
+		c_agamand = {
+			holder_scope = {
+				narrative_event = {
+					id = WCFW.222
+				}
+			}
+		}
+	}
+
+	option = {
+		name = EVTOPTA_WCFW_22 # Throm-Ka!
+		custom_tooltip = { text = EVTOPTA_WCFW_22_tooltip } # Raise the sails!
+
+		prestige = 200
+		wealth = 50
+
+		random_list = {
+			50 = {
+				73 = {
+					province_event = {
+						id = WCFW.123
+						days = 14
+					}
+				}
+				custom_tooltip = { text = EVTOPTA1_WCFW_22_tooltip } # We sail into a storm.
+			}
+			50 = {
+				73 = {
+					province_event = {
+						id = WCFW.124
+						days = 30
+					}
+				}
+				custom_tooltip = { text = EVTOPTA2_WCFW_22_tooltip } # Land ho!
+			}
+		}
+	}
+}
+
+# Reaction Event to WCFW.22
+narrative_event = {
+	id = WCFW.222
+	title = EVTTITLE_WCFW_222
+	desc = EVTDESC_WCFW_222 #A messenger arrived with dire news. A small trading port in northern Lordaeron was raided, and the ships were stolen by bandits!
+	picture = GFX_evt_busy_trading_dock_republic
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCFW_222 # Those damn murlocs must be getting smarter and smarter...
+
+		prestige = -100
+		wealth = -50
+
+		opinion = { modifier = opinion_angry who = FROM years = 5 }
+		add_rival = FROM
+	}
+}
+
+# Delayer event
+province_event = {
+	id = WCFW.123
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		d_frostwolf = {
+			holder_scope = {
+				if = {
+					limit = { frostwolf_leader_exists = yes }
+					narrative_event = { id = WCFW.53 }
+				}
+				else = {
+					73 = { province_event = { id = WCFW.600 } }
 				}
 			}
 		}
@@ -235,9 +506,190 @@ province_event = {
 }
 # Delayed event
 narrative_event = {
-	id = WCFW.13
-	title = EVTTITLE_WCFW_13
-	desc = EVTDESC_WCFW.13 #Dwarven patrol
+	id = WCFW.23
+	title = EVTTITLE_WCFW_23
+	desc = EVTDESC_WCFW_23 # While out at sea, we ended up sailing directly into a horrible storm. Many of our tribesmen have died, and more yet are missing...
+	picture = GFX_evt_tempest
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+
+	immediate = {
+		# Used in scripted effects
+		save_event_target_as = target_settler
+
+		c_dragon_isles = {
+			show_scope_change = no
+			
+			# event_target:target_settler and its people settle here
+			settle_as_target_settler_effect = yes
+			
+			# Declares war against player
+			target_settler_declare_war_effect = yes
+		}
+		
+		# If you're not independent ruler, gives old titles to liege
+		give_old_titles_to_heir_effect = yes
+		
+		clear_settler_flag_effect = yes
+	}
+
+	option = {
+		name = EVTOPTA_WCFW_23 # Establish a camp!
+		custom_tooltip = { text = EVTOPTA_WCFW_23_tooltip } # After that we can capture the local castle...
+
+		# Settle in c_dragon_isles
+
+		narrative_event = { id = WCFW.50 }
+	}
+}
+
+# Delayer event
+province_event = {
+	id = WCFW.124
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		d_frostwolf = {
+			holder_scope = {
+				if = {
+					limit = { frostwolf_leader_exists = yes }
+					narrative_event = { id = WCFW.24 }
+				}
+				else = {
+					73 = { province_event = { id = WCFW.600 } }
+				}
+			}
+		}
+	}
+}
+
+# Delayed event
+narrative_event = {
+	id = WCFW.24
+	title = EVTTITLE_WCFW_24
+	desc = EVTDESC_WCFW_24 # We find Northrend
+	picture = GFX_evt_northrend_coast
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+
+	immediate = {
+		# Used in scripted effects
+		save_event_target_as = target_settler
+
+		c_scalawag_point = {
+			show_scope_change = no
+			
+			# event_target:target_settler and its people settle here
+			settle_as_target_settler_effect = yes
+			
+			# Declares war against player
+			target_settler_declare_war_effect = yes
+		}
+		
+		# If you're not independent ruler, gives old titles to liege
+		give_old_titles_to_heir_effect = yes
+		
+		clear_settler_flag_effect = yes
+	}
+
+	option = {
+		name = EVTOPTA_WCFW_24 # At last, our new home!
+		custom_tooltip = { text = EVTOPTA_WCFW_24_tooltip }
+
+		# Settle in c_scalawag_point
+
+		narrative_event = { id = WCFW.50 }
+	}
+}
+
+# Delayer event
+province_event = {
+	id = WCFW.130
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		d_frostwolf = {
+			holder_scope = {
+				if = {
+					limit = { frostwolf_leader_exists = yes }
+					narrative_event = { id = WCFW.30 }
+				}
+				else = {
+					73 = { province_event = { id = WCFW.600 } }
+				}
+			}
+		}
+	}
+}
+
+# Delayed event
+narrative_event = {
+	id = WCFW.30
+	title = EVTTITLE_WCFW_30
+	desc = EVTDESC_WCFW_30 # During our travels, we found a land with strange and small inhabitants.
+	picture = GFX_evt_dwarffortress
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCFW_30
+		random_list = {
+			50 = {
+				73 = {
+					province_event = {
+						id = WCFW.131
+						days = 7
+					}
+				}
+				custom_tooltip = { text = EVTOPTA1_WCFW_30_tooltip } # Wait... are there more of them on the road?
+			}
+			50 = {
+				73 = {
+					province_event = {
+						id = WCFW.134
+						days = 14
+					}
+				}
+				custom_tooltip = { text = EVTOPTA2_WCFW_30_tooltip } # It'll be good to get away from them.
+			}
+		}
+	}
+}
+
+# Delayer event
+province_event = {
+	id = WCFW.131
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		d_frostwolf = {
+			holder_scope = {
+				if = {
+					limit = { frostwolf_leader_exists = yes }
+					narrative_event = { id = WCFW.31 }
+				}
+				else = {
+					73 = { province_event = { id = WCFW.600 } }
+				}
+			}
+		}
+	}
+}
+
+# Delayed event
+narrative_event = {
+	id = WCFW.31
+	title = EVTTITLE_WCFW_31
+	desc = EVTDESC_WCFW_31 # Other smaller and stockier residents were further along the road.
 	picture = GFX_evt_dwarvenpatrol
 	border = GFX_event_narrative_frame_war
 
@@ -250,33 +702,33 @@ narrative_event = {
 			50 = {
 				73 = {
 					province_event = {
-						id = WCFW.115
+						id = WCFW.132
 						days = 3
 					}
 				}
-				custom_tooltip = { text = EVTOPTA1_WCFW_12_tooltip } #We managed to beat the dwarven patrol!.
+				custom_tooltip = { text = EVTOPTA1_WCFW_31_tooltip } # We won. What was that all about?
 			}
 			50 = {
 				73 = {
 					province_event = {
-						id = WCFW.116
+						id = WCFW.133
 						days = 3
 					}
 				}
-				custom_tooltip = { text = EVTOPTA2_WCFW_12_tooltip } #We lose the battle!
+				custom_tooltip = { text = EVTOPTA2_WCFW_31_tooltip } # Argh!
 			}
 		}
 	}
 
 	option = {
-		name = EVTOPTB_WCFW.13
+		name = EVTOPTB_WCFW_31
 		prestige = -200
 		add_trait = craven
 		add_trait = stressed
 
 		73 = {
 			province_event = {
-				id = WCFW.114 #Western
+				id = WCFW.134 # West
 				days = 21
 			}
 		}
@@ -285,7 +737,7 @@ narrative_event = {
 
 # Delayer event
 province_event = {
-	id = WCFW.115
+	id = WCFW.132
 
 	is_triggered_only = yes
 	hide_window = yes
@@ -294,33 +746,34 @@ province_event = {
 		d_frostwolf = {
 			holder_scope = {
 				if = {
-					limit = { frostwolf_exodus_d_frostwolf_trigger = yes }
-					narrative_event = { id = WCFW.15 }
+					limit = { frostwolf_leader_exists = yes }
+					narrative_event = { id = WCFW.32 }
 				}
 				else = {
-					character_event = { id = WCFW.200 }
+					73 = { province_event = { id = WCFW.600 } }
 				}
 			}
 		}
 	}
 }
+
 # Delayed event
 narrative_event = {
-	id = WCFW.15
-	title = EVTTITLE_WCFW_15
-	desc = EVTDESC_WCFW.15 #We managed to beat the dwarven patrol!.
+	id = WCFW.32
+	title = EVTTITLE_WCFW_32
+	desc = EVTDESC_WCFW_32 # We managed to beat the patrol!
 	picture = GFX_evt_dwarf_against_orc_loose
 	border = GFX_event_narrative_frame_war
 
 	is_triggered_only = yes
 
 	option = {
-		name = EVTOPTA_WCFW.15
+		name = EVTOPTA_WCFW_32 # Keep moving!
 		prestige = 20
 
 		73 = {
 			province_event = {
-				id = WCFW.114 #Western
+				id = WCFW.134 # West
 				days = 21
 			}
 		}
@@ -329,7 +782,7 @@ narrative_event = {
 
 # Delayer event
 province_event = {
-	id = WCFW.116
+	id = WCFW.133
 
 	is_triggered_only = yes
 	hide_window = yes
@@ -338,34 +791,35 @@ province_event = {
 		d_frostwolf = {
 			holder_scope = {
 				if = {
-					limit = { frostwolf_exodus_d_frostwolf_trigger = yes }
-					narrative_event = { id = WCFW.16 }
+					limit = { frostwolf_leader_exists = yes }
+					narrative_event = { id = WCFW.33 }
 				}
 				else = {
-					character_event = { id = WCFW.200 }
+					73 = { province_event = { id = WCFW.600 } }
 				}
 			}
 		}
 	}
 }
+
 # Delayed event
 narrative_event = {
-	id = WCFW.16
-	title = EVTTITLE_WCFW_16
-	desc = EVTDESC_WCFW.16 #We lose the battle!
+	id = WCFW.33
+	title = EVTTITLE_WCFW_33
+	desc = EVTDESC_WCFW_33 # Even though we fought with honour, the enemy defeated us and we had to retreat.
 	picture = GFX_evt_dwarf_against_orc_win
 	border = GFX_event_narrative_frame_war
 
 	is_triggered_only = yes
 
 	option = {
-		name = EVTOPTA_WCFW.16
+		name = EVTOPTA_WCFW_33 # Retreat!
 		prestige = -20
 		add_trait_silently_wounded_effect = yes
 
 		73 = {
 			province_event = {
-				id = WCFW.114 #Western
+				id = WCFW.134 # West
 				days = 21
 			}
 		}
@@ -374,7 +828,7 @@ narrative_event = {
 
 # Delayer event
 province_event = {
-	id = WCFW.114
+	id = WCFW.134
 
 	is_triggered_only = yes
 	hide_window = yes
@@ -383,21 +837,22 @@ province_event = {
 		d_frostwolf = {
 			holder_scope = {
 				if = {
-					limit = { frostwolf_exodus_d_frostwolf_trigger = yes }
-					narrative_event = { id = WCFW.14 }
+					limit = { frostwolf_leader_exists = yes }
+					narrative_event = { id = WCFW.34 }
 				}
 				else = {
-					character_event = { id = WCFW.200 }
+					73 = { province_event = { id = WCFW.600 } }
 				}
 			}
 		}
 	}
 }
+
 # Delayed event
 narrative_event = {
-	id = WCFW.14 #Settle in c_north_coldwater
-	title = EVTTITLE_WCFW_14
-	desc = EVTDESC_WCFW.14
+	id = WCFW.34
+	title = EVTTITLE_WCFW_34
+	desc = EVTDESC_WCFW_34 # After a couple months of wandering, we finally arrived at our new home, a piece of shoreline near Ironforge.
 	picture = GFX_evt_khazmodan_coast
 	border = GFX_event_narrative_frame_war
 
@@ -430,17 +885,20 @@ narrative_event = {
 		
 		clear_settler_flag_effect = yes
 	}
-	option = { #Settle
-		name = EVTOPTA_WCFW.14
+	option = {
+		name = EVTOPTA_WCFW_34 # Peons, break ground!
 		prestige = 200
+		
+		# Settle in c_north_coldwater
 
-		narrative_event = { id = WCFW.45 }
+		narrative_event = { id = WCFW.50 }
 	}
 }
 
+# Go South Chain 40-42
 # Delayer event
 province_event = {
-	id = WCFW.111
+	id = WCFW.140
 
 	is_triggered_only = yes
 	hide_window = yes
@@ -449,459 +907,30 @@ province_event = {
 		d_frostwolf = {
 			holder_scope = {
 				if = {
-					limit = { frostwolf_exodus_d_frostwolf_trigger = yes }
-					narrative_event = { id = WCFW.11 }
+					limit = { frostwolf_leader_exists = yes }
+					narrative_event = { id = WCFW.40 }
 				}
 				else = {
-					character_event = { id = WCFW.200 }
+					73 = { province_event = { id = WCFW.600 } }
 				}
 			}
 		}
 	}
 }
+
 # Delayed event
 narrative_event = {
-	id = WCFW.11 #Alterac
-	title = EVTTITLE_WCFW_11
-	desc = EVTDESC_WCFW.11
-	picture = GFX_evt_alteracvalley
-	border = GFX_event_narrative_frame_war
-
-	is_triggered_only = yes
-
-	option = {
-		name = EVTOPTA_WCFW.11 #Settle in Alterac
-		prestige = 200
-
-		73 = {
-			province_event = {
-				id = WCFW.118
-				days = 7
-			}
-		}
-	}
-	option = {
-		name = EVTOPTB_WCFW.11 #Go NORTHERN!!!
-		custom_tooltip = { text = EVTOPTB_WCFW_11_tooltip }
-
-		73 = {
-			province_event = {
-				id = WCFW.119
-				days = 14
-			}
-		}
-	}
-}
-
-# Delayer event
-province_event = {
-	id = WCFW.118
-
-	is_triggered_only = yes
-	hide_window = yes
-
-	immediate = {
-		d_frostwolf = {
-			holder_scope = {
-				if = {
-					limit = { frostwolf_exodus_d_frostwolf_trigger = yes }
-					narrative_event = { id = WCFW.18 }
-				}
-				else = {
-					character_event = { id = WCFW.200 }
-				}
-			}
-		}
-	}
-}
-# Delayed event
-narrative_event = {
-	id = WCFW.18 #Settle in Alterac
-	title = EVTTITLE_WCFW_18
-	desc = EVTDESC_WCFW.18
-	picture = GFX_evt_alteracvalley2
-	border = GFX_event_narrative_frame_war
-
-	is_triggered_only = yes
-
-
-	immediate = {
-		# Used in scripted effects
-		save_event_target_as = target_settler
-
-		c_alterac_valley = {
-			show_scope_change = no
-			
-			# event_target:target_settler and its people settle here
-			settle_as_target_settler_effect = yes
-			
-			# Declares war against player
-			target_settler_declare_war_effect = yes
-		}
-		
-		# If you're not independent ruler, gives old titles to liege
-		give_old_titles_to_heir_effect = yes
-		
-		clear_settler_flag_effect = yes
-	}
-
-	option = {
-		name = EVTOPTA_WCFW.18
-
-		#Settle in c_alterac_valley
-
-		narrative_event = { id = WCFW.45 }
-	}
-}
-
-# Delayer event
-province_event = {
-	id = WCFW.119
-
-	is_triggered_only = yes
-	hide_window = yes
-
-	immediate = {
-		d_frostwolf = {
-			holder_scope = {
-				if = {
-					limit = { frostwolf_exodus_d_frostwolf_trigger = yes }
-					narrative_event = { id = WCFW.19 }
-				}
-				else = {
-					character_event = { id = WCFW.200 }
-				}
-			}
-		}
-	}
-}
-narrative_event = {
-	id = WCFW.19 #Way to Dragon Isles
-	title = EVTTITLE_WCFW_19
-	desc = EVTDESC_WCFW.19 #We have nowhere to go. Should we consider going back and settle in the mountains?
-	picture = GFX_evt_lordaeron_coast
-	border = GFX_event_narrative_frame_war
-
-	is_triggered_only = yes
-
-	option = {
-		name = EVTOPTA_WCFW.19 #We should look for a way to cross the sea...
-		custom_tooltip = { text = EVTOPTA_WCFW_19_tooltip }
-
-		73 = {
-			province_event = {
-				id = WCFW.150
-				days = 14
-			}
-		}
-	}
-	option = {
-		name = EVTOPTB_WCFW.19 #Go back
-		custom_tooltip = { text = EVTOPTB_WCFW_19_tooltip }
-
-		73 = {
-			province_event = {
-				id = WCFW.118
-				days = 21
-			}
-		}
-	}
-
-}
-
-# Delayer event
-province_event = {
-	id = WCFW.150
-
-	is_triggered_only = yes
-	hide_window = yes
-
-	immediate = {
-		d_frostwolf = {
-			holder_scope = {
-				if = {
-					limit = { frostwolf_exodus_d_frostwolf_trigger = yes }
-					narrative_event = { id = WCFW.50 }
-				}
-				else = {
-					character_event = { id = WCFW.200 }
-				}
-			}
-		}
-	}
-}
-# Delayed event
-narrative_event = {
-	id = WCFW.50 #Steal ships!
-	title = EVTTITLE_WCFW_50
-	desc = EVTDESC_WCFW.50 #We decided not to give up. Stealing ships is necessary!
-	picture = GFX_evt_busy_trading_dock_republic
-	border = GFX_event_narrative_frame_war
-
-	is_triggered_only = yes
-
-	option = {
-		name = EVTOPTA_WCFW.50 #Go ahead!
-		custom_tooltip = { text = EVTOPTA_WCFW_50_tooltip }
-		
-		73 = {
-			province_event = {
-				id = WCFW.152
-				days = 3
-			}
-		}
-	}
-}
-
-narrative_event = {
-	id = WCFW.51 #Someone stole our ships?!
-	title = EVTTITLE_WCFW_51
-	desc = EVTDESC_WCFW.51
-	picture = GFX_evt_busy_trading_dock_republic
-	border = GFX_event_narrative_frame_war
-
-	is_triggered_only = yes
-
-	option = {
-		name = EVTOPTA_WCFW.51 #Was that murlocs?!
-
-		prestige = -100
-		wealth = -50
-
-		opinion = { modifier = opinion_angry who = FROM years = 5 }
-		add_rival = FROM
-	}
-}
-
-# Delayer event
-province_event = {
-	id = WCFW.152
-
-	is_triggered_only = yes
-	hide_window = yes
-
-	immediate = {
-		d_frostwolf = {
-			holder_scope = {
-				if = {
-					limit = { frostwolf_exodus_d_frostwolf_trigger = yes }
-					narrative_event = { id = WCFW.52 }
-				}
-				else = {
-					character_event = { id = WCFW.200 }
-				}
-			}
-		}
-	}
-}
-# Delayed event
-narrative_event = {
-	id = WCFW.52 #We successfuly stole the ship.
-	title = EVTTITLE_WCFW_52
-	desc = EVTDESC_WCFW.52
-	picture = GFX_evt_merchant_ship_at_sea_republic
-	border = GFX_event_narrative_frame_war
-
-	is_triggered_only = yes
-	
-	immediate = {
-		c_agamand = {
-			holder_scope = {
-				narrative_event = {
-					id = WCFW.51
-				}
-			}
-		}
-	}
-
-	option = {
-		name = EVTOPTA_WCFW.52 #Hurah!
-		custom_tooltip = { text = EVTOPTA_WCFW_52_tooltip }
-
-		prestige = 200
-		wealth = 50
-
-		random_list = {
-			50 = {
-				73 = {
-					province_event = {
-						id = WCFW.153
-						days = 14
-					}
-				}
-				custom_tooltip = { text = EVTOPTA1_WCFW_12_tooltip } #We hit the storm!
-			}
-			50 = {
-				73 = {
-					province_event = {
-						id = WCFW.154
-						days = 30
-					}
-				}
-				custom_tooltip = { text = EVTOPTA2_WCFW_12_tooltip } #We found a new land!
-			}
-		}
-	}
-}
-
-# Delayer event
-province_event = {
-	id = WCFW.153
-
-	is_triggered_only = yes
-	hide_window = yes
-
-	immediate = {
-		d_frostwolf = {
-			holder_scope = {
-				if = {
-					limit = { frostwolf_exodus_d_frostwolf_trigger = yes }
-					narrative_event = { id = WCFW.53 }
-				}
-				else = {
-					character_event = { id = WCFW.200 }
-				}
-			}
-		}
-	}
-}
-# Delayed event
-narrative_event = {
-	id = WCFW.53 #Our fleet crashed and the survivors settled on Dragon Isles
-	title = EVTTITLE_WCFW_53
-	desc = EVTDESC_WCFW.53
-	picture = GFX_evt_tempest
-	border = GFX_event_narrative_frame_war
-
-	is_triggered_only = yes
-
-	immediate = {
-		# Used in scripted effects
-		save_event_target_as = target_settler
-
-		c_dragon_isles = {
-			show_scope_change = no
-			
-			# event_target:target_settler and its people settle here
-			settle_as_target_settler_effect = yes
-			
-			# Declares war against player
-			target_settler_declare_war_effect = yes
-		}
-		
-		# If you're not independent ruler, gives old titles to liege
-		give_old_titles_to_heir_effect = yes
-		
-		clear_settler_flag_effect = yes
-	}
-
-	option = {
-		name = EVTOPTA_WCFW.53
-		custom_tooltip = { text = EVTOPTA_WCFW_53_tooltip }
-
-		#Settle in c_dragon_isles
-
-		narrative_event = { id = WCFW.45 }
-	}
-}
-
-# Delayer event
-province_event = {
-	id = WCFW.154
-
-	is_triggered_only = yes
-	hide_window = yes
-
-	immediate = {
-		d_frostwolf = {
-			holder_scope = {
-				if = {
-					limit = { frostwolf_exodus_d_frostwolf_trigger = yes }
-					narrative_event = { id = WCFW.54 }
-				}
-				else = {
-					character_event = { id = WCFW.200 }
-				}
-			}
-		}
-	}
-}
-# Delayed event
-narrative_event = {
-	id = WCFW.54 #We found a new land, full of giants and wild animals.
-	title = EVTTITLE_WCFW_54
-	desc = EVTDESC_WCFW.54
-	picture = GFX_evt_northrend_coast
-	border = GFX_event_narrative_frame_war
-
-	is_triggered_only = yes
-
-	immediate = {
-		# Used in scripted effects
-		save_event_target_as = target_settler
-
-		c_scalawag_point = {
-			show_scope_change = no
-			
-			# event_target:target_settler and its people settle here
-			settle_as_target_settler_effect = yes
-			
-			# Declares war against player
-			target_settler_declare_war_effect = yes
-		}
-		
-		# If you're not independent ruler, gives old titles to liege
-		give_old_titles_to_heir_effect = yes
-		
-		clear_settler_flag_effect = yes
-	}
-
-	option = {
-		name = EVTOPTA_WCFW.54
-		custom_tooltip = { text = EVTOPTA_WCFW_54_tooltip }
-
-		#Settle in c_scalawag_point
-
-		narrative_event = { id = WCFW.45 }
-	}
-}
-
-
-#South chain 20-29, 40-49
-# Delayer event
-province_event = {
-	id = WCFW.120
-
-	is_triggered_only = yes
-	hide_window = yes
-
-	immediate = {
-		d_frostwolf = {
-			holder_scope = {
-				if = {
-					limit = { frostwolf_exodus_d_frostwolf_trigger = yes }
-					narrative_event = { id = WCFW.20 }
-				}
-				else = {
-					character_event = { id = WCFW.200 }
-				}
-			}
-		}
-	}
-}
-# Delayed event
-narrative_event = {
-	id = WCFW.20
-	title = EVTTITLE_WCFW_20 #We are ready.
-	desc = EVTDESC_WCFW.20
+	id = WCFW.40
+	title = EVTTITLE_WCFW_40
+	desc = EVTDESC_WCFW_40 # Our clan is ready to leave.
 	picture = GFX_evt_campfire
 	border = GFX_event_narrative_frame_war
 
 	is_triggered_only = yes
 
 	option = {
-		name = EVTOPTA_WCFW.20 #Let's hit the road!
-		custom_tooltip = { text = EVTOPTA_WCFW_20_tooltip }
+		name = EVTOPTA_WCFW_40 # Let us leave this place!
+		custom_tooltip = { text = EVTOPTA_WCFW_40_tooltip } # We're going south.
 		73 = {
 			province_event = {
 				id = WCFW.121
@@ -911,9 +940,10 @@ narrative_event = {
 	}
 }
 
+
 # Delayer event
 province_event = {
-	id = WCFW.121
+	id = WCFW.141
 
 	is_triggered_only = yes
 	hide_window = yes
@@ -922,11 +952,11 @@ province_event = {
 		d_frostwolf = {
 			holder_scope = {
 				if = {
-					limit = { frostwolf_exodus_d_frostwolf_trigger = yes }
+					limit = { frostwolf_leader_exists = yes }
 					narrative_event = { id = WCFW.21 }
 				}
 				else = {
-					character_event = { id = WCFW.200 }
+					73 = { province_event = { id = WCFW.600 } }
 				}
 			}
 		}
@@ -934,50 +964,53 @@ province_event = {
 }
 # Delayed event
 narrative_event = {
-	id = WCFW.21
-	title = EVTTITLE_WCFW_21
-	desc = EVTDESC_WCFW.21 #Unusually hot, plants and animals are unknown
+	id = WCFW.41
+	title = EVTTITLE_WCFW_41
+	desc = EVTDESC_WCFW_41 # With each step, the weather seems to get warmer, the animals larger and nastier, and the plants stranger.
 	picture = GFX_evt_jungle
 	border = GFX_event_narrative_frame_war
 
 	is_triggered_only = yes
 
 	option = {
-		name = EVTOPTA_WCFW.21
+		name = EVTOPTA_WCFW_41 # No one ever said it would be easy!
+		custom_tooltip = { text = EVTOPTA_WCFW_41_tooltip } # You press on.
 		73 = {
 			province_event = {
-				id = WCFW.144 #Everything is ok
+				id = WCFW.142 #Everything is ok
 				days = 2
 			}
 		}
 	}
 }
+
 # Delayer event
 province_event = {
-	id = WCFW.144
+	id = WCFW.142
 
 	is_triggered_only = yes
 	hide_window = yes
-
+ 
 	immediate = {
 		d_frostwolf = {
 			holder_scope = {
 				if = {
-					limit = { frostwolf_exodus_d_frostwolf_trigger = yes }
-					narrative_event = { id = WCFW.44 }
+					limit = { frostwolf_leader_exists = yes }
+					narrative_event = { id = WCFW.42 }
 				}
 				else = {
-					character_event = { id = WCFW.200 }
+					character_event = { id = WCFW.600 }
 				}
 			}
 		}
 	}
 }
+
 # Delayed event
 narrative_event = {
-	id = WCFW.44 #Settle in c_surohi
-	title = EVTTITLE_WCFW_44
-	desc = EVTDESC_WCFW.44
+	id = WCFW.42
+	title = EVTTITLE_WCFW_42
+	desc = EVTDESC_WCFW_42 # Our scouts have returned, giving us two choices.
 	picture = GFX_evt_jungle
 	border = GFX_event_narrative_frame_war
 
@@ -988,8 +1021,8 @@ narrative_event = {
 		save_event_target_as = target_settler
 	}
 
-	option = { #Settle
-		name = EVTOPTA_WCFW.44
+	option = {
+		name = EVTOPTA_WCFW_42 # Settle here.
 		
 		prestige = 200
 
@@ -1003,9 +1036,9 @@ narrative_event = {
 			target_settler_declare_war_effect = yes
 		}
 	}
-	option = { #Settle Southern
-		name = EVTOPTB_WCFW.44
-		custom_tooltip = { text = EVTOPTB_WCFW_44_tooltip }
+	option = {
+		name = EVTOPTB_WCFW_42 # Go south.
+		custom_tooltip = { text = EVTOPTB_WCFW_42_tooltip } # You move closer to the sea.
 		
 		prestige = 200
 
@@ -1026,14 +1059,17 @@ narrative_event = {
 		
 		clear_settler_flag_effect = yes
 		
-		narrative_event = { id = WCFW.45 }
+		# Settle in c_surohi or c_nekmani
+		
+		narrative_event = { id = WCFW.50 }
 	}
 }
 
-narrative_event = { #Frostwolf settled
-	id = WCFW.45
-	title = EVTTITLE_WCFW_45
-	desc = EVTDESC_WCFW.45
+# Frostwolf settle event
+narrative_event = {
+	id = WCFW.50
+	title = EVTTITLE_WCFW_50
+	desc = EVTDESC_WCFW_50 # The Frostwolf Clan, led by the honourable orc [Root.GetTitledFirstName], has found its new home in [Root.Capital.GetName].
 	picture = GFX_evt_frostwolfexodus
 	border = GFX_event_narrative_frame_war
 
@@ -1055,11 +1091,11 @@ narrative_event = { #Frostwolf settled
 		trigger = {
 			NOT = { culture_group = orc_group }
 		}
-		name = EVTOPTA_WCFW.45 #Frost-who?
+		name = EVTOPTA_WCFW_50 # Frost-who?
 	}
 	option = {
 		trigger = { character = ROOT }
-		name = EVTOPTB_WCFW.45 #This is the beginning of a new life for our clan..
+		name = EVTOPTB_WCFW_50 # To a new beginning!
 		prestige = 100
 		d_frostwolf = {
 			show_scope_change = yes
@@ -1089,31 +1125,246 @@ narrative_event = { #Frostwolf settled
 			NOT = { character = ROOT }
 			culture_group = orc_group
 		}
-		name = EVTOPTC_WCFW.45 #These rats cannot hide from the Horde!
+		name = EVTOPTC_WCFW_50 # Rats! The Horde will hunt them all!
 		piety = 5
 	}
 }
 
-# FAIL EVENT
-character_event = {
-	id = WCFW.200
-	picture = GFX_evt_orcish_horde
-	desc =  EVTDESC_WCFW_200
-	border = GFX_event_normal_frame_war
+# Frostwolf failure event 60-62
+# delayer event
+province_event = {
+	id = WCFW.600
 	
 	is_triggered_only = yes
+	hide_window = yes
+	
+	trigger = {
+		frostwolf_leader_exists = yes
+	}
+	
+	immediate = {
+		d_stormreaver = {
+			holder_scope = {
+				narrative_event = { id = WCFW.60 }
+			}
+		}
+	}
+}
+
+# Forcer informed of failure event
+# delayed event
+narrative_event = {
+	id = WCFW.60
+	title = EVTTITLE_WCFW_60
+	desc =  EVTDESC_WCFW_60 # Despite the fairly clear orders you gave to [From.GetFirstName], the Frostwolf clan refused to leave the Horde.
+	picture = GFX_evt_orc_city
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+	
+	immediate = {
+
+	}
+	
+	trigger = {
+		frostwolf_chain_butcher_exists = yes
+	}
+
+	option = {
+		name = EVTOPT_WCFW_60 # What is necessary shall be done.
+		73 = {
+			province_event = {
+				id = WCFW.610
+				days = 7
+			}
+		}
+	}
+}
+
+# delayer event
+province_event = {
+	id = WCFW.610
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	trigger = {
+		frostwolf_leader_exists = yes
+	}
+	
+	immediate = {
+		d_frostwolf = {
+			holder_scope = {
+				save_event_target_as = target_frostwolf_leader
+			}
+		}
+		
+		any_playable_ruler = {
+			limit = {
+				OR = { # ((Part of the Horde AND player) OR Frostwolf Leader)
+					AND = {
+						ai = no
+						realm = { title = e_horde }
+					}
+					character = event_target:target_frostwolf_leader
+				}
+			}
+			narrative_event = { id = WCFW.61 }
+		}
+	}
+}
+
+# BUTCHERING EVENT
+# Delayed event
+narrative_event = {
+	id = WCFW.61
+	title = EVTTITLE_WCFW_61
 	
 	immediate = {
 		d_frostwolf = {
 			clr_title_flag = fw_hunger_event_flag
+			holder_scope = {
+				save_event_target_as = target_frostwolf_leader
+			}
+		}
+		d_stormreaver = {
+			holder_scope = {
+				save_event_target_as = target_frostwolf_butcher
+				
+				# Create the new character under Stormreaver
+				create_character = {
+					dynasty = actually_culture
+					culture = stormreaver religion = orcish_fel
+					trait=tough_soldier
+					trait=creature_orc
+					trait=class_warrior_5
+					random_traits = yes
+					age = 22
+				}
+				new_character = {
+					save_event_target_as = target_new_orc
+				}
+			}
 		}
 	}
-
+	
+	desc = {
+		trigger = { character = event_target:target_frostwolf_leader }
+		text = EVTDESC_WCFW_61 # You are outside watching the campfire when you suddenly hear loud screams...
+	}
+	desc = {
+		trigger = { NOT = { character = event_target:target_frostwolf_leader } }
+		text = EVTDESC_WCFW_61_horde # Word arrives that the Frostwolf clan led by [target_frostwolf_leader.GetFirstName] has been completely decimated...
+	}
+	
+	picture = GFX_evt_orcish_horde
+	border = GFX_event_narrative_frame_war
+	
+	is_triggered_only = yes
+	hide_from = yes
+	
 	option = {
-		name = I_SEE
+		trigger = { character = event_target:target_frostwolf_leader }
+		name = EVTOPT_WCFW_61 # May the spirits curse you forever, [From.GetFirstName]!
+	}
+	
+	option = {
+		trigger = { NOT = { character = event_target:target_frostwolf_leader } }
+		name = INTERESTING
+	}
+	
+	after = {
+		# Create landless title for new orc (so he can be landless)
+		create_title = {
+			tier = DUKE
+			landless = yes
+			holder = event_target:target_new_orc
+			culture = event_target:target_frostwolf_butcher
+		}
+		
+		if = {
+			limit = { character = event_target:target_frostwolf_leader }
+			# Become adventurer orc if you're Frostwolf leader, they have a landless title so no game over
+			set_player_character = event_target:target_new_orc
+		}
+		
+		# Now butcher the whole frostwolf clan, abdicate to new orc + kill leader, killer unknown since done 'in secret'
+		event_target:target_frostwolf_leader = {
+			any_courtier = {
+				death = { death_reason = death_murder_unknown killer = event_target:target_frostwolf_butcher }
+			}
+			
+			# Destroy the Frostwolf tribe title and give the rest to the new orc
+			destroy_landed_title = d_frostwolf
+			abdicate_to = event_target:target_new_orc
+			death = { death_reason = death_murder_unknown killer = event_target:target_frostwolf_butcher }
+		}
+		
+		# Destroy the landless title so Dead Ravine becomes primary + make loyal vassal of Gul'dan/successor
+		event_target:target_new_orc = {
+			primary_title = {
+				activate_title = { title = THIS status = no }
+				destroy_landed_title = THIS
+			}
+			set_defacto_liege = event_target:target_frostwolf_butcher
+			opinion = { modifier = opinion_loyal_servant who = event_target:target_frostwolf_butcher }
+		}
+		
+		# Fire the event that speaks of the new inhabitants after three days (news has to travel, you know!)
+		73 = {
+			province_event = {
+				id = WCFW.620
+				days = 3
+			}
+		}
 	}
 }
 
+# delayer event
+province_event = {
+	id = WCFW.620
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
+		any_player = {
+			limit = {
+				realm = { title = e_horde }
+			}	
+			narrative_event = { id = WCFW.62 }
+		}
+	}
+}
 
+# NEW INHABITANTS
+# Delayed event
+narrative_event = {
+	id = WCFW.62
+	title = EVTTITLE_WCFW_62
+	desc =  EVTDESC_WCFW_62 # The decimation of the Frostwolf clan left their lands uninhabited...
+	picture = GFX_evt_orc_city
+	border = GFX_event_narrative_frame_war
 
+	is_triggered_only = yes
+	
+	immediate = {
+		d_stormreaver = { # Gul'dan or successor
+			holder_scope = {
+				save_event_target_as = target_frostwolf_butcher
+			}
+		}
+		c_dead_ravine = { # New orc (this early in the game, they're always here)
+		holder_scope = {
+				save_event_target_as = target_new_orc
+			}
+		}
+	}
+	
+	# Show our new orc as the portrait in the upper-right corner (so people can click on him, fast info)
+	portrait = event_target:target_new_orc
 
+	option = {
+		name = LOKTAR_OGAR
+	}
+}
