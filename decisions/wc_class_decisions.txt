@@ -251,6 +251,69 @@ decisions = {
 		}
 	}
 
+	### Spell Breaker ###
+	teach_yourself_spell_breaker = {
+		is_high_prio = yes
+
+		ai_check_interval = 60
+
+		ai = no
+		only_playable = yes
+
+		potential = {
+			is_untouchable_trigger = no
+
+			is_adult = yes
+			is_incapable = no
+			prisoner = no
+			
+			NOT = { has_character_flag = hide_class_training_decisions_flag }
+			
+			potential_spell_breaker_trigger = yes
+		}
+		allow = {
+			show_only_failed_conditions = yes
+			
+			is_inaccessible_trigger = no
+			
+			allow_spell_breaker_trigger = yes
+			OR = {
+				AND = {
+					is_ruler = yes
+					wealth = 25
+				}
+				is_ruler = no
+			}
+		}
+		effect = {
+			if = {
+				limit = { ai = no }
+				wealth = -25
+			}
+			character_event = { id = WCCLS.1301 }
+		}
+		revoke_allowed = {
+			always = no
+		}
+		ai_will_do = {
+			factor = 0.05
+
+			modifier = {
+				factor = 10
+
+				true_religion_group = arcane_group
+			}
+			modifier = {
+				factor = 2
+				trait = ambitious
+			}
+			modifier = {
+				factor = 2
+				trait = brave
+			}
+		}
+	}
+
 	### Priest ###
 	teach_yourself_priest = {
 		is_high_prio = yes
@@ -1635,6 +1698,53 @@ decisions = {
 
 	### Loa Priest ###
 
+	### Spell Breaker
+	forge_arcaneblade = {
+		is_high_prio = yes
+
+		ai_check_interval = 120
+
+		only_playable = yes
+
+		potential = {
+			is_adult = yes
+					is_spell_breaker_class_trigger = yes
+			
+			OR = {
+				ai = no
+				NOT = { has_character_flag = forged_arcaneblade }		# Otherwise, AI create a ton of runeblades
+			}
+		}
+		allow = {
+			show_only_failed_conditions = yes
+			
+			custom_tooltip = {
+				text = is_not_busy_trigger_tooltip
+				hidden_tooltip = { NOT = { has_character_flag = do_not_disturb } }
+			}
+			piety = 500
+		}
+		effect = {
+			set_character_flag = do_not_disturb				# Otherwise, you can fire decision twice
+			set_character_flag = forged_arcaneblade
+			
+				piety = -500
+			character_event = { id = WCCLS.10400 }
+		}
+		revoke_allowed = {
+			always = no
+		}
+		ai_will_do = {
+			factor = 0.8
+
+			modifier = {
+				factor = 0
+				war = yes
+
+			}
+		}
+	}
+
 	### Death Knight
 	forge_runeblade = {
 		is_high_prio = yes
@@ -1723,7 +1833,10 @@ targetted_decisions = {
 			is_incapable = no
 			prisoner = no
 
-			is_mage_class_trigger = yes
+			OR {
+				is_mage_class_trigger = yes
+				is_spell_breaker_class_trigger = yes
+			}
 		}
 
 		allow = {
@@ -1774,7 +1887,10 @@ targetted_decisions = {
 			is_incapable = no
 			prisoner = no
 
-			is_mage_class_trigger = yes
+			OR {
+				is_mage_class_trigger = yes
+				is_spell_breaker_class_trigger = yes
+			}
 		}
 
 		potential = {
@@ -2430,6 +2546,103 @@ targetted_decisions = {
 		}
 	}
 
+	### Spellbreaker ###
+	# Drain Mana from enemy
+	drain_arcane = {
+		filter = court
+		ai_target_filter = court
+		ai_check_interval = 24
+
+		only_playable = yes
+
+		from_potential = {
+			is_untouchable_trigger = no
+
+			is_adult = yes
+			is_incapable = no
+			prisoner = no
+
+			is_spell_breaker_class_trigger = yes
+		}
+
+		potential = {
+			is_untouchable_trigger = no
+
+			is_within_diplo_range = FROM
+
+			OR = {
+				character = FROM
+				has_invader_title_trigger = no
+			}
+
+			is_magic_class_trigger = yes
+		}
+
+		allow = {
+			show_only_failed_conditions = yes
+
+			OR = {
+				has_1_mana_trigger = yes
+				has_2_mana_trigger = yes
+				has_3_mana_trigger = yes
+				has_4_mana_trigger = yes
+				has_5_mana_trigger = yes
+			}
+
+			is_inaccessible_trigger = no
+			
+			NOT = { has_character_modifier = drained_mana }
+			custom_tooltip = {
+				text = has_not_used_decision_3_years_tooltip
+				hidden_tooltip = {
+					OR = {
+						NOT = { has_character_flag = drained_mana_cooldown_flag }
+						had_character_flag = { flag = drained_mana_cooldown_flag years = 3 }
+					}
+				}
+			}
+
+			is_humanoid_trigger = yes
+		}
+
+		effect = {
+
+			FROM = { save_event_target_as = target_priest }
+			FROM = { character_event = { id = WCCLS.5} }
+			FROM = { character_event = { id = WCCLS.5} }
+			
+			ROOT = {
+				show_scope_change = no
+				
+				set_character_flag = drained_mana_cooldown_flag
+
+					tooltip = {
+							add_character_modifier = { name = drained_mana years = 2 }
+					}
+					if = {
+						limit = { NOT = { character = FROM } }
+						opinion = { modifier = opinion_hate who = FROM year = 5 }
+					}
+					hidden_effect = { character_event = { id = WCCLS.1401 } }
+			}
+		}
+
+		revoke_allowed = { always = no }
+
+		ai_will_do = {
+			factor = 1
+			modifier = {
+				factor = 0.01
+				NOR = {
+					trait = dwarf
+					is_priest = yes
+					is_ascetic_trigger = yes
+					is_virgin_trigger = yes
+					is_landed = yes
+				}
+			}
+		}
+	}
 	### Warlock ###
 	# Gives soul_shard that can be used alter
 	prisoner_drain_soul = {

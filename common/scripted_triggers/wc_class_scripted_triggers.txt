@@ -4,6 +4,7 @@ is_training_self_trigger = {
 		has_character_modifier = training_self_mage
 		has_character_modifier = training_self_hunter
 		has_character_modifier = training_self_warrior
+		has_character_modifier = training_self_spell_breaker
 		has_character_modifier = training_self_paladin
 		has_character_modifier = training_self_priest
 		has_character_modifier = training_self_rogue
@@ -25,6 +26,7 @@ is_training_mentor_trigger = {
 		has_character_modifier = training_mentor_mage
 		has_character_modifier = training_mentor_hunter
 		has_character_modifier = training_mentor_warrior
+		has_character_modifier = training_mentor_spell_breaker
 		has_character_modifier = training_mentor_paladin
 		has_character_modifier = training_mentor_priest
 		has_character_modifier = training_mentor_rogue
@@ -95,6 +97,7 @@ is_combined_class_trigger = {
 		is_alternative_class_trigger = yes
 		is_paladin_class_trigger = yes
 		is_death_knight_class_trigger = yes
+		is_spell_breaker_class_trigger = yes
 		custom_tooltip = {
 			text = is_combined_class_trigger_tooltip
 			hidden_tooltip = {
@@ -245,6 +248,8 @@ is_1_2_magic_class_trigger = {
 	OR = {
 		trait = class_mage_1
 		trait = class_mage_2
+		trait = class_spell_breaker_1
+		trait = class_spell_breaker_2
 		trait = class_paladin_1
 		trait = class_paladin_2
 		trait = class_priest_1
@@ -269,6 +274,8 @@ is_3_4_magic_class_trigger = {
 	OR = {
 		trait = class_mage_3
 		trait = class_mage_4
+		trait = class_spell_breaker_3
+		trait = class_spell_breaker_4
 		trait = class_paladin_3
 		trait = class_paladin_4
 		trait = class_priest_3
@@ -293,6 +300,8 @@ is_5_6_magic_class_trigger = {
 	OR = {
 		trait = class_mage_5
 		trait = class_mage_6
+		trait = class_spell_breaker_5
+		trait = class_spell_breaker_6
 		trait = class_paladin_5
 		trait = class_paladin_6
 		trait = class_priest_5
@@ -317,6 +326,8 @@ is_7_8_magic_class_trigger = {
 	OR = {
 		trait = class_mage_7
 		trait = class_mage_8
+		trait = class_spell_breaker_7
+		trait = class_spell_breaker_8
 		trait = class_paladin_7
 		trait = class_paladin_8
 		trait = class_priest_7
@@ -341,6 +352,8 @@ is_9_10_magic_class_trigger = {
 	OR = {
 		trait = class_mage_9
 		trait = class_mage_10
+		trait = class_spell_breaker_9
+		trait = class_spell_breaker_10
 		trait = class_paladin_9
 		trait = class_paladin_10
 		trait = class_priest_9
@@ -423,6 +436,7 @@ has_1_mana_trigger = {
 has_max_level_trigger = {
 	OR = {
 		trait = class_mage_10
+		trait = class_spell_breaker_10
 		trait = class_hunter_10
 		trait = class_warrior_10
 		trait = class_paladin_10
@@ -520,6 +534,25 @@ is_paladin_class_trigger = {
 				trait = class_paladin_8
 				trait = class_paladin_9
 				trait = class_paladin_10
+			}
+		}
+	}
+}
+is_spell_breaker_class_trigger = {
+	custom_tooltip = {
+		text = is_spell_breaker_class_trigger_tooltip
+		hidden_tooltip = {
+			OR = {
+				trait = class_spell_breaker_1
+				trait = class_spell_breaker_2
+				trait = class_spell_breaker_3
+				trait = class_spell_breaker_4
+				trait = class_spell_breaker_5
+				trait = class_spell_breaker_6
+				trait = class_spell_breaker_7
+				trait = class_spell_breaker_8
+				trait = class_spell_breaker_9
+				trait = class_spell_breaker_10
 			}
 		}
 	}
@@ -868,6 +901,14 @@ is_weak_death_knight_class_trigger = {
 		trait = class_death_knight_4
 	}
 }
+is_weak_spell_breaker_class_trigger = {
+	OR = {
+		trait = class_spell_breaker_1
+		trait = class_spell_breaker_2
+		trait = class_spell_breaker_3
+		trait = class_spell_breaker_4
+	}
+}
 is_weak_necromancer_class_trigger = {
 	OR = {
 		trait = class_necromancer_1
@@ -912,6 +953,7 @@ has_class_trait_wo_training_trigger = {
 				is_druid_class_trigger = yes
 				is_loa_priest_class_trigger = yes
 				is_death_knight_class_trigger = yes
+				is_spell_breaker_class_trigger = yes
 				is_necromancer_class_trigger = yes
 				is_shadow_priest_class_trigger = yes
 
@@ -1066,6 +1108,65 @@ allow_warrior_trigger = {
 united_warrior_trigger = {
 	potential_warrior_trigger = yes
 	allow_warrior_trigger = yes
+}
+
+potential_spell_breaker_wo_training_trigger = {
+	age = 11
+	
+	can_be_spell_breaker_trigger = yes
+	
+	OR = {
+		NOT = { has_class_trait_wo_training_trigger = yes }
+		AND = {
+			is_spell_breaker_class_trigger = no
+			OR = {
+				is_warrior_class_trigger = yes
+				is_mage_class_trigger = yes
+			}
+			is_combined_class_trigger = no
+		}
+	}
+}
+potential_spell_breaker_trigger = {
+	potential_spell_breaker_wo_training_trigger = yes
+
+	is_training_self_trigger = no
+	is_training_mentor_trigger = no
+}
+allow_spell_breaker_trigger = {
+	OR = {
+		trigger_if = {
+			limit = { is_adult = no }
+			is_adult = no
+		}
+		AND = {
+			trigger_if = {
+				limit = { any_owned_bloodline = { has_bloodline_flag = bloodline_mage_training } }
+				martial = 8
+			}
+			trigger_else = {
+				martial = 12
+			}
+			OR = {
+				learning = 6
+				has_magical_potential_trigger = yes
+			}
+		}
+	}
+}
+# If this trigger isn't true, a character can not be a spell breaker
+can_be_spell_breaker_trigger = {
+	religion_group = arcane_group
+	true_religion_group = arcane_group
+	OR {
+		culture_group = naga_group
+		culture_group = high_elf_group
+		culture_group = night_elf_group
+	}
+}
+united_spell_breaker_trigger = {
+	potential_spell_breaker_trigger = yes
+	allow_spell_breaker_trigger = yes
 }
 
 potential_paladin_wo_training_trigger = {
@@ -1717,6 +1818,7 @@ potential_class_trigger = {
 		potential_hunter_trigger = yes
 		potential_warrior_trigger = yes
 		potential_paladin_trigger = yes
+		potential_spell_breaker_trigger = yes
 		potential_priest_trigger = yes
 		potential_rogue_trigger = yes
 		potential_warlock_trigger = yes
@@ -1733,6 +1835,7 @@ united_class_trigger = {
 		united_hunter_trigger = yes
 		united_warrior_trigger = yes
 		united_paladin_trigger = yes
+		united_spell_breaker_trigger = yes
 		united_priest_trigger = yes
 		united_rogue_trigger = yes
 		united_warlock_trigger = yes
@@ -1796,6 +1899,20 @@ potential_mentor_paladin_trigger = {
 		trait = class_paladin_8
 		trait = class_paladin_9
 		trait = class_paladin_10
+	}
+
+	is_training_self_trigger = no
+	is_training_mentor_trigger = no
+}
+potential_mentor_spell_breaker_trigger = {
+	is_spell_breaker_class_trigger = yes
+	OR = {
+		trait = class_spell_breaker_5
+		trait = class_spell_breaker_6
+		trait = class_spell_breaker_7
+		trait = class_spell_breaker_8
+		trait = class_spell_breaker_9
+		trait = class_spell_breaker_10
 	}
 
 	is_training_self_trigger = no
