@@ -701,12 +701,11 @@ society_quest_event = {
 			limit = { has_character_flag = disembowel_small_humanoid_flag }
 			set_quest = quest_disembowel_small_humanoid
 		}
-		if = {
+		else_if = {
 			limit = { has_character_flag = disembowel_medium_humanoid_flag }
 			set_quest = quest_disembowel_medium_humanoid
 		}
-		if = {
-			limit = { has_character_flag = disembowel_large_humanoid_flag }
+		else = {
 			set_quest = quest_disembowel_large_humanoid
 		}
 	}
@@ -845,23 +844,15 @@ society_quest_event = {
 #Assign event
 society_quest_event = {
 	id = WCQUE.705
-	desc = {
-		trigger = { society_member_of = shadow_council }
-		text = EVTDESC_WCDAC_8011_council
-	}
-	desc = {
-		trigger = { society_member_of = twilights_hammer_cult }
-		text = EVTDESC_WCDAC_8011_cult
-	}
+	desc = EVTDESC_WCDAC_8011
 
 	is_triggered_only = yes
 
 	immediate = {
-		random_courtier = {
-			limit = {
-				is_potential_mind_control_target_trigger = yes
-			}
-			save_event_target_as = target_mind
+		random_list = {
+			10 = { set_character_flag = control_mind_martial_flag }
+			10 = { set_character_flag = control_mind_intrigue_flag }
+			10 = { set_character_flag = control_mind_learning_flag }
 		}
 	}
 
@@ -869,11 +860,17 @@ society_quest_event = {
 
 	option = {
 		name = ACCEPT
-		event_target:target_mind = {
-			set_quest_target = {
-				id = quest_control_mind
-				holder = ROOT
-			}
+		
+		if = {
+			limit = { has_character_flag = control_mind_martial_flag }
+			set_quest = quest_control_mind_martial
+		}
+		else_if = {
+			limit = { has_character_flag = control_mind_intrigue_flag }
+			set_quest = quest_control_mind_intrigue
+		}
+		else = {
+			set_quest = quest_control_mind_learning
 		}
 	}
 	option  = {
@@ -887,6 +884,12 @@ society_quest_event = {
 		}
 
 		ai_chance = { factor = 0 }
+	}
+
+	after = {
+		clr_character_flag = control_mind_martial_flag
+		clr_character_flag = control_mind_intrigue_flag
+		clr_character_flag = control_mind_learning_flag
 	}
 }
 
