@@ -1,0 +1,142 @@
+namespace = WCOAW
+#On Another World Events
+
+# Set "On Another World" characters as landless
+character_event = {
+	id = WCOAW.1
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	trigger = {
+		trait = on_another_world
+	}
+
+	immediate = {
+        create_title = {
+            tier = DUKE
+            landless = yes
+			name = "ANOTHER_WORLD_TITLE"
+            holder = THIS
+            culture = THIS
+        }
+        set_defacto_liege = THIS
+        
+        # Remove them from councillor position at start of the game
+        remove_title = job_chancellor
+        remove_title = job_marshal
+        remove_title = job_treasurer
+        remove_title = job_spymaster
+        remove_title = job_spiritual
+	}
+}
+
+# on_avoided_imprison_started_war
+# on_became_imprisoned
+# on_avoided_imprison_fled_country
+# Removes imprisonment when character is on another world
+character_event = {
+	id = WCOAW.200
+
+    is_triggered_only = yes
+    hide_window = yes
+    
+    trigger = {
+        trait = on_another_world
+    }
+    
+    immediate = {
+ 	   if = {
+ 		   limit = { prisoner = yes }
+ 		   imprison = no
+ 	   }
+ 	   FROM = {
+           modifier = opinion_arrest_attempt
+ 		   character_event = { id = WCOAW.2 }
+ 	   }
+    }
+ }
+ 
+ # Follow-up to WCOAW.200
+ letter_event = {
+ 	id = WCOAW.2
+    desc = "EVTDESC_WCOAW_2"
+	border = GFX_event_letter_frame_intrigue
+ 
+ 	is_triggered_only = yes
+ 
+ 	option = {
+ 		name = EVTOPT_WCOAW_2
+ 		custom_tooltip = { text = EVTOPT_WCOAW_2_tooltip }
+ 	}
+ }
+ 
+ # Don't allow religious conversion, whatsoever when on another world
+ character_event = {
+ 	id = WCOAW.3
+ 
+ 	is_triggered_only = yes
+ 	hide_window = yes
+ 
+ 	trigger = {
+ 		trait = on_another_world
+ 	}
+ 
+    # ROOT is the character after conversion and the FROM scope has the old religion
+ 	immediate = {
+         religion = FROM
+ 	}
+ }
+ 
+ # NPC setup to get ready to go to another world (move titles) + inform liege (if player)
+ character_event = {
+   id = WCOAW.104
+ 
+   is_triggered_only = yes
+   hide_window = yes
+ 
+   trigger = {
+	   ai = yes # Players will never have this happen, they shouldn't either
+   }
+ 
+	# Give liege titles of the character that goes to another world
+   immediate = {
+	   add_trait = on_another_world # Give them the required trait
+	   liege = {
+		   save_event_target_as = target_liege
+	   }
+	   abdicate_to = event_target:target_liege
+	   
+	   # Create landless title for the character
+	   create_title = {
+		   tier = DUKE
+		   landless = yes
+		   name = "ANOTHER_WORLD_TITLE"
+		   holder = THIS
+		   culture = THIS
+	   }
+	   set_defacto_liege = THIS
+	   
+	   event_target:target_liege = { character_event = { id = WCOAW.4 } }
+   }
+ }
+ 
+ # Interaction to Liege that a character is no longer in this world
+ # ROOT = the liege of the character
+ # FROM = the NP that goes to another world
+ character_event = {
+   id = WCOAW.4
+   desc = "EVTDESC_WCOAW_4"
+   picture = GFX_evt_another_world
+   
+   is_triggered_only = yes
+   
+   trigger = {
+	   ai = no # AI don't need this info
+   }
+   
+   option = {
+	  name = EVTOPT_WCOAW_4
+	  custom_tooltip = { text = EVTOPT_WCOAW_4_tooltip }
+   }
+ }
