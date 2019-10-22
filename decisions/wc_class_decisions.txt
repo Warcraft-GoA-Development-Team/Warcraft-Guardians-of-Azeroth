@@ -251,7 +251,7 @@ decisions = {
 		}
 	}
 
-	### Priest ###   # Remember to edit become_priestess_of_elune when changing something
+	### Priest ###
 	teach_yourself_priest = {
 		is_high_prio = yes
 
@@ -270,7 +270,6 @@ decisions = {
 			NOT = { has_character_flag = hide_class_training_decisions_flag }
 
 			potential_priest_trigger = yes
-			NOT = { religion = kaldorei_religion }
 		}
 		allow = {
 			show_only_failed_conditions = yes
@@ -301,77 +300,8 @@ decisions = {
 
 			modifier = {
 				factor = 10
-
+				
 				light_true_religion_trigger = yes
-				OR = {
-					has_benevolent_trait_trigger = yes
-					has_pious_trait_trigger = yes
-				}
-			}
-			modifier = {
-				factor = 2
-				trait = ambitious
-			}
-			modifier = {
-				factor = 2
-				trait = brave
-			}
-		}
-	}
-	### Priestess of the Moon###
-	become_priestess_of_elune = {
-		is_high_prio = yes
-
-		ai_check_interval = 60
-
-		ai = no
-		only_playable = yes
-
-		potential = {
-			is_untouchable_trigger = no
-
-			is_adult = yes
-			is_female = yes
-			is_incapable = no
-			prisoner = no
-			
-			NOT = { has_character_flag = hide_class_training_decisions_flag }
-
-			potential_priest_trigger = yes
-			religion = kaldorei_religion
-		}
-		allow = {
-			show_only_failed_conditions = yes
-			
-			is_inaccessible_trigger = no
-			
-			is_in_society = no
-			allow_priest_trigger = yes
-			OR = {
-				AND = {
-					is_ruler = yes
-					wealth = 25
-				}
-				is_ruler = no
-			}
-		}
-		effect = {
-			if = {
-				limit = { ai = no }
-				wealth = -25
-			}
-			character_event = { id = WCCLS.401 }
-		}
-		revoke_allowed = {
-			always = no
-		}
-		ai_will_do = {
-			factor = 0.05
-
-			modifier = {
-				factor = 10
-
-				true_religion = kaldorei_religion
 				OR = {
 					has_benevolent_trait_trigger = yes
 					has_pious_trait_trigger = yes
@@ -2839,9 +2769,12 @@ targetted_decisions = {
 						}
 					}
 				}
-				AND = {
+				trigger_if = {
+					limit = {
+						FROM = { has_quest = quest_control_mind }
+						is_quest_target_of = FROM
+					}
 					is_quest_target_of = FROM
-					FROM = { has_quest = quest_control_mind }
 				}
 			}
 
@@ -2877,12 +2810,15 @@ targetted_decisions = {
 							}
 							society_rank > 2
 						}
-						OR = {
-							has_society_currency_medium_trigger = yes
-							AND = {
-								ROOT = { is_quest_target_of = FROM }
+						trigger_if = {
+							limit = {
 								has_quest = quest_control_mind
+								ROOT = { is_quest_target_of = FROM }
 							}
+							ROOT = { is_quest_target_of = FROM }
+						}
+						trigger_else = {
+							has_society_currency_medium_trigger = yes
 						}
 					}
 					trigger_if = {
@@ -3253,17 +3189,15 @@ targetted_decisions = {
 						limit = { has_quest = quest_disembowel_small_humanoid }
 						clr_quest = quest_disembowel_small_humanoid
 						add_society_currency_minor_effect = yes
-						break = yes
 					}
-					if = {
+					else_if = {
 						limit = { society_member_of = cult_of_the_damned }
 						add_society_currency_trivial_effect = yes
 					}
 				}
-				break = yes
 			}
 			# Medium Humanoid
-			if = {
+			else_if = {
 				limit = { is_medium_humanoid_trigger = yes }
 				FROM = {
 					show_scope_change = no
@@ -3271,17 +3205,15 @@ targetted_decisions = {
 						limit = { has_quest = quest_disembowel_medium_humanoid }
 						clr_quest = quest_disembowel_medium_humanoid
 						add_society_currency_minor_effect = yes
-						break = yes
 					}
-					if = {
+					else_if = {
 						limit = { society_member_of = cult_of_the_damned }
 						add_society_currency_trivial_effect = yes
 					}
 				}
-				break = yes
 			}
 			# Large Humanoid
-			if = {
+			else_if = {
 				limit = { is_large_humanoid_trigger = yes }
 				FROM = {
 					show_scope_change = no
@@ -3289,17 +3221,14 @@ targetted_decisions = {
 						limit = { has_quest = quest_disembowel_large_humanoid }
 						clr_quest = quest_disembowel_large_humanoid
 						add_society_currency_medium_effect = yes
-						break = yes
 					}
-					if = {
+					else_if = {
 						limit = { society_member_of = cult_of_the_damned }
 						add_society_currency_minor_effect = yes
 					}
 				}
-				break = yes
 			}
-			FROM = {
-				show_scope_change = no
+			else = {
 				if = {
 					limit = { society_member_of = cult_of_the_damned }
 					add_society_currency_trivial_effect = yes
@@ -3356,7 +3285,7 @@ targetted_decisions = {
 
 		# If you modify potential or allow, don't forget to change WCDAC.7050
 		allow = {
-			show_only_failed_conditions = yes
+			# show_only_failed_conditions = yes
 			
 			FROM = {
 				show_scope_change = no
@@ -3377,7 +3306,16 @@ targetted_decisions = {
 							society_member_of = cult_of_the_damned
 							society_rank > 1
 						}
-						has_society_currency_minor_trigger = yes
+						trigger_if = {
+							limit = {
+								has_quest = quest_turn_into_undead
+								ROOT = { is_quest_target_of = FROM }
+							}
+							ROOT = { is_quest_target_of = FROM }
+						}
+						trigger_else = {
+							has_society_currency_minor_trigger = yes
+						}
 					}
 					AND = {
 						wealth = 50
@@ -3507,7 +3445,16 @@ targetted_decisions = {
 							society_member_of = cult_of_the_damned
 							society_rank > 2
 						}
-						has_society_currency_minor_trigger = yes
+						trigger_if = {
+							limit = {
+								has_quest = quest_turn_into_undead
+								ROOT = { is_quest_target_of = FROM }
+							}
+							ROOT = { is_quest_target_of = FROM }
+						}
+						trigger_else = {
+							has_society_currency_medium_trigger = yes
+						}
 					}
 					
 					# Fallback
@@ -3541,7 +3488,6 @@ targetted_decisions = {
 					}
 					clr_quest = quest_turn_into_undead
 					add_society_currency_medium_effect = yes
-					break = yes
 				}
 				else_if = {
 					limit = {
@@ -3555,9 +3501,9 @@ targetted_decisions = {
 					limit = {
 						society_member_of = cult_of_the_damned
 						society_rank > 2
-						has_society_currency_minor_trigger = yes
+						has_society_currency_medium_trigger = yes
 					}
-					detract_society_currency_minor_effect = yes
+					detract_society_currency_medium_effect = yes
 				}
 			}
 		}
