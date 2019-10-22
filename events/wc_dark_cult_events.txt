@@ -1,48 +1,5 @@
 namespace = WCDAC
 
-character_event = {
-	id = WCDAC.100
-	hide_window = yes
-
-	is_triggered_only = yes
-
-	immediate = {
-		FROM = {
-			set_character_flag = cult_of_the_damned_attempted_recruitment
-			set_character_flag = being_recruited_by_cult_of_the_damned
-			character_event = { id = WCCSO.7001 days = 3 }
-		}
-	}
-}
-character_event = {
-	id = WCDAC.101
-	hide_window = yes
-
-	is_triggered_only = yes
-
-	immediate = {
-		FROM = {
-			set_character_flag = shadow_council_attempted_recruitment
-			set_character_flag = being_recruited_by_shadow_council
-			character_event = { id = WCCSO.7001 days = 3 }
-		}
-	}
-}
-character_event = {
-	id = WCDAC.102
-	hide_window = yes
-
-	is_triggered_only = yes
-
-	immediate = {
-		FROM = {
-			set_character_flag = twilights_hammer_cult_attempted_recruitment
-			set_character_flag = being_recruited_by_twilights_hammer_cult
-			character_event = { id = WCCSO.7001 days = 3 }
-		}
-	}
-}
-
 # Notifies family/friend/lover/spouse what FROM have become
 # on_character_convert_religion
 character_event = {
@@ -343,6 +300,7 @@ character_event = {
 
 	trigger = {
 		has_dlc = "Zeus"
+		has_dlc = "Mystics"
 
 		is_alive = yes
 		is_dying = no
@@ -380,19 +338,7 @@ character_event = {
 					NOT = { character = event_target:target_loyal_ruler }
 					has_job_title = no
 					has_minor_title = no
-					OR = {
-						AND = {
-							has_dlc = "Mystics"
-							society_member_of = shadow_council
-						}
-						AND = {
-							NOT = { has_dlc = "Mystics" }
-							OR = {
-								true_religion = orcish_fel
-								true_religion = burning_legion_religion
-							}
-						}
-					}
+					society_member_of = shadow_council
 				}
 			}
 		}
@@ -405,19 +351,7 @@ character_event = {
 					NOT = { character = event_target:target_loyal_ruler }
 					has_job_title = no
 					has_minor_title = no
-					OR = {
-						AND = {
-							has_dlc = "Mystics"
-							society_member_of = shadow_council
-						}
-						AND = {
-							NOT = { has_dlc = "Mystics" }
-							OR = {
-								true_religion = orcish_fel
-								true_religion = burning_legion_religion
-							}
-						}
-					}
+					society_member_of = shadow_council
 				}
 				character_event = { id = WCDAC.4017 }
 			}
@@ -436,19 +370,7 @@ character_event = {
 				NOT = { character = event_target:target_loyal_ruler }
 				has_job_title = no
 				has_minor_title = no
-				OR = {
-					AND = {
-						has_dlc = "Mystics"
-						society_member_of = shadow_council
-					}
-					AND = {
-						NOT = { has_dlc = "Mystics" }
-						OR = {
-							true_religion = orcish_fel
-							true_religion = burning_legion_religion
-						}
-					}
-				}
+				society_member_of = shadow_council
 			}
 		}
 		name = EVTOPTB_WCDAC_4014
@@ -461,19 +383,7 @@ character_event = {
 				NOT = { character = event_target:target_loyal_ruler }
 				has_job_title = no
 				has_minor_title = no
-				OR = {
-					AND = {
-						has_dlc = "Mystics"
-						society_member_of = shadow_council
-					}
-					AND = {
-						NOT = { has_dlc = "Mystics" }
-						OR = {
-							true_religion = orcish_fel
-							true_religion = burning_legion_religion
-						}
-					}
-				}
+				society_member_of = shadow_council
 			}
 			move_character = event_target:target_loyal_ruler
 			character_event = { id = WCDAC.4017 }
@@ -1199,6 +1109,7 @@ narrative_event = {
 		name = EVTOPTA_WCDAC_5040
 
 		leave_society = yes
+		set_global_flag = twilights_hammer_cult_active_flag
 		join_society_twilights_hammer_cult_effect = yes
 		hidden_effect = {
 			set_society_grandmaster = yes # Set character as Grand Master
@@ -1727,668 +1638,6 @@ character_event = {
 	}
 }
 
-##########################
-#	MISSIONS
-##########################
-
-############################
-#	the Cult of the Damned
-############################
-
-###### Infect grain ######
-
-#Ping event
-character_event = {
-	id = WCDAC.7023
-	hide_window = yes
-
-	is_triggered_only = yes
-
-	immediate = { FROM = { society_quest_event = { id = WCDAC.7024 days = 7 random = 7 } } }
-}
-
-#Assign event
-society_quest_event = {
-	id = WCDAC.7024
-	desc = EVTDESC_WCDAC_7024
-
-	is_triggered_only = yes
-
-	immediate = {
-		random_realm_province = {
-			limit = {
-				NOT = { religion = death_god }
-				NOT = { has_province_modifier = undead_province }
-				any_province_holding = { holder_scope = { NOT = { character = ROOT } } }
-			}
-			random_province_holding = {
-				limit = { holder_scope = { NOT = { character = ROOT } } }
-				save_event_target_as = infection_target
-			}
-		}
-
-		random_realm_province = {
-			limit = {
-				NOT = { holder_scope =  { character = ROOT } }
-				NOT = { religion = death_god }
-				NOT = { has_province_modifier = undead_province }
-			}
-			random_province_holding = {
-				save_event_target_as = infection_target
-			}
-		}
-	}
-
-	quest_target = event_target:infection_target
-
-	option = {
-		name = ACCEPT
-		event_target:infection_target = {
-			set_quest_target = {
-				id = quest_infect_grain
-				holder = ROOT
-			}
-		}
-	}
-	option  = {
-		name = DECLINE
-		custom_tooltip = { text = decline_quest_tooltip }
-
-		add_character_modifier = {
-			name = quest_cooldown_timer
-			hidden = yes
-			days = 1000
-		}
-
-		ai_chance = { factor = 0 }
-	}
-}
-
-# Introductory event
-long_character_event = {
-	id = WCDAC.7025
-	desc = EVTDESC_WCDAC_7025
-	picture = GFX_evt_secret_ceremony
-
-	is_triggered_only = yes
-
-	immediate = {
-		random_quest_target = {
-			limit = { is_quest_target_of = ROOT }
-			save_event_target_as =  infection_target
-		}
-		event_target:infection_target = {
-			location = { save_event_target_as = province_of_infection_target }
-			holder_scope = { save_event_target_as = holder_of_infection_target }
-		}
-	}
-
-	option = {
-		name  = EVTOPTA_WCDAC_7025
-		character_event = { id = WCDAC.7026 }
-	}
-}
-
-# Faces the guards
-character_event = {
-	id = WCDAC.7026
-	desc = EVTDESC_WCDAC_7026
-	picture = GFX_evt_secret_ceremony
-
-	is_triggered_only = yes
-
-	# Bribe the guards
-	option = {
-		name  = EVTOPTA_WCDAC_7026
-		scaled_wealth = { value = -0.05 min = -25 }
-		hidden_effect = {
-			set_character_flag = tried_to_bribe_flag
-			random_list = {
-				75 = {
-					set_character_flag = bribed_the_guards_flag
-					character_event = { id = WCDAC.7030 }
-				}
-				25 = {
-					set_character_flag = attacked_the_guards_flag
-					character_event = { id = WCDAC.7027 }
-					modifier = {
-						factor = 1.75
-						NOT = { diplomacy = 12 }
-					}
-					modifier = {
-						factor = 1.75
-						NOT = { diplomacy = 7 }
-					}
-					modifier = {
-						factor = 1.75
-						NOT = { diplomacy = 3 }
-					}
-				}
-			}
-		}
-		ai_chance = {
-			factor = 0
-		}
-	}
-	# Hide from the guards
-	option = {
-		name  = EVTOPTB_WCDAC_7026
-		hidden_effect = {
-			set_character_flag = tried_to_hide_flag
-			random_list = {
-				75 = {
-					set_character_flag = avoided_the_guards_flag
-					character_event = { id = WCDAC.7030 }
-				}
-				25 = {
-					set_character_flag = attacked_the_guards_flag
-					character_event = { id = WCDAC.7027 }
-					modifier = {
-						factor = 1.75
-						NOT = { intrigue = 12 }
-					}
-					modifier = {
-						factor = 1.75
-						NOT = { intrigue = 7 }
-					}
-					modifier = {
-						factor = 1.75
-						NOT = { intrigue = 3 }
-					}
-				}
-			}
-		}
-		ai_chance = {
-			factor = 1
-		}
-	}
-	# Attack the guards
-	option = {
-		name  = EVTOPTC_WCDAC_7026
-		hidden_effect = {
-			set_character_flag = tried_to_attack_flag
-			set_character_flag = attacked_the_guards_flag
-			character_event = { id = WCDAC.7027 }
-		}
-		ai_chance = {
-			factor = 0
-		}
-	}
-}
-
-# Struggles with the guards
-character_event = {
-	id = WCDAC.7027
-	desc = {
-		trigger = { has_character_flag = tried_to_bribe_flag }
-		text = EVTDESC_WCDAC_7027_case_01
-	}
-	desc = {
-		trigger = { has_character_flag = tried_to_hide_flag }
-		text = EVTDESC_WCDAC_7027_case_02
-	}
-	desc = {
-		trigger = { has_character_flag = tried_to_attack_flag }
-		text = EVTDESC_WCDAC_7027_case_03
-	}
-	picture = GFX_evt_secret_ceremony
-
-	is_triggered_only = yes
-
-	immediate = {
-		hidden_effect = {
-			event_target:holder_of_infection_target = {
-				create_character = {
-					dynasty = none
-					religion = THIS
-					culture = THIS
-					female = no
-					age = 40
-					attributes = {
-						martial=5 diplomacy=3 stewardship=3 intrigue=3 learning=3
-					}
-					random_traits = yes
-					trait = class_warrior_2
-					trait=misguided_warrior
-				}
-				new_character = {
-					save_event_target_as = target_guard
-					set_character_flag = quest_character_flag
-					clear_event_target = target_enemy
-					save_event_target_as = target_enemy
-				}
-			}
-		}
-		save_event_target_as = target_adventurer
-	}
-
-	# Attack him
-	option = {
-		name  = EVTOPTA_WCDAC_7027
-
-		# You win immediately
-		# I wanted to put duel with guard here, but don't have time - your Zuzu
-		character_event = { id = WCDAC.7030 }
-	}
-	# Run away
-	option = {
-		trigger = { }
-		name = EVTOPTB_WCDAC_7027
-
-		clr_quest = {
-			id = quest_infect_grain
-			failure = yes
-		}
-		hidden_effect = {
-			clr_character_flag = infection_in_progress
-			clr_character_flag = tried_to_bribe_flag
-			clr_character_flag = bribed_the_guards_flag
-			clr_character_flag = tried_to_hide_flag
-			clr_character_flag = avoided_the_guards_flag
-			clr_character_flag = tried_to_attack_flag
-			clr_character_flag = attacked_the_guards_flag
-		}
-	}
-
-	after = {
-		event_target:target_guard = { death = { death_reason = death_missing } }
-	}
-}
-
-# You imprisoned by the guards. Fail.
-character_event = {
-	id = WCDAC.7028
-	desc = EVTDESC_WCDAC_7028
-	picture = GFX_evt_into_the_dungeon
-
-	is_triggered_only = yes
-
-	immediate = {
-		event_target:target_guard = {
-			if = { limit = { is_alive = yes } death = { death_reason = death_missing } }
-		}
-	}
-
-	option = {
-		name = ALAS
-
-		clr_quest = {
-			id = quest_devil_worshipers_desecrate_temple
-			failure = yes
-		}
-		hidden_effect = {
-			clr_character_flag = infection_in_progress
-			clr_character_flag = tried_to_bribe_flag
-			clr_character_flag = bribed_the_guards_flag
-			clr_character_flag = tried_to_hide_flag
-			clr_character_flag = avoided_the_guards_flag
-			clr_character_flag = tried_to_attack_flag
-			clr_character_flag = attacked_the_guards_flag
-			increase_visibility_effect = yes
-		}
-	}
-}
-
-# The grain is infected. What to do with the witnesses?
-character_event = {
-	id = WCDAC.7030
-	desc = {
-		trigger = { has_character_flag = bribed_the_guards_flag }
-		text = EVTDESC_WCDAC_7030_case_01
-	}
-	desc = {
-		trigger = { has_character_flag = avoided_the_guards_flag }
-		text = EVTDESC_WCDAC_7030_case_02
-	}
-	desc = {
-		trigger = { has_character_flag = attacked_the_guards_flag }
-		text = EVTDESC_WCDAC_7030_case_03
-	}
-	picture = GFX_evt_secret_ceremony
-
-	is_triggered_only = yes
-
-	immediate = {
-		event_target:target_guard = {
-			if = { limit = { is_alive = yes } death = { death_reason = death_missing } }
-		}
-	}
-
-	# Eliminate if it's necessary.
-	option = {
-		name  = EVTOPTA_WCDAC_7030
-
-		hidden_effect = {
-			character_event = { id = WCDAC.7032 }
-
-			random_list = {
-				10 = { increase_visibility_effect = yes }
-				90 = {}
-			}
-		}
-
-		ai_chance = {
-			factor = 75
-		}
-	}
-	# Kill them all!
-	option = {
-		name  = EVTOPTB_WCDAC_7030
-
-		add_trait_cruel_effect = yes
-		remove_trait_kind_effect = yes
-		add_society_currency_minor_effect = yes
-
-		hidden_effect = {
-			character_event = { id = WCDAC.7032 }
-		}
-
-		ai_chance = {
-			factor = 25
-		}
-	}
-}
-
-# Finishing of the quest
-character_event = {
-	id = WCDAC.7032
-	desc = EVTDESC_WCDAC_7032
-	picture = GFX_evt_secret_ceremony
-
-	is_triggered_only = yes
-
-	option = {
-		name = EXCELLENT
-
-		clr_quest = quest_infect_grain
-		add_society_currency_medium_effect = yes
-
-		event_target:infection_target = {
-			add_holding_modifier = {
-				name = infected_holding
-				years = 5
-				hidden = yes
-			}
-		}
-
-		hidden_effect = {
-			clr_character_flag = infection_in_progress
-			clr_character_flag = tried_to_bribe_flag
-			clr_character_flag = bribed_the_guards_flag
-			clr_character_flag = tried_to_hide_flag
-			clr_character_flag = avoided_the_guards_flag
-			clr_character_flag = tried_to_attack_flag
-			clr_character_flag = attacked_the_guards_flag
-			random = {
-				chance = 50
-				minor_soul_corruption_effect = yes
-			}
-		}
-	}
-}
-
-
-### Disembowel character ###
-
-# Ping event
-character_event = {
-	id = WCDAC.7040
-	hide_window = yes
-
-	is_triggered_only = yes
-
-	immediate = { FROM = { society_quest_event = { id = WCDAC.7041 days = 7 random = 7 } } }
-}
-
-#Assign event
-society_quest_event = {
-	id = WCDAC.7041
-	desc = EVTDESC_WCDAC_7041
-	border = GFX_event_letter_frame_intrigue
-
-	is_triggered_only = yes
-
-	immediate = {
-		random_list = {
-			10 = { set_character_flag = disembowel_small_humanoid_flag }
-			10 = { set_character_flag = disembowel_medium_humanoid_flag }
-			5 = { set_character_flag = disembowel_large_humanoid_flag }
-		}
-	}
-
-	option = {
-		name = ACCEPT
-
-		if = {
-			limit = { has_character_flag = disembowel_small_humanoid_flag }
-			set_quest = quest_disembowel_small_humanoid
-		}
-		if = {
-			limit = { has_character_flag = disembowel_medium_humanoid_flag }
-			set_quest = quest_disembowel_medium_humanoid
-		}
-		if = {
-			limit = { has_character_flag = disembowel_large_humanoid_flag }
-			set_quest = quest_disembowel_large_humanoid
-		}
-	}
-
-	option = {
-		name = DECLINE
-		custom_tooltip = { text = decline_quest_tooltip }
-
-		add_character_modifier = {
-			name = quest_cooldown_timer
-			hidden = yes
-			days = 1000
-		}
-
-		ai_chance = { factor = 0 }
-	}
-
-	after = {
-		hidden_effect = {
-			clr_character_flag = disembowel_small_humanoid_flag
-			clr_character_flag = disembowel_medium_humanoid_flag
-			clr_character_flag = disembowel_large_humanoid_flag
-		}
-	}
-}
-
-### Turn into undead ###
-
-#Ping event
-character_event = {
-	id = WCDAC.7050
-	hide_window = yes
-
-	is_triggered_only = yes
-
-	immediate = { FROM = { society_quest_event = { id = WCDAC.7051 days = 7 random = 7 } } }
-}
-
-#Assign event
-society_quest_event = {
-	id = WCDAC.7051
-	desc = EVTDESC_WCDAC_7051
-
-	is_triggered_only = yes
-
-	immediate = {
-		random_courtier = {
-			limit = {
-				ai = yes
-				is_adult = yes
-				is_incapable = no
-				prisoner = no
-
-				NOT = { character = ROOT }
-				NOT = { has_character_flag = being_raised_flag }
-
-				is_dark_being_trigger = no
-				is_humanoid_trigger = yes
-				is_in_society = no
-			}
-			save_event_target_as = target_future_undead
-		}
-	}
-
-	quest_target = event_target:target_future_undead
-
-	option = {
-		name = ACCEPT
-		event_target:target_future_undead = {
-			set_quest_target = {
-				id = quest_turn_into_undead
-				holder = ROOT
-			}
-		}
-	}
-	option  = {
-		name = DECLINE
-		custom_tooltip = { text = decline_quest_tooltip }
-
-		add_character_modifier = {
-			name = quest_cooldown_timer
-			hidden = yes
-			days = 1000
-		}
-
-		ai_chance = { factor = 0 }
-	}
-}
-
-############################
-#	the Shadow Council
-############################
-
-### Drain a soul ###
-
-# Ping event
-character_event = {
-	id = WCDAC.8000
-	hide_window = yes
-
-	is_triggered_only = yes
-
-	immediate = { FROM = { society_quest_event = { id = WCDAC.8001 days = 7 random = 7 } } }
-}
-
-#Assign event
-society_quest_event = {
-	id = WCDAC.8001
-	desc = EVTDESC_WCDAC_8001
-	border = GFX_event_letter_frame_intrigue
-
-	is_triggered_only = yes
-
-	immediate = {
-		random_list = {
-			5 = { set_character_flag = drain_soul_ruler_flag }
-			10 = { set_character_flag = drain_soul_holy_person_flag }
-			10 = { set_character_flag = drain_soul_virgin_flag }
-		}
-	}
-
-	option = {
-		name = ACCEPT
-
-		if = {
-			limit = { has_character_flag = drain_soul_ruler_flag }
-			set_quest = quest_drain_soul_ruler
-		}
-		if = {
-			limit = { has_character_flag = drain_soul_holy_person_flag }
-			set_quest = quest_drain_soul_holy_person
-		}
-		if = {
-			limit = { has_character_flag = drain_soul_virgin_flag }
-			set_quest = quest_drain_soul_virgin
-		}
-	}
-
-	option = {
-		name = DECLINE
-		custom_tooltip = { text = decline_quest_tooltip }
-
-		add_character_modifier = {
-			name = quest_cooldown_timer
-			hidden = yes
-			days = 1000
-		}
-
-		ai_chance = { factor = 0 }
-	}
-
-	after = {
-		hidden_effect = {
-			clr_character_flag = drain_soul_ruler_flag
-			clr_character_flag = drain_soul_holy_person_flag
-			clr_character_flag = drain_soul_virgin_flag
-		}
-	}
-}
-
-### Mind Control ###
-
-#Ping event
-character_event = {
-	id = WCDAC.8010
-	hide_window = yes
-
-	is_triggered_only = yes
-
-	immediate = { FROM = { society_quest_event = { id = WCDAC.8011 days = 7 random = 7 } } }
-}
-
-#Assign event
-society_quest_event = {
-	id = WCDAC.8011
-	desc = {
-		trigger = { society_member_of = shadow_council }
-		text = EVTDESC_WCDAC_8011_council
-	}
-	desc = {
-		trigger = { society_member_of = twilights_hammer_cult }
-		text = EVTDESC_WCDAC_8011_cult
-	}
-
-	is_triggered_only = yes
-
-	immediate = {
-		random_courtier = {
-			limit = {
-				is_potential_mind_control_target_trigger = yes
-			}
-			save_event_target_as = target_mind
-		}
-	}
-
-	quest_target = event_target:target_mind
-
-	option = {
-		name = ACCEPT
-		event_target:target_mind = {
-			set_quest_target = {
-				id = quest_control_mind
-				holder = ROOT
-			}
-		}
-	}
-	option  = {
-		name = DECLINE
-		custom_tooltip = { text = decline_quest_tooltip }
-
-		add_character_modifier = {
-			name = quest_cooldown_timer
-			hidden = yes
-			days = 1000
-		}
-
-		ai_chance = { factor = 0 }
-	}
-}
-
 # on_county_religion_change
 # Upgrades tribals, builds buildings when province is converted to evil religion
 province_event = {
@@ -2420,6 +1669,51 @@ province_event = {
 		}
 	}
 }
+# on_county_religion_change
+# Destroy trade post when province converts to/from evil religions
+province_event = {
+	id = WCDAC.9992
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	trigger = {
+		has_trade_post = yes
+		owner_can_have_trade_post_trigger = no
+	}
+
+	immediate = {
+		trade_post_owner = {
+			destroy_tradepost = ROOT
+			if = {
+				limit = { ai = no }
+				character_event = { id = WCDAC.9993 }
+			}
+		}
+	}
+}
+# Notification
+character_event = {
+	id = WCDAC.9993
+	desc = {
+		trigger = { evil_public_religion_trigger = yes }
+		text = EVTDESC_WCDAC_9993_evil
+	}
+	desc = {
+		trigger = { evil_public_religion_trigger = no }
+		text = EVTDESC_WCDAC_9993_normal
+	}
+	picture = GFX_evt_trade_post_republic
+	border = GFX_event_normal_frame_economy
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = ALAS
+		tooltip = { destroy_tradepost = FROM }
+	}
+}
+
 
 ######################
 # Clean-up events
