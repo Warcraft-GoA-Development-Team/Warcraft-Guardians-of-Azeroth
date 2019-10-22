@@ -1089,25 +1089,7 @@ narrative_event = {
 		clear_settler_flag_effect = yes
 		
 		# Spawns army for start
-		capital_scope = {
-			ROOT = {
-				spawn_unit = {
-					owner = ROOT
-					province = PREV
-					home = PREV
-					troops = {
-						archers = { 1000 1000 }
-						light_infantry = { 1500 1500 }
-						heavy_infantry = { 2000 2000 }
-						light_cavalry = { 375 375 }
-						knights = { 125 125 }
-					}
-					attrition = 0
-					merge = yes
-					maintenance = no
-				}
-			}
-		}
+		spawn_colonial_troops_effect = yes
 	}
 
 	# I'll spread its will across Kalimdor!
@@ -1644,37 +1626,84 @@ character_event = {
 	}
 }
 
+# No longer needed since buildings are gone
+# # on_county_religion_change
+# # Upgrades tribals, builds buildings when province is converted to evil religion
+# province_event = {
+	# id = WCDAC.9990
+
+	# is_triggered_only = yes
+	# hide_window = yes
+
+	# trigger = {
+		# OR = {
+			# use_scourge_buildings_trigger = yes
+			# use_legion_buildings_trigger = yes
+			# use_shathyar_buildings_trigger = yes
+		# }
+	# }
+
+	# immediate = {
+		# build_all_evil_buildings_province_effect = yes
+		# if = {
+			# limit = {
+				# any_province_holding = {
+					# holding_type = tribal
+				# }
+			# }
+			# random_province_holding = {
+				# limit = { holding_type = tribal }
+				# convert_tribal_to_castle_effect = yes
+			# }
+		# }
+	# }
+# }
+
 # on_county_religion_change
-# Upgrades tribals, builds buildings when province is converted to evil religion
+# Destroy trade post when province converts to/from evil religions
 province_event = {
-	id = WCDAC.9990
+	id = WCDAC.9992
 
 	is_triggered_only = yes
 	hide_window = yes
 
 	trigger = {
-		OR = {
-			use_scourge_buildings_trigger = yes
-			use_legion_buildings_trigger = yes
-			use_shathyar_buildings_trigger = yes
-		}
+		has_trade_post = yes
+		owner_can_have_trade_post_trigger = no
 	}
 
 	immediate = {
-		build_all_evil_buildings_province_effect = yes
-		if = {
-			limit = {
-				any_province_holding = {
-					holding_type = tribal
-				}
-			}
-			random_province_holding = {
-				limit = { holding_type = tribal }
-				convert_tribal_to_castle_effect = yes
+		trade_post_owner = {
+			destroy_tradepost = ROOT
+			if = {
+				limit = { ai = no }
+				character_event = { id = WCDAC.9993 }
 			}
 		}
 	}
 }
+# Notification
+character_event = {
+	id = WCDAC.9993
+	desc = {
+		trigger = { evil_public_religion_trigger = yes }
+		text = EVTDESC_WCDAC_9993_evil
+	}
+	desc = {
+		trigger = { evil_public_religion_trigger = no }
+		text = EVTDESC_WCDAC_9993_normal
+	}
+	picture = GFX_evt_trade_post_republic
+	border = GFX_event_normal_frame_economy
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = ALAS
+		tooltip = { destroy_tradepost = FROM }
+	}
+}
+
 
 ######################
 # Clean-up events
