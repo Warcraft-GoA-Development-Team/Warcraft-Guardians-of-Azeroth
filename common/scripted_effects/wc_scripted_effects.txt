@@ -1,8 +1,4 @@
 set_cannot_marry_flag_effect = {
-	if = {
-		limit = { can_marry_trigger = no }
-		log = "[This.GetBestName] can't marry"
-	}
 	add_trait = cannot_marry_trait
 	if = {
 		limit = {
@@ -10,9 +6,39 @@ set_cannot_marry_flag_effect = {
 			is_theocracy = no
 			tier = BARON
 		}
-		set_government_type = theocracy_government
+		if = {
+			limit = {
+				is_government_potential = theocracy_government
+			}
+			set_government_type = theocracy_government
+		}
+		else_if = {
+			limit = {
+				is_government_potential = republic_government
+			}
+			set_government_type = republic_government
+		}
+		else = {
+			log = "(IMPORTANT) Can't block marriage of [This.GetBestName]"
+		}
 	}
 }
+find_right_spouse_effect = {
+	if = {
+		limit = {
+			ai = yes
+			host = {
+				OR = {
+					ai = yes
+					NOT = { is_parent_of = PREV }
+					NOT = { is_grandparent_of = PREV }
+				}
+			}
+		}
+		character_event = { id = WCCLN.130 }		# Finds right spouse
+	}
+}
+
 remove_racial_traits_effect = {
 	# Fixes immortal age
 	rejuvenate_effect = yes
@@ -139,7 +165,7 @@ remove_racial_traits_effect = {
 	if = { limit = { trait = creature_infinite_whelp			} remove_trait = creature_infinite_whelp		}
 	if = { limit = { trait = creature_infinite_drake			} remove_trait = creature_infinite_drake		}
 	if = { limit = { trait = creature_infinite_dragon			} remove_trait = creature_infinite_dragon		}
-	if = { limit = { trait = creature_infinitee_wyrm			} remove_trait = creature_infinite_wyrm			}
+	if = { limit = { trait = creature_infinite_wyrm			} remove_trait = creature_infinite_wyrm			}
 
 	# Race-related traits
 	if = { limit = { trait = twoheaded 						} remove_trait = twoheaded					}
@@ -149,93 +175,6 @@ remove_racial_traits_effect = {
 	if = { limit = { trait = spikes_mutation 				} remove_trait = spikes_mutation				}
 	if = { limit = { trait = scales_mutation 				} remove_trait = scales_mutation				}
 	if = { limit = { trait = eyes_mutation 					} remove_trait = eyes_mutation				}
-}
-join_society_shadow_council_effect = {
-	join_society = shadow_council
-	if = {
-		limit = {
-			NOR = {
-				true_religion = orcish_fel
-				true_religion = burning_legion_religion
-			}
-		}
-		if = {
-			limit = {
-				OR = {
-					independent = yes
-					liege = {
-						NOR = {
-							religion = orcish_fel
-							religion = burning_legion_religion
-						}
-					}
-				}
-			}
-			set_secret_religion = burning_legion_religion
-		}
-		if = {
-			limit = {
-				independent = no
-				liege = { religion = orcish_fel }
-			}
-			if = { limit = { has_secret_religion = yes } clear_secret_religion = yes }
-			religion = orcish_fel
-		}
-		if = {
-			limit = {
-				independent = no
-				liege = { religion = burning_legion_religion }
-			}
-			if = { limit = { has_secret_religion = yes } clear_secret_religion = yes }
-			religion = burning_legion_religion
-		}
-	}
-}
-join_society_cult_of_the_damned_effect = {
-	join_society = cult_of_the_damned
-	if = {
-		limit = { NOT = { true_religion = death_god } }
-		if = {
-			limit = {
-				OR = {
-					independent = yes
-					liege = { NOT = { religion = death_god } }
-				}
-			}
-			set_secret_religion = death_god
-		}
-		if = {
-			limit = {
-				independent = no
-				liege = { religion = death_god }
-			}
-			if = { limit = { has_secret_religion = yes } clear_secret_religion = yes }
-			religion = death_god
-		}
-	}
-}
-join_society_twilights_hammer_cult_effect = {
-	join_society = twilights_hammer_cult
-	if = {
-		limit = { NOT = { true_religion = old_gods_worship } }
-		if = {
-			limit = {
-				OR = {
-					independent = yes
-					liege = { NOT = { religion = old_gods_worship } }
-				}
-			}
-			set_secret_religion = old_gods_worship
-		}
-		if = {
-			limit = {
-				independent = no
-				liege = { religion = old_gods_worship }
-			}
-			if = { limit = { has_secret_religion = yes } clear_secret_religion = yes }
-			religion = old_gods_worship
-		}
-	}
 }
 tomb_generate_random_treasury_effect = {
 	if = {
@@ -463,11 +402,6 @@ decrease_colony = {
 		remove_province_modifier = colony_3
 		add_province_modifier = { name = colony_2 duration = -1 }
 	}
-}
-clr_all_society_recruitment_flags_effect = {
-	clr_character_flag = being_recruited_by_cult_of_the_damned
-	clr_character_flag = being_recruited_by_shadow_council
-	clr_character_flag = being_recruited_by_twilights_hammer_cult
 }
 
 add_prev_useful_flesh = {
@@ -1103,36 +1037,57 @@ convert_to_target_undead_province_effect = {
 	religion = event_target:target_province_holder
 }
 spawn_horde_troops_effect = {
-	spawn_small_horde_troops_effect = yes
-	if = {
-		limit = {
-			has_game_rule = {
-				name = invaders_strength
-				value = default
+	custom_tooltip = {
+		text = spawn_small_horde_troops_tooltip
+		spawn_small_horde_troops_effect = yes
+		if = {
+			limit = {
+				has_game_rule = {
+					name = horde_invasion
+					value = x0_5
+				}
 			}
+			spawn_small_horde_troops_effect = yes
 		}
-		spawn_small_horde_troops_effect = yes
-	}
-	if = {
-		limit = {
-			has_game_rule = {
-				name = invaders_strength
-				value = x1_5
+		if = {
+			limit = {
+				has_game_rule = {
+					name = horde_invasion
+					value = default
+				}
 			}
+			spawn_small_horde_troops_effect = yes
+			spawn_small_horde_troops_effect = yes
+			spawn_small_horde_troops_effect = yes
 		}
-		spawn_small_horde_troops_effect = yes
-		spawn_small_horde_troops_effect = yes
-	}
-	if = {
-		limit = {
-			has_game_rule = {
-				name = invaders_strength
-				value = x2
+		if = {
+			limit = {
+				has_game_rule = {
+					name = horde_invasion
+					value = x1_5
+				}
 			}
+			spawn_small_horde_troops_effect = yes
+			spawn_small_horde_troops_effect = yes
+			spawn_small_horde_troops_effect = yes
+			spawn_small_horde_troops_effect = yes
+			spawn_small_horde_troops_effect = yes
 		}
-		spawn_small_horde_troops_effect = yes
-		spawn_small_horde_troops_effect = yes
-		spawn_small_horde_troops_effect = yes
+		if = {
+			limit = {
+				has_game_rule = {
+					name = horde_invasion
+					value = x2
+				}
+			}
+			spawn_small_horde_troops_effect = yes
+			spawn_small_horde_troops_effect = yes
+			spawn_small_horde_troops_effect = yes
+			spawn_small_horde_troops_effect = yes
+			spawn_small_horde_troops_effect = yes
+			spawn_small_horde_troops_effect = yes
+			spawn_small_horde_troops_effect = yes
+		}
 	}
 }
 # DON'T USE it outside of spawn_horde_troops_effect
@@ -1142,11 +1097,11 @@ spawn_small_horde_troops_effect = {
 		province = 73
 		home = 73
 		troops = {
-			archers = { 500 500 }
-			light_infantry = { 750 750 }
-			heavy_infantry = { 1000 1000 }
-			light_cavalry = { 200 200 }
-			knights = { 50 50 }
+			light_infantry = { 125 125 }
+			heavy_infantry = { 550 550 }
+			pikemen = { 150 150 }
+			light_cavalry = { 75 75 }
+			archers = { 250 250 }
 		}
 		attrition = 0
 		maintenance = no
@@ -1157,41 +1112,62 @@ spawn_small_horde_troops_effect = {
 		owner = THIS
 		earmark = horde_forces
 		troops = {
-			galleys = { 50 50 }
+			galleys = { 25 25 }
 		}
 	}
 }
 spawn_legion_troops_effect = {
-	spawn_small_legion_troops_effect = yes
-	if = {
-		limit = {
-			has_game_rule = {
-				name = invaders_strength
-				value = default
+	custom_tooltip = {
+		text = spawn_small_legion_troops_tooltip
+		spawn_small_legion_troops_effect = yes
+		if = {
+			limit = {
+				has_game_rule = {
+					name = legion_invasion
+					value = x0_5
+				}
 			}
+			spawn_small_legion_troops_effect = yes
 		}
-		spawn_small_legion_troops_effect = yes
-	}
-	if = {
-		limit = {
-			has_game_rule = {
-				name = invaders_strength
-				value = x1_5
+		if = {
+			limit = {
+				has_game_rule = {
+					name = legion_invasion
+					value = default
+				}
 			}
+			spawn_small_legion_troops_effect = yes
+			spawn_small_legion_troops_effect = yes
+			spawn_small_legion_troops_effect = yes
 		}
-		spawn_small_legion_troops_effect = yes
-		spawn_small_legion_troops_effect = yes
-	}
-	if = {
-		limit = {
-			has_game_rule = {
-				name = invaders_strength
-				value = x2
+		if = {
+			limit = {
+				has_game_rule = {
+					name = legion_invasion
+					value = x1_5
+				}
 			}
+			spawn_small_legion_troops_effect = yes
+			spawn_small_legion_troops_effect = yes
+			spawn_small_legion_troops_effect = yes
+			spawn_small_legion_troops_effect = yes
+			spawn_small_legion_troops_effect = yes
 		}
-		spawn_small_legion_troops_effect = yes
-		spawn_small_legion_troops_effect = yes
-		spawn_small_legion_troops_effect = yes
+		if = {
+			limit = {
+				has_game_rule = {
+					name = legion_invasion
+					value = x2
+				}
+			}
+			spawn_small_legion_troops_effect = yes
+			spawn_small_legion_troops_effect = yes
+			spawn_small_legion_troops_effect = yes
+			spawn_small_legion_troops_effect = yes
+			spawn_small_legion_troops_effect = yes
+			spawn_small_legion_troops_effect = yes
+			spawn_small_legion_troops_effect = yes
+		}
 	}
 }
 spawn_small_legion_troops_effect = {
@@ -1200,8 +1176,12 @@ spawn_small_legion_troops_effect = {
 		province = event_target:target_summoning_location
 		home = event_target:target_summoning_location
 		troops = {
-			light_infantry = { 2000 2000 }
-			demonicshock = { 2250 2250 }
+			light_infantry = { 150 150 }
+			heavy_infantry = { 750 750 }
+			pikemen = { 350 350 }
+			knights = { 50 50 }
+			archers = { 100 100 }
+			elite_infantry = { 125 125 }
 		}
 		attrition = 0
 		maintenance = no
@@ -1212,18 +1192,7 @@ spawn_small_legion_troops_effect = {
 		province = event_target:target_summoning_location
 		home = event_target:target_summoning_location
 		troops = {
-			golems = { 250 250 }
-		}
-		attrition = 0
-		maintenance = no
-		earmark = legion_forces
-	}
-	spawn_unit = {
-		owner = THIS
-		province = event_target:target_summoning_location
-		home = event_target:target_summoning_location
-		troops = {
-			artillery = { 500 500 }
+			siege_machines = { 125 125 }
 		}
 		attrition = 0
 		maintenance = no
@@ -1234,52 +1203,73 @@ spawn_small_legion_troops_effect = {
 		owner = THIS
 		earmark = legion_forces
 		troops = {
-			galleys = { 75 75 }
+			galleys = { 35 35 }
 		}
 	}
 }
 spawn_scourge_troops_effect = {
-	spawn_small_scourge_troops_effect = yes
-	if = {
-		limit = {
-			has_game_rule = {
-				name = invaders_strength
-				value = default
+	custom_tooltip = {
+		text = spawn_small_scourge_troops_tooltip
+		spawn_small_scourge_troops_effect = yes
+		if = {
+			limit = {
+				has_game_rule = {
+					name = scourge_invasion
+					value = x0_5
+				}
 			}
+			spawn_small_scourge_troops_effect = yes
 		}
-		spawn_small_scourge_troops_effect = yes
-	}
-	if = {
-		limit = {
-			has_game_rule = {
-				name = invaders_strength
-				value = x1_5
+		if = {
+			limit = {
+				has_game_rule = {
+					name = scourge_invasion
+					value = default
+				}
 			}
+			spawn_small_scourge_troops_effect = yes
+			spawn_small_scourge_troops_effect = yes
+			spawn_small_scourge_troops_effect = yes
 		}
-		spawn_small_scourge_troops_effect = yes
-		spawn_small_scourge_troops_effect = yes
-	}
-	if = {
-		limit = {
-			has_game_rule = {
-				name = invaders_strength
-				value = x2
+		if = {
+			limit = {
+				has_game_rule = {
+					name = scourge_invasion
+					value = x1_5
+				}
 			}
+			spawn_small_scourge_troops_effect = yes
+			spawn_small_scourge_troops_effect = yes
+			spawn_small_scourge_troops_effect = yes
+			spawn_small_scourge_troops_effect = yes
+			spawn_small_scourge_troops_effect = yes
 		}
-		spawn_small_scourge_troops_effect = yes
-		spawn_small_scourge_troops_effect = yes
-		spawn_small_scourge_troops_effect = yes
+		if = {
+			limit = {
+				has_game_rule = {
+					name = scourge_invasion
+					value = x2
+				}
+			}
+			spawn_small_scourge_troops_effect = yes
+			spawn_small_scourge_troops_effect = yes
+			spawn_small_scourge_troops_effect = yes
+			spawn_small_scourge_troops_effect = yes
+			spawn_small_scourge_troops_effect = yes
+			spawn_small_scourge_troops_effect = yes
+			spawn_small_scourge_troops_effect = yes
+		}
 	}
 }
 spawn_small_scourge_troops_effect = {
 	spawn_unit = {
-		province = 695
-		home = 695
+		province = event_target:target_province
+		home = event_target:target_province
 		owner = THIS
 		troops = {
-			archers = { 1875 1875 }
-			light_infantry = { 2625 2625 }
-			golems = { 500 500 }
+			pikemen = { 250 250 }
+			archers = { 1000 1000 }
+			undead = { 2750 2750 }
 		}
 		attrition = 0
 		maintenance = no
@@ -1288,19 +1278,21 @@ spawn_small_scourge_troops_effect = {
 		province = closest
 		owner = THIS
 		troops = {
-			galleys = { 75 75 }
+			galleys = { 35 35 }
 		}
 	}
 }
 spawn_plague_troops_effect = {
+	# Must be 100 in total
 	spawn_unit = {
 		province = ROOT
 		home = ROOT
 		owner = THIS
 		scaled_by_biggest_garrison = 1
 		troops = {
-			archers = { 3 3 }
-			scourgehorde = { 7 7 }
+			light_infantry = { 10 10 }
+			archers = { 12 12 }
+			undead = { 78 78 }
 		}
 		attrition = 0
 		maintenance = no
@@ -1313,11 +1305,10 @@ spawn_colonial_troops_effect = {
 		province = capital_scope
 		home = capital_scope
 		troops = {
-			archers = { 800 800 }
-			light_infantry = { 1200 1200 }
+			light_infantry = { 300 300 }
 			heavy_infantry = { 1500 1500 }
-			light_cavalry = { 200 200 }
-			knights = { 300 300 }
+			light_cavalry = { 600 600 }
+			archers = { 900 900 }
 		}
 		attrition = 1.0
 		maintenance = no
@@ -1585,18 +1576,6 @@ remove_has_magical_withdrawal_trait_effect = {
 	if = {
 		limit = { trait = has_magical_withdrawal }
 		remove_trait = has_magical_withdrawal
-	}
-}
-
-find_right_spouse_effect = {
-	if = {
-		limit = {
-			ai = yes
-			can_marry = yes
-			can_marry_trigger = yes
-			host = { ai = yes }
-		}
-		character_event = { id = WCCLN.130 }		# Finds right spouse
 	}
 }
 
@@ -2033,6 +2012,24 @@ add_default_traits = {
 				}
 			}
 		}
+		
+		# cannibal_trait
+		if = {
+			limit = { prefer_cannibal_trait_trigger = yes }
+			random = {
+				chance = 35
+				
+				additive_modifier = {
+					value = 50
+					evil_public_religion_trigger = yes
+				}
+				
+				if = {
+					limit = { NOT = { trait = cannibal_trait } } 
+					add_trait = cannibal_trait
+				}
+			}
+		}
 	}
 }
 
@@ -2304,7 +2301,10 @@ cleanup_province_as_target_settler_effect = {
             }
 			
 			# Upgrade tribal if there's one
-			upgrade_province_as_target_settler_effect = yes
+			if = {
+				limit = { holder_scope = { character = event_target:target_settler } }
+				upgrade_province_as_target_settler_effect = yes
+			}
 		
 			culture = event_target:target_settler
 			religion = event_target:target_settler
@@ -2314,25 +2314,25 @@ cleanup_province_as_target_settler_effect = {
 # Upgrade tribal if there's one as target_settler prefer
 upgrade_province_as_target_settler_effect = {
 	hidden_effect = {
-	if = {
-		limit = { any_province_holding = { holding_type = tribal } }
-		random_province_holding = {
-			limit = { holding_type = tribal }
-			make_capital_holding = yes
-			if = {
-				limit = { event_target:target_settler = { has_character_flag = prefer_temples_flag } }
-				convert_tribal_to_temple_effect = yes
-			}
-			else_if = {
-				limit = { event_target:target_settler = { has_character_flag = prefer_cities_flag } }
-				convert_tribal_to_city_effect = yes
-			}
-			else = {
-				convert_tribal_to_castle_effect = yes
+		if = {
+			limit = { any_province_holding = { holding_type = tribal } }
+			random_province_holding = {
+				limit = { holding_type = tribal }
+				make_capital_holding = yes
+				if = {
+					limit = { event_target:target_settler = { has_character_flag = prefer_temples_flag } }
+					convert_tribal_to_temple_effect = yes
+				}
+				else_if = {
+					limit = { event_target:target_settler = { has_character_flag = prefer_cities_flag } }
+					convert_tribal_to_city_effect = yes
+				}
+				else = {
+					convert_tribal_to_castle_effect = yes
+				}
 			}
 		}
 	}
-}
 }
 # target_settler and its people settle here
 settle_as_target_settler_effect = {
@@ -2406,10 +2406,10 @@ give_old_titles_to_heir_effect = {
 						is_heir = no
 					}
 					preferred_limit = {
-						is_30_age_trigger = no
+						is_30_physical_age_trigger = no
 					}
 					preferred_limit = {
-						is_40_age_trigger = no
+						is_40_physical_age_trigger = no
 					}
 
 					save_event_target_as = target_heir
@@ -2481,11 +2481,11 @@ target_settler_declare_war_effect = {
 					# If has 2 or more claims, claims all
 					if = {
 						limit = {
-							event_target:target_velen = {
-								total_claims = {
-									who = PREV
-									strong = yes
-									value = 2
+							event_target:target_settler = {
+								can_use_cb = {
+									target = PREV
+									casus_belli = claim_all
+									only_check_triggers = yes
 								}
 							}
 						}
@@ -2736,6 +2736,22 @@ add_blood_trait_effect = {
 			}
 			else_if = {
 				limit = {
+					NOT = {
+						trait = creature_dryad
+					}
+					OR = {
+						event_target:target_father = { trait = creature_dryad }
+						event_target:target_mother = { trait = creature_dryad }
+						AND = {
+							event_target:target_father = { trait = blood_dryad }
+							event_target:target_mother = { trait = blood_dryad }
+						}
+					}
+				}
+				add_trait = blood_dryad
+			}
+			else_if = {
+				limit = {
 					NOT = { trait = creature_highborne }
 					OR = {
 						event_target:target_father = { trait = creature_highborne }
@@ -2845,7 +2861,7 @@ ruler_sell_land_to_holy_order_effect = {
 			else = { prestige = 500 }
 			wealth = 400
 		}
-		
+
 		# Free vassals
 		if = {
 			limit = { is_ruler = yes }
@@ -2895,11 +2911,11 @@ ruler_sell_land_to_holy_order_effect = {
 
 				if = {
 					limit = { limit = { holder_scope = { character = event_target:target_ruler } } }
-					ruler_grant_land_to_holy_order_effect = yes
-				}
+				ruler_grant_land_to_holy_order_effect = yes
 			}
 		}
 	}
+}
 }
 ruler_grant_land_to_holy_order_effect = {
 	event_target:target_order_leader = {
@@ -3025,14 +3041,16 @@ add_random_learning_education_effect = {
 spawn_heavy_sea_ravagers_effect = {
 	random_list = {
 		25 = {
+			# Must be 100 in total
 			spawn_unit = {
 				province = event_target:target_province
 				home = event_target:target_province
 				owner = ROOT
 				troops = {
-					light_infantry = { 300 300 }
-					heavy_infantry = { 400 400 }
-					archers = { 300 300 }
+					light_infantry = { 15 15 }
+					heavy_infantry = { 50 50 }
+					pikemen = { 15 15 }
+					archers = { 20 20 }
 				}
 				attrition = 0
 				scaled_by_biggest_garrison = 1.5
@@ -3040,14 +3058,16 @@ spawn_heavy_sea_ravagers_effect = {
 			}
 		}
 		40 = {
+			# Must be 100 in total
 			spawn_unit = {
 				province = event_target:target_province
 				home = event_target:target_province
 				owner = ROOT
 				troops = {
-					light_infantry = { 300 300 }
-					heavy_infantry = { 400 400 }
-					archers = { 300 300 }
+					light_infantry = { 15 15 }
+					heavy_infantry = { 50 50 }
+					pikemen = { 15 15 }
+					archers = { 20 20 }
 				}
 				attrition = 0
 				scaled_by_biggest_garrison = 2.25
@@ -3059,14 +3079,16 @@ spawn_heavy_sea_ravagers_effect = {
 				factor = 5
 				realm_size = 100
 			}
+			# Must be 100 in total
 			spawn_unit = {
 				province = event_target:target_province
 				home = event_target:target_province
 				owner = ROOT
 				troops = {
-					light_infantry = { 300 300 }
-					heavy_infantry = { 400 400 }
-					archers = { 300 300 }
+					light_infantry = { 15 15 }
+					heavy_infantry = { 50 50 }
+					pikemen = { 15 15 }
+					archers = { 20 20 }
 				}
 				attrition = 0
 				scaled_by_biggest_garrison = 3
@@ -3078,14 +3100,16 @@ spawn_heavy_sea_ravagers_effect = {
 				factor = 12.5
 				realm_size = 100
 			}
+			# Must be 100 in total
 			spawn_unit = {
 				province = event_target:target_province
 				home = event_target:target_province
 				owner = ROOT
 				troops = {
-					light_infantry = { 300 300 }
-					heavy_infantry = { 400 400 }
-					archers = { 300 300 }
+					light_infantry = { 15 15 }
+					heavy_infantry = { 50 50 }
+					pikemen = { 15 15 }
+					archers = { 20 20 }
 				}
 				attrition = 0
 				scaled_by_biggest_garrison = 3.75
@@ -3105,13 +3129,14 @@ spawn_heavy_sea_ravagers_effect = {
 spawn_light_sea_ravagers_effect = {
 	random_list = {
 		25 = {
+			# Must be 100 in total
 			spawn_unit = {
 				province = event_target:target_province
 				home = event_target:target_province
 				owner = ROOT
 				troops = {
-					light_infantry = { 700 700 }
-					archers = { 300 300 }
+					archers = { 30 30 }
+					thralls = { 70 70 }
 				}
 				attrition = 0
 				scaled_by_biggest_garrison = 1.5
@@ -3119,13 +3144,14 @@ spawn_light_sea_ravagers_effect = {
 			}
 		}
 		40 = {
+			# Must be 100 in total
 			spawn_unit = {
 				province = event_target:target_province
 				home = event_target:target_province
 				owner = ROOT
 				troops = {
-					light_infantry = { 700 700 }
-					archers = { 300 300 }
+					archers = { 30 30 }
+					thralls = { 70 70 }
 				}
 				attrition = 0
 				scaled_by_biggest_garrison = 2.25
@@ -3137,13 +3163,14 @@ spawn_light_sea_ravagers_effect = {
 				factor = 5
 				realm_size = 100
 			}
+			# Must be 100 in total
 			spawn_unit = {
 				province = event_target:target_province
 				home = event_target:target_province
 				owner = ROOT
 				troops = {
-					light_infantry = { 700 700 }
-					archers = { 300 300 }
+					archers = { 30 30 }
+					thralls = { 70 70 }
 				}
 				attrition = 0
 				scaled_by_biggest_garrison = 3
@@ -3155,13 +3182,14 @@ spawn_light_sea_ravagers_effect = {
 				factor = 12.5
 				realm_size = 100
 			}
+			# Must be 100 in total
 			spawn_unit = {
 				province = event_target:target_province
 				home = event_target:target_province
 				owner = ROOT
 				troops = {
-					light_infantry = { 700 700 }
-					archers = { 300 300 }
+					archers = { 30 30 }
+					thralls = { 70 70 }
 				}
 				attrition = 0
 				scaled_by_biggest_garrison = 3.75
@@ -3180,36 +3208,57 @@ spawn_light_sea_ravagers_effect = {
 }
 
 spawn_qiraji_troops_effect = {
-	spawn_small_qiraji_troops_effect = yes
-	if = {
-		limit = {
-			has_game_rule = {
-				name = invaders_strength
-				value = default
+	custom_tooltip = {
+		text = spawn_small_qiraji_troops_tooltip
+		spawn_small_qiraji_troops_effect = yes
+		if = {
+			limit = {
+				has_game_rule = {
+					name = qiraji_invasion
+					value = x0_5
+				}
 			}
+			spawn_small_qiraji_troops_effect = yes
 		}
-		spawn_small_qiraji_troops_effect = yes
-	}
-	if = {
-		limit = {
-			has_game_rule = {
-				name = invaders_strength
-				value = x1_5
+		if = {
+			limit = {
+				has_game_rule = {
+					name = qiraji_invasion
+					value = default
+				}
 			}
+			spawn_small_qiraji_troops_effect = yes
+			spawn_small_qiraji_troops_effect = yes
+			spawn_small_qiraji_troops_effect = yes
 		}
-		spawn_small_qiraji_troops_effect = yes
-		spawn_small_qiraji_troops_effect = yes
-	}
-	if = {
-		limit = {
-			has_game_rule = {
-				name = invaders_strength
-				value = x2
+		if = {
+			limit = {
+				has_game_rule = {
+					name = qiraji_invasion
+					value = x1_5
+				}
 			}
+			spawn_small_qiraji_troops_effect = yes
+			spawn_small_qiraji_troops_effect = yes
+			spawn_small_qiraji_troops_effect = yes
+			spawn_small_qiraji_troops_effect = yes
+			spawn_small_qiraji_troops_effect = yes
 		}
-		spawn_small_qiraji_troops_effect = yes
-		spawn_small_qiraji_troops_effect = yes
-		spawn_small_qiraji_troops_effect = yes
+		if = {
+			limit = {
+				has_game_rule = {
+					name = qiraji_invasion
+					value = x2
+				}
+			}
+			spawn_small_qiraji_troops_effect = yes
+			spawn_small_qiraji_troops_effect = yes
+			spawn_small_qiraji_troops_effect = yes
+			spawn_small_qiraji_troops_effect = yes
+			spawn_small_qiraji_troops_effect = yes
+			spawn_small_qiraji_troops_effect = yes
+			spawn_small_qiraji_troops_effect = yes
+		}
 	}
 }
 spawn_small_qiraji_troops_effect = {
@@ -3218,17 +3267,9 @@ spawn_small_qiraji_troops_effect = {
 		province = event_target:target_province
 		home = event_target:target_province
 		troops = {
-			insectoidswarm = { 2150 2150 }
-		}
-		attrition = 0
-		maintenance = no
-	}
-	spawn_unit = {
-		owner = THIS
-		province = event_target:target_province
-		home = event_target:target_province
-		troops = {
-			insectoidguard = { 350 350 }
+			light_infantry = { 250 250 }
+			knights = { 70 70 }
+			swarm = { 1000 1000 }
 		}
 		attrition = 0
 		maintenance = no
@@ -3236,12 +3277,14 @@ spawn_small_qiraji_troops_effect = {
 }
 
 spawn_pack_troops_effect = {
+	# Must be 100 in total
 	spawn_unit = {
 		province = event_target:target_province
 		home = event_target:target_province
 		owner = THIS
 		troops = {
-			light_infantry = { 1250 1250 }
+			heavy_infantry = { 60 60 }
+			animals = { 40 40 }
 		}
 		cannot_inherit = yes
 		attrition = 0
@@ -3259,7 +3302,7 @@ spawn_bitten_troops_effect = {
 		home = event_target:target_province
 		owner = THIS
 		troops = {
-			light_infantry = { 1 1 }
+			animals = { 1 1 }
 		}
 		cannot_inherit = yes
 		attrition = 0
@@ -3397,6 +3440,29 @@ build_all_evil_buildings_province_effect = {
 				}
 			}
 			build_all_evil_buildings_title_effect = yes
+		}
+	}
+}
+# Gives cannibal_trait to your courtiers
+court_share_cannibal_trait_effect = {
+	hidden_effect = {
+		any_courtier = {
+			limit = {
+				is_adult = yes
+				is_incapable = no
+				prisoner = no
+				is_inaccessible_trigger = no
+
+				is_ruler = no
+
+				religion = ROOT
+
+				NOT = { trait = cannibal_trait }
+			}
+			random = {
+				chance = 50
+				add_trait = cannibal_trait
+			}
 		}
 	}
 }

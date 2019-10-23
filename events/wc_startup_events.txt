@@ -36,13 +36,21 @@ character_event = {
 	trigger = {
 		is_untouchable_trigger = no
 
-		is_lowborn = yes
-		is_patrician = no
-		
-		OR = {
-			is_ruler = no
-			is_theocracy = yes
-			tier = BARON
+
+		trigger_if = {
+			limit = {	# Gives class traits to members of CC and SoE no matter what
+				NOT = {
+					society_member_of = cenarion_circle
+					society_member_of = sisterhood_of_elune
+				}
+			}
+			is_lowborn = yes
+			
+			OR = {
+				is_ruler = no
+				is_theocracy = yes
+				tier = BARON
+			}
 		}
 		
 		is_save_game = no
@@ -50,7 +58,17 @@ character_event = {
 		united_class_trigger = yes
 	}
 	immediate = {
-		ai_add_random_class_effect = yes
+		if = {
+			limit = { society_member_of = cenarion_circle }
+			ai_add_druid_class_effect = yes
+		}
+		else_if = {
+			limit = { society_member_of = sisterhood_of_elune }
+			ai_add_priest_class_effect = yes
+		}
+		else = {
+			ai_add_random_class_effect = yes
+		}
 	}
 }
 
@@ -151,5 +169,53 @@ character_event = {
 	
 	immediate = {
 		character_event = { id = WCRAC.400 }
+	}
+}
+
+# on_startup
+# Fixes child portraits of immortal characters
+character_event = {
+	id = WCSUP.45
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	min_age = 16
+	
+	trigger = {
+		is_save_game = no
+		
+		immortal = yes
+		age = 16
+		immortal_age < 16
+	}
+	
+	immediate = {
+		log = "(DEBUG) [Root.GetID] [Root.GetBestName] is adult with child portrait"
+		
+		character_event = { id = WCRAC.200 }
+	}
+}
+
+# on_startup
+# Debuger: shows children with adult portraits
+character_event = {
+	id = WCSUP.50
+	
+	hide_window = yes
+	is_triggered_only = yes
+	
+	max_age = 16
+	
+	trigger = {
+		is_save_game = no
+		
+		immortal = yes
+		NOT = { age = 16 }
+		immortal_age > 16
+	}
+	
+	immediate = {
+		log = "(DEBUG) [Root.GetID] [Root.GetBestName] is child with adult portrait"
 	}
 }
