@@ -39,7 +39,7 @@ narrative_event = {
 		custom_tooltip = { text = EVTOPT_WCFW_1_tooltip }
 		73 = {
 			province_event = {
-				id = WCFW.200
+				id = WCFW.102
 				days = 7
 			}
 		}
@@ -48,7 +48,7 @@ narrative_event = {
 
 # Delayer event
 province_event = {
-	id = WCFW.200
+	id = WCFW.102
 
 	is_triggered_only = yes
 	hide_window = yes
@@ -108,7 +108,7 @@ narrative_event = {
 		# We will not leave the Horde, no matter what.
 		73 = {
 			province_event = {
-				id = WCFW.160
+				id = WCFW.161
 				days = 7
 			}
 		}
@@ -166,30 +166,6 @@ narrative_event = {
 			province_event = {
 				id = WCFW.130 # West
 				days = 31
-			}
-		}
-	}
-	option = {
-		name = EVTOPTC_WCFW_10 # Let the spirits guide us, we shall follow the winds! (either N or W)
-		piety = 50
-		random_list = {
-			50 = {
-				73 = {
-					province_event = {
-						id = WCFW.111 # North
-						days = 31
-					}
-				}
-				custom_tooltip = { text = EVTOPTA1_WCFW_10_tooltip } # and we travel towards the North.
-			}
-			50 = {
-				73 = {
-					province_event = {
-						id = WCFW.130 # West
-						days = 31
-					}
-				}
-				custom_tooltip = { text = EVTOPTA2_WCFW_10_tooltip } # and we travel towards the West.
 			}
 		}
 	}
@@ -1031,7 +1007,7 @@ province_event = {
 					narrative_event = { id = WCFW.42 }
 				}
 				else = {
-					character_event = { id = WCFW.160 }
+					73 = { province_event = { id = WCFW.160 } }
 				}
 			}
 		}
@@ -1159,7 +1135,7 @@ narrative_event = {
 	}
 }
 
-# Frostwolf failure event 60-62
+# Frostwolf failure event 60-63
 # delayer event
 province_event = {
 	id = WCFW.160
@@ -1167,40 +1143,31 @@ province_event = {
 	is_triggered_only = yes
 	hide_window = yes
 	
-	trigger = {
-		frostwolf_leader_exists = yes
-	}
-	
 	immediate = {
-		d_stormreaver = {
+		d_frostwolf = {
 			holder_scope = {
-				narrative_event = { id = WCFW.60 }
+				if = {
+					limit = { frostwolf_leader_exists = yes }
+					narrative_event = { id = WCFW.60 }
+				}
 			}
 		}
 	}
 }
 
-# Forcer informed of failure event
+# Frostwolf failure popup (will always happen, even if Stormreaver is dead)
 # delayed event
 narrative_event = {
 	id = WCFW.60
 	title = EVTTITLE_WCFW_60
-	desc =  EVTDESC_WCFW_60 # Despite the fairly clear orders you gave to [From.GetFirstName], the Frostwolf clan refused to leave the Horde.
+	desc =  EVTDESC_WCFW_60 # It seems that despite all the efforts your clan has made to leave the Horde, they have all failed.
 	picture = GFX_evt_orc_city
 	border = GFX_event_narrative_frame_war
 
 	is_triggered_only = yes
-	
-	immediate = {
-
-	}
-	
-	trigger = {
-		frostwolf_chain_butcher_exists = yes
-	}
 
 	option = {
-		name = EVTOPT_WCFW_60 # What is necessary shall be done.
+		name = EVTOPT_WCFW_60 # We are Frostwolves, we will endure.
 		73 = {
 			province_event = {
 				id = WCFW.161
@@ -1213,6 +1180,55 @@ narrative_event = {
 # delayer event
 province_event = {
 	id = WCFW.161
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	trigger = {
+		d_frostwolf = {
+			holder_scope = {
+				frostwolf_leader_exists = yes
+			}
+		}
+	}
+	
+	immediate = {
+		d_stormreaver = {
+			holder_scope = {
+				if = {
+					limit = { frostwolf_chain_butcher_exists = yes }
+					narrative_event = { id = WCFW.61 }
+				}
+			}
+		}
+	}
+}
+
+# Forcer informed of failure event (this can fail if Stormreaver is dead)
+# delayed event
+narrative_event = {
+	id = WCFW.61
+	title = EVTTITLE_WCFW_61
+	desc =  EVTDESC_WCFW_61 # Despite the fairly clear orders you gave to [From.GetFirstName], the Frostwolf clan refused to leave the Horde.
+	picture = GFX_evt_orc_city
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPT_WCFW_61 # What is necessary shall be done.
+		73 = {
+			province_event = {
+				id = WCFW.162
+				days = 7
+			}
+		}
+	}
+}
+
+# delayer event
+province_event = {
+	id = WCFW.162
 	
 	is_triggered_only = yes
 	hide_window = yes
@@ -1238,7 +1254,7 @@ province_event = {
 					character = event_target:target_frostwolf_leader
 				}
 			}
-			narrative_event = { id = WCFW.61 }
+			narrative_event = { id = WCFW.62 }
 		}
 	}
 }
@@ -1246,8 +1262,8 @@ province_event = {
 # BUTCHERING EVENT
 # Delayed event
 narrative_event = {
-	id = WCFW.61
-	title = EVTTITLE_WCFW_61
+	id = WCFW.62
+	title = EVTTITLE_WCFW_62
 	
 	immediate = {
 		d_frostwolf = {
@@ -1279,11 +1295,11 @@ narrative_event = {
 	
 	desc = {
 		trigger = { character = event_target:target_frostwolf_leader }
-		text = EVTDESC_WCFW_61 # You are outside watching the campfire when you suddenly hear loud screams...
+		text = EVTDESC_WCFW_62 # You are outside watching the campfire when you suddenly hear loud screams...
 	}
 	desc = {
 		trigger = { NOT = { character = event_target:target_frostwolf_leader } }
-		text = EVTDESC_WCFW_61_horde # Word arrives that the Frostwolf clan led by [target_frostwolf_leader.GetFirstName] has been completely decimated...
+		text = EVTDESC_WCFW_62_horde # Word arrives that the Frostwolf clan led by [target_frostwolf_leader.GetFirstName] has been completely decimated...
 	}
 	
 	picture = GFX_evt_orcish_horde
@@ -1294,7 +1310,7 @@ narrative_event = {
 	
 	option = {
 		trigger = { character = event_target:target_frostwolf_leader }
-		name = EVTOPT_WCFW_61 # May the spirits curse you forever, [From.GetFirstName]!
+		name = EVTOPT_WCFW_62 # May the spirits curse you forever, [From.GetFirstName]!
 	}
 	
 	option = {
@@ -1342,7 +1358,7 @@ narrative_event = {
 		# Fire the event that speaks of the new inhabitants after three days (news has to travel, you know!)
 		73 = {
 			province_event = {
-				id = WCFW.162
+				id = WCFW.163
 				days = 3
 			}
 		}
@@ -1351,7 +1367,7 @@ narrative_event = {
 
 # delayer event
 province_event = {
-	id = WCFW.162
+	id = WCFW.163
 	
 	is_triggered_only = yes
 	hide_window = yes
@@ -1361,7 +1377,7 @@ province_event = {
 			limit = {
 				realm = { title = e_horde }
 			}	
-			narrative_event = { id = WCFW.62 }
+			narrative_event = { id = WCFW.63 }
 		}
 	}
 }
@@ -1369,9 +1385,9 @@ province_event = {
 # NEW INHABITANTS
 # Delayed event
 narrative_event = {
-	id = WCFW.62
-	title = EVTTITLE_WCFW_62
-	desc =  EVTDESC_WCFW_62 # The decimation of the Frostwolf clan left their lands uninhabited...
+	id = WCFW.63
+	title = EVTTITLE_WCFW_63
+	desc =  EVTDESC_WCFW_63 # The decimation of the Frostwolf clan left their lands uninhabited...
 	picture = GFX_evt_orc_city
 	border = GFX_event_narrative_frame_war
 
