@@ -1445,6 +1445,12 @@ character_event = {
 	# Imp
 	option = {
 		name = EVTOPTA_WCCLS_610
+		trigger_switch = {
+			on_trigger = has_character_modifier
+			# pet_imp = { remove_character_modifier = pet_imp }
+			pet_felhunter = { remove_character_modifier = pet_felhunter }
+			pet_felguard = { remove_character_modifier = pet_felguard }
+		}
 		add_character_modifier = { name = pet_imp duration = -1 }
 	}
 	# Succubus
@@ -1502,11 +1508,23 @@ character_event = {
 	# Felhunter
 	option = {
 		name = EVTOPTC_WCCLS_610
+		trigger_switch = {
+			on_trigger = has_character_modifier
+			pet_imp = { remove_character_modifier = pet_imp }
+			# pet_felhunter = { remove_character_modifier = pet_felhunter }
+			pet_felguard = { remove_character_modifier = pet_felguard }
+		}
 		add_character_modifier = { name = pet_felhunter duration = -1 }
 	}
 	# Felguard
 	option = {
 		name = EVTOPTD_WCCLS_610
+		trigger_switch = {
+			on_trigger = has_character_modifier
+			pet_imp = { remove_character_modifier = pet_imp }
+			pet_felhunter = { remove_character_modifier = pet_felhunter }
+			# pet_felguard = { remove_character_modifier = pet_felguard }
+		}
 		add_character_modifier = { name = pet_felguard duration = -1 }
 	}
 
@@ -2732,16 +2750,86 @@ character_event = {
 }
 
 # summon_void_creature
-# Creates creature_nraqi
-# If FROM fails, kills FROM
+# Picks type of void creature
+character_event = {
+	id = WCCLS.1213
+	desc = EVTDESC_WCCLS_1213
+	picture = GFX_evt_nraqi
+	border = GFX_event_normal_frame_intrigue
+	
+	is_triggered_only = yes
+	
+	# C'thrax
+	option = {
+		trigger = {
+			religion = old_gods_worship
+			true_religion = old_gods_worship
+			OR = {
+				trait = being_void
+				is_9_10_physical_class_trigger = yes
+			}
+		}
+		name = EVTOPTA_WCCLS_1213
+		
+		set_character_flag = summon_void_creature_cthrax_flag
+		character_event = { id = WCCLS.1215 days = 3 }
+		
+		ai_chance = {
+			factor = 20
+		}
+	}
+	# N'raqi
+	option = {
+		trigger = {
+			religion = old_gods_worship
+			true_religion = old_gods_worship
+			NOT = {
+				trait = being_void
+				is_9_10_physical_class_trigger = yes
+			}
+		}
+		name = EVTOPTB_WCCLS_1213
+		
+		set_character_flag = summon_void_creature_nraqi_flag
+		character_event = { id = WCCLS.1215 days = 3 }
+		
+		ai_chance = {
+			factor = 20
+		}
+	}
+	# Merciless one
+	option = {
+		trigger = {
+			NOT = { has_character_modifier = pet_merciless_one }
+		}
+		name = EVTOPTC_WCCLS_1213
+		
+		clr_character_flag = summon_void_creature_ongoing_flag
+		
+		add_character_modifier = { name = pet_merciless_one years = 10 }
+		
+		ai_chance = {
+			factor = 80
+		}
+	}
+	# Changed my mind
+	option = {
+		name = CHANGED_MY_MIND
+		
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+# Creates creature_nraqi or creature_cthraxxi
 character_event = {
 	id = WCCLS.1215
 	desc = {
-		trigger = { NOT = { has_character_flag = summon_void_creature_fail_flag } }
+		trigger = { always = yes }
 		text = EVTDESC_WCCLS_1215_success
 	}
 	desc = {
-		trigger = { has_character_flag = summon_void_creature_fail_flag }
+		trigger = { always = no }
 		text = EVTDESC_WCCLS_1215_fail
 	}
 	picture = GFX_evt_nraqi
@@ -2753,8 +2841,7 @@ character_event = {
 		create_character = {
 			female = no
 			dynasty = none
-			culture = nraqi religion = ROOT secret_religion = ROOT
-			trait = cruel
+			culture = nraqi religion = ROOT
 			random_traits = yes
 			age = 300
 			flag = race_delay_flag
@@ -2763,7 +2850,7 @@ character_event = {
 			save_event_target_as = target_nraqi
 
 			if = {
-				limit = { ROOT = { trait = being_void } }
+				limit = { ROOT = { has_character_flag = summon_void_creature_cthrax_flag } }
 				set_graphical_culture = cthraxxi
 			}
 			
@@ -2802,33 +2889,17 @@ character_event = {
 					give_nickname = nick_the_seeker
 				}
 			}
-			if = {
-				limit = { ROOT = { has_character_flag = summon_void_creature_secret_flag } }
-				set_secret_religion = old_gods_worship
-			}
 		}
 	}
 
 	option = {
-		trigger = { NOT = { has_character_flag = summon_void_creature_fail_flag } }
 		name = EXCELLENT
-
-		# reverse_opinion = { modifier = opinion_loyal_servant who = event_target:target_nraqi }
-	}
-
-	option = {
-		trigger = { has_character_flag = summon_void_creature_fail_flag }
-		name = ARGH
-
-		death = { death_reason = death_execution_eaten killer = event_target:target_nraqi }
-		hidden_effect = { event_target:target_nraqi = { death = { death_reason = death_missing } } }
 	}
 
 	after = {
 		clr_character_flag = summon_void_creature_ongoing_flag
-		clr_character_flag = summon_void_creature_success_flag
-		clr_character_flag = summon_void_creature_secret_flag
-		clr_character_flag = summon_void_creature_fail_flag
+		clr_character_flag = summon_void_creature_cthrax_flag
+		clr_character_flag = summon_void_creature_nraqi_flag
 	}
 }
 
