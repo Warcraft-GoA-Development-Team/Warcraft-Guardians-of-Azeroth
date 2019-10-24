@@ -741,33 +741,26 @@ society_quest_event = {
 	is_triggered_only = yes
 
 	immediate = {
-		random_courtier = {
-			limit = {
-				ai = yes
-				is_adult = yes
-				is_incapable = no
-				prisoner = no
-
-				NOT = { character = ROOT }
-				NOT = { has_character_flag = being_raised_flag }
-
-				is_dark_being_trigger = no
-				is_humanoid_trigger = yes
-				is_in_society = no
-			}
-			save_event_target_as = target_future_undead
+		random_list = {
+			10 = { set_character_flag = turn_into_undead_martial_flag }
+			10 = { set_character_flag = turn_into_undead_intrigue_flag }
+			10 = { set_character_flag = turn_into_undead_learning_flag }
 		}
 	}
 
-	quest_target = event_target:target_future_undead
-
 	option = {
 		name = ACCEPT
-		event_target:target_future_undead = {
-			set_quest_target = {
-				id = quest_turn_into_undead
-				holder = ROOT
-			}
+		
+		if = {
+			limit = { has_character_flag = turn_into_undead_martial_flag }
+			set_quest = quest_turn_into_undead_martial
+		}
+		else_if = {
+			limit = { has_character_flag = turn_into_undead_intrigue_flag }
+			set_quest = quest_turn_into_undead_intrigue
+		}
+		else = {
+			set_quest = quest_turn_into_undead_learning
 		}
 	}
 	option  = {
@@ -781,6 +774,12 @@ society_quest_event = {
 		}
 
 		ai_chance = { factor = 0 }
+	}
+	
+	after = {
+		clr_character_flag = turn_into_undead_martial_flag
+		clr_character_flag = turn_into_undead_intrigue_flag
+		clr_character_flag = turn_into_undead_learning_flag
 	}
 }
 
@@ -855,8 +854,6 @@ society_quest_event = {
 			10 = { set_character_flag = control_mind_learning_flag }
 		}
 	}
-
-	quest_target = event_target:target_mind
 
 	option = {
 		name = ACCEPT
