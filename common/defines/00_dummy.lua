@@ -1,5 +1,6 @@
 -- Format for overwriting define values:
 --
+--
 -- NDefines.NDiplomacy.DEMESNE_BASE_MAX_SIZE = 2.0
 
 NDefines.NEngine.MISSING_SCRIPTED_SUCCESSOR_ERROR_CUTOFF_YEAR = 583
