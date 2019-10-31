@@ -6231,7 +6231,7 @@ society_quest_event = {
 					holder_scope = {
 						# Warcraft
 						evil_public_religion_trigger = no
-						# religion = ROOT
+						evil_true_religion_trigger = no
 					}
 					holder_scope = { NOT = { character = ROOT } }
 					holder_scope = { NOT = { same_society_as = ROOT } }
@@ -6243,7 +6243,7 @@ society_quest_event = {
 					holder_scope = {
 						# Warcraft
 						evil_public_religion_trigger = no
-						# religion = ROOT
+						evil_true_religion_trigger = no
 					}
 					holder_scope = { NOT = { character = ROOT } }
 					holder_scope = { NOT = { same_society_as = ROOT } }
@@ -6260,7 +6260,7 @@ society_quest_event = {
 					holder_scope = {
 						# Warcraft
 						evil_public_religion_trigger = no
-						# religion = ROOT
+						evil_true_religion_trigger = no
 					}
 					holder_scope = { NOT = { same_society_as = ROOT } }
 				}
@@ -6271,7 +6271,7 @@ society_quest_event = {
 					holder_scope = {
 						# Warcraft
 						evil_public_religion_trigger = no
-						# religion = ROOT
+						evil_true_religion_trigger = no
 					}
 					holder_scope = { NOT = { same_society_as = ROOT } }
 				}
@@ -6333,6 +6333,19 @@ character_event = {
 	#take opportunity to desecrate, start desecration chain
 	option = {
 		name = EVTOPTA_MNM_7111
+		
+		# Warcraft
+		ROOT = {
+			show_scope_change = no
+			
+			FROM = {
+				show_scope_change = no
+				
+				# If it's possible, complete quest right now
+				prev_complete_desecrate_this_temple_quest_instantly_effect = yes
+			}
+		}
+		
 		set_character_flag = desecration_violent
 		character_event = {
 			id = MNM.7113 days = 4
@@ -6393,6 +6406,18 @@ character_event = {
 		}
 		
 		has_quest = quest_devil_worshipers_desecrate_temple
+		
+		# Warcraft
+		# Temple holder isn't evil and not you
+		event_target:dw_desecration_target = {
+			prev_desecrate_temple_holder_trigger = yes
+		}
+	}
+	
+	# Warcraft
+	fail_trigger_effect = {
+		# Tries to finish event chain
+		character_event = { id = MNM.7117 }
 	}
 
 	immediate = {
@@ -6561,6 +6586,18 @@ character_event = {
 		}
 		
 		has_quest = quest_devil_worshipers_desecrate_temple
+		
+		# Warcraft
+		# Temple holder isn't evil and not you
+		event_target:dw_desecration_target = {
+			prev_desecrate_temple_holder_trigger = yes
+		}
+	}
+	
+	# Warcraft
+	fail_trigger_effect = {
+		# Tries to finish event chain
+		character_event = { id = MNM.7117 }
 	}
 
 	desc = {
@@ -6642,6 +6679,18 @@ character_event = {
 			society_member_of = twilights_hammer_cult
 		}
 		has_quest = quest_devil_worshipers_desecrate_temple
+		
+		# Warcraft
+		# Temple holder isn't evil and not you
+		event_target:dw_desecration_target = {
+			prev_desecrate_temple_holder_trigger = yes
+		}
+	}
+	
+	# Warcraft
+	fail_trigger_effect = {
+		# Tries to finish event chain
+		character_event = { id = MNM.7117 }
 	}
 
 	desc = {
@@ -6821,10 +6870,14 @@ character_event = {
 				name = desecrated_temple
 				years = 5
 			}
-			holder_scope = {
-				religion_authority = {
-					modifier = temple_desecrated
-					years = 30
+			# Warcraft
+			if = {
+				limit = { prev_desecrate_temple_holder_trigger = yes }
+				holder_scope = {
+					religion_authority = {
+						modifier = temple_desecrated
+						years = 30
+					}
 				}
 			}
 		}
@@ -6856,10 +6909,14 @@ character_event = {
 				years = 5
 				hidden = yes
 			}
-			holder_scope = {
-				religion_authority = {
-					modifier = temple_desecrated
-					years = 30
+			# Warcraft
+			if = {
+				limit = { prev_desecrate_temple_holder_trigger = yes }
+				holder_scope = {
+					religion_authority = {
+						modifier = temple_desecrated
+						years = 30
+					}
 				}
 			}
 		}
