@@ -7,6 +7,8 @@ province_event = {
 	hide_window = yes
 
 	immediate = {
+		695 = { save_event_target_as = target_province }
+		
 		create_character = {
 			name = Ner'zhul
 			dynasty = 2353
@@ -96,7 +98,7 @@ province_event = {
 			spawn_scourge_troops_effect = yes
 			spawn_scourge_troops_effect = yes
 			spawn_scourge_troops_effect = yes
-			spawn_scourge_troops_effect = yes
+			# spawn_scourge_troops_effect = yes
 
 			c_icecrown = {
 				# Declares war against player
@@ -582,12 +584,14 @@ narrative_event = {
 				religion = burning_legion_religion
 			}
 		}
+		
+		clr_global_flag = scourge_is_under_legion_control_flag
 	}
 
 	after = {
-		clr_global_flag = scourge_is_under_legion_control_flag
-		
 		e_burning_legion = { holder_scope = { narrative_event = { id = WCUND.135 } } }
+		
+		clr_global_flag = scourge_is_under_legion_control_flag
 	}
 }
 # Notificates the Legion about the decision
@@ -1086,28 +1090,45 @@ character_event = {
 	}
 	picture = GFX_evt_cemetery
 	border = GFX_event_normal_frame_religion
+	portrait = event_target:target_necromancer
 
 	is_triggered_only = yes
 
 	# Just an undead
 	option = {
 		trigger = {
-			OR = {
-				NOT = {
-					event_target:target_undead = {
-						has_class_trait_trigger = yes
-						is_alternative_class_trigger = no
+			event_target:target_undead = { NOT = { trait = undead } }
+			
+			event_target:target_necromancer = {
+				OR = {
+					NOT = {
+						event_target:target_undead = {
+							has_class_trait_trigger = yes
+							is_alternative_class_trigger = no
+						}
 					}
-				}
-				NOR = {
-					event_target:target_undead = { is_paladin_class_trigger = yes }
-					is_7_8_magic_class_trigger = yes
-					trait = lich_king
+					NOR = {
+						event_target:target_undead = { is_paladin_class_trigger = yes }
+						is_7_8_magic_class_trigger = yes
+						trait = lich_king
+						AND = {
+							society_member_of = cult_of_the_damned
+							is_society_grandmaster = yes
+						}
+					}
 				}
 			}
 		}
 		name = EVTOPTA_WCUND_300
 
+		if = {
+			limit = {
+				has_quest = quest_turn_into_undead
+				quest_target = { character = event_target:target_undead }
+			}
+			clr_quest = quest_turn_into_undead
+			add_society_currency_medium_effect = yes
+		}
 		tooltip = {
 			event_target:target_undead = {
 				add_trait_undead_effect = yes
@@ -1127,53 +1148,33 @@ character_event = {
 		}
 	}
 
-	# Ghost
+	# Vampire
 	option = {
 		trigger = {
-			always = no
-
-			event_target:target_undead = { NOT = { character = ROOT } }
-			NOR = {
-				event_target:target_undead = { is_paladin_class_trigger = yes }
-				is_7_8_magic_class_trigger = yes
-				trait = lich_king
-			}
-		}
-		name = EVTOPTB_WCUND_300
-
-		event_target:target_undead = {
-			set_character_flag = transition_into_wraith_flag
-			tooltip = {
-				remove_racial_traits_effect = yes
-				add_trait = creature_wraith
-				add_trait_undead_effect = yes
-				if = {
-					limit = { event_target:target_undead = { NOT = { character = ROOT } } }
-					opinion = {
-						modifier = opinion_loyal_servant
-						who = ROOT
+			event_target:target_undead = { NOT = { trait = vampire } }
+			
+			NOT = { event_target:target_undead = { is_paladin_class_trigger = yes } }
+			event_target:target_necromancer = {
+				OR = {
+					is_7_8_magic_class_trigger = yes
+					trait = lich_king
+					AND = {
+						society_member_of = cult_of_the_damned
+						is_society_grandmaster = yes
 					}
 				}
 			}
 		}
-		hidden_effect = { event_target:target_undead = { character_event = { id = WCPOD.5013 } } }
-
-		ai_chance = {
-			factor = 5
-		}
-	}
-
-	# Vampire
-	option = {
-		trigger = {
-			NOT = { event_target:target_undead = { is_paladin_class_trigger = yes } }
-			OR = {
-				is_7_8_magic_class_trigger = yes
-				trait = lich_king
-			}
-		}
 		name = EVTOPTD_WCUND_300
 
+		if = {
+			limit = {
+				has_quest = quest_turn_into_undead
+				quest_target = { character = event_target:target_undead }
+			}
+			clr_quest = quest_turn_into_undead
+			add_society_currency_medium_effect = yes
+		}
 		event_target:target_undead = {
 			set_character_flag = transition_into_vampire_flag
 			tooltip = {
@@ -1198,18 +1199,34 @@ character_event = {
 	# Death Knight
 	option = {
 		trigger = {
+			event_target:target_undead = { NOT = { is_death_knight_class_trigger = yes } }
+			
 			event_target:target_undead = {
 				has_class_trait_trigger = yes
 				is_alternative_class_trigger = no
 			}
-			OR = {
-				event_target:target_undead = { is_paladin_class_trigger = yes }
-				is_7_8_magic_class_trigger = yes
-				trait = lich_king
+			event_target:target_necromancer = {
+				OR = {
+					event_target:target_undead = { is_paladin_class_trigger = yes }
+					is_7_8_magic_class_trigger = yes
+					trait = lich_king
+					AND = {
+						society_member_of = cult_of_the_damned
+						is_society_grandmaster = yes
+					}
+				}
 			}
 		}
 		name = EVTOPTC_WCUND_300
 
+		if = {
+			limit = {
+				has_quest = quest_turn_into_undead
+				quest_target = { character = event_target:target_undead }
+			}
+			clr_quest = quest_turn_into_undead
+			add_society_currency_medium_effect = yes
+		}
 		event_target:target_undead = {
 			set_character_flag = transition_into_death_knight_flag
 			tooltip = {
@@ -1234,14 +1251,30 @@ character_event = {
 	# Lich
 	option = {
 		trigger = {
+			event_target:target_undead = { NOT = {  trait = creature_lich } }
+			
 			NOT = { event_target:target_undead = { is_paladin_class_trigger = yes } }
-			OR = {
-				is_7_8_magic_class_trigger = yes
-				trait = lich_king
+			event_target:target_necromancer = {
+				OR = {
+					is_7_8_magic_class_trigger = yes
+					trait = lich_king
+					AND = {
+						society_member_of = cult_of_the_damned
+						is_society_grandmaster = yes
+					}
+				}
 			}
 		}
 		name = EVTOPTF_WCUND_300
 
+		if = {
+			limit = {
+				has_quest = quest_turn_into_undead
+				quest_target = { character = event_target:target_undead }
+			}
+			clr_quest = quest_turn_into_undead
+			add_society_currency_medium_effect = yes
+		}
 		event_target:target_undead = {
 			set_character_flag = transition_into_lich_flag
 			tooltip = {
@@ -1266,7 +1299,6 @@ character_event = {
 
 	# No, I changed my mind
 	option = {
-		trigger = { event_target:target_undead = { character = ROOT } }
 		name = EVTOPTE_WCUND_300
 
 		event_target:target_undead = { clr_character_flag = being_raised_flag }

@@ -4,6 +4,7 @@ namespace = WCORD
 # 101-200 - the Order of the Silver Hand
 # 201-300 - the Nethergarde
 # 301-400 - the Syndicate
+# 401-500 - the Kor'kron
 
 # The Destruction of the Brotherhood of the Horse
 narrative_event = {
@@ -752,7 +753,7 @@ character_event = {
 
 						set_character_flag = land_request_sent@event_target:target_desired_title
 
-						letter_event = { id = WCORD.9035 days = 1 }
+						letter_event = { id = WCORD.9035 days = 3 }
 					}
 				}
 			}
@@ -780,7 +781,7 @@ character_event = {
 
 						set_character_flag = land_request_sent@event_target:target_desired_title
 
-						letter_event = { id = WCORD.9035 days = 1 }
+						letter_event = { id = WCORD.9035 days = 3 }
 					}
 				}
 			}
@@ -808,7 +809,7 @@ character_event = {
 
 						set_character_flag = land_request_sent@event_target:target_desired_title
 
-						letter_event = { id = WCORD.9035 days = 1 }
+						letter_event = { id = WCORD.9035 days = 3 }
 					}
 				}
 			}
@@ -836,11 +837,59 @@ character_event = {
 
 						set_character_flag = land_request_sent@event_target:target_desired_title
 
-						letter_event = { id = WCORD.9035 days = 1 }
+						letter_event = { id = WCORD.9035 days = 3 }
 					}
 				}
 			}
 		}
+	}
+}
+
+### Kor'kron Creation
+# Ping event
+character_event = {
+	id = WCORD.405
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
+		# Sends to all members of the Horde
+		any_player = {
+			limit = {
+				OR = {
+					character = event_target:target_warchief
+					is_member_of_horde_faction_trigger = yes
+					top_liege = { is_member_of_horde_faction_trigger = yes }
+				}
+			}
+			narrative_event = { id = WCORD.406 }
+		}
+	}
+}
+# Narrative event
+narrative_event = {
+	id = WCORD.406
+	title = EVTTITLE_WCORD_406
+	desc = EVTDESC_WCORD_406
+	picture = GFX_evt_korkron
+	
+	is_triggered_only = yes
+	
+	hide_new = yes
+	
+	# Lok'tar Ogar
+	option = {
+		trigger = {
+			culture_group = orc_group
+		}
+		name = LOKTAR_OGAR
+	}
+	option = {
+		trigger = {
+			NOT = { culture_group = orc_group }
+		}
+		name = EVTOPTB_WCORD_406
 	}
 }
 
@@ -970,7 +1019,34 @@ letter_event = {
 
 	is_triggered_only = yes
 
+	trigger = {
+		is_playable = yes
+		
+		OR = {
+			character = event_target:target_ruler
+			is_vassal_or_below = event_target:target_ruler
+		}
+	}
+	
+	fail_trigger_effect = {
+		log = "(ORDER) WCORD.9035 couldn't fire for [Root.GetBestName], [target_ruler.GetBestName] is target_ruler"
+		
+		if = {
+			limit = { character = event_target:target_ruler }
+			clr_character_flag = land_request_sent@event_target:target_desired_title
+		}
+		else_if = {	# Liege (who got this letter) isn't liege or isn't landed anymore, so sends letter again to actual top liege
+			limit = { event_target:target_ruler = { independent = no } }
+			event_target:target_ruler = { top_liege = { letter_event = { id = WCORD.9035 days = 3 } } }
+		}
+		else = { # Ruler somehow became independent, so... just sells lands
+			ruler_sell_land_to_holy_order_effect = yes
+		}
+	}
+
 	immediate = {
+		log = "(ORDER) WCORD.9035 fired for [Root.GetBestName], [target_ruler.GetBestName] is target_ruler"
+		
 		if = {
 			limit = { character = event_target:target_ruler }
 			clr_character_flag = land_request_sent@event_target:target_desired_title
@@ -985,7 +1061,8 @@ letter_event = {
 			ruler_sell_land_to_holy_order_effect = yes
 		}
 
-		liege = { letter_event = { id = WCORD.9035 } }
+		# Sends this event to top liege
+		top_liege = { letter_event = { id = WCORD.9035 days = 3 } }
 	}
 
 	option = {
@@ -998,15 +1075,14 @@ letter_event = {
 	option = {
 		name = DECLINE
 
-		event_target:target_ruler = { letter_event = { id = WCORD.9036 } }
+		if = {
+			limit = { NOT = { character = event_target:target_ruler } }
+			event_target:target_ruler = { letter_event = { id = WCORD.9036 days = 3 } }
+		}
 
 		ai_chance = {
 			factor = 0
 		}
-	}
-
-	after = {
-
 	}
 }
 # Liege says no
