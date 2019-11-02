@@ -47,7 +47,6 @@ decisions = {
 			OR = {
 				has_landed_title = k_dalaran
 				has_landed_title = d_dalaran
-				has_landed_title = c_dalaran
 			}
 			has_global_flag = dark_portal_was_opened_flag
 			c_nether_hill = {
@@ -71,6 +70,116 @@ decisions = {
 		revoke_allowed = {
 			always = no
 		}
+		ai_will_do = {
+			factor = 1
+		}
+	}
+	form_korkron = {
+		is_high_prio = yes
+
+		ai_check_interval = 12
+
+		only_playable = yes
+		only_independent = yes
+
+		potential = {
+			d_korkron = { has_holder = no }
+			
+			trait = creature_orc
+			culture_group = orc_group
+			trait = leader_of_horde_trait
+			
+			has_landed_title = e_horde
+			has_global_flag = centralized_horde_flag
+		}
+
+		allow = {
+			wealth = 250
+			prestige = 1000
+		}
+
+		effect = {
+			save_event_target_as = target_warchief
+			
+			wealth = -250
+			prestige = -1000
+			
+			any_vassal = {
+				limit = {
+					NOT = { culture_group = orc_group }
+				}
+				show_scope_change = no
+				
+				opinion = { modifier = opinion_shocked who = ROOT years = 10 }
+			}
+			any_tributary = {
+				limit = {
+					NOT = { culture_group = orc_group }
+				}
+				show_scope_change = no
+				
+				opinion = { modifier = opinion_shocked who = ROOT years = 10 }
+			}
+			
+			hidden_effect = {
+				if = {
+					limit = {
+						job_marshal = {
+							is_ruler = no
+							is_heir = no
+							
+							trait = creature_orc
+							culture_group = orc_group
+						}
+					}
+					job_marshal = {
+						save_event_target_as = target_overlord
+					}
+				}
+				else_if = {
+					limit = {
+						any_courtier = {
+							is_ruler = no
+							is_heir = no
+							
+							trait = creature_orc
+							culture_group = orc_group
+							
+							has_minor_title = title_commander
+						}
+					}
+					random_courtier = {
+						limit = {
+							is_ruler = no
+							is_heir = no
+							
+							trait = creature_orc
+							culture_group = orc_group
+							
+							has_minor_title = title_commander
+						}
+						save_event_target_as = target_overlord
+					}
+				}
+				else = {
+					spawn_fantastic_commander_effect = yes
+					new_character = {
+						save_event_target_as = target_overlord
+					}
+				}
+				
+				event_target:target_overlord = {
+					wealth = 500
+					
+					activate_title = { title = d_korkron status = yes }
+					d_korkron = { grant_title = PREV }
+					set_defacto_liege = ROOT
+					
+					character_event = { id = WCORD.405 }
+				}
+			}
+		}
+
 		ai_will_do = {
 			factor = 1
 		}

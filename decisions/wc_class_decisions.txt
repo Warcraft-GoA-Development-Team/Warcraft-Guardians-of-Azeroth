@@ -251,7 +251,7 @@ decisions = {
 		}
 	}
 
-	### Priest ###   # Remember to edit become_priestess_of_elune when changing something
+	### Priest ###
 	teach_yourself_priest = {
 		is_high_prio = yes
 
@@ -270,7 +270,6 @@ decisions = {
 			NOT = { has_character_flag = hide_class_training_decisions_flag }
 
 			potential_priest_trigger = yes
-			NOT = { religion = kaldorei_religion }
 		}
 		allow = {
 			show_only_failed_conditions = yes
@@ -301,77 +300,8 @@ decisions = {
 
 			modifier = {
 				factor = 10
-
+				
 				light_true_religion_trigger = yes
-				OR = {
-					has_benevolent_trait_trigger = yes
-					has_pious_trait_trigger = yes
-				}
-			}
-			modifier = {
-				factor = 2
-				trait = ambitious
-			}
-			modifier = {
-				factor = 2
-				trait = brave
-			}
-		}
-	}
-	### Priestess of the Moon###
-	become_priestess_of_elune = {
-		is_high_prio = yes
-
-		ai_check_interval = 60
-
-		ai = no
-		only_playable = yes
-
-		potential = {
-			is_untouchable_trigger = no
-
-			is_adult = yes
-			is_female = yes
-			is_incapable = no
-			prisoner = no
-			
-			NOT = { has_character_flag = hide_class_training_decisions_flag }
-
-			potential_priest_trigger = yes
-			religion = kaldorei_religion
-		}
-		allow = {
-			show_only_failed_conditions = yes
-			
-			is_inaccessible_trigger = no
-			
-			is_in_society = no
-			allow_priest_trigger = yes
-			OR = {
-				AND = {
-					is_ruler = yes
-					wealth = 25
-				}
-				is_ruler = no
-			}
-		}
-		effect = {
-			if = {
-				limit = { ai = no }
-				wealth = -25
-			}
-			character_event = { id = WCCLS.401 }
-		}
-		revoke_allowed = {
-			always = no
-		}
-		ai_will_do = {
-			factor = 0.05
-
-			modifier = {
-				factor = 10
-
-				true_religion = kaldorei_religion
 				OR = {
 					has_benevolent_trait_trigger = yes
 					has_pious_trait_trigger = yes
@@ -1228,6 +1158,7 @@ targetted_decisions = {
 	ask_to_be_your_mentor = {
 		ai_target_filter = realm
 		ai_check_interval = 24
+		diplomacy_icon = GFX_trainer_decision
 
 		ai = no
 		only_playable = yes
@@ -1810,7 +1741,7 @@ targetted_decisions = {
 				}
 			}
 
-			is_5_6_magic_class_trigger = yes
+			has_5_6_magic_class_or_higher_trigger = yes
 			has_3_mana_trigger = yes
 		}
 
@@ -1981,7 +1912,7 @@ targetted_decisions = {
 
 				conditional_tooltip = {
 					trigger = { ROOT = { trait = severely_injured } }
-					is_5_6_magic_class_trigger = yes
+					has_5_6_magic_class_or_higher_trigger = yes
 					has_3_mana_trigger = yes
 				}
 				conditional_tooltip = {
@@ -2016,13 +1947,25 @@ targetted_decisions = {
 			}
 			FROM = {
 				show_scope_change = no
-				tooltip = {
+				if = {
+					limit = { character = ROOT }
 					if = {
 						limit = { ROOT = { trait = severely_injured } }
 						remove_3_mana_effect = yes
 					}
 					else = {
 						remove_1_mana_effect = yes
+					}
+				}
+				else = {
+					tooltip = {
+						if = {
+							limit = { ROOT = { trait = severely_injured } }
+							remove_3_mana_effect = yes
+						}
+						else = {
+							remove_1_mana_effect = yes
+						}
 					}
 				}
 			}
@@ -2122,7 +2065,7 @@ targetted_decisions = {
 				
 				is_inaccessible_trigger = no
 
-				is_3_4_magic_class_trigger = yes
+				has_3_4_magic_class_or_higher_trigger = yes
 				has_2_mana_trigger = yes
 			}
 		}
@@ -2577,25 +2520,7 @@ targetted_decisions = {
 			prisoner = no
 
 			is_warlock_class_trigger = yes
-			trigger_if = {
-				limit = { is_9_10_magic_class_trigger = yes }
-				NOT = { has_character_modifier = mana_5 }
-			}
-			trigger_else_if = {
-				limit = { is_7_8_magic_class_trigger = yes }
-				NOT = { has_character_modifier = mana_4 }
-			}
-			trigger_else_if = {
-				limit = { is_5_6_magic_class_trigger = yes }
-				NOT = { has_character_modifier = mana_3 }
-			}
-			trigger_else_if = {
-				limit = { is_3_4_magic_class_trigger = yes }
-				NOT = { has_character_modifier = mana_2 }
-			}
-			trigger_else = {
-				NOT = { has_character_modifier = mana_1 }
-			}
+			mana_is_full_trigger = no
 		}
 
 		allow = {
@@ -2720,7 +2645,7 @@ targetted_decisions = {
 				}
 			}
 
-			is_3_4_magic_class_trigger = yes
+			has_3_4_magic_class_or_higher_trigger = yes
 			has_2_mana_trigger = yes
 			OR = {
 				has_artifact = soul_shard
@@ -2844,9 +2769,12 @@ targetted_decisions = {
 						}
 					}
 				}
-				AND = {
+				trigger_if = {
+					limit = {
+						FROM = { has_quest = quest_control_mind }
+						is_quest_target_of = FROM
+					}
 					is_quest_target_of = FROM
-					FROM = { has_quest = quest_control_mind }
 				}
 			}
 
@@ -2870,7 +2798,7 @@ targetted_decisions = {
 							}
 						}
 						AND = {
-							is_5_6_magic_class_trigger = yes
+							has_5_6_magic_class_or_higher_trigger = yes
 							has_2_mana_trigger = yes
 						}
 					}
@@ -2882,12 +2810,15 @@ targetted_decisions = {
 							}
 							society_rank > 2
 						}
-						OR = {
-							has_society_currency_medium_trigger = yes
-							AND = {
-								ROOT = { is_quest_target_of = FROM }
+						trigger_if = {
+							limit = {
 								has_quest = quest_control_mind
+								ROOT = { is_quest_target_of = FROM }
 							}
+							ROOT = { is_quest_target_of = FROM }
+						}
+						trigger_else = {
+							has_society_currency_medium_trigger = yes
 						}
 					}
 					trigger_if = {
@@ -2937,7 +2868,7 @@ targetted_decisions = {
 							is_death_knight_class_trigger = yes
 							is_shadow_priest_class_trigger = yes
 						}
-						is_5_6_magic_class_trigger = yes
+						has_5_6_magic_class_or_higher_trigger = yes
 						has_2_mana_trigger = yes
 					}
 					remove_2_mana_effect = yes
@@ -3123,19 +3054,19 @@ targetted_decisions = {
 						}
 						modifier = {
 							factor = 2.24
-							is_9_10_magic_class_trigger = yes
+							has_9_10_magic_class_trigger = yes
 						}
 						modifier = {
 							factor = 2.24
-							is_7_8_magic_class_trigger = yes
+							has_7_8_magic_class_or_higher_trigger = yes
 						}
 						modifier = {
 							factor = 2.24
-							is_5_6_magic_class_trigger = yes
+							has_5_6_magic_class_or_higher_trigger = yes
 						}
 						modifier = {
 							factor = 2.24
-							is_3_4_magic_class_trigger = yes
+							has_3_4_magic_class_or_higher_trigger = yes
 						}
 					}
 					50 = {	# Fail
@@ -3258,17 +3189,15 @@ targetted_decisions = {
 						limit = { has_quest = quest_disembowel_small_humanoid }
 						clr_quest = quest_disembowel_small_humanoid
 						add_society_currency_minor_effect = yes
-						break = yes
 					}
-					if = {
+					else_if = {
 						limit = { society_member_of = cult_of_the_damned }
 						add_society_currency_trivial_effect = yes
 					}
 				}
-				break = yes
 			}
 			# Medium Humanoid
-			if = {
+			else_if = {
 				limit = { is_medium_humanoid_trigger = yes }
 				FROM = {
 					show_scope_change = no
@@ -3276,17 +3205,15 @@ targetted_decisions = {
 						limit = { has_quest = quest_disembowel_medium_humanoid }
 						clr_quest = quest_disembowel_medium_humanoid
 						add_society_currency_minor_effect = yes
-						break = yes
 					}
-					if = {
+					else_if = {
 						limit = { society_member_of = cult_of_the_damned }
 						add_society_currency_trivial_effect = yes
 					}
 				}
-				break = yes
 			}
 			# Large Humanoid
-			if = {
+			else_if = {
 				limit = { is_large_humanoid_trigger = yes }
 				FROM = {
 					show_scope_change = no
@@ -3294,17 +3221,14 @@ targetted_decisions = {
 						limit = { has_quest = quest_disembowel_large_humanoid }
 						clr_quest = quest_disembowel_large_humanoid
 						add_society_currency_medium_effect = yes
-						break = yes
 					}
-					if = {
+					else_if = {
 						limit = { society_member_of = cult_of_the_damned }
 						add_society_currency_minor_effect = yes
 					}
 				}
-				break = yes
 			}
-			FROM = {
-				show_scope_change = no
+			else = {
 				if = {
 					limit = { society_member_of = cult_of_the_damned }
 					add_society_currency_trivial_effect = yes
@@ -3361,7 +3285,7 @@ targetted_decisions = {
 
 		# If you modify potential or allow, don't forget to change WCDAC.7050
 		allow = {
-			show_only_failed_conditions = yes
+			# show_only_failed_conditions = yes
 			
 			FROM = {
 				show_scope_change = no
@@ -3382,7 +3306,16 @@ targetted_decisions = {
 							society_member_of = cult_of_the_damned
 							society_rank > 1
 						}
-						has_society_currency_minor_trigger = yes
+						trigger_if = {
+							limit = {
+								has_quest = quest_turn_into_undead
+								ROOT = { is_quest_target_of = FROM }
+							}
+							ROOT = { is_quest_target_of = FROM }
+						}
+						trigger_else = {
+							has_society_currency_minor_trigger = yes
+						}
 					}
 					AND = {
 						wealth = 50
@@ -3412,8 +3345,7 @@ targetted_decisions = {
 						has_quest = quest_turn_into_undead
 						quest_target = { character = ROOT }
 					}
-					clr_quest = quest_turn_into_undead
-					add_society_currency_medium_effect = yes
+					# Pay nothing
 				}
 				else_if = {
 					limit = {
@@ -3504,7 +3436,7 @@ targetted_decisions = {
 				OR = {
 					trigger_if = {
 						limit = { is_necromancer_class_trigger = yes }
-						is_5_6_magic_class_trigger = yes
+						has_5_6_magic_class_or_higher_trigger = yes
 						has_3_mana_trigger = yes
 					}
 					trigger_if = {
@@ -3512,7 +3444,16 @@ targetted_decisions = {
 							society_member_of = cult_of_the_damned
 							society_rank > 2
 						}
-						has_society_currency_minor_trigger = yes
+						trigger_if = {
+							limit = {
+								has_quest = quest_turn_into_undead
+								ROOT = { is_quest_target_of = FROM }
+							}
+							ROOT = { is_quest_target_of = FROM }
+						}
+						trigger_else = {
+							has_society_currency_medium_trigger = yes
+						}
 					}
 					
 					# Fallback
@@ -3544,14 +3485,12 @@ targetted_decisions = {
 						has_quest = quest_turn_into_undead
 						quest_target = { character = ROOT }
 					}
-					clr_quest = quest_turn_into_undead
-					add_society_currency_medium_effect = yes
-					break = yes
+					# Pay nothing
 				}
 				else_if = {
 					limit = {
 						is_necromancer_class_trigger = yes
-						is_5_6_magic_class_trigger = yes
+						has_5_6_magic_class_or_higher_trigger = yes
 						has_3_mana_trigger = yes
 					}
 					remove_3_mana_effect = yes
@@ -3560,9 +3499,9 @@ targetted_decisions = {
 					limit = {
 						society_member_of = cult_of_the_damned
 						society_rank > 2
-						has_society_currency_minor_trigger = yes
+						has_society_currency_medium_trigger = yes
 					}
-					detract_society_currency_minor_effect = yes
+					detract_society_currency_medium_effect = yes
 				}
 			}
 		}
@@ -3654,19 +3593,19 @@ targetted_decisions = {
 								set_character_flag = drive_crazy_lunatic_flag
 								modifier = {
 									factor = 2.66
-									is_9_10_magic_class_trigger = yes
+									has_9_10_magic_class_trigger = yes
 								}
 								modifier = {
 									factor = 2.66
-									is_7_8_magic_class_trigger = yes
+									has_7_8_magic_class_or_higher_trigger = yes
 								}
 								modifier = {
 									factor = 2.66
-									is_5_6_magic_class_trigger = yes
+									has_5_6_magic_class_or_higher_trigger = yes
 								}
 								modifier = {
 									factor = 2.66
-									is_3_4_magic_class_trigger = yes
+									has_3_4_magic_class_or_higher_trigger = yes
 								}
 								modifier = {
 									factor = 0
@@ -3690,19 +3629,19 @@ targetted_decisions = {
 						}
 						modifier = {
 							factor = 2.24
-							is_9_10_magic_class_trigger = yes
+							has_9_10_magic_class_trigger = yes
 						}
 						modifier = {
 							factor = 2.24
-							is_7_8_magic_class_trigger = yes
+							has_7_8_magic_class_or_higher_trigger = yes
 						}
 						modifier = {
 							factor = 2.24
-							is_5_6_magic_class_trigger = yes
+							has_5_6_magic_class_or_higher_trigger = yes
 						}
 						modifier = {
 							factor = 2.24
-							is_3_4_magic_class_trigger = yes
+							has_3_4_magic_class_or_higher_trigger = yes
 						}
 					}
 					50 = {	# Fail
@@ -3784,7 +3723,7 @@ targetted_decisions = {
 				}
 			}
 
-			is_5_6_magic_class_trigger = yes
+			has_5_6_magic_class_or_higher_trigger = yes
 			has_3_mana_trigger = yes
 		}
 
@@ -3802,11 +3741,11 @@ targetted_decisions = {
 						set_character_flag = summon_void_creature_success_flag
 						modifier = {
 							factor = 4.47
-							is_9_10_magic_class_trigger = yes
+							has_9_10_magic_class_trigger = yes
 						}
 						modifier = {
 							factor = 4.47
-							is_7_8_magic_class_trigger = yes
+							has_7_8_magic_class_or_higher_trigger = yes
 						}
 					}
 					25 = {
@@ -3873,7 +3812,7 @@ settlement_decisions = {
 				show_scope_change = no
 				is_inaccessible_trigger = no
 
-				is_3_4_magic_class_trigger = yes
+				has_3_4_magic_class_or_higher_trigger = yes
 				has_2_mana_trigger = yes
 			}
 		}
@@ -3974,7 +3913,7 @@ settlement_decisions = {
 				religion_group = druidism_group
 				true_religion_group = druidism_group
 
-				is_9_10_magic_class_trigger = yes
+				has_9_10_magic_class_trigger = yes
 
 				wealth = 250
 				piety = 5000
