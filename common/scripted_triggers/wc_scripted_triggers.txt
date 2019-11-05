@@ -2067,15 +2067,27 @@ has_weak_character_trigger = {
 can_fight_prev_trigger = {
 	trigger_if = {
 		limit = {
-			is_member_of_horde_faction_trigger = yes
+			OR = {
+				is_member_of_horde_faction_trigger = yes
+				suzerain = { is_member_of_horde_faction_trigger = yes }
+			}
 		}
-		PREV = { is_member_of_horde_faction_trigger = no }
+		PREV = {
+			is_member_of_horde_faction_trigger = no
+			NOT = { suzerain = { is_member_of_horde_faction_trigger = yes } }
+		}
 	}
 	trigger_if = {
 		limit = {
-			is_member_of_alliance_faction_trigger = yes
+			OR = {
+				is_member_of_alliance_faction_trigger = yes
+				suzerain = { is_member_of_alliance_faction_trigger = yes }
+			}
 		}
-		PREV = { is_member_of_alliance_faction_trigger = no }
+		PREV = {
+			is_member_of_alliance_faction_trigger = no
+			NOT = { suzerain = { is_member_of_alliance_faction_trigger = yes } }
+		}
 	}
 	trigger_if = { # Blocks infighting even you got different suzerains, but I can't allow that due to Paradox scripting rules
 		limit = {
@@ -4374,5 +4386,23 @@ arcane_true_religion_trigger = {
 		true_religion = mystery_of_the_makers
 		true_religion = cult_of_loken
 		true_religion = odyn
+	}
+}
+
+is_in_player_sphere_of_influence_trigger = {
+	trigger_if = {
+		limit = {
+			ai = yes
+		}
+		host = {
+			ai = no
+			OR = {
+				is_parent_of = PREV
+				is_grandparent_of = PREV
+			}
+		}
+	}
+	trigger_else = {
+		ai = no
 	}
 }
