@@ -27,13 +27,8 @@ find_right_spouse_effect = {
 	if = {
 		limit = {
 			ai = yes
-			host = {
-				OR = {
-					ai = yes
-					NOT = { is_parent_of = PREV }
-					NOT = { is_grandparent_of = PREV }
-				}
-			}
+			
+			is_in_player_sphere_of_influence_trigger = no
 		}
 		character_event = { id = WCCLN.130 }		# Finds right spouse
 	}
@@ -175,93 +170,6 @@ remove_racial_traits_effect = {
 	if = { limit = { trait = spikes_mutation 				} remove_trait = spikes_mutation				}
 	if = { limit = { trait = scales_mutation 				} remove_trait = scales_mutation				}
 	if = { limit = { trait = eyes_mutation 					} remove_trait = eyes_mutation				}
-}
-join_society_shadow_council_effect = {
-	join_society = shadow_council
-	if = {
-		limit = {
-			NOR = {
-				true_religion = orcish_fel
-				true_religion = burning_legion_religion
-			}
-		}
-		if = {
-			limit = {
-				OR = {
-					independent = yes
-					liege = {
-						NOR = {
-							religion = orcish_fel
-							religion = burning_legion_religion
-						}
-					}
-				}
-			}
-			set_secret_religion = burning_legion_religion
-		}
-		if = {
-			limit = {
-				independent = no
-				liege = { religion = orcish_fel }
-			}
-			if = { limit = { has_secret_religion = yes } clear_secret_religion = yes }
-			religion = orcish_fel
-		}
-		if = {
-			limit = {
-				independent = no
-				liege = { religion = burning_legion_religion }
-			}
-			if = { limit = { has_secret_religion = yes } clear_secret_religion = yes }
-			religion = burning_legion_religion
-		}
-	}
-}
-join_society_cult_of_the_damned_effect = {
-	join_society = cult_of_the_damned
-	if = {
-		limit = { NOT = { true_religion = death_god } }
-		if = {
-			limit = {
-				OR = {
-					independent = yes
-					liege = { NOT = { religion = death_god } }
-				}
-			}
-			set_secret_religion = death_god
-		}
-		if = {
-			limit = {
-				independent = no
-				liege = { religion = death_god }
-			}
-			if = { limit = { has_secret_religion = yes } clear_secret_religion = yes }
-			religion = death_god
-		}
-	}
-}
-join_society_twilights_hammer_cult_effect = {
-	join_society = twilights_hammer_cult
-	if = {
-		limit = { NOT = { true_religion = old_gods_worship } }
-		if = {
-			limit = {
-				OR = {
-					independent = yes
-					liege = { NOT = { religion = old_gods_worship } }
-				}
-			}
-			set_secret_religion = old_gods_worship
-		}
-		if = {
-			limit = {
-				independent = no
-				liege = { religion = old_gods_worship }
-			}
-			if = { limit = { has_secret_religion = yes } clear_secret_religion = yes }
-			religion = old_gods_worship
-		}
-	}
 }
 tomb_generate_random_treasury_effect = {
 	if = {
@@ -489,11 +397,6 @@ decrease_colony = {
 		remove_province_modifier = colony_3
 		add_province_modifier = { name = colony_2 duration = -1 }
 	}
-}
-clr_all_society_recruitment_flags_effect = {
-	clr_character_flag = being_recruited_by_cult_of_the_damned
-	clr_character_flag = being_recruited_by_shadow_council
-	clr_character_flag = being_recruited_by_twilights_hammer_cult
 }
 
 add_prev_useful_flesh = {
@@ -1001,7 +904,7 @@ drink_demon_blood_effect = {
 		add_35_fel_corruption_effect = yes
 	}
 }
-change_evil_laws_effect = {
+set_evil_laws_to_title_effect = {
 	if = {
 		limit = {
 			# is_law_allowed = succ_evil_elective
@@ -1189,11 +1092,11 @@ spawn_small_horde_troops_effect = {
 		province = 73
 		home = 73
 		troops = {
+			light_infantry = { 125 125 }
+			heavy_infantry = { 550 550 }
+			pikemen = { 150 150 }
+			light_cavalry = { 75 75 }
 			archers = { 250 250 }
-			light_infantry = { 375 375 }
-			heavy_infantry = { 500 500 }
-			light_cavalry = { 100 100 }
-			knights = { 25 25 }
 		}
 		attrition = 0
 		maintenance = no
@@ -1268,8 +1171,12 @@ spawn_small_legion_troops_effect = {
 		province = event_target:target_summoning_location
 		home = event_target:target_summoning_location
 		troops = {
-			light_infantry = { 1000 1000 }
-			demonicshock = { 1125 1125 }
+			light_infantry = { 150 150 }
+			heavy_infantry = { 750 750 }
+			pikemen = { 350 350 }
+			knights = { 50 50 }
+			archers = { 100 100 }
+			elite_infantry = { 125 125 }
 		}
 		attrition = 0
 		maintenance = no
@@ -1280,18 +1187,7 @@ spawn_small_legion_troops_effect = {
 		province = event_target:target_summoning_location
 		home = event_target:target_summoning_location
 		troops = {
-			golems = { 125 125 }
-		}
-		attrition = 0
-		maintenance = no
-		earmark = legion_forces
-	}
-	spawn_unit = {
-		owner = THIS
-		province = event_target:target_summoning_location
-		home = event_target:target_summoning_location
-		troops = {
-			artillery = { 250 250 }
+			siege_machines = { 125 125 }
 		}
 		attrition = 0
 		maintenance = no
@@ -1366,9 +1262,9 @@ spawn_small_scourge_troops_effect = {
 		home = event_target:target_province
 		owner = THIS
 		troops = {
-			archers = { 925 925 }
-			light_infantry = { 1325 1325 }
-			golems = { 250 250 }
+			pikemen = { 250 250 }
+			archers = { 1000 1000 }
+			undead = { 2750 2750 }
 		}
 		attrition = 0
 		maintenance = no
@@ -1382,14 +1278,16 @@ spawn_small_scourge_troops_effect = {
 	}
 }
 spawn_plague_troops_effect = {
+	# Must be 100 in total
 	spawn_unit = {
 		province = ROOT
 		home = ROOT
 		owner = THIS
 		scaled_by_biggest_garrison = 1
 		troops = {
-			archers = { 3 3 }
-			scourgehorde = { 7 7 }
+			light_infantry = { 10 10 }
+			archers = { 12 12 }
+			undead = { 78 78 }
 		}
 		attrition = 0
 		maintenance = no
@@ -1402,11 +1300,10 @@ spawn_colonial_troops_effect = {
 		province = capital_scope
 		home = capital_scope
 		troops = {
-			archers = { 800 800 }
-			light_infantry = { 1200 1200 }
+			light_infantry = { 300 300 }
 			heavy_infantry = { 1500 1500 }
-			light_cavalry = { 200 200 }
-			knights = { 300 300 }
+			light_cavalry = { 600 600 }
+			archers = { 900 900 }
 		}
 		attrition = 1.0
 		maintenance = no
@@ -1423,25 +1320,20 @@ spawn_colonial_troops_effect = {
 
 set_scourge_government_effect = {
 	set_government_type = scourge_government
-	any_demesne_title = {
-		limit = { prevs_title_can_has_laws_trigger = yes }
-		change_evil_laws_effect = yes
-	}
-	recalc_succession = yes
+	set_evil_government_laws_effect = yes
 }
 set_legion_government_effect = {
 	set_government_type = legion_government
-	any_demesne_title = {
-		limit = { prevs_title_can_has_laws_trigger = yes }
-		change_evil_laws_effect = yes
-	}
-	recalc_succession = yes
+	set_evil_government_laws_effect = yes
 }
 set_black_pact_government_effect = {
 	set_government_type = black_pact_government
+	set_evil_government_laws_effect = yes
+}
+set_evil_government_laws_effect = {
 	any_demesne_title = {
 		limit = { prevs_title_can_has_laws_trigger = yes }
-		change_evil_laws_effect = yes
+		set_evil_laws_to_title_effect = yes
 	}
 	recalc_succession = yes
 }
@@ -2960,11 +2852,12 @@ ruler_sell_land_to_holy_order_effect = {
 			wealth = 400
 		}
 
-		# Free vassals
+		# Free vassals # Must be before title granting because otherwise ruler gets title of vassal when he lose all titles
 		if = {
 			limit = { is_ruler = yes }
 			any_vassal = {
 				limit = {
+					NOT = { tier = BARON }
 					any_demesne_title = {
 						OR = {
 							title = event_target:target_desired_title
@@ -3009,11 +2902,11 @@ ruler_sell_land_to_holy_order_effect = {
 
 				if = {
 					limit = { limit = { holder_scope = { character = event_target:target_ruler } } }
-				ruler_grant_land_to_holy_order_effect = yes
+					ruler_grant_land_to_holy_order_effect = yes
+				}
 			}
 		}
 	}
-}
 }
 ruler_grant_land_to_holy_order_effect = {
 	event_target:target_order_leader = {
@@ -3139,14 +3032,16 @@ add_random_learning_education_effect = {
 spawn_heavy_sea_ravagers_effect = {
 	random_list = {
 		25 = {
+			# Must be 100 in total
 			spawn_unit = {
 				province = event_target:target_province
 				home = event_target:target_province
 				owner = ROOT
 				troops = {
-					light_infantry = { 300 300 }
-					heavy_infantry = { 400 400 }
-					archers = { 300 300 }
+					light_infantry = { 15 15 }
+					heavy_infantry = { 50 50 }
+					pikemen = { 15 15 }
+					archers = { 20 20 }
 				}
 				attrition = 0
 				scaled_by_biggest_garrison = 1.5
@@ -3154,14 +3049,16 @@ spawn_heavy_sea_ravagers_effect = {
 			}
 		}
 		40 = {
+			# Must be 100 in total
 			spawn_unit = {
 				province = event_target:target_province
 				home = event_target:target_province
 				owner = ROOT
 				troops = {
-					light_infantry = { 300 300 }
-					heavy_infantry = { 400 400 }
-					archers = { 300 300 }
+					light_infantry = { 15 15 }
+					heavy_infantry = { 50 50 }
+					pikemen = { 15 15 }
+					archers = { 20 20 }
 				}
 				attrition = 0
 				scaled_by_biggest_garrison = 2.25
@@ -3173,14 +3070,16 @@ spawn_heavy_sea_ravagers_effect = {
 				factor = 5
 				realm_size = 100
 			}
+			# Must be 100 in total
 			spawn_unit = {
 				province = event_target:target_province
 				home = event_target:target_province
 				owner = ROOT
 				troops = {
-					light_infantry = { 300 300 }
-					heavy_infantry = { 400 400 }
-					archers = { 300 300 }
+					light_infantry = { 15 15 }
+					heavy_infantry = { 50 50 }
+					pikemen = { 15 15 }
+					archers = { 20 20 }
 				}
 				attrition = 0
 				scaled_by_biggest_garrison = 3
@@ -3192,14 +3091,16 @@ spawn_heavy_sea_ravagers_effect = {
 				factor = 12.5
 				realm_size = 100
 			}
+			# Must be 100 in total
 			spawn_unit = {
 				province = event_target:target_province
 				home = event_target:target_province
 				owner = ROOT
 				troops = {
-					light_infantry = { 300 300 }
-					heavy_infantry = { 400 400 }
-					archers = { 300 300 }
+					light_infantry = { 15 15 }
+					heavy_infantry = { 50 50 }
+					pikemen = { 15 15 }
+					archers = { 20 20 }
 				}
 				attrition = 0
 				scaled_by_biggest_garrison = 3.75
@@ -3219,13 +3120,14 @@ spawn_heavy_sea_ravagers_effect = {
 spawn_light_sea_ravagers_effect = {
 	random_list = {
 		25 = {
+			# Must be 100 in total
 			spawn_unit = {
 				province = event_target:target_province
 				home = event_target:target_province
 				owner = ROOT
 				troops = {
-					light_infantry = { 700 700 }
-					archers = { 300 300 }
+					archers = { 30 30 }
+					thralls = { 70 70 }
 				}
 				attrition = 0
 				scaled_by_biggest_garrison = 1.5
@@ -3233,13 +3135,14 @@ spawn_light_sea_ravagers_effect = {
 			}
 		}
 		40 = {
+			# Must be 100 in total
 			spawn_unit = {
 				province = event_target:target_province
 				home = event_target:target_province
 				owner = ROOT
 				troops = {
-					light_infantry = { 700 700 }
-					archers = { 300 300 }
+					archers = { 30 30 }
+					thralls = { 70 70 }
 				}
 				attrition = 0
 				scaled_by_biggest_garrison = 2.25
@@ -3251,13 +3154,14 @@ spawn_light_sea_ravagers_effect = {
 				factor = 5
 				realm_size = 100
 			}
+			# Must be 100 in total
 			spawn_unit = {
 				province = event_target:target_province
 				home = event_target:target_province
 				owner = ROOT
 				troops = {
-					light_infantry = { 700 700 }
-					archers = { 300 300 }
+					archers = { 30 30 }
+					thralls = { 70 70 }
 				}
 				attrition = 0
 				scaled_by_biggest_garrison = 3
@@ -3269,13 +3173,14 @@ spawn_light_sea_ravagers_effect = {
 				factor = 12.5
 				realm_size = 100
 			}
+			# Must be 100 in total
 			spawn_unit = {
 				province = event_target:target_province
 				home = event_target:target_province
 				owner = ROOT
 				troops = {
-					light_infantry = { 700 700 }
-					archers = { 300 300 }
+					archers = { 30 30 }
+					thralls = { 70 70 }
 				}
 				attrition = 0
 				scaled_by_biggest_garrison = 3.75
@@ -3353,17 +3258,9 @@ spawn_small_qiraji_troops_effect = {
 		province = event_target:target_province
 		home = event_target:target_province
 		troops = {
-			insectoidswarm = { 1075 1075 }
-		}
-		attrition = 0
-		maintenance = no
-	}
-	spawn_unit = {
-		owner = THIS
-		province = event_target:target_province
-		home = event_target:target_province
-		troops = {
-			insectoidguard = { 175 175 }
+			light_infantry = { 250 250 }
+			knights = { 70 70 }
+			swarm = { 1000 1000 }
 		}
 		attrition = 0
 		maintenance = no
@@ -3371,12 +3268,14 @@ spawn_small_qiraji_troops_effect = {
 }
 
 spawn_pack_troops_effect = {
+	# Must be 100 in total
 	spawn_unit = {
 		province = event_target:target_province
 		home = event_target:target_province
 		owner = THIS
 		troops = {
-			light_infantry = { 1250 1250 }
+			heavy_infantry = { 60 60 }
+			animals = { 40 40 }
 		}
 		cannot_inherit = yes
 		attrition = 0
@@ -3394,7 +3293,7 @@ spawn_bitten_troops_effect = {
 		home = event_target:target_province
 		owner = THIS
 		troops = {
-			light_infantry = { 1 1 }
+			animals = { 1 1 }
 		}
 		cannot_inherit = yes
 		attrition = 0
@@ -3556,5 +3455,24 @@ court_share_cannibal_trait_effect = {
 				add_trait = cannibal_trait
 			}
 		}
+	}
+}
+
+# Clear mortal traits because you became immortal
+clr_mortal_traits_effect = {
+	if = {
+		limit = { trait = infirm }
+		remove_trait = infirm
+	}
+	if = {
+		limit = {
+			trait = infertile
+			
+			OR = {
+				immortal_need_infertile_trait_trigger = no
+				is_completely_infertile_race_and_being_trigger = yes
+			}
+		}
+		remove_trait = infertile
 	}
 }
