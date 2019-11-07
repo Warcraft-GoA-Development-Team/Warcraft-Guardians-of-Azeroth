@@ -1,6 +1,9 @@
-name = "Warcraft: Guardians of Azeroth"
+name = "Warcraft:_Guardians_of_Azeroth"
 path = "mod/Guardians of Azeroth"
-picture="GoA.jpg"
+picture="GoAPreview.jpg"
+tags = {
+	Warcraft Fantasy WoW Azeroth Total Conversion
+}
 
 user_dir = "Guardians of Azeroth"
 
@@ -29,4 +32,4 @@ replace_path = "gfx/flags"
 replace_path = "events"
 replace_path = "decisions"
 replace_path = "map\statics"
-replace_path = "music"
+# replace_path = "music"

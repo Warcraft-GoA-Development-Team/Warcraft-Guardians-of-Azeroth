@@ -4183,11 +4183,11 @@ province_event = {
 						spawn_unit = {
 							province = PREV
 							home = PREV
-							scaled_by_biggest_garrison = 1.0
+							scaled_by_biggest_garrison = 0.65
 							troops = {
 								archers = { 6 6 }
 								light_cavalry = { 4 4 }
-								light_infantry = { 10 10 }
+								heavy_infantry = { 5 5 }
 							}
 						}
 					}
@@ -4206,11 +4206,11 @@ province_event = {
 						spawn_unit = {
 							province = PREV
 							home = PREV
-							scaled_by_biggest_garrison = 1.0
+							scaled_by_biggest_garrison = 0.65
 							troops = {
 								archers = { 6 6 }
 								light_cavalry = { 3 3 }
-								light_infantry = { 11 11 }
+								heavy_infantry = { 6 6 }
 							}
 						}
 					}
@@ -4229,10 +4229,10 @@ province_event = {
 						spawn_unit = {
 							province = PREV
 							home = PREV
-							scaled_by_biggest_garrison = 1.0
+							scaled_by_biggest_garrison = 0.65
 							troops = {
 								archers = { 6 6 }
-								light_infantry = { 14 14 }
+								heavy_infantry = { 7 7 }
 							}
 						}
 					}
@@ -6319,39 +6319,75 @@ diploresponse_event = {
 	}
 }
 
+# Warcraft - Changes government of adventures
 character_event = { # Fix adventurers turning Tribal land Feudal
 	id = 539
 	hide_window = yes
 	is_triggered_only = yes
 
-	only_rulers = yes
+	# Warcraft
+	ai = yes
+	only_playable = yes
 	
 	trigger = {
+		# Warcraft
+		is_landed = yes
+		
 		ai = yes
 		
 		# Warcraft
 		# There's feudals that can have no castles
 		government = feudal_government
 		# is_feudal = yes
+
+		# Warcraft
+		trait = adventurer
+		
+		# Warcraft
+		num_of_count_titles = 1
+		NOT = { num_of_count_titles = 2 }
+
+		FROM = {
+			OR = {
+				holding_type = castle
+				holding_type = tribal
+			}
+		}
 	}
 
 	immediate = {
+		# Warcraft
+		log = "539 fired for [Root.GetBestName], [From.GetFullBaseName] is FROM title"
+	
+		# Warcraft
 		if = {
+			limit = { religion = death_god }
+			set_scourge_government_effect = yes
+		}
+		else_if = {
+			limit = { religion = burning_legion_religion }
+			set_legion_government_effect = yes
+		}
+		else_if = {
+			limit = { religion = old_gods_worship }
+			set_black_pact_government_effect = yes
+		}
+		else_if = {
 			limit = {
-				NOT = {
-					any_realm_province = {
-						any_province_holding = {
-							holding_type = castle
-						}
-					}
-				}
-				any_realm_province = {
-					any_province_holding = {
-						holding_type = tribal
-					}
+				FROM = {
+					holding_type = castle
 				}
 			}
-			set_government_type = tribal_government
+			if = {
+				limit = { can_be_feudal_trigger = no }
+				set_tribal_monarchy_government_effect = yes
+			}
+		}
+		else_if = {
+			limit = {
+				FROM = { holding_type = tribal }
+			}
+			set_tribal_government_effect = yes
 		}
 	}
 }
