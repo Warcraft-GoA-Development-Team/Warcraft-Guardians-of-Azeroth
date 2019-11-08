@@ -1,4 +1,4 @@
-name = "Warcraft:_GoA_Russian_Localization"
+name = "Warcraft:_GoA_Rus_Loc"
 path = "mod/Warcraft-GoA-Russian"
 picture="GoARusPreview.jpg"
 tags = {
