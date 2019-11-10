@@ -2,7 +2,7 @@ name = "Warcraft:_GoA_Music"
 path = "mod/Warcraft-GoA-Music"
 picture="GoAPreview.jpg"
 tags = {
-	Warcraft Fantasy WoW Azeroth Total Conversion
+	"Warcraft" "Fantasy" "WoW" "World of Wacraft" "Azeroth" "Total Conversion"
 }
 
 dependencies = {

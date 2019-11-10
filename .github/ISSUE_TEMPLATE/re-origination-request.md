@@ -1,7 +1,7 @@
 ---
 name: Re-Origination Request
 about: Bug Report
-title: "[BUG] | Issue Title"
+title: "Issue Title"
 labels: ":beetle: bug :beetle:"
 
 ---
@@ -11,6 +11,8 @@ labels: ":beetle: bug :beetle:"
 **Mod Version**
 
 **What expansions do you have installed?**
+
+**Are you using any submods/mods? If so, which?**
 
 **Please explain your issue in as much detail as possible:**
 

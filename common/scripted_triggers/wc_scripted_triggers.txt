@@ -137,6 +137,8 @@ is_susceptible_to_worgen_curse_province_trigger = {
 }
 # CAN'T CHANGE RELIGION IF IT'S NOT TRUE
 can_switch_religion_character_trigger = {
+	holy_order = no
+	controls_religion = no
 	is_theocracy = no
 	
 	trigger_if = {
@@ -201,6 +203,12 @@ can_switch_religion_character_trigger = {
 		}
 		dark_true_religion_trigger = no
 	}
+}
+# CAN'T ADOPT SECRET RELIGION IF IT'S NOT TRUE
+can_adopt_secret_religion_character_trigger = {
+	holy_order = no
+	controls_religion = no
+	is_theocracy = no
 }
 root_can_switch_religion_province_trigger = {
 	trigger_if = {
@@ -716,6 +724,17 @@ is_aggressive_religion_trigger = {
 		religion = scarlet_light
 		religion = lightbound
 		religion = cult_of_hakkar
+		religion_group = primitive_group
+		religion_group = vrykul_religion_group
+	}
+}
+like_raiding_adventure_triggger = {
+	OR = {
+		culture = pirate_culture
+		
+		evil_public_religion_trigger = yes
+		religion = orcish_fel
+		religion_group = elemental_lords_group
 		religion_group = primitive_group
 		religion_group = vrykul_religion_group
 	}
@@ -2029,7 +2048,6 @@ is_susceptible_to_plague_province_trigger = {
 has_pet_trigger = {
 	OR = {
 		has_character_modifier = pet_imp
-		has_character_modifier = pet_succubus
 		has_character_modifier = pet_felhunter
 		has_character_modifier = pet_felguard
 	}
@@ -2059,15 +2077,27 @@ has_weak_character_trigger = {
 can_fight_prev_trigger = {
 	trigger_if = {
 		limit = {
-			is_member_of_horde_faction_trigger = yes
+			OR = {
+				is_member_of_horde_faction_trigger = yes
+				suzerain = { is_member_of_horde_faction_trigger = yes }
+			}
 		}
-		PREV = { is_member_of_horde_faction_trigger = no }
+		PREV = {
+			is_member_of_horde_faction_trigger = no
+			NOT = { suzerain = { is_member_of_horde_faction_trigger = yes } }
+		}
 	}
 	trigger_if = {
 		limit = {
-			is_member_of_alliance_faction_trigger = yes
+			OR = {
+				is_member_of_alliance_faction_trigger = yes
+				suzerain = { is_member_of_alliance_faction_trigger = yes }
+			}
 		}
-		PREV = { is_member_of_alliance_faction_trigger = no }
+		PREV = {
+			is_member_of_alliance_faction_trigger = no
+			NOT = { suzerain = { is_member_of_alliance_faction_trigger = yes } }
+		}
 	}
 	trigger_if = { # Blocks infighting even you got different suzerains, but I can't allow that due to Paradox scripting rules
 		limit = {
@@ -4014,11 +4044,8 @@ theramore_founding_refugees_trigger = {
 	# NOT = { has_character_flag = invitation_to_sail_is_sent_flag }
 	NOT = { has_character_flag = foundation_theramore_declined_flag }
 
-	evil_public_religion_trigger = no
-	OR = {
-		has_alliance_religion_trigger = yes
-		has_alliance_culture_trigger = yes
-	}
+	has_alliance_religion_trigger = yes
+	has_alliance_culture_trigger = yes
 
 	can_resettle_trigger = yes
 	is_member_of_horde_faction_trigger = no
@@ -4367,4 +4394,26 @@ arcane_true_religion_trigger = {
 		true_religion = cult_of_loken
 		true_religion = odyn
 	}
+}
+
+is_in_player_sphere_of_influence_trigger = {
+	trigger_if = {
+		limit = {
+			ai = yes
+		}
+		host = {
+			ai = no
+			OR = {
+				is_parent_of = PREV
+				is_grandparent_of = PREV
+			}
+		}
+	}
+	trigger_else = {
+		ai = no
+	}
+}
+
+special_succession_type_trigger = {
+	 has_law = succ_evil_elective
 }
