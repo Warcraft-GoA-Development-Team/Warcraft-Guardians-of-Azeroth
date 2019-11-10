@@ -1,13 +1,17 @@
 ---
-name: Installation Problem
-about: Report about installation problems
+name: Re-Localization Request
+about: Report about localization problems
 title: "ISSUE TITLE"
-labels: ":beetle: bug - installation :computer:" 
+labels: ":beetle: bug - localization :scroll:" 
 
 ---
 
 **DO NOT REMOVE PRE-EXISTING LINES**
 ------------------------------------------------------------------------------------------------------------
-This issue is to help individuals get their version of the mod in working order, so to start:
+**Mod Version**
 
-**What problem are you encountering during launching the mod?**
+**Are you using any submods/mods? If so, which?**
+
+**Please explain your issue in as much detail as possible:**
+
+**Upload screenshots of the problem localization:**
