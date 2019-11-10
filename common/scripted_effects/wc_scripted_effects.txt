@@ -27,13 +27,8 @@ find_right_spouse_effect = {
 	if = {
 		limit = {
 			ai = yes
-			host = {
-				OR = {
-					ai = yes
-					NOT = { is_parent_of = PREV }
-					NOT = { is_grandparent_of = PREV }
-				}
-			}
+			
+			is_in_player_sphere_of_influence_trigger = no
 		}
 		character_event = { id = WCCLN.130 }		# Finds right spouse
 	}
@@ -909,7 +904,7 @@ drink_demon_blood_effect = {
 		add_35_fel_corruption_effect = yes
 	}
 }
-change_evil_laws_effect = {
+set_evil_laws_to_title_effect = {
 	if = {
 		limit = {
 			# is_law_allowed = succ_evil_elective
@@ -1325,25 +1320,20 @@ spawn_colonial_troops_effect = {
 
 set_scourge_government_effect = {
 	set_government_type = scourge_government
-	any_demesne_title = {
-		limit = { prevs_title_can_has_laws_trigger = yes }
-		change_evil_laws_effect = yes
-	}
-	recalc_succession = yes
+	set_evil_government_laws_effect = yes
 }
 set_legion_government_effect = {
 	set_government_type = legion_government
-	any_demesne_title = {
-		limit = { prevs_title_can_has_laws_trigger = yes }
-		change_evil_laws_effect = yes
-	}
-	recalc_succession = yes
+	set_evil_government_laws_effect = yes
 }
 set_black_pact_government_effect = {
 	set_government_type = black_pact_government
+	set_evil_government_laws_effect = yes
+}
+set_evil_government_laws_effect = {
 	any_demesne_title = {
 		limit = { prevs_title_can_has_laws_trigger = yes }
-		change_evil_laws_effect = yes
+		set_evil_laws_to_title_effect = yes
 	}
 	recalc_succession = yes
 }
@@ -2862,11 +2852,12 @@ ruler_sell_land_to_holy_order_effect = {
 			wealth = 400
 		}
 
-		# Free vassals
+		# Free vassals # Must be before title granting because otherwise ruler gets title of vassal when he lose all titles
 		if = {
 			limit = { is_ruler = yes }
 			any_vassal = {
 				limit = {
+					NOT = { tier = BARON }
 					any_demesne_title = {
 						OR = {
 							title = event_target:target_desired_title
@@ -2911,11 +2902,11 @@ ruler_sell_land_to_holy_order_effect = {
 
 				if = {
 					limit = { limit = { holder_scope = { character = event_target:target_ruler } } }
-				ruler_grant_land_to_holy_order_effect = yes
+					ruler_grant_land_to_holy_order_effect = yes
+				}
 			}
 		}
 	}
-}
 }
 ruler_grant_land_to_holy_order_effect = {
 	event_target:target_order_leader = {
@@ -3464,5 +3455,24 @@ court_share_cannibal_trait_effect = {
 				add_trait = cannibal_trait
 			}
 		}
+	}
+}
+
+# Clear mortal traits because you became immortal
+clr_mortal_traits_effect = {
+	if = {
+		limit = { trait = infirm }
+		remove_trait = infirm
+	}
+	if = {
+		limit = {
+			trait = infertile
+			
+			OR = {
+				immortal_need_infertile_trait_trigger = no
+				is_completely_infertile_race_and_being_trigger = yes
+			}
+		}
+		remove_trait = infertile
 	}
 }
