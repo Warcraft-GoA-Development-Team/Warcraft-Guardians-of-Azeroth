@@ -2858,8 +2858,7 @@ character_event = {
 ###########################################
 # Correspondence between mentor and student
 ###########################################
-
-# Choses class after ask_to_be_mentor or offer_to_be_mentor decision
+# Picks class after ask_to_be_mentor or offer_to_be_mentor decisions
 character_event = {
 	id = WCCLS.1500
 	desc = {
@@ -2900,8 +2899,9 @@ character_event = {
 		}
 		name = A_MAGE
 
-		event_target:student = { set_character_flag = training_mentor_mage_flag }
 		event_target:student = {
+			show_scope_change = no
+
 			set_character_flag = training_mentor_mage_flag
 			if = {
 				limit = {
@@ -2936,6 +2936,8 @@ character_event = {
 		name = A_HUNTER
 
 		event_target:student = {
+			show_scope_change = no
+
 			set_character_flag = training_mentor_hunter_flag
 			if = {
 				limit = {
@@ -2970,6 +2972,8 @@ character_event = {
 		name = A_WARRIOR
 
 		event_target:student = {
+			show_scope_change = no
+
 			set_character_flag = training_mentor_warrior_flag
 			if = {
 				limit = {
@@ -3004,6 +3008,8 @@ character_event = {
 		name = A_PALADIN
 
 		event_target:student = {
+			show_scope_change = no
+
 			set_character_flag = training_mentor_paladin_flag
 			if = {
 				limit = {
@@ -3038,6 +3044,8 @@ character_event = {
 		name = A_PRIEST
 
 		event_target:student = {
+			show_scope_change = no
+
 			set_character_flag = training_mentor_priest_flag
 			if = {
 				limit = {
@@ -3072,6 +3080,8 @@ character_event = {
 		name = A_ROGUE
 
 		event_target:student = {
+			show_scope_change = no
+
 			set_character_flag = training_mentor_rogue_flag
 			if = {
 				limit = {
@@ -3106,6 +3116,8 @@ character_event = {
 		name = A_WARLOCK
 
 		event_target:student = {
+			show_scope_change = no
+
 			set_character_flag = training_mentor_warlock_flag
 			if = {
 				limit = {
@@ -3140,6 +3152,8 @@ character_event = {
 		name = A_SHAMAN
 
 		event_target:student = {
+			show_scope_change = no
+
 			set_character_flag = training_mentor_shaman_flag
 			if = {
 				limit = {
@@ -3174,6 +3188,8 @@ character_event = {
 		name = A_DRUID
 
 		event_target:student = {
+			show_scope_change = no
+
 			set_character_flag = training_mentor_druid_flag
 			if = {
 				limit = {
@@ -3208,6 +3224,8 @@ character_event = {
 		name = A_LOA_PRIEST
 
 		event_target:student = {
+			show_scope_change = no
+
 			set_character_flag = training_mentor_loa_priest_flag
 			if = {
 				limit = {
@@ -3242,6 +3260,8 @@ character_event = {
 		name = A_DEATH_KNIGHT
 
 		event_target:student = {
+			show_scope_change = no
+
 			set_character_flag = training_mentor_death_knight_flag
 			if = {
 				limit = {
@@ -3276,6 +3296,8 @@ character_event = {
 		name = A_NECROMANCER
 
 		event_target:student = {
+			show_scope_change = no
+
 			set_character_flag = training_mentor_necromancer_flag
 			if = {
 				limit = {
@@ -3310,6 +3332,8 @@ character_event = {
 		name = A_SHADOW_PRIEST
 
 		event_target:student = {
+			show_scope_change = no
+
 			set_character_flag = training_mentor_shadow_priest_flag
 			if = {
 				limit = {
@@ -3333,23 +3357,38 @@ character_event = {
 
 		event_target:student = {
 			show_scope_change = no
+			
 			clr_training_mentor_flag_effect = yes
+		}
+		event_target:target_initiator = {
+			show_scope_change = no
+			
 			opinion = { who = event_target:mentor modifier = opinion_rejected_request_for_mentoring }
 		}
 	}
 }
-
-# Mentor: student asks you
+# Character asks you to be mentor
 letter_event = {
 	id = WCCLS.2100
-	desc = EVTDESC_WCCLS_2100
+	desc = {
+		trigger = {
+			character = event_target:student
+		}
+		text = EVTDESC_WCCLS_2100_yourself
+	}
+	desc = {
+		trigger = {
+			NOT = { character = event_target:student }
+		}
+		text = EVTDESC_WCCLS_2100_others
+	}
 
 	is_triggered_only = yes
 
 	option = {														# Mentor accepts
 		name = EVTOPTA_WCCLS_2100
 
-		event_target:student = { letter_event = { id = WCCLS.2101 days = 1 } }
+		event_target:target_initiator = { letter_event = { id = WCCLS.2101 days = 1 } }
 
 		ai_chance = {
 			factor = 1
@@ -3358,7 +3397,7 @@ letter_event = {
 	option = {														# Mentor refuses
 		name = EVTOPTC_WCCLS_2100
 
-		event_target:student = {
+		event_target:target_initiator = {
 			show_scope_change = no
 			
 			opinion = { who = event_target:mentor modifier = opinion_rejected_request_for_mentoring }
@@ -3371,32 +3410,56 @@ letter_event = {
 		}
 	}
 }
-
-# Student: mentor accepts
+# Character agrees to be mentor
 letter_event = {
 	id = WCCLS.2101
-	desc = EVTDESC_WCCLS_2101
+	desc = {
+		trigger = {
+			character = event_target:student
+		}
+		text = EVTDESC_WCCLS_2101_yourself
+	}
+	desc = {
+		trigger = {
+			NOT = { character = event_target:student }
+		}
+		text = EVTDESC_WCCLS_2101_others
+	}
 
 	is_triggered_only = yes
 
 	option = {
 		name = EXCELLENT
 
-		custom_tooltip = {
-			text = starts_training_tooltip
-			hidden_effect = { character_event = { id = WCCLS.2150 } }
+		event_target:student = {
+			show_scope_change = no
+
+			custom_tooltip = {
+				text = starts_training_tooltip
+				hidden_effect = { character_event = { id = WCCLS.2150 } }
+			}
 		}
 	}
 	
 	after = {
-		clr_training_mentor_flag_effect = yes
+		event_target:student = { clr_character_flag = ask_to_be_mentor_ongoing_flag }
 	}
 }
-
-# Student: mentor refuses
+# Characters refuses to be mentor
 letter_event = {
 	id = WCCLS.2103
-	desc = EVTDESC_WCCLS_2103
+	desc = {
+		trigger = {
+			character = event_target:student
+		}
+		text = EVTDESC_WCCLS_2103_yourself
+	}
+	desc = {
+		trigger = {
+			NOT = { character = event_target:student }
+		}
+		text = EVTDESC_WCCLS_2103_others
+	}
 
 	is_triggered_only = yes
 
@@ -3405,10 +3468,9 @@ letter_event = {
 	}
 	
 	after = {
-		clr_training_mentor_flag_effect = yes
+		event_target:student = { clr_training_mentor_flag_effect = yes }
 	}
 }
-
 # Event-sorter
 character_event = {
 	id = WCCLS.2150
@@ -3417,11 +3479,13 @@ character_event = {
 	is_triggered_only = yes
 
 	immediate = {
+		# WARNING! Training should take less time than opinion_teaching_me (6 years right now)
+
+		# Just good opinion
 		event_target:mentor = {
-			opinion = { who = event_target:student modifier = opinion_student years = 5 }
-			character_event = { id = WCCLS.2151 years = 5 }				# Removes opinion when the training is done
+			opinion = { who = event_target:student modifier = opinion_student years = 10 }
 		}
-		opinion = { who = event_target:mentor modifier = opinion_wc_mentor years = 5 }
+		opinion = { who = event_target:mentor modifier = opinion_wc_mentor years = 10 }
 
 		if = {
 			limit = {
@@ -3567,17 +3631,7 @@ character_event = {
 	}
 }
 
-# Removes one student from the mentor
-character_event = {
-	id = WCCLS.2151
-
-	is_triggered_only = yes
-	hide_window = yes
-
-	immediate = {
-		event_target:student = { remove_opinion = { who = ROOT modifier = opinion_teaching_me } }
-	}
-}
+###########################################
 
 # Level up/changes class after training
 character_event = {
@@ -4134,22 +4188,18 @@ character_event = {
 		if = {
 			limit = {
 				guardian = {
-					has_class_trait_trigger = yes
-					is_alternative_class_trigger = no
+					potential_mentor_class_trigger = yes
 				}
 			}
 			guardian = { character_event = { id = WCCLS.3003 } }
 		}
-		else = {
-			if = {
-				limit = {
-					educator = {
-						has_class_trait_trigger = yes
-						is_alternative_class_trigger = no
-					}
+		else_if = {
+			limit = {
+				educator = {
+					potential_mentor_class_trigger = yes
 				}
-				educator = { character_event = { id = WCCLS.3003 } }
 			}
+			educator = { character_event = { id = WCCLS.3003 } }
 		}
 	}
 }
@@ -4160,8 +4210,22 @@ character_event = {
 	hide_window = yes
 
 	immediate = {
+		FROM = {
+			if = {
+				limit = { is_ruler = no }
+				liege = { save_event_target_as = target_initiator }
+			}
+			else = { save_event_target_as = target_initiator }
+		}
+
 		if = {
 			limit = {
+				ROOT = {
+					event_target:target_initiator = {
+						this_see_prev_class_trait_trigger = yes }
+					}
+				}
+
 				FROM = {
 					ROOT = {
 						prev_student_this_class_mentor_potential = yes
@@ -4177,14 +4241,10 @@ character_event = {
 
 				set_character_flag = ask_to_be_mentor_ongoing_flag
 
-				opinion = { modifier = opinion_teaching_me who = ROOT }
-
-				if = {
-					limit = { is_ruler = no }
-					liege = { character_event = { id = WCCLS.1500 } }
-				}
-				else = { character_event = { id = WCCLS.1500 } }
+				opinion = { modifier = opinion_teaching_me who = ROOT years = 6 }
 			}
+			
+			event_target:target_initiator = { character_event = { id = WCCLS.1500 } }
 		}
 	}
 }

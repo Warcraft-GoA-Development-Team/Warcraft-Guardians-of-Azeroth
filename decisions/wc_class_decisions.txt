@@ -1156,18 +1156,32 @@ decisions = {
 #################################################
 targetted_decisions = {
 	ask_to_be_mentor = {
+		third_party = FROM
+		
 		ai_target_filter = realm
+		third_party_filter = court_including_me
+		ai_third_party_filter = court_including_me
+		
 		ai_check_interval = 24
 		diplomacy_icon = GFX_trainer_decision
 
 		ai = no
 		only_playable = yes
-
-		from_potential = {
-			is_adult = yes
-		}
+		
 		potential = {
-			FROM = {
+			potential_mentor_class_trigger = yes
+			ROOT = { FROM = { this_see_prev_class_trait_trigger = yes } }
+		}
+		
+		third_party_potential = {
+			FROMFROM = {
+				# Can't force other players to pick class
+				OR = {
+					character = ROOT_FROM # Since FROM ain't working
+					ai = yes
+				}
+				is_adult = yes
+				
 				show_scope_change = no
 				
 				ROOT = {
@@ -1178,7 +1192,7 @@ targetted_decisions = {
 			}
 			
 			ROOT = {
-				FROM = {
+				FROMFROM = {
 					show_scope_change = no
 						
 					prev_mentor_this_class_student_potential = yes
@@ -1186,9 +1200,12 @@ targetted_decisions = {
 			}
 		}
 		allow = {
+			# FROM = { NOT = { has_character_modifier = ask_to_be_mentor_cooldown } }
+		}
+		third_party_allow = {
 			# show_only_failed_conditions = yes
 			
-			FROM = {
+			FROMFROM = {
 				show_scope_change = no
 				
 				ROOT = {
@@ -1202,13 +1219,17 @@ targetted_decisions = {
 			ROOT = {
 				save_event_target_as = mentor
 			}
-			FROM = {
+			FROMFROM = {
 				save_event_target_as = student
 
 				set_character_flag = ask_to_be_mentor_ongoing_flag
-				add_character_modifier = { name = ask_to_be_mentor_cooldown years = 1 }
 
-				opinion = { modifier = opinion_teaching_me who = ROOT }
+				opinion = { modifier = opinion_teaching_me who = ROOT years = 6 }
+			}
+			FROM = {
+				save_event_target_as = target_initiator
+
+				# add_character_modifier = { name = ask_to_be_mentor_cooldown years = 1 }
 
 				character_event = { id = WCCLS.1500 }
 			}
