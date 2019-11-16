@@ -1812,7 +1812,7 @@ targetted_decisions = {
 			set_character_flag = sharp_mind_cooldown_flag
 
 			tooltip = { add_character_modifier = { name = sharp_mind years = 2 } }
-			opinion = { modifier = opinion_grateful who = FROM year = 10 }
+			opinion = { modifier = opinion_grateful who = FROM years = 10 }
 			hidden_effect = { character_event = { id = WCCLS.40 } }
 
 			FROM = {
@@ -2099,7 +2099,7 @@ targetted_decisions = {
 					}
 					if = {
 						limit = { NOT = { character = FROM } }
-						opinion = { modifier = opinion_grateful who = FROM year = 5 }
+						opinion = { modifier = opinion_grateful who = FROM years = 5 }
 					}
 					hidden_effect = { character_event = { id = WCCLS.305 } }
 				}
@@ -2663,16 +2663,6 @@ targetted_decisions = {
 			trigger_switch = {
 				on_trigger = has_character_modifier
 				pet_imp = { remove_character_modifier = pet_imp }
-				pet_succubus = {
-					remove_character_modifier = pet_succubus
-					if = {
-						limit = { any_friend = { trait = creature_sayaadi } }
-						random_friend = {
-							limit = { trait = creature_sayaadi }
-							death = { death_reason = death_missing }
-						}
-					}
-				}
 				pet_felhunter = { remove_character_modifier = pet_felhunter }
 				pet_felguard = { remove_character_modifier = pet_felguard }
 			}
@@ -2784,8 +2774,14 @@ targetted_decisions = {
 
 			has_invader_title_trigger = no
 			has_weak_character_trigger = yes
+			
 			FROM = {
 				is_inaccessible_trigger = no
+				
+				custom_tooltip = {
+					text = control_mind_ongoing_tooltip
+					NOT = { has_character_flag = control_mind_ongoing_flag }
+				}
 
 				OR = {
 					trigger_if = {
@@ -2834,7 +2830,10 @@ targetted_decisions = {
 
 		effect = {
 			set_character_flag = mind_control_attempt_flag
+			
 			FROM = {
+				set_character_flag = control_mind_ongoing_flag
+				
 				hidden_effect = { character_event = { id = WCCLS.615 days = 3 } }
 
 				if = {
@@ -3291,6 +3290,8 @@ targetted_decisions = {
 				show_scope_change = no
 				is_inaccessible_trigger = no
 
+				not_raising_undead_flag_trigger = yes
+
 				OR = {
 					trigger_if = {
 						limit = {
@@ -3328,7 +3329,11 @@ targetted_decisions = {
 
 		effect = {
 			hidden_effect = {
-				FROM = { save_event_target_as = target_necromancer }
+				FROM = {
+					save_event_target_as = target_necromancer
+					
+					set_character_flag = raising_undead_flag
+				}
 				save_event_target_as = target_undead
 
 				set_character_flag = being_raised_flag
@@ -3394,8 +3399,6 @@ targetted_decisions = {
 				trait = lich_king	# Ner'zhul is incapable
 			}
 
-			NOT = { has_character_flag = ongoing_creation_of_monstrous_undead_flag }
-
 			OR = {
 				is_necromancer_class_trigger = yes
 				AND = {
@@ -3433,6 +3436,8 @@ targetted_decisions = {
 				show_scope_change = no
 				is_inaccessible_trigger = no
 
+				not_raising_undead_flag_trigger = yes
+
 				OR = {
 					trigger_if = {
 						limit = { is_necromancer_class_trigger = yes }
@@ -3466,7 +3471,7 @@ targetted_decisions = {
 		effect = {
 			hidden_effect = {
 				set_character_flag = being_raised_flag
-				FROM = { set_character_flag = ongoing_creation_of_monstrous_undead_flag }
+				FROM = { set_character_flag = raising_undead_flag }
 			}
 
 			save_event_target_as = target_prisoner
