@@ -1,7 +1,7 @@
 ---
 name: Suggestion Request
 about: Suggest an idea for this mod
-title: "[SUGGESTION] | SUGGESTION TITLE"
+title: "SUGGESTION TITLE"
 labels: ":question: suggestion :question:"
 
 ---
