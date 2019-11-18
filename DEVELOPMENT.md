@@ -1,17 +1,3 @@
-# DEVELOPER GUIDE
-
-## General Guidelines
-- When you create an event or decision, **always** leave a comment so other developers can know context.
-- Try to use `weight_multiplier` instead of `mean_time_to_happen`, it makes the mod less CPU intensive.
-- Add pre-triggers as much as possible, this also makes the mod less CPU intensive.
-- There's custom Notepad++ language `Guardians of Azeroth\coder_resources\CK2 Language.xml`. It's very desirable to instal it. This will highlight the syntax of CK2 and will allow to use Right Click > `Toggle Single Line Comment`, `Block Comment` and `Block Unmomment` functions to comment out multiple lines. It also enables such functions as `View > Unfold All`, `Fold All`, `Collapse Current Level` etc.
-
-To instal:
-1. Open Notepad++ and open the "Define Your Language" tool in the "Language" menu
-2. Click "Import" and select the `Guardians of Azeroth\coder_resources\CK2 Language.xml` file.
-3. Make sure to hit "Save As" in the Define Your Language tool. Type anything you want as the name, it isn't important.
-4. Select the new language in the "Language" menu.
-
 ## Order of Conditions and Commands
  - There **must** be a gap (line without any text) between the numbered groups written below. In essence, all conditions in the same number group will occur together in one code block. For example, a space will exist between `has_dlc` and `ai`.
 ### [Conditions](https://ck2.paradoxwikis.com/Conditions)
@@ -49,5 +35,3 @@ To instal:
 ### [Titles](https://ck2.paradoxwikis.com/Title_modding)
  
 ### [Traits](https://ck2.paradoxwikis.com/Trait_modding)
- 
- 
