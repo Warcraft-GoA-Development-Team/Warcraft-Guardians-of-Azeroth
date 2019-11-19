@@ -1,0 +1,137 @@
+###################################
+#
+# Warcraft Harpy Decisions from Harpy submod
+# (Tribal side ONLY)
+#
+###################################
+
+# Written by "Cipher" 
+
+targetted_decisions = {
+	mate_with_prisioners = {
+		is_high_prio = no
+
+		filter = all
+		ai_target_filter = all
+		ai_check_interval = 60
+
+		ai = yes
+		only_playable = no
+
+		from_potential = {
+			trait = creature_harpy
+			NOR = {
+				culture = reformed_harpy
+				trait = aviannasblessing
+			}	
+			NOT = { trait = infertile }
+		}
+
+		potential = {
+			is_female = no
+			prisoner = yes
+			is_adult = yes
+			OR = {
+				at_location = FROM
+				liege = { ROOT = { at_location = PREV } }
+			}
+		}
+		allow = {
+			FROM = { is_pregnant = no }
+			is_adult = yes
+		}
+		effect = {
+			FROM = { 
+				impregnate_cuckoo = ROOT
+			}
+			random = { chance = 50 death = { death_reason = harpy_death } }
+		}
+		revoke_allowed = {
+			always = no
+		}
+		ai_will_do = {
+			factor = 1
+			modifier = {
+				factor = 0
+				FROM = { is_pregnant = yes }
+			}
+			modifier = {
+				factor = 0
+				FROM = { num_of_children = 5 } 
+			}
+			modifier = {
+				factor = 0
+				FROM = {
+					any_child_even_if_dead = {
+						ROOT = { is_father = PREV }
+					}
+				}
+			}
+		}
+	}
+	
+	
+	
+	prepare_for_children = {
+		is_high_prio = no
+
+		filter = court
+		ai_target_filter = court
+		third_party_filter = court
+		third_party = FROM
+		ai_check_interval = 60
+		ai_third_party_filter = court		
+		ai = yes
+		only_playable = no
+
+		third_party_potential = {
+			FROMFROM = {
+				trait = creature_harpy
+				is_adult = no
+				NOT = { has_character_modifier = has_food_prepared }
+			}
+		}
+		
+		third_party_allow = {
+		}
+		
+		third_party_score = {
+			factor = 1
+			additive_modifier = {
+				value = 1
+				FROMFROM = { is_child_of = FROM }
+			}	
+		}
+
+		from_potential = {
+			trait = creature_harpy
+			NOR = {
+				culture = reformed_harpy
+				trait = aviannasblessing
+			}
+		}
+
+		potential = {
+			prisoner = yes
+		}
+		allow = {
+			is_incapable = no
+		}
+		effect = {
+			death = { death_reason = harpy_death killer = FROM }
+			FROMFROM = { add_character_modifier = { name = has_food_prepared duration = -1 }  }
+		}
+		revoke_allowed = {
+			always = no
+		}
+		ai_will_do = {
+			factor = 0.8
+			modifier = {
+				factor = 0
+				FROM = {
+					has_children = no
+				}
+			}
+		}
+	}
+}
