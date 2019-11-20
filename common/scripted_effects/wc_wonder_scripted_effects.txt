@@ -1,0 +1,118 @@
+max_upgrade_wonder_effect = {
+	add_wonder_stage = 1
+	add_wonder_stage = 1
+	add_wonder_stage = 1
+	add_wonder_stage = 1
+}
+plant_world_tree_wonder_effect = {
+    event_target:target_druid = {
+		show_scope_change = no
+		if = {
+			limit = { religion_group = druidism_group }
+			religion_authority = { modifier = new_world_tree }
+		}
+	}
+    event_target:target_title = {
+		show_scope_change = no
+		set_title_flag = world_tree_title_flag
+		add_wonder = wonder_world_tree
+	}
+    event_target:target_province = {
+		show_scope_change = no
+		if = {
+			limit = { ROOT = { character = event_target:target_druid } }
+			if = {
+				limit = { NOT = { num_of_max_settlements = 6 } }
+				add_holding_slot = 2
+			}
+			else_if = {
+				limit = { NOT = { num_of_max_settlements = 7 } }
+				add_holding_slot = 1
+			}
+		}
+	}
+}
+corrupt_world_tree_wonder_effect = {
+    event_target:target_corruptor = {
+		show_scope_change = no
+		if = {
+			limit = { religion = old_gods_worship }
+			religion_authority = { modifier = corrupted_world_tree_good }
+		}
+	}
+	event_target:target_title = {
+		show_scope_change = no
+		if = {
+			limit = { has_wonder = wonder_world_tree }
+			destroy_wonder = wonder_world_tree
+		}
+		if = {
+			limit = {
+                AND = {
+                    title = c_nordrassil 
+                    has_wonder = wonder_world_tree
+                } 
+            }
+			destroy_wonder = wonder_world_tree
+			hidden_effect = {
+				if = {
+					limit = { NOT = { has_global_flag = night_elves_lost_immortality_flag } }
+					set_global_flag = night_elves_lost_immortality_flag
+					# Delayed notification event
+					3264 = { province_event = { id = WCDRU.5500 days = 10 random = 10 } }
+				}
+			}
+		}
+		clr_title_flag = world_tree_title_flag
+		set_title_flag = nightmare_tree_title_flag
+		add_wonder = wonder_corrupted_world_tree
+	}
+	event_target:target_province = {
+		show_scope_change = no
+		
+		clr_province_flag = corrupt_world_tree_ongoing_flag
+	}
+}
+burn_world_tree_effect = {
+	event_target:target_arsonist = {
+		if = {
+			limit = { event_target:target_title = { has_title_flag = world_tree_title_flag } }
+			add_character_modifier = { name = burned_world_tree_opinion years = 100 }
+		}
+	}
+	event_target:target_title = {
+		show_scope_change = no
+		if = {
+			limit = { has_wonder = wonder_world_tree }
+			destroy_wonder = wonder_world_tree
+		}
+		if = {
+			limit = {
+                AND = {
+                    title = c_nordrassil 
+                    has_wonder = wonder_world_tree
+                } 
+            }
+			destroy_wonder = wonder_world_tree
+			hidden_effect = {
+				if = {
+					limit = { NOT = { has_global_flag = night_elves_lost_immortality_flag } }
+					set_global_flag = night_elves_lost_immortality_flag
+					# Delayed notification event
+					3264 = { province_event = { id = WCDRU.5500 days = 10 random = 10 } }
+				}
+			}
+		}
+		if = {
+			limit = { has_wonder = wonder_corrupted_world_tree }
+			destroy_wonder = wonder_corrupted_world_tree
+		}
+		clr_title_flag = world_tree_title_flag
+		clr_title_flag = nightmare_tree_title_flag
+	}
+	event_target:target_province = {
+		show_scope_change = no
+		clr_province_flag = corrupt_world_tree_ongoing_flag
+		clr_province_flag = burn_world_tree_ongoing_flag
+	}
+}
