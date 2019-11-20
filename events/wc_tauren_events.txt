@@ -1,0 +1,84 @@
+namespace = WCTAR
+
+# Start of the Gathering
+narrative_event = {
+	id = WCTAR.100
+	title = EVTTITLE_WCTAR_100
+	desc = EVTDESC_WCTAR_100
+	picture = GFX_evt_tauren_gathering
+	
+	is_triggered_only = yes
+	
+	immediate = {
+		save_event_target_as = hosting_tauren
+	}
+	
+	option = {
+		name = EVTOPTA_WCTAR_100
+		
+		any_character = {
+			limit = {
+				is_ruler = yes
+				OR = {
+					independent = yes
+					is_tributary = yes
+				}
+				trait = creature_tauren
+			}
+			character_event = { id = WCTAR.101 days = 10 }
+		}
+	}
+	
+	after = {
+		#character_event = { id = WCTAR.103 years = 1 }
+	}
+}
+
+#Invitation received
+letter_event = {
+	id = WCTAR.101
+	desc = EVTDESC_WCTAR_101
+	portrait = event_target:hosting_tauren
+	
+	is_triggered_only = yes
+	
+	immediate = {
+		save_event_target_as = tauren_with_letter
+	}
+	
+	#Accept invitation
+	option = {
+		name = EVTOPTA_WCTAR_101
+		ai_chance = {
+			factor = 10
+		}
+		set_character_flag = accepted_invitation
+		opinion = { modifier = accepted_gathering_invitation who = event_target:hosting_tauren years = 8 } 
+		event_target:hosting_tauren = { character_event = { id = WCTAR.102 month = 1 random = 10 } }
+	}
+	
+	#Refuse Invitation	
+	option = {
+		name = EVTOPTB_WCTAR_101
+		ai_chance = {
+			factor = 0
+		}
+		opinion = { modifier = refused_gathering_invitation who = event_target:hosting_tauren years = 8 } 
+	}
+}
+
+#Invitation return positive
+letter_event = {
+	id = WCTAR.102
+	desc = EVTDESC_WCTAR_102
+	portrait = event_target:tauren_with_letter
+	
+	is_triggered_only = yes
+	
+	#Great Options
+	option = {
+		name = EVTOPTA_WCTAR_102
+		
+		opinion = { modifier = accepted_gathering_invitation who = event_target:tauren_with_letter years = 8 } 
+	}
+}
