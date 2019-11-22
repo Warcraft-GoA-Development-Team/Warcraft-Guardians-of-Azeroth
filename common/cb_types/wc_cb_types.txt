@@ -1711,7 +1711,7 @@ county_adventure = {	# Based on duchy_adventure
 #Tauren expansion gathering coalition
 tauren_united_coalition = {
 	name = tauren_coalition
-	war_name = WAR_NAME_INVASION
+	war_name = WAR_TAUREN_INVASION
 	sprite = 27
 	truce_days = 1000
 	hostile_against_others = no
@@ -1738,43 +1738,44 @@ tauren_united_coalition = {
 			war = no
 			trait = creature_tauren
 		}
+		FROM = {
+			NOT = { culture_group = tauren_group }
+			independent = yes
+			higher_tier_than = BARON
+			NOT = { government = tribal_monarchy_government }
+			NOT = { government = merchant_republic_government }
+			NOT = { government = feudal_government }
+			OR = {
+				higher_tier_than = ROOT
+				relative_realm_size = {
+					who = ROOT
+					size >= 1.5
+				}
+				AND = {
+					government = nomadic_government
+					population = 20000 
+				}
+			}
+		}
 	}
 
 	can_use = {
 		ROOT = {
-			can_declare_wars_trigger = yes
 			FROM = {
-				can_declare_wars_trigger = yes
 				can_fight_prev_trigger = yes
 			}
-			#Has coalition start flag 
-			#has_character_flag = joint_host_tauren_coalition
 		}
 		
 		
 		# Other conditions
 		ROOT = {
+			#Has coalition start flag 
+			has_character_modifier = preparing_tauren_coalition
 			OR = {
 				independent = yes
 				is_tributary = yes
 			}
 			NOT = { same_realm = FROM }
-		}
-		FROM = {
-			is_landed = yes
-			independent = yes
-			higher_tier_than = BARON
-			OR = {
-				is_tribal = yes
-				is_nomadic = yes
-			}
-			OR = {
-				max_realm_levy_diff = { who = ROOT value = 1000 } 
-				AND = {
-					is_nomadic = yes
-					population = 10000 
-				}
-			}
 		}
 
 		# Shares the border
@@ -1818,7 +1819,7 @@ tauren_united_coalition = {
 		}
 		
 		hidden_tooltip = {
-			ROOT = { clr_character_flag = joint_host_tauren_coalition }
+			ROOT = { remove_character_modifier = preparing_tauren_coalition }
 		}
 	}
 	
