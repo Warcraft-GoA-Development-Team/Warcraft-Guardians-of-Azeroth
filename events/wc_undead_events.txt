@@ -1109,7 +1109,7 @@ character_event = {
 					}
 					NOR = {
 						event_target:target_undead = { is_paladin_class_trigger = yes }
-						is_7_8_magic_class_trigger = yes
+						has_7_8_magic_class_or_higher_trigger = yes
 						trait = lich_king
 						AND = {
 							society_member_of = cult_of_the_damned
@@ -1121,6 +1121,14 @@ character_event = {
 		}
 		name = EVTOPTA_WCUND_300
 
+		if = {
+			limit = {
+				has_quest = quest_turn_into_undead
+				quest_target = { character = event_target:target_undead }
+			}
+			clr_quest = quest_turn_into_undead
+			add_society_currency_medium_effect = yes
+		}
 		tooltip = {
 			event_target:target_undead = {
 				add_trait_undead_effect = yes
@@ -1148,7 +1156,7 @@ character_event = {
 			NOT = { event_target:target_undead = { is_paladin_class_trigger = yes } }
 			event_target:target_necromancer = {
 				OR = {
-					is_7_8_magic_class_trigger = yes
+					has_7_8_magic_class_or_higher_trigger = yes
 					trait = lich_king
 					AND = {
 						society_member_of = cult_of_the_damned
@@ -1159,6 +1167,14 @@ character_event = {
 		}
 		name = EVTOPTD_WCUND_300
 
+		if = {
+			limit = {
+				has_quest = quest_turn_into_undead
+				quest_target = { character = event_target:target_undead }
+			}
+			clr_quest = quest_turn_into_undead
+			add_society_currency_medium_effect = yes
+		}
 		event_target:target_undead = {
 			set_character_flag = transition_into_vampire_flag
 			tooltip = {
@@ -1192,7 +1208,7 @@ character_event = {
 			event_target:target_necromancer = {
 				OR = {
 					event_target:target_undead = { is_paladin_class_trigger = yes }
-					is_7_8_magic_class_trigger = yes
+					has_7_8_magic_class_or_higher_trigger = yes
 					trait = lich_king
 					AND = {
 						society_member_of = cult_of_the_damned
@@ -1203,6 +1219,14 @@ character_event = {
 		}
 		name = EVTOPTC_WCUND_300
 
+		if = {
+			limit = {
+				has_quest = quest_turn_into_undead
+				quest_target = { character = event_target:target_undead }
+			}
+			clr_quest = quest_turn_into_undead
+			add_society_currency_medium_effect = yes
+		}
 		event_target:target_undead = {
 			set_character_flag = transition_into_death_knight_flag
 			tooltip = {
@@ -1232,7 +1256,7 @@ character_event = {
 			NOT = { event_target:target_undead = { is_paladin_class_trigger = yes } }
 			event_target:target_necromancer = {
 				OR = {
-					is_7_8_magic_class_trigger = yes
+					has_7_8_magic_class_or_higher_trigger = yes
 					trait = lich_king
 					AND = {
 						society_member_of = cult_of_the_damned
@@ -1243,6 +1267,14 @@ character_event = {
 		}
 		name = EVTOPTF_WCUND_300
 
+		if = {
+			limit = {
+				has_quest = quest_turn_into_undead
+				quest_target = { character = event_target:target_undead }
+			}
+			clr_quest = quest_turn_into_undead
+			add_society_currency_medium_effect = yes
+		}
 		event_target:target_undead = {
 			set_character_flag = transition_into_lich_flag
 			tooltip = {
@@ -1269,10 +1301,25 @@ character_event = {
 	option = {
 		name = EVTOPTE_WCUND_300
 
-		event_target:target_undead = { clr_character_flag = being_raised_flag }
+		event_target:target_undead = {
+			# Clears flags that undead gets during rising
+			clr_undead_raising_flags = yes
+		}
 
 		ai_chance = {
 			factor = 0
+		}
+	}
+	
+	after = {
+		if = {	# Lich King or member of the Cult of the Damned is target_necromancer in ask_for_dark_gift decision, but target_necromancer doesn't get any flags that should be cleared
+			limit = {
+				event_target:target_undead = { NOT = { has_character_flag = ask_for_dark_gift_used_flag } }
+			}
+			event_target:target_necromancer = {
+				# Clears flags that necromancer gets during rising
+				clr_necromancer_raising_flags = yes
+			}
 		}
 	}
 }
@@ -1524,8 +1571,10 @@ character_event = {
 
 	option = {
 		name = EXCELLENT
-
-		hidden_effect = { clr_character_flag = being_raised_flag }
+	}
+	after = {
+		# Clears flags that necromancer gets during rising
+		clr_necromancer_raising_flags = yes
 	}
 }
 
@@ -1571,8 +1620,10 @@ character_event = {
 	}
 
 	after = {
-		clr_character_flag = ongoing_turning_into_monstrous_undead_flag
-		clr_character_flag = being_raised_flag
+		# Clears flags that necromancer gets during rising
+		clr_necromancer_raising_flags = yes
+		# Clears flags that undead gets during rising
+		clr_undead_raising_flags = yes
 	}
 }
 
