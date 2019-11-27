@@ -1707,3 +1707,170 @@ county_adventure = {	# Based on duchy_adventure
 		factor = 1
 	}
 }
+
+#Tauren expansion gathering coalition
+tauren_united_coalition = {
+	name = tauren_coalition
+	war_name = WAR_TAUREN_INVASION
+	sprite = 27
+	truce_days = 1000
+	hostile_against_others = no
+	is_permanent = yes
+	is_holy_war = no
+	can_ask_to_join_war = yes
+	allow_whitepeace = no
+
+	allowed_to_target_tributaries = no
+
+	battle_warscore_mult = 0.5
+	max_defender_occupation_score = 60
+	max_attacker_occupation_score = 60
+	capturing_attacker_is_complete_victory = yes
+	capturing_defender_is_complete_victory = yes
+	defender_unoccupied_warscore = yes
+	
+	sort_priority = 2500
+
+	can_use_gui = {
+		ROOT = {	
+			prestige = 500
+			piety = 100
+			war = no
+			trait = creature_tauren
+		}
+		FROM = {
+			NOT = { culture_group = tauren_group }
+			independent = yes
+			higher_tier_than = BARON
+			NOT = { government = tribal_monarchy_government }
+			NOT = { government = merchant_republic_government }
+			NOT = { government = feudal_government }
+			OR = {
+				higher_tier_than = ROOT
+				relative_realm_size = {
+					who = ROOT
+					size >= 1.5
+				}
+				AND = {
+					government = nomadic_government
+					population = 20000 
+				}
+			}
+		}
+	}
+
+	can_use = {
+		ROOT = {
+			FROM = {
+				can_fight_prev_trigger = yes
+			}
+		}
+		
+		
+		# Other conditions
+		ROOT = {
+			#Has coalition start flag 
+			has_character_modifier = preparing_tauren_coalition
+			OR = {
+				independent = yes
+				is_tributary = yes
+			}
+			NOT = { same_realm = FROM }
+		}
+
+		# Shares the border
+		OR = {
+			FROM = { shares_realm_border_with = ROOT }
+			any_character = {
+				limit = { has_character_flag = joint_tauren_coalition }
+				shares_realm_border_with = FROM
+			}
+		}
+	}
+
+	is_valid = {
+		ROOT = {
+			independent = yes
+			NOT = { same_realm = FROM }
+		}
+
+		FROM = {
+			is_landed = yes
+			independent = yes
+		}
+	}
+
+	on_add = {	
+		ROOT = {
+			prestige = -500
+			piety = -100
+		}
+		
+		any_character = {
+			limit = {
+				has_character_flag = joint_tauren_coalition 
+				OR = {
+					is_tributary = yes
+					independent = yes
+				}
+			}
+			clr_character_flag = joint_tauren_coalition
+			join_attacker_wars = ROOT
+		}
+		
+		hidden_tooltip = {
+			ROOT = { remove_character_modifier = preparing_tauren_coalition }
+		}
+	}
+	
+	on_invalidation = {
+		ROOT = {
+			prestige = 500
+			piety = 100
+		}
+	}
+
+	on_success = {
+		FROM = {
+			primary_title = {
+				destroy_landed_title = THIS
+			}
+		}
+		ROOT = {
+			prestige = 1000
+			piety = 500
+			
+		}
+	}
+
+	on_reverse_demand = {
+		FROM = { make_tributary = { who = FROM percentage = 0.4 tributary_type = default } }
+		FROM = { prestige = 1000 piety = 500 }
+	}
+
+	attacker_ai_victory_worth = {
+		factor = -1 # always accept
+	}
+
+	attacker_ai_defeat_worth = {
+		factor = 100
+	}
+
+	defender_ai_victory_worth = {
+		factor = -1 # always accept
+	}
+
+	defender_ai_defeat_worth = {
+		factor = 100
+	}
+
+	ai_will_do = {
+		factor = 1
+		modifier = {
+			factor = 0
+			FROM = { is_forbidden_war_target_for_ai_root_trigger = yes }
+		}
+
+	}
+}
+

@@ -1,0 +1,249 @@
+namespace = WCTAR
+
+# Start of the Gathering
+narrative_event = {
+	id = WCTAR.100
+	title = EVTTITLE_WCTAR_100
+	desc = EVTDESC_WCTAR_100
+	picture = GFX_evt_tauren_gathering
+	
+	is_triggered_only = yes
+	
+	immediate = {
+		save_event_target_as = hosting_tauren
+		clr_global_flag = gathering_event_hosted
+		set_global_flag = gathering_event_hosted
+	}
+	
+	option = {
+		name = EVTOPTA_WCTAR_100
+		
+		any_character = {
+			limit = {
+				is_ruler = yes
+				OR = {
+					independent = yes
+					is_tributary = yes
+				}
+				trait = creature_tauren
+				NOT = { character = ROOT }
+			}
+			character_event = { id = WCTAR.101 month = 1 }
+		}
+		add_character_modifier = { name = hosting_the_event_gathering duration = -1 }
+		character_event = { id = WCTAR.104 years = 1 }
+	}
+}
+
+#Invitation received
+letter_event = {
+	id = WCTAR.101
+	desc = EVTDESC_WCTAR_101
+	portrait = event_target:hosting_tauren
+	
+	is_triggered_only = yes
+	
+	immediate = {
+		save_event_target_as = tauren_with_letter
+	}
+	
+	#Accept invitation
+	option = {
+		name = EVTOPTA_WCTAR_101
+		ai_chance = {
+			factor = 10
+		}
+		add_character_modifier = { name = participating_in_event duration = -1 }
+		opinion = { modifier = accepted_gathering_invitation who = event_target:hosting_tauren years = 8 } 
+		hidden_tooltip = {
+			random_list = {
+				25 = { event_target:hosting_tauren = { character_event = { id = WCTAR.102 months = 1} } }
+				25 = { event_target:hosting_tauren = { character_event = { id = WCTAR.102 months = 6} } }
+				25 = { event_target:hosting_tauren = { character_event = { id = WCTAR.102 months = 8} } }
+			}
+		}
+	}
+	
+	#Refuse Invitation	
+	option = {
+		name = EVTOPTB_WCTAR_101
+		ai_chance = {
+			factor = 0
+		}
+		opinion = { modifier = refused_gathering_invitation who = event_target:hosting_tauren years = 8 } 
+	}
+}
+
+#Invitation return positive
+letter_event = {
+	id = WCTAR.102
+	desc = EVTDESC_WCTAR_102
+	portrait = event_target:tauren_with_letter
+	
+	is_triggered_only = yes
+	
+	#Great Options
+	option = {
+		name = EVTOPTA_WCTAR_102
+		
+		opinion = { modifier = accepted_gathering_invitation who = event_target:tauren_with_letter years = 8 } 
+	}
+}
+
+#Start of the Gathering
+narrative_event = {
+	id = WCTAR.104
+	title = EVTTITLE_WCTAR_100
+	desc = EVTDESC_WCTAR_104
+	picture = GFX_evt_tauren_gathering
+	
+	is_triggered_only = yes
+	
+	immediate = {
+		save_event_target_as = coalition_host
+	}
+	
+	option = {
+		name = EVTOPTA_WCTAR_104
+		wealth = 10
+		any_character = {
+			limit = {
+				has_character_modifier = participating_in_event
+			}
+			custom_tooltip = { text = WILLVOTE }
+			character_event = { id = WCTAR.105 days = 1 }
+		}
+		add_character_modifier = { name = preparing_tauren_coalition duration = 1650 }
+	}
+	option = {
+		name = EVTOPTB_WCTAR_104
+	}
+	option = {
+		name = EVTOPTC_WCTAR_104
+	}
+	option = {
+		name = EVTOPTD_WCTAR_104
+	}
+}
+
+#####################Coalition##################
+
+#Invitation received coalition
+letter_event = {
+	id = WCTAR.105
+	desc = EVTDESC_WCTAR_105
+	portrait = event_target:hosting_tauren
+	
+	is_triggered_only = yes
+	
+	immediate = {
+		save_event_target_as = coalition_person
+	}
+	
+	#Accept invitation
+	option = {
+		name = EVTOPTA_WCTAR_105
+		ai_chance = {
+			factor = 10
+		}
+		set_character_flag = joint_tauren_coalition
+		event_target:coalition_host = { character_event = { id = WCTAR.106 days = 1 random = 4} }
+		remove_character_modifier = participating_in_event
+	}
+	
+	#Refuse Invitation	
+	option = {
+		name = EVTOPTB_WCTAR_105
+		ai_chance = {
+			factor = 0
+		}
+		remove_character_modifier = participating_in_event
+	}
+}
+
+#Coalition Return positive
+letter_event = {
+	id = WCTAR.106
+	desc = EVTDESC_WCTAR_106
+	portrait = event_target:coalition_person
+	
+	is_triggered_only = yes
+	
+	#Great Options
+	option = {
+		name = EVTOPTA_WCTAR_106
+	}
+}
+
+#####################Religious Traditions##################
+
+
+#Invitation received coalition
+letter_event = {
+	id = WCTAR.107
+	desc = EVTDESC_WCTAR_107
+	portrait = event_target:hosting_tauren
+	
+	is_triggered_only = yes
+	
+	immediate = {
+		save_event_target_as = coalition_person
+	}
+	
+	#Accept invitation
+	option = {
+		name = EVTOPTA_WCTAR_107
+		ai_chance = {
+			factor = 10
+		}
+		add_character_modifier = { name = gathering_give_levy years = 9 }
+		event_target:coalition_host = { character_event = { id = WCTAR.108 days = 1 random = 4} }
+		remove_character_modifier = participating_in_event
+	}
+	
+	#Refuse Invitation	
+	option = {
+		name = EVTOPTB_WCTAR_107
+		ai_chance = {
+			factor = 0
+		}
+		remove_character_modifier = participating_in_event
+	}
+}
+
+#Coalition Return positive
+letter_event = {
+	id = WCTAR.106
+	desc = EVTDESC_WCTAR_108
+	portrait = event_target:coalition_person
+	
+	is_triggered_only = yes
+	
+	#Great Options
+	option = {
+		name = EVTOPTA_WCTAR_108
+		add_character_modifier = { name = gathering_receive_levy years = 9 stacking = yes }
+	}
+}
+
+#Promise to defend
+letter_event = {
+	id = WCTAR.109
+	desc = EVTDESC_WCTAR_109
+	portrait = event_target:coalition_person
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		ROOT = { 
+			trait = creature_tauren 
+			has_character_modifier = gathering_give_levy
+		}
+	}
+	
+	#Great Options
+	option = {
+		name = EVTOPTA_WCTAR_109
+		add_character_modifier = { name = gathering_receive_levy years = 9 stacking = yes }
+	}
+}
