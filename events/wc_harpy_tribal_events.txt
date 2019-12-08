@@ -1,0 +1,372 @@
+######################Cipher Event - Harpy Events#############################
+namespace = WCHO
+
+#Mating event post sieging
+character_event = {
+	id = WCHO.1
+	title = EVTTITLE_WCHO.1
+	desc = EVTDESC_WCHO.1
+	picture = GFX_evt_harpy_siege
+	border = GFX_event_normal_frame_diplomacy
+	
+	is_triggered_only = yes
+	hide_from = yes
+	
+	trigger = {
+		ROOT = { 
+			trait = creature_harpy
+			culture = harpy
+		}
+		FROM = { 
+			owner = {
+				any_courtier = {
+					at_location = FROM
+					is_adult = yes
+					is_possible_harpy_victim_trigger = yes
+				}
+			}
+		}
+	}
+	
+	immediate = {
+		FROM = { 
+			owner = {
+				random_courtier = {
+					limit = { 		
+						at_location = FROM
+						is_adult = yes
+						is_possible_harpy_victim_trigger = yes
+					}
+					save_event_target_as = RHarpy
+				}
+			}
+		}	
+	}
+	
+	#Use them to Mate
+	option = {
+		trigger = {
+			NOT = { 
+				trait = infertile
+			}
+			is_adult = yes
+			OR ={
+				AND = {
+					has_concubinage = yes
+					NOT = { num_of_consorts = 4 }
+				}
+				AND = {
+					has_concubinage = no
+					can_marry = yes
+				}
+			}
+		}
+		name = EVTOPTA_WCHO.1
+		prestige = 25
+		piety = 50
+		ROOT = { 
+			if = {
+				limit ={ 
+					has_concubinage = yes
+					NOT = { num_of_consorts = 4 }
+				}
+				add_consort = event_target:RHarpy
+			}
+			if = {
+				limit = { 
+					has_concubinage = no
+					can_marry = yes
+				}
+				add_spouse_matrilineal = event_target:RHarpy
+			}		
+		}
+	}
+	
+		
+	#Share them with Dynasty
+	option = {
+		name = EVTOPTD_WCHO.1
+		trigger = {
+			any_dynasty_member = {
+				NOT = { trait = infertile }
+				is_female = yes
+				trait = creature_harpy
+				is_pregnant = no
+				is_adult = yes
+			}
+		}
+		random_dynasty_member = {
+				limit = {
+					NOT = { trait = infertile }
+					is_female = yes
+					trait = creature_harpy
+					is_pregnant = no
+					is_adult = yes
+				}
+				reverse_opinion = { modifier = opinion_happy who = ROOT years = 5 }
+				prestige = 10
+				save_event_target_as = chosen_f_harpy
+		}
+		event_target:chosen_f_harpy= { 
+				impregnate = event_target:RHarpy 
+				death = { death_reason = harpy_death }
+		}
+	}
+	
+	
+	
+	#Use them as Concubines
+	option = {
+		trigger = {
+			OR = {
+				AND = {
+					NOT = { 
+						trait = infertile
+					}
+					is_adult = yes
+				}
+				any_courtier_or_vassal = {
+					trait = creature_harpy
+					is_adult = no
+					NOT = { has_character_modifier = has_food_prepared }
+				}
+				ROOT ={
+					trait = creature_harpy
+					is_adult = no
+					NOT = { has_character_modifier = has_food_prepared }
+				}
+			}
+			NOT = { num_of_prisoners = 5 }
+		}
+		name = EVTOPTB_WCHO.1
+		event_target:RHarpy = { 
+			imprison = ROOT
+		}
+		prestige = -10		
+	}
+	
+	
+	#ShareThemWithTribe
+	option = {
+		trigger = {
+			OR = {
+				any_courtier = {
+					is_female = yes
+					trait = creature_harpy
+					is_pregnant = no
+					is_adult = yes
+				}
+				any_vassal = {
+					is_female = yes
+					trait = creature_harpy
+					is_pregnant = no
+					is_adult = yes
+				}
+			}
+		}
+		name = EVTOPTC_WCHO.1
+		prestige = 40
+		piety = 10
+		#hidden_tooltip = {
+			random_list = {
+				50 = {
+					random_courtier = {
+						limit = {
+							NOT = { trait = infertile }
+							is_female = yes
+							trait = creature_harpy
+							is_pregnant = no
+							is_adult = yes
+						}
+					prestige = 10
+					reverse_opinion = { modifier = opinion_happy who = ROOT years = 5 }	
+					save_event_target_as = chosen_harpy
+					}
+				}
+				50 = {
+					random_vassal = {
+						limit = {
+							NOT = { trait = infertile }
+							is_female = yes
+							trait = creature_harpy
+							is_pregnant = no
+							is_adult = yes
+							ai = yes
+						}
+					prestige = 10
+					reverse_opinion = { modifier = opinion_happy who = ROOT years = 5 }	
+					save_event_target_as = chosen_harpy
+					}
+				}		
+			}
+		#}
+		event_target:RHarpy = {
+				impregnate = event_target:chosen_harpy
+				death = { death_reason = harpy_death }
+		}	
+	}
+}
+
+#In case commander is not liege, it happens sometimes#
+character_event = {
+	id = WCHO.2
+	picture = GFX_evt_harpy_siege
+	border = GFX_event_normal_frame_diplomacy
+	
+	is_triggered_only = yes
+	hide_from = yes
+	hide_window = yes
+	
+	trigger = {
+		ROOT = { 
+			ai = yes
+			is_landed = no
+		}
+	}
+	
+	
+	immediate = {
+		ROOT = {
+			liege = {
+				character_event = { id = WCHO.1 }
+			}
+		}
+	}
+	
+	option = {
+		name = EVTOPTA_WCHO.2
+	}
+}
+
+#Feeding the baby once it reaches of age!
+character_event = {
+	id = WCHO.3
+	title = EVTTITLE_WCHO.3
+	desc = EVTDESC_WCHO.3
+	picture = GFX_evt_harpy_siege
+	border = GFX_event_normal_frame_diplomacy
+	
+	is_triggered_only = yes
+	hide_from = yes
+	
+	trigger = {
+		has_character_modifier = has_food_prepared
+	}
+	
+	
+	#Use them to Mate
+	option = {
+		name = EVTOPTA_WCHO.3
+		remove_character_modifier = has_food_prepared
+		custom_tooltip = { text = stat_increase_growup }
+		random_list = { 
+			40 = { change_diplomacy = 1 } 
+			40 = { change_stewardship = 1 }
+			40 = { change_martial = 1 }
+			40 = { change_intrigue = 1 }
+			40 = { change_learning = 1 }		
+		}
+		random = {
+			chance = 50 
+			random_list = { 
+				40 = { change_diplomacy = 1 } 
+				40 = { change_stewardship = 1 }
+				40 = { change_martial = 1 }
+				40 = { change_intrigue = 1 }
+				40 = { change_learning = 1 }		
+			}
+		}
+	}
+}
+
+#Upon sons birth actions towards father
+character_event = {
+	id = WCHO.4
+	picture = GFX_evt_harpy_siege
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		mother = { trait = creature_harpy }
+	}
+
+	
+	option = {
+		name = EVTOPTA_WCHO.4
+
+		save_event_target_as = egg_born
+		father = { save_event_target_as = father_of_egg }
+		mother = {
+			character_event = { id = WCHO.5 days = 1 } 
+		}
+	}
+}
+
+#Upon sons birth actions towards father
+character_event = {
+	id = WCHO.5
+	desc = EVTDESC_WCHO.5
+	picture = GFX_evt_harpy_siege
+	border = GFX_event_normal_frame_diplomacy
+	portrait = event_target:father_of_egg
+	
+	is_triggered_only = yes
+	
+	immediate = {
+	}
+	
+	#Keep him around
+	option = {
+		name = EVTOPTA_WCHO.5
+		
+		prestige = -20
+	}
+	
+	
+	#Feed him to child
+	option = {
+		name = EVTOPTB_WCHO.5
+		trigger = {
+			event_target:father_of_egg = {
+				OR = {
+					is_lowborn = yes
+					AND = {
+						is_landed = no
+						is_heir = no
+						is_ruler = no
+						is_playable = no
+					}
+				}
+			}
+		}
+		
+		event_target:father_of_egg = {
+			any_dynasty_member = {
+				opinion = { modifier = evil_murderer who = ROOT years = 60 } 
+			}
+			death = { death_reason = death_execution killer = ROOT } 
+		}
+		
+		event_target:egg_born = { add_character_modifier = { name = well_fed duration = -1 } }
+		
+		prestige = 50
+		piety = 25
+		
+	}
+	
+	
+	#Exile
+	option = {
+		name = EVTOPTC_WCHO.5
+
+		ROOT = {
+			remove_spouse = event_target:father_of_egg
+			remove_consort = event_target:father_of_egg
+		}
+		event_target:father_of_egg = {
+			banish = yes
+		}
+		prestige = 10
+		piety = 5
+	}
+}

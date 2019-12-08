@@ -446,15 +446,9 @@ is_completely_infertile_race_and_being_trigger = {
 }
 # CAN'T HAS ROMANCES, MARRIAGES WITH CHARACTER IF IT'S NOT TRUE
 can_has_sexual_relation_with_prev = {
-	OR = {
-		can_marry_trigger = yes
-		trait = creature_sayaadi
-	}
+	can_marry_trigger = yes
 	PREV = {
-		OR = {
-			can_marry_trigger = yes
-			trait = creature_sayaadi
-		}
+		can_marry_trigger = yes
 	}
 	trigger_if = {
 		limit = {
@@ -483,14 +477,26 @@ can_has_sexual_relation_with_prev = {
 				OR = {
 					# Can have sexual relationship with all humanoids that can marry
 					trigger_if = {
-						limit = { trait = creature_sayaadi }
+						limit = { 
+							OR = {
+								trait = creature_sayaadi
+								trait = creature_harpy
+							}
+						}
 						PREV = {
 							is_humanoid_trigger = yes
 							can_marry_trigger = yes
 						}
 					}
 					trigger_if = {
-						limit = { PREV = { trait = creature_sayaadi } }
+						limit = { 
+							PREV = { 							
+								OR = {
+									trait = creature_sayaadi
+									trait = creature_harpy
+								} 
+							} 
+						}
 						is_humanoid_trigger = yes
 						can_marry_trigger = yes
 					}
@@ -2955,7 +2961,11 @@ require_cannot_marry_flag_trigger = {
 
 		# Races
 		is_only_male_race_trigger = yes
-		is_only_female_race_trigger = yes
+		AND = {
+			is_only_female_race_trigger = yes
+			NOT = { trait = creature_sayaadi }
+			NOT = { trait = creature_harpy }
+		}
 		is_whelp_trigger = yes
 		is_drake_trigger = yes
 		trait = creature_ghoul
@@ -4368,4 +4378,13 @@ not_raising_undead_flag_trigger = {
 		text = raising_undead_flag_trigger_tooltip
 		NOT = { has_character_flag = raising_undead_flag }
 	}
+}
+
+
+#Harpy Trait
+is_possible_harpy_victim_trigger = {
+	is_female = no 
+	is_ruler = no
+	NOT = { trait = creature_dragon }
+	can_has_children_trigger = yes
 }
