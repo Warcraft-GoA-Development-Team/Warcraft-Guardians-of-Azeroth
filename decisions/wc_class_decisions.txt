@@ -1927,7 +1927,7 @@ decisions = {
 			is_druid_class_trigger = yes
 		}
 		allow = {
-			show_only_failed_conditions = yes
+			# show_only_failed_conditions = yes # Better to see conditions because this decision is part of quest
 			
 			custom_tooltip = {
 				text = is_not_busy_trigger_tooltip
@@ -2816,7 +2816,7 @@ targetted_decisions = {
 		}
 
 		allow = {
-			show_only_failed_conditions = yes
+			# show_only_failed_conditions = yes # Better to see conditions because this decision is part of quest
 			
 			is_dark_being_trigger = no
 			is_humanoid_trigger = yes
@@ -3082,7 +3082,7 @@ targetted_decisions = {
 
 		# If you modify potential or allow, don't forget to change WCDAC.8010
 		allow = {
-			show_only_failed_conditions = yes
+			# show_only_failed_conditions = yes # Better to see conditions because this decision is part of quest
 			
 			is_inaccessible_trigger = no
 
@@ -3114,10 +3114,20 @@ targetted_decisions = {
 				}
 				trigger_if = {
 					limit = {
-						FROM = { has_quest = quest_control_mind }
-						is_quest_target_of = FROM
+						FROM = {
+							has_quest_control_mind_trigger = yes
+							ROOT = { quest_control_mind_prev_target_trigger = yes }
+						}
 					}
-					is_quest_target_of = FROM
+					FROM = {
+						show_scope_change = yes
+						
+						ROOT = {
+							show_scope_change = yes
+							
+							quest_control_mind_prev_target_trigger = yes
+						}
+					}
 				}
 			}
 
@@ -3161,10 +3171,14 @@ targetted_decisions = {
 						}
 						trigger_if = {
 							limit = {
-								has_quest = quest_control_mind
-								ROOT = { is_quest_target_of = FROM }
+								has_quest_control_mind_trigger = yes
+								ROOT = { quest_control_mind_prev_target_trigger = yes }
 							}
-							ROOT = { is_quest_target_of = FROM }
+							ROOT = {
+								show_scope_change = yes
+							
+								quest_control_mind_prev_target_trigger = yes
+							}
 						}
 						trigger_else = {
 							has_society_currency_medium_trigger = yes
@@ -3207,8 +3221,8 @@ targetted_decisions = {
 				}
 				if = {
 					limit = {
-						ROOT = { is_quest_target_of = FROM }
-						has_quest = quest_control_mind
+						has_quest_control_mind_trigger = yes
+						ROOT = { quest_control_mind_prev_target_trigger = yes }
 					}
 					# Pay nothing
 				}
@@ -3506,7 +3520,7 @@ targetted_decisions = {
 		}
 
 		allow = {
-			show_only_failed_conditions = yes
+			# show_only_failed_conditions = yes # Better to see conditions because this decision is part of quest
 			
 			is_dark_being_trigger = no
 			is_humanoid_trigger = yes
@@ -3637,10 +3651,11 @@ targetted_decisions = {
 
 		# If you modify potential or allow, don't forget to change WCDAC.7050
 		allow = {
-			# show_only_failed_conditions = yes
+			# show_only_failed_conditions = yes # Better to see conditions because this decision is part of quest
 			
 			FROM = {
 				show_scope_change = no
+				
 				is_inaccessible_trigger = no
 
 				not_raising_undead_flag_trigger = yes
@@ -3662,10 +3677,12 @@ targetted_decisions = {
 						}
 						trigger_if = {
 							limit = {
-								has_quest = quest_turn_into_undead
-								ROOT = { is_quest_target_of = FROM }
+								has_quest_turn_into_undead_trigger = yes
+								ROOT = { quest_turn_into_undead_prev_target_trigger = yes }
 							}
-							ROOT = { is_quest_target_of = FROM }
+							ROOT = {
+								quest_turn_into_undead_prev_target_trigger = yes
+							}
 						}
 						trigger_else = {
 							has_society_currency_minor_trigger = yes
@@ -3700,8 +3717,8 @@ targetted_decisions = {
 				minor_soul_corruption_effect = yes
 				if = {
 					limit = {
-						has_quest = quest_turn_into_undead
-						quest_target = { character = ROOT }
+						has_quest_turn_into_undead_trigger = yes
+						ROOT = { quest_turn_into_undead_prev_target_trigger = yes }
 					}
 					# Pay nothing
 				}
@@ -3783,7 +3800,7 @@ targetted_decisions = {
 		}
 
 		allow = {
-			show_only_failed_conditions = yes
+			# show_only_failed_conditions = yes # Better to see conditions because this decision is part of quest
 
 			FROM = {
 				show_scope_change = no
@@ -3804,10 +3821,12 @@ targetted_decisions = {
 						}
 						trigger_if = {
 							limit = {
-								has_quest = quest_turn_into_undead
-								ROOT = { is_quest_target_of = FROM }
+								has_quest_turn_into_undead_trigger = yes
+								ROOT = { quest_turn_into_undead_prev_target_trigger = yes }
 							}
-							ROOT = { is_quest_target_of = FROM }
+							ROOT = {
+								quest_turn_into_undead_prev_target_trigger = yes
+							}
 						}
 						trigger_else = {
 							has_society_currency_medium_trigger = yes
@@ -3835,13 +3854,11 @@ targetted_decisions = {
 				show_scope_change = no
 				hidden_effect = { character_event = { id = WCUND.350 } }
 
-				change_variable = { which = useful_flesh value = -12 }
-				increase_visibility_effect = yes
-				major_soul_corruption_effect = yes
+				### Pays currency
 				if = {
 					limit = {
-						has_quest = quest_turn_into_undead
-						quest_target = { character = ROOT }
+						has_quest_turn_into_undead_trigger = yes
+						ROOT = { quest_turn_into_undead_prev_target_trigger = yes }
 					}
 					# Pay nothing
 				}
@@ -3861,6 +3878,14 @@ targetted_decisions = {
 					}
 					detract_society_currency_medium_effect = yes
 				}
+				change_variable = { which = useful_flesh value = -12 }
+				### Gets currency
+				# Completes quest - gets society currency
+				complete_quest_turn_into_undead_prev_effect = yes
+				# Gets visibility variables
+				increase_visibility_effect = yes
+				
+				major_soul_corruption_effect = yes
 			}
 		}
 
