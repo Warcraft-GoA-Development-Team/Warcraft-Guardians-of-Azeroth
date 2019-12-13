@@ -1632,11 +1632,11 @@ character_event = {
 }
 
 ###############################
-# The Merging with a Lich King
+# Merging with Lich King
 ###############################
-# Saves owner of Frostmourne as global event target
+### Saves owner of Frostmourne as global event target
 character_event = {
-	id = WCUND.495
+	id = WCUND.395
 	
 	is_triggered_only = yes
 	hide_window = yes
@@ -1646,12 +1646,12 @@ character_event = {
 	}
 	
 	immediate = {
-		save_global_event_target_as = frostmourne_holder_target
+		save_global_event_target_as = target_frostmourne_holder
 	}
 }
-# Merge intro
+### Merge intro
 narrative_event = {
-	id = WCUND.500
+	id = WCUND.400
 	title = EVTTITLE_WCUND_500
 	desc = EVTDESC_WCUND_500
 	picture = GFX_evt_icecrown
@@ -1659,55 +1659,45 @@ narrative_event = {
 
 	is_triggered_only = yes
 
-	min_age = 16
-	only_playable = yes
-	only_capable = yes
-	prisoner = no
-
-	trigger = {		
-		is_adult = yes
-		is_incapable = no
-		prisoner = no
-		is_inaccessible_trigger = no
-
-		e_scourge = {
-			holder_scope = {
-				trait = lich_king
-				trait = in_ice_prison
-				OR = {
-					has_character_modifier = mind_control_3
-					has_character_modifier = mind_control_4
-				}
-			}
-		}
-
-		has_artifact = frostmourne
-		religion = death_god
-		
-	}
-
-	immediate = {
-		e_scourge = { holder_scope = { save_event_target_as = target_lich_king } }
-		set_global_flag = merging_with_the_lich_king
-	}
-
 	option = { #For the champion
 		name = EVTOPTA_WCUND_500
-		narrative_event = { id = WCUND.550 days = 30 }
+		73 = { province_event = { id = WCUND.524 days = 30 } }
 		#TODO: Add ping for Ner'zhul player so he can switch before gameover
 	}
 }
-# Merges you
+### Merges you
+# Delayer event
+province_event = {
+	id = WCUND.524
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
+		# If... these conditions are met, event chain can go on
+		if = {
+			limit = {
+				event_target:target_lich_king = { merging_lich_king_trigger = yes }
+				event_target:target_champion = { merging_champion_trigger = yes }
+			}
+			event_target:target_champion = { narrative_event = { id = WCUND.525 } }
+		}
+		# Else... notify that event chain failed
+		else = {
+			event_target:target_lich_king = { character_event = { id = WCUND.540 } }
+			event_target:target_champion = { character_event = { id = WCUND.540 } }
+		}
+	}
+}
+# Delayed event
 narrative_event = {
-	id = WCUND.550
+	id = WCUND.525
 	title = EVTTITLE_WCUND_550
 	desc = EVTDESC_WCUND_550
 	picture = GFX_evt_icecrown
 	border = GFX_event_narrative_frame_war
 
 	is_triggered_only = yes
-
-	trigger = { has_global_flag = merging_with_the_lich_king }
 
 	option = {
 		name = EVTOPTA_WCUND_550
@@ -1736,6 +1726,31 @@ narrative_event = {
 		}
 	}
 }
+### Merging failed
+character_event = {
+	id = WCUND.540
+	desc = {
+		trigger = { character = event_target:target_lich_king }
+		text = EVTDESC_WCUND_540_lich_king
+	}
+	desc = {
+		trigger = { character = event_target:target_champion }
+		text = EVTDESC_WCUND_540_champion
+	}
+	picture = GFX_evt_icecrown
+	border = GFX_event_normal_frame_intrigue
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = ALAS
+	}
+
+	after = {
+		clr_character_flag = merge_with_champion_ongoing_flag
+	}
+}
+
 # The New Lich King
 narrative_event = {
 	id = WCUND.551
@@ -1765,8 +1780,6 @@ narrative_event = {
 		ai = no
 	}
 	show_root = yes
-
-	immediate = { clr_global_flag = merging_with_the_lich_king }
 
 	option = {
 		name = {
