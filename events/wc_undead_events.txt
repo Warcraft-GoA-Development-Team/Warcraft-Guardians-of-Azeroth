@@ -1652,20 +1652,20 @@ character_event = {
 ### Merge intro
 narrative_event = {
 	id = WCUND.400
-	title = EVTTITLE_WCUND_500
-	desc = EVTDESC_WCUND_500
+	title = EVTTITLE_WCUND_400
+	desc = EVTDESC_WCUND_400
 	picture = GFX_evt_icecrown
 	border = GFX_event_narrative_frame_war
 
 	is_triggered_only = yes
 
 	option = { #For the champion
-		name = EVTOPTA_WCUND_500
+		name = EVTOPTA_WCUND_400
 		73 = { province_event = { id = WCUND.524 days = 30 } }
 		#TODO: Add ping for Ner'zhul player so he can switch before gameover
 	}
 }
-### Merges you
+### Merges with Lich King
 # Delayer event
 province_event = {
 	id = WCUND.524
@@ -1692,36 +1692,69 @@ province_event = {
 # Delayed event
 narrative_event = {
 	id = WCUND.525
-	title = EVTTITLE_WCUND_550
-	desc = EVTDESC_WCUND_550
+	title = EVTTITLE_WCUND_400
+	desc = EVTDESC_WCUND_525
 	picture = GFX_evt_icecrown
 	border = GFX_event_narrative_frame_war
 
 	is_triggered_only = yes
 
+	# Consume Lich King's soul - if Lich King is player, Lich King gets game over :3
 	option = {
-		name = EVTOPTA_WCUND_550
+		trigger = {
+			event_target:target_lich_king = { ai = no }
+		}
+		name = EVTOPTA_WCUND_525
+		
+		hidden_effect = {
+			if = {
+				limit = { OR = { is_republic = yes is_theocracy = yes is_nomadic = yes } }
+				abdicate = yes
+			}
+		}
+		event_target:target_lich_king = {
+			show_scope_change = no
 
-		if = {
-			limit = { OR = { is_republic = yes is_theocracy = yes is_tribal = yes } }
-			abdicate = yes
+			hidden_effect = {
+				ROOT = { wealth = PREV }
+				clear_wealth = yes
+			}
+			abdicate_to = ROOT
+			hidden_effect = {
+				death = { death_reason = death_merged killer = ROOT }
+			}
 		}
-		if = {
-			limit = { is_female = no }
-			custom_tooltip = { text = becomes_the_new_lich_king_tooltip }
+		
+		ai_chance = {
+			factor = 0
 		}
-		if = {
-			limit = { is_female = yes }
-			custom_tooltip = { text = becomes_the_new_lich_queen_tooltip }
+	}
+	
+	# Merge with Lich King's soul
+	option = {
+		name = EVTOPTB_WCUND_525
+		
+		hidden_effect = {
+			if = {
+				limit = { OR = { is_republic = yes is_theocracy = yes is_nomadic = yes } }
+				abdicate = yes
+			}
 		}
-		hidden_tooltip = {
-			e_scourge = {
-				holder_scope = {
-					ROOT = { wealth = PREV }
-					clear_wealth = yes
-					abdicate_to = ROOT
-					death = { death_reason = death_merged killer = ROOT }
+		event_target:target_lich_king = {
+			show_scope_change = no
+			
+			hidden_effect = {
+				ROOT = {
+					create_temporary_landless_title_effect = yes	# Creates temporary landless title to avoid game over
+					wealth = PREV
 				}
+				set_player_character = ROOT	# Current Lich King starts playing as ROOT
+				clear_wealth = yes
+			}
+			abdicate_to = ROOT
+			hidden_effect = {
+				destroy_temporary_landless_title_effect = yes	# Destroys title created in create_temporary_landless_title_effect
+				death = { death_reason = death_merged killer = ROOT }
 			}
 		}
 	}
