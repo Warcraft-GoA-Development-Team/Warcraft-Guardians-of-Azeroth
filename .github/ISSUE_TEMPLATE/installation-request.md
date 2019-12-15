@@ -1,7 +1,7 @@
 ---
 name: Installation Problem
 about: Report about installation problems
-title: "ISSUE TITLE"
+title: "Issue Title"
 labels: ":beetle: bug - installation :computer:" 
 
 ---
