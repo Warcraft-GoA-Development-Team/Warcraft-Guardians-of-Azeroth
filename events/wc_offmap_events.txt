@@ -1387,18 +1387,24 @@ character_event = {
 			if = {
 				limit = { offmap_cthun = { has_status = old_god_partly_imprisoned } }
 				offmap_cthun = { set_status = old_god_partly_free }
-				b_ahnqiraj = {
-					add_building = ca_old_god_1
-				}
 				set_global_flag = reawakening_of_cthun_flag
-				2956 = { province_event = { id = WCOME.350 } }
+				2956 = {
+					wonder = {
+						add_upgrade_slots = 1
+						add_wonder_upgrade = upgrade_old_god_cthun_1
+					}
+					province_event = { id = WCOME.350 }
+				}
 				break = yes
 			}
 			if = {
 				limit = { offmap_cthun = { has_status = old_god_partly_free } }
 				offmap_cthun = { set_status = old_god_free }
-				b_ahnqiraj = {
-					add_building = ca_old_god_2
+				2956 = {
+					wonder = {
+						destroy_wonder_upgrade = upgrade_old_god_cthun_1
+						add_wonder_upgrade = upgrade_old_god_cthun_2
+					}
 				}
 			}
 		}
@@ -1412,18 +1418,55 @@ character_event = {
 			if = {
 				limit = { offmap_nzoth = { has_status = old_god_partly_imprisoned } }
 				offmap_nzoth = { set_status = old_god_partly_free }
-				b_sagehold = {
-					add_building = ca_old_god_1
-				}
 				set_global_flag = reawakening_of_nzoth_flag
-				3545 = { province_event = { id = WCOME.350 } }
+				3545 = {
+					wonder = {
+						add_upgrade_slots = 1
+						add_wonder_upgrade = upgrade_old_god_nzoth_1
+					}
+					province_event = { id = WCOME.350 }
+				}
 				break = yes
 			}
 			if = {
 				limit = { offmap_nzoth = { has_status = old_god_partly_free } }
 				offmap_nzoth = { set_status = old_god_free }
-				b_sagehold = {
-					add_building = ca_old_god_2
+				3545 = {
+					wonder = {
+						destroy_wonder_upgrade = upgrade_old_god_nzoth_1
+						add_wonder_upgrade = upgrade_old_god_nzoth_2
+					}
+				}
+			}
+		}
+		if = {
+			limit = { yogg_saron_offmap_decisions_enabled_trigger = yes }
+			if = {
+				limit = { offmap_yoggsaron = { has_status = old_god_imprisoned } }
+				offmap_nzoth = { set_status = old_god_partly_imprisoned }
+				break = yes
+			}
+			if = {
+				limit = { offmap_yoggsaron = { has_status = old_god_partly_imprisoned } }
+				offmap_yoggsaron = { set_status = old_god_partly_free }
+				set_global_flag = reawakening_of_yogg_saron_flag
+				858 = {
+					wonder = {
+						add_upgrade_slots = 1
+						add_wonder_upgrade = upgrade_old_god_yogg_saron_1
+					}
+					province_event = { id = WCOME.350 }
+				}
+				break = yes
+			}
+			if = {
+				limit = { offmap_yoggsaron = { has_status = old_god_partly_free } }
+				offmap_yoggsaron = { set_status = old_god_free }
+				858 = {
+					wonder = {
+						destroy_wonder_upgrade = upgrade_old_god_yogg_saron_1
+						add_wonder_upgrade = upgrade_old_god_yogg_saron_2
+					}
 				}
 			}
 		}
@@ -1450,6 +1493,12 @@ province_event = {
 		if = {
 			limit = { has_global_flag = reawakening_of_nzoth_flag }
 			b_sagehold = {
+					holder_scope = { narrative_event = { id = WCOME.360 } }
+			}
+		}
+		if = {
+			limit = { has_global_flag = reawakening_of_yogg_saron_flag }
+			b_ulduar = {
 					holder_scope = { narrative_event = { id = WCOME.360 } }
 			}
 		}
@@ -1493,8 +1542,13 @@ narrative_event = {
 			limit = { has_global_flag = reawakening_of_nzoth_flag }
 			3545 = { save_event_target_as = target_province }
 		}
+		if = {
+			limit = { has_global_flag = reawakening_of_yogg_saron_flag }
+			858 = { save_event_target_as = target_province }
+		}
 		clr_global_flag = reawakening_of_nzoth_flag
 		clr_global_flag = reawakening_of_cthun_flag
+		clr_global_flag = reawakening_of_yogg_saron_flag
 	}
 
 	# The Qiraji will devour them all!
@@ -1571,6 +1625,29 @@ narrative_event = {
 			}
 			narrative_event = { id = WCOME.370 days = 360 random = 720 }
 		}
+		if = {
+			limit = {
+				character = ROOT
+				yogg_saron_offmap_decisions_enabled_trigger = yes
+			}
+			
+			# Gives gold
+			wealth = 1000
+			# Spawns troops
+			spawn_unit = {
+				owner = ROOT
+				province = event_target:target_province
+				home = event_target:target_province
+				troops = {
+					light_infantry = { 10000 10000 }
+					heavy_infantry = { 7000 7000 }
+					casters = { 4000 4000 }
+				}
+				attrition = 0
+				maintenance = no
+			}
+			narrative_event = { id = WCOME.370 days = 360 random = 720 }
+		}
 	}
 	# The ancient evil must remain in confinement!
 	option = {
@@ -1627,6 +1704,13 @@ narrative_event = {
 				nzoth_offmap_decisions_enabled_trigger = yes
 			}
 			offmap_nzoth = { set_policy = old_god_working }
+		}
+		if = {
+			limit = {
+				character = ROOT
+				yogg_saron_offmap_decisions_enabled_trigger = yes
+			}
+			offmap_yoggsaron = { set_policy = old_god_working }
 		}
 	}
 	# The ancient evil must remain in confinement!
