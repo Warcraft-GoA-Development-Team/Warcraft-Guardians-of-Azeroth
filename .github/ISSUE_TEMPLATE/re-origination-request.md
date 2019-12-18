@@ -1,16 +1,19 @@
 ---
 name: Re-Origination Request
 about: Bug Report
-title: "[BUG] | Issue Title"
+title: "Issue Title"
 labels: ":beetle: bug :beetle:"
 
 ---
-
+<!--
 **DO NOT REMOVE PRE-EXISTING LINES**
 ------------------------------------------------------------------------------------------------------------
-**Mod Version**
+-->
+**Your mod version is:**
 
 **What expansions do you have installed?**
+
+**Are you using any submods/mods? If so, which?**
 
 **Please explain your issue in as much detail as possible:**
 
