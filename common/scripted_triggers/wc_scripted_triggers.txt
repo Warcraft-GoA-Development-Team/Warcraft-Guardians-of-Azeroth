@@ -137,6 +137,8 @@ is_susceptible_to_worgen_curse_province_trigger = {
 }
 # CAN'T CHANGE RELIGION IF IT'S NOT TRUE
 can_switch_religion_character_trigger = {
+	holy_order = no
+	controls_religion = no
 	is_theocracy = no
 	
 	trigger_if = {
@@ -158,6 +160,26 @@ can_switch_religion_character_trigger = {
 				evil_true_religion_trigger = no
 			}
 			trait = kind
+			trigger_if = {
+				limit = { is_adult = no }
+				OR = {
+					trait = affectionate
+					mother = {
+						is_alive = yes
+						custom_tooltip = {
+							text = evil_true_religion_trigger_negative_tooltip
+							evil_true_religion_trigger = no
+						}
+					}
+					father = {
+						is_alive = yes
+						custom_tooltip = {
+							text = evil_true_religion_trigger_negative_tooltip
+							evil_true_religion_trigger = no
+						}
+					}
+				}
+			}
 		}
 	}
 	trigger_else_if = {
@@ -181,6 +203,12 @@ can_switch_religion_character_trigger = {
 		}
 		dark_true_religion_trigger = no
 	}
+}
+# CAN'T ADOPT SECRET RELIGION IF IT'S NOT TRUE
+can_adopt_secret_religion_character_trigger = {
+	holy_order = no
+	controls_religion = no
+	is_theocracy = no
 }
 root_can_switch_religion_province_trigger = {
 	trigger_if = {
@@ -266,7 +294,7 @@ can_switch_culture_character_trigger = {
 			}
 		}
 		custom_tooltip = {
-			text = evil_true_religion_trigger_negative_tooltip
+			text = can_not_change_culture_evil_true_religion_trigger_negative_tooltip
 			evil_true_religion_trigger = no
 		}
 	}
@@ -392,7 +420,7 @@ is_completely_infertile_trigger = {
 	OR = {
 		trait = eunuch
 		trait = infertile
-		
+
 		is_completely_infertile_race_and_being_trigger = yes
 	}
 }
@@ -700,6 +728,17 @@ is_aggressive_religion_trigger = {
 		religion_group = vrykul_religion_group
 	}
 }
+like_raiding_adventure_triggger = {
+	OR = {
+		culture = pirate_culture
+		
+		evil_public_religion_trigger = yes
+		religion = orcish_fel
+		religion_group = elemental_lords_group
+		religion_group = primitive_group
+		religion_group = vrykul_religion_group
+	}
+}
 
 evil_true_religion_trigger = {
 	custom_tooltip = {
@@ -727,7 +766,7 @@ dark_public_religion_trigger = {
 		religion_group = fel_group
 		religion_group = necromancy_group
 		religion_group = void_group
-		religion = forsaken_cult
+		# religion = forsaken_cult
 		religion = cult_of_loken
 		religion = cult_of_hakkar
 		religion = helya
@@ -941,106 +980,6 @@ can_be_shadow_council_member_trigger = {
 			}
 		}
 	}
-}
-
-prev_is_visible_mage_to_this_trigger = {
-	PREV = { has_mage_trait_trigger = yes }
-	OR = {
-		has_character_flag = debug_mode_flag		# Debug mode
-		character = PREV
-		AND = {
-			is_close_relative = PREV
-			is_mage_class_trigger = yes
-		}
-		PREV = { is_visible_mage_to_all_trigger = yes }
-	}
-}
-is_visible_mage_to_all_trigger = {
-	OR = {
-		dark_public_religion_trigger = yes
-		religion_group = arcane_group
-		liege = {
-			primary_title = {
-				NOT = { has_law = status_of_magic_0 }
-			}
-		}
-	}
-}
-prev_is_visible_warlock_to_this_trigger = {
-	PREV = { is_warlock_class_trigger = yes }
-	prev_fel_modifier_is_visible_to_this_trigger = yes
-}
-prev_fel_modifier_is_visible_to_this_trigger = {
-	OR = {
-		has_character_flag = debug_mode_flag		# Debug mode
-		character = PREV
-		true_religion_group = fel_group
-		# society_member_of = class_society_warlock
-		society_member_of = shadow_council
-		AND = {
-			is_close_relative = PREV
-			is_warlock_class_trigger = yes
-		}
-		PREV = { fel_modifier_is_visible_to_all_trigger = yes }
-	}
-}
-fel_modifier_is_visible_to_all_trigger = {
-	dark_public_religion_trigger = yes
-}
-prev_is_visible_necromancer_to_this_trigger = {
-	PREV = { is_necromancer_class_trigger = yes }
-	prev_necromantic_modifier_is_visible_to_this_trigger = yes
-}
-prev_necromantic_modifier_is_visible_to_this_trigger = {
-	OR = {
-		has_character_flag = debug_mode_flag		# Debug mode
-		character = PREV
-		true_religion_group = necromancy_group
-		# society_member_of = class_society_necromancer
-		society_member_of = cult_of_the_damned
-		AND = {
-			is_close_relative = PREV
-			is_necromancer_class_trigger = yes
-		}
-		PREV = { necromantic_modifier_is_visible_to_all_trigger = yes }
-	}
-}
-necromantic_modifier_is_visible_to_all_trigger = {
-	OR = {
-		dark_public_religion_trigger = yes
-		liege = {
-			primary_title = {
-				NOR = {
-					has_law = status_of_magic_0
-					has_law = status_of_magic_1
-				}
-			}
-		}
-	}
-}
-prev_is_visible_shadow_priest_to_this_trigger = {
-	PREV = { is_shadow_priest_class_trigger = yes }
-	prev_void_modifier_is_visible_to_this_trigger = yes
-}
-prev_void_modifier_is_visible_to_this_trigger = {
-	OR = {
-		has_character_flag = debug_mode_flag		# Debug mode
-		character = PREV
-		OR = {
-			true_religion_group = void_group
-			true_religion = forsaken_cult
-		}
-		# society_member_of = class_society_shadow_priest
-		society_member_of = twilights_hammer_cult
-		AND = {
-			is_close_relative = PREV
-			is_shadow_priest_class_trigger = yes
-		}
-		PREV = { void_modifier_is_visible_to_all_trigger = yes }
-	}
-}
-void_modifier_is_visible_to_all_trigger = {
-	dark_public_religion_trigger = yes
 }
 
 ### potential_race triggers ###
@@ -2109,7 +2048,6 @@ is_susceptible_to_plague_province_trigger = {
 has_pet_trigger = {
 	OR = {
 		has_character_modifier = pet_imp
-		has_character_modifier = pet_succubus
 		has_character_modifier = pet_felhunter
 		has_character_modifier = pet_felguard
 	}
@@ -2139,15 +2077,27 @@ has_weak_character_trigger = {
 can_fight_prev_trigger = {
 	trigger_if = {
 		limit = {
-			is_member_of_horde_faction_trigger = yes
+			OR = {
+				is_member_of_horde_faction_trigger = yes
+				suzerain = { is_member_of_horde_faction_trigger = yes }
+			}
 		}
-		PREV = { is_member_of_horde_faction_trigger = no }
+		PREV = {
+			is_member_of_horde_faction_trigger = no
+			NOT = { suzerain = { is_member_of_horde_faction_trigger = yes } }
+		}
 	}
 	trigger_if = {
 		limit = {
-			is_member_of_alliance_faction_trigger = yes
+			OR = {
+				is_member_of_alliance_faction_trigger = yes
+				suzerain = { is_member_of_alliance_faction_trigger = yes }
+			}
 		}
-		PREV = { is_member_of_alliance_faction_trigger = no }
+		PREV = {
+			is_member_of_alliance_faction_trigger = no
+			NOT = { suzerain = { is_member_of_alliance_faction_trigger = yes } }
+		}
 	}
 	trigger_if = { # Blocks infighting even you got different suzerains, but I can't allow that due to Paradox scripting rules
 		limit = {
@@ -2969,44 +2919,27 @@ true_religion_associated_with_sunwell_trigger = {
 # Needed for status_of_magic
 ai_like_dark_magic_trigger = {
 	OR = {
-		NOR = {
-			trait = zealous
-			true_religion = scarlet_light
-			true_religion = lightbound
-		}
 		is_dark_being_trigger = yes
 		is_warlock_class_trigger = yes
 		is_necromancer_class_trigger = yes
 		is_shadow_priest_class_trigger = yes
 		dark_true_religion_trigger = yes
+		trait = cynical
 	}
 }
 ai_dislike_dark_magic_trigger = {
-	is_dark_being_trigger = no
-	is_warlock_class_trigger = no
-	is_necromancer_class_trigger = no
-	is_shadow_priest_class_trigger = no
-	dark_true_religion_trigger = no
-	NOT = { trait = content }
+	ai_like_dark_magic_trigger = no
 	OR = {
 		trait = zealous
 		true_religion = scarlet_light
 		true_religion = lightbound
 	}
 }
-ai_dislike_normal_magic_trigger = {
-	is_dark_being_trigger = no
-	is_mage_class_trigger = no
-	is_warlock_class_trigger = no
-	is_necromancer_class_trigger = no
-	is_shadow_priest_class_trigger = no
-	dark_true_religion_trigger = no
-	secular_true_religion_trigger = no
-	NOT = { trait = content }
+ai_like_normal_magic_trigger = {
 	OR = {
-		trait = zealous
-		true_religion = scarlet_light
-		true_religion = lightbound
+		ai_like_dark_magic_trigger = yes
+		is_mage_class_trigger = yes
+		arcane_true_religion_trigger = yes
 	}
 }
 
@@ -4088,11 +4021,8 @@ theramore_founding_refugees_trigger = {
 	# NOT = { has_character_flag = invitation_to_sail_is_sent_flag }
 	NOT = { has_character_flag = foundation_theramore_declined_flag }
 
-	evil_public_religion_trigger = no
-	OR = {
-		has_alliance_religion_trigger = yes
-		has_alliance_culture_trigger = yes
-	}
+	has_alliance_religion_trigger = yes
+	has_alliance_culture_trigger = yes
 
 	can_resettle_trigger = yes
 	is_member_of_horde_faction_trigger = no
@@ -4191,45 +4121,6 @@ fury_of_wolf_human_event_trigger = {
 	is_susceptible_to_worgen_curse_character_trigger = yes
 	NOT = { religion_group = druidism_group }
 	NOT = { true_religion_group = druidism_group }
-}
-
-is_potential_mind_control_target_trigger = {
-	is_alive = yes
-	is_dying = no
-	
-	ai = yes
-	is_adult = yes
-	is_incapable = no
-	prisoner = no
-	is_inaccessible_trigger = no
-
-	NOT = { character = ROOT }
-	NOT = { has_character_flag = mind_control_attempt_flag }
-
-	is_dark_being_trigger = no
-	is_humanoid_trigger = yes
-	
-	has_weak_character_trigger = yes
-	is_in_society = no
-	NOT = { has_opinion_modifier = { who = ROOT modifier = opinion_loyal_servant } }
-}
-is_potential_turn_into_undead_target_trigger = {
-	is_alive = yes
-	is_dying = no
-	
-	ai = yes
-	is_adult = yes
-	is_incapable = no
-	prisoner = no
-	is_inaccessible_trigger = no
-
-	NOT = { character = ROOT }
-	NOT = { has_character_flag = being_raised_flag }
-
-	is_dark_being_trigger = no
-	can_be_undead_trigger = yes
-	
-	is_in_society = no
 }
 
 can_improve_relations_with_root_trigger = {
@@ -4415,4 +4306,67 @@ marine_culture_trigger = {
 		culture = pirate_culture
 		culture = wastewander
 	}
+}
+
+# If this isn't true, religion doesn't send missionaries via events, only via job action
+religion_prefer_to_send_missionaries_trigger = {
+	dark_public_religion_trigger = no
+	secular_public_religion_trigger = no
+}
+
+# Arcane magic play big role in these religions
+arcane_public_religion_trigger = {
+	OR = {
+		religion_group = arcane_group
+		religion_group = dragon_religion_group
+		religion = mystery_of_the_makers
+		religion = cult_of_loken
+		religion = odyn
+	}
+}
+arcane_true_religion_trigger = {
+	OR = {
+		true_religion_group = arcane_group
+		true_religion_group = dragon_religion_group
+		true_religion = mystery_of_the_makers
+		true_religion = cult_of_loken
+		true_religion = odyn
+	}
+}
+
+is_in_player_sphere_of_influence_trigger = {
+	trigger_if = {
+		limit = {
+			ai = yes
+		}
+		host = {
+			ai = no
+			OR = {
+				is_parent_of = PREV
+				is_grandparent_of = PREV
+			}
+		}
+	}
+	trigger_else = {
+		ai = no
+	}
+}
+
+special_succession_type_trigger = {
+	 has_law = succ_evil_elective
+}
+
+# Is NOT raising or creating an undead being
+not_raising_undead_flag_trigger = {
+	custom_tooltip = {
+		text = raising_undead_flag_trigger_tooltip
+		NOT = { has_character_flag = raising_undead_flag }
+	}
+}
+
+# Trigger used in mind control events
+can_be_mind_controlled_by_scourge_trigger = {
+	trait = being_undead
+	NOT = { has_character_flag = freed_from_lich_king_flag }
+	NOT = { has_landed_title = e_scourge }
 }
