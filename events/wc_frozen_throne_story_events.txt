@@ -533,59 +533,8 @@ narrative_event = {
 		#Kick out Garithos from faction
 		event_target:target_garithos = { leave_alliance_faction_effect = yes }
 		
-		#Ping General Abbendis to begin secession
-		if = {
-			limit = {
-				c_60560 = {		# James
-					ai = yes
-
-					is_alive = yes
-
-					religion = holy_light
-					culture = lordaeronian
-					is_dark_being_trigger = no
-				}
-			}
-			c_60560 = { 
-				save_event_target_as = target_scarlet_general 
-				narrative_event = { id = WCTFT.121 days = 7 }
-			}
-		}
-		#If James is dead/MIA, ping his daughter instead
-		else_if = {
-			limit = {
-				c_60561 = {		# Brigitte
-					ai = yes
-
-					is_alive = yes
-
-					religion = holy_light
-					culture = lordaeronian
-					is_dark_being_trigger = no
-				}
-			}
-			c_60561 = { 
-				save_event_target_as = target_scarlet_general 
-				narrative_event = { id = WCTFT.121 days = 7 }
-			}
-		}
-		#Otherwise, create a High General
-		else = {
-			create_character = {
-				female = no
-				dynasty = none
-				culture = lordaeronian religion = holy_light
-				trait=brilliant_strategist
-				trait=creature_human
-				trait=class_paladin_7
-				trait=wroth trait=zealous
-				age = 30
-			}
-			new_character = { 
-				save_event_target_as = target_scarlet_general
-				narrative_event = { id = WCTFT.121 days = 7 }
-			}
-		}
+		# Resistance Garithos Path: The Abbendis Schism
+		73 = { province_event = { id = WCTFT.124 days = 7 } }
 	}
 
 	option = { #This will ruffle some feathers
@@ -633,10 +582,33 @@ narrative_event = {
 	}
 }
 
-# Resistance Garithos Path: The Abbendis Schism
-### In this outcome Argent Dawn doesn't form ###
+### Resistance Garithos Path: The Abbendis Schism
+# In this outcome Argent Dawn doesn't form #
+# Delayer event
+province_event = {
+	id = WCTFT.124
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
+		### Creates d_scarlet_crusade and d_church_scarlet_light
+		create_d_scarlet_crusade_effect = yes
+		create_d_church_scarlet_light_effect = yes
+		
+		# Notification
+		d_scarlet_crusade = {
+			holder_scope = {
+				set_defacto_liege = event_target:target_garithos
+				
+				narrative_event = { id = WCTFT.125 }
+			}
+		}
+	}
+}
+# Delayed event
 narrative_event = {
-	id = WCTFT.121
+	id = WCTFT.125
 	title = EVTTITLE_WCTFT_121
 	desc = EVTDESC_WCTFT_121
 	picture = GFX_evt_paladin_human
@@ -646,9 +618,11 @@ narrative_event = {
 
 	major = yes
 	major_trigger = {
-		ai = no
+		OR = {
+			ai = no
+			religion_group = light_group
+		}
 	}
-	
 	show_root = yes
 	
 	trigger = {
@@ -657,65 +631,6 @@ narrative_event = {
 				name = frozen_throne_story
 				value = off
 			}
-		}
-	}
-	
-	immediate = {
-		#The Schism itself
-		event_target:target_scarlet_general = {
-			religion = scarlet_light
-			clear_secret_religion = yes
-			activate_title = { title = d_scarlet_crusade status = yes }
-			d_scarlet_crusade = { grant_title = PREV }
-			set_special_character_title = "HIGH_GENERAL_TITLE"
-			religion_authority = {
-				modifier = religious_order_formed
-				years = 10
-			}
-			religion_authority = {
-				modifier = religious_split_good
-				years = 10
-			}
-			set_defacto_liege = event_target:target_garithos
-			wealth = 500
-			narrative_event = { id = WCTFT.122 }
-		}
-		#Grand Inquisitor
-		if = {
-			limit = {
-				c_60550 = {		# Isilien
-					ai = yes
-
-					is_alive = yes
-
-					religion = holy_light
-					culture = lordaeronian
-					trait = zealous
-				}
-			}
-			c_60550 = { save_event_target_as = target_grand_inquisitor }
-		}
-		else = {
-			create_character = {
-				dynasty = none
-				culture = lordaeronian religion = scarlet_light
-				trait=scholarly_theologian
-				trait=creature_human
-				trait=class_priest_6
-				trait=wroth trait=zealous trait=ambitious
-				age = 40
-			}
-			new_character = { save_event_target_as = target_grand_inquisitor }
-		}
-		event_target:target_grand_inquisitor = {
-			religion = scarlet_light
-			clear_secret_religion = yes
-			wealth = 500
-			
-			activate_title = { title = d_church_scarlet_light status = yes }
-			d_church_scarlet_light = { grant_title = PREV }
-			set_defacto_liege = THIS
-
 		}
 	}
 	
