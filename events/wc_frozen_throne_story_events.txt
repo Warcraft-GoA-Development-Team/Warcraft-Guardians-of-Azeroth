@@ -264,18 +264,8 @@ narrative_event = {
 			}
 		}
 		
-		#Ping the Silver Hand leader
-		d_order_of_the_silver_hand = {
-			if = {
-				limit = {
-					has_holder = yes
-					is_primary_holder_title = yes
-				}
-				holder_scope = { 
-					narrative_event = { id = WCTFT.111 days = 7 } 
-				}
-			}
-		}
+		# Resistance Calia Path: The Silver Hand's Loyalties
+		73 = { province_event = { id = WCTFT.114 days = 7 } }
 	}
 
 	option = { #A new hope for Lordaeron
@@ -323,9 +313,33 @@ narrative_event = {
 	}
 }
 
-# Resistance Calia Path: The Silver Hand's Loyalties
+### Resistance Calia Path: The Silver Hand's Loyalties
+# Delayer event
+province_event = {
+	id = WCTFT.114
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	trigger = {
+		# Calia controls k_lordaeron and is light_group
+		k_lordaeron = {
+			has_holder = yes
+			holder_scope = {
+				true_religion_group = light_group
+				
+				character = event_target:target_calia
+			}
+		}
+	}
+	
+	immediate = {
+		d_order_of_the_silver_hand = { holder_scope = { narrative_event = { id = WCTFT.115 } } }
+	}
+}
+# Delayed event
 narrative_event = {
-	id = WCTFT.111
+	id = WCTFT.115
 	title = EVTTITLE_WCTFT_111
 	desc = EVTDESC_WCTFT_111
 	picture = GFX_evt_paladin_human
@@ -345,88 +359,36 @@ narrative_event = {
 	}
 	
 	option = { #We stand with Lordaeron
-		# Raymond George's faction in Tyr's Hand secedes from the Silver Hand (creates d_argent_dawn)
-		# The Highlord
-		if = {
-			limit = {
-				c_60625 = {		# Raymond
-					ai = yes
-
-					is_alive = yes
-
-					religion = holy_light
-					culture = lordaeronian
-				}
-			}
-			c_60625 = { save_event_target_as = target_argent_highlord }
-		}
-		#If Raymond is dead/MIA, ping Maxwell Tyrosus instead
-		else_if = {
-			limit = {
-				c_60650 = {		# Maxwell
-					ai = yes
-
-					is_alive = yes
-
-					religion = holy_light
-					culture = lordaeronian
-				}
-			}
-			c_60650 = { 
-				save_event_target_as = target_argent_highlord 
-			}
-		}
-		else = {
-			create_character = {
-				female = no
-				dynasty = none
-				culture = lordaeronian religion = holy_light
-				trait=brilliant_strategist
-				trait=creature_human
-				trait=class_paladin_7
-				trait=wroth trait=zealous
-				age = 50
-			}
-			new_character = { save_event_target_as = target_argent_highlord }
-		}
-		event_target:target_argent_highlord = {
-			religion = holy_light
-			clear_secret_religion = yes
-			activate_title = { title = d_argent_dawn status = yes }
-			d_argent_dawn = { grant_title = PREV }
-			religion_authority = {
-				modifier = religious_order_formed
-				years = 10
-			}
-			set_defacto_liege = THIS
-			wealth = 500
-		}
+		name = EVTOPTA_WCTFT_111
 		
-		# Transfer eastern Silver Hand provinces to Argent Dawn
+		# Creates d_argent_dawn
+		create_d_argent_dawn_effect = yes
+		
+		# Eastern Silver Hand provinces support the Argent Dawn
 		d_order_of_the_silver_hand = {
 			holder_scope = { 
 				any_vassal = { 
-					limit = {
-						primary_title = { de_jure_liege_or_above = k_stratholme }
-					}
-					set_defacto_liege = d_argent_dawn
+					limit = { capital_scope = { region = world_eastern_kingdoms_lordaeron_eastern_lordaeron } }
+					support_argent_dawn_effect = yes
 				}
 			}
 		}
 		
-		# Make the Silver Hand vassal of Lordaeron
+		# Makes d_order_of_the_silver_hand vassal of Lordaeron
 		d_order_of_the_silver_hand = {
 			set_defacto_liege = k_lordaeron
 		}
 		
-		# Notify the world of the split
-		event_target:target_argent_highlord = {
-			narrative_event = { id = WCTFT.112 }
-		}
-		
 		#Calia is pleased
 		
-		name = EVTOPTA_WCTFT_111
+		# Notify the world of the split
+		hidden_effect = {
+			d_argent_dawn = {
+				holder_scope = {
+					narrative_event = { id = WCTFT.112 }
+				}
+			}
+		}
 		
 		ai_chance = {
 			factor = 1
@@ -592,8 +554,9 @@ province_event = {
 	hide_window = yes
 	
 	trigger = {
-		# Garithos controls c_lordaeron and is light_group
-		c_lordaeron = {
+		# Garithos controls k_lordaeron and is light_group
+		k_lordaeron = {
+			has_holder = yes
 			holder_scope = {
 				true_religion_group = light_group
 				
@@ -611,9 +574,23 @@ province_event = {
 		religious_split_holy_light_bad_effect = yes
 		religious_split_scarlet_light_good_effect = yes
 		
+		# Western Silver Hand provinces support the Scarlet Crusade
+		d_order_of_the_silver_hand = {
+			holder_scope = { 
+				any_vassal = {
+					limit = {
+						is_potential_scarlet_follower_trigger = yes
+						capital_scope = { region = world_eastern_kingdoms_lordaeron_western_lordaeron }
+					}
+					support_scarlet_light_effect = yes
+				}
+			}
+		}
+		
 		d_scarlet_crusade = {
 			holder_scope = {
-				set_defacto_liege = event_target:target_garithos
+				# Makes d_scarlet_crusade vassal of k_lordaeron
+				set_defacto_liege = k_lordaeron
 				
 				# Notification
 				narrative_event = { id = WCTFT.125 }
@@ -652,7 +629,7 @@ narrative_event = {
 	# Garithos always support the Crusade
 	option = {
 		trigger = { 
-			has_landed_title = c_lordaeron
+			has_landed_title = k_lordaeron
 		}
 		name = EVTOPTB_WCLAT_9001
 		
@@ -662,7 +639,7 @@ narrative_event = {
 	# Doesn't support the Crusade
 	option = {
 		trigger = { 
-			NOT = { has_landed_title = c_lordaeron }
+			NOT = { has_landed_title = k_lordaeron }
 			true_religion = holy_light
 		}
 		name = EVTOPTB_WCTFT_121
@@ -679,7 +656,7 @@ narrative_event = {
 	# Support the Scarlet Crusade
 	option = {
 		trigger = {
-			NOT = { has_landed_title = c_lordaeron }
+			NOT = { has_landed_title = k_lordaeron }
 			OR = {
 				true_religion = scarlet_light
 				
@@ -699,7 +676,7 @@ narrative_event = {
 	
 	option = { #Evil reaction
 		trigger = {
-			NOT = { has_landed_title = c_lordaeron }
+			NOT = { has_landed_title = k_lordaeron }
 			evil_true_religion_trigger = yes
 		}
 		name = EVTOPTD_WCTFT_121
@@ -708,7 +685,7 @@ narrative_event = {
 	option = { #Everyone else's reaction
 		trigger = { 
 			NOT = {
-				has_landed_title = c_lordaeron
+				has_landed_title = k_lordaeron
 				true_religion = holy_light
 				true_religion = scarlet_light
 				evil_true_religion_trigger = no

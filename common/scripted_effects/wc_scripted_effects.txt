@@ -3693,6 +3693,12 @@ decrease_mind_control_stage_effect = {
 }
 
 support_scarlet_light_effect = {
+	# Vassals of d_order_of_the_silver_hand become vassals of d_scarlet_crusade
+	if = {
+		limit = { de_facto_liege = d_order_of_the_silver_hand }
+		set_defacto_liege = d_scarlet_crusade
+	}
+	
 	religion = scarlet_light
 	if = {
 		limit = { has_secret_religion = yes }
@@ -3752,28 +3758,70 @@ support_scarlet_light_effect = {
 		}
 	}
 }
+support_argent_dawn_effect = {
+	# Vassals of d_order_of_the_silver_hand become vassals of d_argent_dawn
+	if = {
+		limit = { de_facto_liege = d_order_of_the_silver_hand }
+		set_defacto_liege = d_argent_dawn
+	}
+}
 
 # Creates d_argent_dawn
 create_d_argent_dawn_effect = {
 	# Picks Highlord
-	create_character = {
-		female = no
-		dynasty = none
-		culture=lordaeronian religion=holy_light
-		trait=brilliant_strategist
-		trait=creature_human
-		trait=class_paladin_7
-		trait=kind trait=just
-		age = 50
+	# Raymond
+	if = {
+		limit = { c_60625 = { is_potential_argent_leader_trigger = yes } }
+		c_60625 = { save_event_target_as = target_argent_highlord }
 	}
-	new_character = {
-		activate_title = { title = d_argent_dawn status = yes }
-		d_argent_dawn = { grant_title = PREV }
+	# Maxwell Tyrosus
+	else_if = {
+		limit = { c_60650 = { is_potential_argent_leader_trigger = yes } }
+		c_60650 = { save_event_target_as = target_argent_highlord }
+	}
+	# Member of the Silver Hand
+	else_if = {
+		limit = {
+			d_order_of_the_silver_hand = {
+				has_holder = yes
+				holder_scope = {
+					any_courtier = {
+						is_potential_argent_leader_trigger = yes
+					}
+				}
+			}
+		}
+		d_order_of_the_silver_hand = {
+			holder_scope = {
+				random_courtier = {
+					limit = { is_potential_argent_leader_trigger = yes }
+					save_event_target_as = target_grand_crusader
+				}
+			}
+		}
+	}
+	else = {
+		create_character = {
+			female = no
+			dynasty = none
+			culture=lordaeronian religion=holy_light
+			trait=brilliant_strategist
+			trait=creature_human
+			trait=class_paladin_7
+			trait=kind trait=just
+			age = 50
+		}
+		new_character = { save_event_target_as = target_argent_highlord }
+	}
+	event_target:target_argent_highlord = {
+		wealth = 500
 		religion_authority = {
 			modifier = religious_order_formed
 			years = 10
 		}
-		religious_split_holy_light_bad_effect = yes
+		
+		activate_title = { title = d_argent_dawn status = yes }
+		d_argent_dawn = { grant_title = PREV }
 		set_defacto_liege = THIS
 	}
 }
