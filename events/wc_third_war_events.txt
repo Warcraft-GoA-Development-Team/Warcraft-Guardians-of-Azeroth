@@ -3027,36 +3027,41 @@ narrative_event = {
 			}
 			abdicate = yes
 		}
+		
+		# Picks description
+		# You're independent, you do massacre
 		if = {
 			limit = {
 				is_ruler = yes
 				independent = yes
 			}
 			set_character_flag = homecoming_inde_ruler_desc_flag
-			break = yes
 		}
-		event_target:target_realm = {
-			if = {
-				limit = {
-					has_holder = yes
+		# Kill your king, do massacre
+		else_if = {
+			limit = {
+				event_target:target_realm = {
 					holder_scope = {
 						independent = yes
 
 						evil_public_religion_trigger = no
 					}
 				}
-				holder_scope = { save_event_target_as = target_ruler }
-				ROOT  = {
-					if = {
-						limit = { event_target:target_ruler = { is_close_relative = ROOT } }
-						set_character_flag = homecoming_close_relative_desc_flag
-					}
-					else = { set_character_flag = homecoming_not_close_relative_desc_flag }
-				}
 			}
+			event_target:target_realm = { holder_scope = { save_event_target_as = target_ruler } }
+			# King is your close relative
+			if = {
+				limit = { event_target:target_ruler = { is_close_relative = ROOT } }
+				set_character_flag = homecoming_close_relative_desc_flag
+			}
+			# King isn't your close relative
 			else = {
-				ROOT = { set_character_flag = homecoming_ruined_homeland_desc_flag }
+				set_character_flag = homecoming_not_close_relative_desc_flag
 			}
+		}
+		# Your king is corrupted, homeland is ruined
+		else = {
+			set_character_flag = homecoming_ruined_homeland_desc_flag
 		}
 	}
 
