@@ -1661,12 +1661,70 @@ narrative_event = {
 	
 	immediate = {
 		add_trait = travelling
+		
+		# You feel guilt of killing that character
+		if = {
+			limit = { any_kill_list_character = { is_close_relative = ROOT } }
+			random_kill_list_character = {
+				limit = { is_close_relative = ROOT }
+				save_event_target_as = target_killed_character
+			}
+		}
 	}
 
 	option = { #For the champion
 		name = EVTOPTA_WCUND_400
+		
+		# If you finished the Champion event chain, you get +1 event
+		if = {
+			limit = { has_character_flag = finished_champion_event_chain_flag }
+			73 = { province_event = { id = WCUND.410 days = 30 } }
+		}
+		else = {
+			73 = { province_event = { id = WCUND.524 days = 60 } }
+		}
+	}
+}
+### Return to Northrend
+# Delayed event
+province_event = {
+	id = WCUND.410
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
+		# If... these conditions are met, event chain can go on
+		if = {
+			limit = {
+				event_target:target_lich_king = { merging_lich_king_trigger = yes }
+				event_target:target_champion = { merging_champion_trigger = yes }
+			}
+			event_target:target_champion = { narrative_event = { id = WCUND.411 } }
+		}
+		# Else... notify that event chain failed
+		else = {
+			event_target:target_lich_king = { character_event = { id = WCUND.540 } }
+			event_target:target_champion = { character_event = { id = WCUND.540 } }
+		}
+	}
+}
+# Delayer event
+narrative_event = {
+	id = WCUND.411
+	title = EVTTITLE_WCUND_400
+	desc = EVTDESC_WCUND_411
+	picture = GFX_evt_icecrown
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+	
+	option = {
+		name = EVTOPTA_WCUND_411
+		
+		remove_slothful_or_add_diligent_silently_effect = yes
+		
 		73 = { province_event = { id = WCUND.524 days = 30 } }
-		#TODO: Add ping for Ner'zhul player so he can switch before gameover
 	}
 }
 ### Merges with Lich King
