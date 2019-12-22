@@ -138,6 +138,8 @@ leave_horde_faction_effect = {
 			# Destroys faction
 			any_tributary = {
 				limit = { is_tributary = { type = political_faction suzerain = suzerain } }
+				show_scope_change = no
+				
 				leave_horde_faction_effect = yes
 			}
 			remove_trait = leader_of_horde_trait		# Must be after any_tributary
@@ -156,12 +158,16 @@ leave_horde_faction_effect = {
 				e_horde = { destroy_landed_title = THIS }
 			}
 			else = {
-				narrative_event = { id = WCPLF.106 }
+				e_horde = { holder_scope = { narrative_event = { id = WCPLF.106 } } }
 			}
 		}
 		if = {
 			limit = { is_tributary = yes }
-			suzerain = { remove_tributary = PREV }
+			suzerain = {
+				show_scope_change = no
+				
+				remove_tributary = PREV
+			}
 		}
 		if = {
 			limit = {
@@ -196,6 +202,14 @@ leave_alliance_faction_effect = {
 			}
 			if = {
 				limit = {
+					# If political factions are disabled, destroys it without any chance
+					NOT = {
+						has_game_rule = {
+							name = political_factions
+							value = disabled
+						}
+					}
+					
 					NOT = { has_global_flag = centralized_alliance_flag }
 					any_independent_ruler = {
 						NOT = { character = PREV }
@@ -225,15 +239,19 @@ leave_alliance_faction_effect = {
 					add_trait = leader_of_alliance_trait
 					narrative_event = { id = WCPLF.60 }
 				}
-				any_tributary = {
-					limit = { is_tributary = { type = political_faction suzerain = suzerain } }
-					join_alliance_faction_effect = yes
+				hidden_effect = {
+					any_tributary = {
+						limit = { is_tributary = { type = political_faction suzerain = suzerain } }
+						join_alliance_faction_effect = yes
+					}
 				}
 			}
 			else = {
 				# Destroys faction
 				any_tributary = {
 					limit = { is_tributary = { type = political_faction suzerain = suzerain } }
+					show_scope_change = no
+					
 					leave_alliance_faction_effect = yes
 				}
 				remove_trait = leader_of_alliance_trait			# Must be after any_tributary
@@ -244,7 +262,11 @@ leave_alliance_faction_effect = {
 		}
 		if = {
 			limit = { is_tributary = yes }
-			suzerain = { remove_tributary = PREV }
+			suzerain = {
+				show_scope_change = no
+				
+				remove_tributary = PREV
+			}
 		}
 		if = {
 			limit = {
@@ -381,7 +403,11 @@ create_e_horde_effect = {
 		}
 		# Makes the Horde centralized after revival
 		if = {
-			limit = { NOT = { has_global_flag = centralized_horde_flag } }
+			limit = {
+				trait = leader_of_horde_trait # Condition is needed in case political factions are disabled
+				
+				NOT = { has_global_flag = centralized_horde_flag }
+			}
 			set_global_flag = centralized_horde_flag
 		}
 	}
@@ -402,13 +428,21 @@ create_e_horde_effect = {
 		}
 	}
 	if = {
-		limit = { NOT = { government = faction_government } }
+		limit = {
+			NOT = { government = faction_government }
+			
+			trait = leader_of_horde_trait # Condition is needed in case political factions are disabled
+		}
 		set_government_type = faction_government
 	}
 	hidden_effect = {
 		e_horde = { change_faction_laws = yes }
 		if = {
-			limit = { has_global_flag = centralized_horde_flag }
+			limit = {
+				trait = leader_of_horde_trait # Condition is needed in case political factions are disabled
+				
+				has_global_flag = centralized_horde_flag
+			}
 			# Breaks alliances before becoming vassal
 			break_alliances_with_horde_faction_effect = yes
 			any_tributary = {
@@ -451,7 +485,11 @@ create_e_alliance_effect = {
 			}
 		}
 		if = {
-			limit = { NOT = { has_global_flag = centralized_alliance_flag } }
+			limit = {
+				trait = leader_of_alliance_trait # Condition is needed in case political factions are disabled
+				
+				NOT = { has_global_flag = centralized_alliance_flag }
+			}
 			set_global_flag = centralized_alliance_flag
 		}
 	}
@@ -472,13 +510,21 @@ create_e_alliance_effect = {
 		}
 	}
 	if = {
-		limit = { NOT = { government = faction_government } }
+		limit = {
+			NOT = { government = faction_government }
+			
+			trait = leader_of_alliance_trait # Condition is needed in case political factions are disabled
+		}
 		set_government_type = faction_government
 	}
 	hidden_effect = {
 		e_alliance = { change_faction_laws = yes }
 		if = {
-			limit = { has_global_flag = centralized_alliance_flag }
+			limit = {
+				trait = leader_of_alliance_trait # Condition is needed in case political factions are disabled
+				
+				has_global_flag = centralized_alliance_flag
+			}
 			# Breaks alliances before becoming vassal
 			break_alliances_with_alliance_faction_effect = yes
 			any_tributary = {
