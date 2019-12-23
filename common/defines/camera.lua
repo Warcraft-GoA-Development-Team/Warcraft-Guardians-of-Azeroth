@@ -4,13 +4,13 @@
 
 -- Main Menu, Static
 -- Camera position
-NDefines.NFrontend.FRONTEND_POS_X = 2700.0
-NDefines.NFrontend.FRONTEND_POS_Y = 375.0
-NDefines.NFrontend.FRONTEND_POS_Z = 700.0
+NDefines.NFrontend.FRONTEND_POS_X = 825.0
+NDefines.NFrontend.FRONTEND_POS_Y = 500.0
+NDefines.NFrontend.FRONTEND_POS_Z = 1075.0
 -- Camera angle
-NDefines.NFrontend.FRONTEND_LOOK_X = 2699.0
+NDefines.NFrontend.FRONTEND_LOOK_X = 800.0
 NDefines.NFrontend.FRONTEND_LOOK_Y = 0.0
-NDefines.NFrontend.FRONTEND_LOOK_Z = 825.0
+NDefines.NFrontend.FRONTEND_LOOK_Z = 1275.0
 
 -- Initial position in main menu
 NDefines.NFrontend.CAMERA_START_X = 790.0
