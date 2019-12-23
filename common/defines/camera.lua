@@ -1,3 +1,17 @@
+-- X is west-east
+-- Y is height
+-- Z is south-north
+
+-- Main Menu, Static
+-- Camera position
+NDefines.NFrontend.FRONTEND_POS_X = 2700.0
+NDefines.NFrontend.FRONTEND_POS_Y = 375.0
+NDefines.NFrontend.FRONTEND_POS_Z = 700.0
+-- Camera angle
+NDefines.NFrontend.FRONTEND_LOOK_X = 2699.0
+NDefines.NFrontend.FRONTEND_LOOK_Y = 0.0
+NDefines.NFrontend.FRONTEND_LOOK_Z = 825.0
+
 -- Initial position in main menu
 NDefines.NFrontend.CAMERA_START_X = 790.0
 NDefines.NFrontend.CAMERA_START_Y = 150.0
@@ -10,13 +24,6 @@ NDefines.NFrontend.CAMERA_END_Z = 600.0
 NDefines.NFrontend.CAMERA_LOOKAT_X = 790.0
 NDefines.NFrontend.CAMERA_LOOKAT_Y = 0.0
 NDefines.NFrontend.CAMERA_LOOKAT_Z = 1000.0
--- ???
-NDefines.NFrontend.FRONTEND_POS_X = 790.0
-NDefines.NFrontend.FRONTEND_POS_Y = 500.0
-NDefines.NFrontend.FRONTEND_POS_Z = 600.0
-NDefines.NFrontend.FRONTEND_LOOK_X = 790.0
-NDefines.NFrontend.FRONTEND_LOOK_Y = 0.0
-NDefines.NFrontend.FRONTEND_LOOK_Z = 1000.0
 -- Move to position in settings
 NDefines.NFrontend.SETTINGS_POS_X = 790.0
 NDefines.NFrontend.SETTINGS_POS_Y = 500.0
