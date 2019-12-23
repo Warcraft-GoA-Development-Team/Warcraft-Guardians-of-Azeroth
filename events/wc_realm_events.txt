@@ -548,15 +548,12 @@ character_event = {
 }
 
 ### Ymiron Awakened ###
-narrative_event = {
-	id = WCRLM.800
-	title = EVTTITLE_WCRLM_800
-	desc = EVTDESC_WCRLM_800
-	picture = GFX_evt_utgarde
-	border = GFX_event_narrative_frame_war
-
+character_event = {
+	id = WCRLM.799
+	
 	is_triggered_only = yes
-
+	hide_window = yes
+	
 	immediate = {
 		# Creates Ymiron
 		create_character = {
@@ -573,6 +570,9 @@ narrative_event = {
 			age = 300
 		}
 		new_character = {
+			save_event_target_as = target_ymiron
+		}
+		event_target:target_ymiron = {
 			# Gives bloodline
 			create_bloodline = {
 				type = ymiron
@@ -598,16 +598,48 @@ narrative_event = {
 						limit = { is_betrothed = yes }
 						betrothed = { break_betrothal = PREV }
 					}
-					add_spouse = PREV
-					add_lover = PREV
+					add_spouse = event_target:target_ymiron
+					add_lover = event_target:target_ymiron
 				}
 			}
 			
-			# Ymiron gets k_howling_fjord or claim on k_howling_fjord
+			# Ymiron gets ROOT titles, k_howling_fjord or claim on k_howling_fjord
+			event_target:target_ymiron = { ROOT = { this_abdicate_transfer_wealth_to_play_prev_effect = yes } }
+			if = {
+				limit = {
+					k_howling_fjord = {
+						has_holder = no
+						is_title_active = THIS
+						is_titular = no
+					}
+				}
+				grant_title_no_opinion = k_howling_fjord
+			}
+			else = {
+				add_pressed_claim = k_howling_fjord
+			}
 			
 			# Ymiron gets army
 		}
+		
+		# Notification
+		any_player = {
+			limit = { any_realm_province = { region = world_northrend } }
+			repeat_event = { id = WCRLM.800 }
+		}
 	}
+}
+narrative_event = {
+	id = WCRLM.800
+	title = EVTTITLE_WCRLM_800
+	desc = EVTDESC_WCRLM_800
+	picture = GFX_evt_utgarde
+	border = GFX_event_narrative_frame_war
+	portrait = event_target:target_ymiron
+
+	is_triggered_only = yes
+	
+	hide_new = yes
 	
 	# Who cares?
 	option = {
