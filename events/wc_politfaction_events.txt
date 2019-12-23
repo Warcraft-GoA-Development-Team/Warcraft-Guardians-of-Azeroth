@@ -90,10 +90,8 @@ character_event = {
 		if = {
 			limit = {
 				FROMFROM = {
-					AND = {
-						is_tributary = { type = political_faction suzerain = suzerain }
-						suzerain = { trait = leader_of_horde_trait }
-					}
+					is_tributary = { type = political_faction suzerain = suzerain }
+					suzerain = { trait = leader_of_horde_trait }
 				}
 			}
 			join_horde_faction_effect = yes
@@ -102,40 +100,42 @@ character_event = {
 		else_if = {
 			limit = {
 				FROMFROM = {
-					AND = {
-						is_tributary = { type = political_faction suzerain = suzerain }
-						suzerain = { trait = leader_of_alliance_trait }
-					}
+					is_tributary = { type = political_faction suzerain = suzerain }
+					suzerain = { trait = leader_of_alliance_trait }
 				}
 			}
 			join_alliance_faction_effect = yes
 			FROMFROM = { leave_alliance_faction_effect = yes }
 		}
-		FROMFROM = {
-			trigger_switch = {
-				on_trigger = trait
-				leader_of_horde_trait = {
-					remove_trait = leader_of_horde_trait
-					# Transfers tributaries now since the game do it when the last title is transferred
-					any_tributary = {
-						limit = { is_tributary = { type = political_faction suzerain = suzerain } }
-						suzerain = { remove_tributary = PREV }
-						ROOT = { make_tributary = { who = PREV tributary_type = political_faction } }
-					}
-					ROOT = { become_leader_of_horde_faction_effect = yes }
-					break_alliances_with_horde_faction_effect = yes
+		else_if = {
+			limit = {
+				FROMFROM = {
+					trait = leader_of_horde_trait
 				}
-				leader_of_alliance_trait = {
-					remove_trait = leader_of_alliance_trait
-					# Transfers tributaries now since the game do it when the last title is transferred
-					any_tributary = {
-						limit = { is_tributary = { type = political_faction suzerain = suzerain } }
-						suzerain = { remove_tributary = PREV }
-						ROOT = { make_tributary = { who = PREV tributary_type = political_faction } }
-					}
-					ROOT = { become_leader_of_alliance_faction_effect = yes }
-					break_alliances_with_alliance_faction_effect = yes
+			}
+			FROMFROM = {
+				remove_trait = leader_of_horde_trait
+				# Transfers tributaries now since the game do it when the last title is transferred
+				any_tributary = {
+					limit = { is_tributary = { type = political_faction suzerain = suzerain } }
+					suzerain = { remove_tributary = PREV }
+					ROOT = { make_tributary = { who = PREV tributary_type = political_faction } }
 				}
+				ROOT = { become_leader_of_horde_faction_effect = yes }
+				break_alliances_with_horde_faction_effect = yes
+			}
+		}
+		else = {
+			FROMFROM = {
+				remove_trait = leader_of_alliance_trait
+				# Transfers tributaries now since the game do it when the last title is transferred
+				any_tributary = {
+					limit = { is_tributary = { type = political_faction suzerain = suzerain } }
+					suzerain = { remove_tributary = PREV }
+					ROOT = { make_tributary = { who = PREV tributary_type = political_faction } }
+				}
+				ROOT = { become_leader_of_alliance_faction_effect = yes }
+				break_alliances_with_alliance_faction_effect = yes
 			}
 		}
 	}
@@ -272,7 +272,7 @@ character_event = {
 	}
 }
 
-# One of members takes faction under control
+# New faction leader because prev leader leaves faction
 narrative_event = {
 	id = WCPLF.60
 	title = EVTTITLE_WCPLF_60
@@ -428,7 +428,6 @@ narrative_event = {
 		name = INTERESTING
 	}
 }
-
 
 # FROM asks you to accept FROM into your faction
 letter_event = {
