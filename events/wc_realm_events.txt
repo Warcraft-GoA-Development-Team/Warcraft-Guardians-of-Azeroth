@@ -555,6 +555,12 @@ character_event = {
 	hide_window = yes
 	
 	immediate = {
+		# Saves ROOT's liege for future use
+		if = {
+			limit = { independent = no }
+			liege = { save_event_target_as = target_liege }
+		}
+		
 		# Creates Ymiron
 		create_character = {
 			name=Ymiron
@@ -606,20 +612,26 @@ character_event = {
 			# Ymiron gets ROOT titles, k_howling_fjord or claim on k_howling_fjord
 			event_target:target_ymiron = { ROOT = { this_abdicate_transfer_wealth_to_play_prev_effect = yes } }
 			if = {
-				limit = {
-					k_howling_fjord = {
-						has_holder = no
-						is_title_active = THIS
-						is_titular = no
-					}
+				limit = { k_howling_fjord = { is_title_active = THIS } }
+				if = {
+					limit = { k_howling_fjord = { has_holder = no } }
+					grant_title_no_opinion = k_howling_fjord
 				}
-				grant_title_no_opinion = k_howling_fjord
+				else = {
+					add_pressed_claim = k_howling_fjord
+				}
 			}
-			else = {
-				add_pressed_claim = k_howling_fjord
+			if = {
+				limit = { event_target:target_liege = { character = yes } }
+				set_defacto_liege = event_target:target_liege
 			}
 			
-			# Ymiron gets army
+			# Ymiron gets army and commanders
+			spawn_fantastic_commander_effect = yes
+			spawn_great_commander_effect = yes
+			spawn_great_commander_effect = yes
+			# Well-balanced troops + fleet
+			spawn_colonial_troops_effect = yes
 		}
 		
 		# Notification
