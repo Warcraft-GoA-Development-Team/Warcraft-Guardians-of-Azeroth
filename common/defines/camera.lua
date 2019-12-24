@@ -45,9 +45,9 @@ NDefines.NFrontend.MP_OPTIONS_LOOK_Y = 0.0
 NDefines.NFrontend.MP_OPTIONS_LOOK_Z = 1650.0
 
 -- Move to position in credits
-NDefines.NFrontend.CREDITS_POS_X = 1000.0
-NDefines.NFrontend.CREDITS_POS_Y = 200.0
-NDefines.NFrontend.CREDITS_POS_Z = 1308.0
-NDefines.NFrontend.CREDITS_LOOK_X = 900.0
+NDefines.NFrontend.CREDITS_POS_X = 580.0
+NDefines.NFrontend.CREDITS_POS_Y = 125.0
+NDefines.NFrontend.CREDITS_POS_Z = 650.0
+NDefines.NFrontend.CREDITS_LOOK_X = 560.0
 NDefines.NFrontend.CREDITS_LOOK_Y = 0.0
-NDefines.NFrontend.CREDITS_LOOK_Z = 1450.0
+NDefines.NFrontend.CREDITS_LOOK_Z = 800.0
