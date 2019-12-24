@@ -37,12 +37,12 @@ NDefines.NFrontend.CAMERA_LOOKAT_SETTINGS_Y = 0.0
 NDefines.NFrontend.CAMERA_LOOKAT_SETTINGS_Z = 2010.0
 
 -- Move to position in multiplayer
-NDefines.NFrontend.MP_OPTIONS_POS_X = 360.0
-NDefines.NFrontend.MP_OPTIONS_POS_Y = 200.0
-NDefines.NFrontend.MP_OPTIONS_POS_Z = 848.0
-NDefines.NFrontend.MP_OPTIONS_LOOK_X = 490.0
+NDefines.NFrontend.MP_OPTIONS_POS_X = 620.0
+NDefines.NFrontend.MP_OPTIONS_POS_Y = 250.0
+NDefines.NFrontend.MP_OPTIONS_POS_Z = 1450.0
+NDefines.NFrontend.MP_OPTIONS_LOOK_X = 600.0
 NDefines.NFrontend.MP_OPTIONS_LOOK_Y = 0.0
-NDefines.NFrontend.MP_OPTIONS_LOOK_Z = 1200.0
+NDefines.NFrontend.MP_OPTIONS_LOOK_Z = 1650.0
 
 -- Move to position in credits
 NDefines.NFrontend.CREDITS_POS_X = 1000.0
