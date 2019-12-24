@@ -25,14 +25,14 @@ NDefines.NFrontend.CAMERA_LOOKAT_Y = 0.0
 NDefines.NFrontend.CAMERA_LOOKAT_Z = 1500.0
 
 -- Move to position in settings
-NDefines.NFrontend.SETTINGS_POS_X = 580.0
+NDefines.NFrontend.SETTINGS_POS_X = 560.0
 NDefines.NFrontend.SETTINGS_POS_Y = 125.0
 NDefines.NFrontend.SETTINGS_POS_Z = 650.0
-NDefines.NFrontend.SETTINGS_LOOK_X = 560.0
+NDefines.NFrontend.SETTINGS_LOOK_X = 540.0
 NDefines.NFrontend.SETTINGS_LOOK_Y = 0.0
 NDefines.NFrontend.SETTINGS_LOOK_Z = 800.0
 -- Rotation point in settings
-NDefines.NFrontend.CAMERA_LOOKAT_SETTINGS_X = 560.0
+NDefines.NFrontend.CAMERA_LOOKAT_SETTINGS_X = 540.0
 NDefines.NFrontend.CAMERA_LOOKAT_SETTINGS_Y = 0.0
 NDefines.NFrontend.CAMERA_LOOKAT_SETTINGS_Z = 800.0
 
