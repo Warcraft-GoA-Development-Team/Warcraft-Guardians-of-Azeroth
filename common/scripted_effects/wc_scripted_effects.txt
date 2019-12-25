@@ -3939,3 +3939,47 @@ create_d_church_scarlet_light_effect = {
 		set_defacto_liege = THIS
 	}
 }
+
+# Creates temporary landless title to avoid game over
+create_temporary_landless_title_effect = {
+	create_title = {
+		tier = DUKE
+		landless = yes
+		holder = THIS
+		culture = THIS
+	}
+	new_title = {
+		save_event_target_as = target_temporary_landless_title
+	}
+}
+# Destroys title created in create_temporary_landless_title_effect
+destroy_temporary_landless_title_effect = {
+	event_target:target_temporary_landless_title = {
+		activate_title = { title = THIS status = no }
+		destroy_landed_title = THIS
+	}
+	clear_event_target = target_temporary_landless_title
+}
+
+# THIS abdicates titles and transfers wealth to PREV
+this_abdicate_transfer_wealth_to_prev_effect = {
+	hidden_effect = {
+		PREV = { wealth = PREV }
+		clear_wealth = yes
+	}
+	abdicate_to = PREV
+}
+this_abdicate_transfer_wealth_to_play_prev_effect = {
+	hidden_effect = {
+		PREV = {
+			create_temporary_landless_title_effect = yes	# Creates temporary landless title to avoid game over
+			wealth = PREV
+		}
+		set_player_character = PREV	# THIS start playing PREV
+		clear_wealth = yes
+	}
+	abdicate_to = PREV
+	hidden_effect = {
+		PREV = { destroy_temporary_landless_title_effect = yes }	# Destroys title created in create_temporary_landless_title_effect
+	}
+}
