@@ -796,7 +796,8 @@ narrative_event = {
 	}
 }
 
-# Forsaken Path: Saidan makes deal with close relative of Silver Hand leader
+### Forsaken Path: Saidan makes deal with close relative of Silver Hand leader
+# Delayer event
 province_event = {
 	id = WCTFT.134
 	
@@ -809,18 +810,26 @@ province_event = {
 		d_order_of_the_silver_hand = {
 			has_holder = yes
 			holder_scope = { frozen_throne_silver_leader_trigger = yes }
-			any_close_relative = { frozen_throne_silver_betrayer_trigger = yes }
+			any_close_relative = {
+				is_inaccessible_trigger = no
+
+				frozen_throne_silver_betrayer_trigger = yes
+			}
 		}
 	}
 	
 	immediate = {
-		c_60021 = { save_event_target_as = target_saidan }
+		c_60021 = { save_event_target_as = target_future_crusader }
 		d_order_of_the_silver_hand = {
 			holder_scope = {
 				save_event_target_as = target_silver_leader
 				
 				random_close_relative = {
-					limit = { frozen_throne_silver_betrayer_trigger = yes }
+					limit = {
+						is_inaccessible_trigger = no
+
+						frozen_throne_silver_betrayer_trigger = yes
+					}
 					save_event_target_as = target_silver_betrayer
 					
 					narrative_event = { id = WCTFT.135 }
@@ -829,31 +838,133 @@ province_event = {
 		}
 	}
 }
+# Delayed event
 narrative_event = {
 	id = WCTFT.135
 	title = EVTTITLE_WCTFT_135
 	desc = EVTDESC_WCTFT_135
 	picture = GFX_evt_high_commander
-	border = GFX_event_narrative_frame_war
-	portrait = event_target:target_saidan
+	border = GFX_event_narrative_frame_intrigue
+	portrait = event_target:target_future_crusader
 
 	is_triggered_only = yes
+	
+	immediate = {
+		add_trait = travelling
+	}
 
 	# I'll do it
 	option = {
 		name = EVTOPTA_WCTFT_135
+		
+		73 = { province_event = { id = WCTFT.140 days = 14 random = 14 } }
 	}
 	
 	# I can't do it
 	option = {
 		name = EVTOPTB_WCTFT_135
+		
+		remove_trait = travelling
+		
+		ai_chance = {
+			factor = 0
+		}
 	}
 }
 
-# Forsaken Path: Renault murders Alexandros
+### Forsaken Path: You murders Silver Hand leader
+# Delayer event
+province_event = {
+	id = WCTFT.140
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
+		if = {
+			limit = {
+				event_target:target_silver_leader = { frozen_throne_silver_leader_trigger = yes }
+				event_target:target_silver_betrayer = { frozen_throne_silver_betrayer_trigger = yes }
+			}
+			event_target:target_silver_betrayer= { narrative_event = { id = WCTFT.141 } }
+		}
+		else = {
+			event_target:target_future_crusader = { character_event = { id = WCTFT.200 } }
+			event_target:target_silver_betrayer = { character_event = { id = WCTFT.200 } }
+		}
+	}
+}
+# Delayed event
+narrative_event = {
+	id = WCTFT.141
+	title = EVTTITLE_WCTFT_135
+	desc = EVTDESC_WCTFT_141
+	picture = GFX_evt_high_commander
+	border = GFX_event_narrative_frame_intrigue
+	portrait = event_target:target_silver_leader
+
+	is_triggered_only = yes
+	
+	immediate = {
+		event_target:target_silver_leader = {
+			# Saves artifact to be used in localization
+			if = {
+				limit = {
+					any_artifact = {
+						is_dueling_weapon_artifact_and_equipped = yes
+						is_sharp_weapon_artifact_trigger = yes
+					}
+				}
+				random_artifact = {
+					limit = {
+						is_dueling_weapon_artifact_and_equipped = yes
+						is_sharp_weapon_artifact_trigger = yes
+					}
+					save_event_target_as = dueling_weapon_1 #for loc purposes, kept separate
+				}
+			}
+		}
+	}
+
+	# The deed is done, may my own legend begin!
+	option = {
+		name = EVTOPTA_WCTFT_141
+		
+		event_target:target_silver_leader = {
+			show_scope_change = no
+			
+			tooltip = { death = { death_reason = death_murder_unknown_butchered killer = ROOT } }
+		}
+	}
+}
 
 # Forsaken Path: Silver Hand splinters into Scarlets and Argents
 ### Canon outcome - Argents and Scarlets both form ###
+
+### Forsaken Path: Silver Hand plot failed
+character_event = {
+	id = WCTFT.200
+	desc = EVTDESC_WCTFT_200
+	picture = GFX_evt_high_commander
+	border = GFX_event_normal_frame_intrigue
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = ALAS
+	}
+	
+	after = {
+		if = {
+			limit = {
+				trait = travelling
+				
+				character = event_target:target_silver_betrayer
+			}
+			remove_trait = travelling	
+		}
+	}
+}
 
 # Forsaken Path: Send a diplomat to the Horde?
 
