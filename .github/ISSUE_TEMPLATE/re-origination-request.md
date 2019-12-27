@@ -5,10 +5,11 @@ title: "Issue Title"
 labels: ":beetle: bug :beetle:"
 
 ---
-
+<!--
 **DO NOT REMOVE PRE-EXISTING LINES**
 ------------------------------------------------------------------------------------------------------------
-**Mod Version**
+-->
+**Your mod version is:**
 
 **What expansions do you have installed?**
 
