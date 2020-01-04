@@ -3980,27 +3980,45 @@ destroy_temporary_landless_title_effect = {
 
 # THIS abdicates titles and transfers wealth to PREV
 this_abdicate_transfer_wealth_to_prev_effect = {
+	save_event_target_as = target_ruler
+	PREV = { save_event_target_as = target_heir }
+	
 	hidden_effect = {
-		PREV = { wealth = PREV }
+		event_target:target_heir = { wealth = event_target:target_ruler }
 		clear_wealth = yes
+		any_artifact = {
+			transfer_artifact = { from = event_target:target_ruler to = event_target:target_heir }
+		}
 	}
-	abdicate_to = PREV
+	abdicate_to = event_target:target_heir
 	hidden_effect = {
-		move_character = PREV
+		move_character = event_target:target_heir
 	}
+	
+	clear_event_target =  target_ruler
+	clear_event_target =  target_heir
 }
 this_abdicate_transfer_wealth_to_play_prev_effect = {
+	save_event_target_as = target_ruler
+	PREV = { save_event_target_as = target_heir }
+	
 	hidden_effect = {
-		PREV = {
+		event_target:target_heir = {
 			create_temporary_landless_title_effect = yes	# Creates temporary landless title to avoid game over
-			wealth = PREV
+			wealth = event_target:target_ruler
 		}
-		set_player_character = PREV	# THIS start playing PREV
+		set_player_character = event_target:target_heir	# THIS start playing PREV
 		clear_wealth = yes
+		any_artifact = {
+			transfer_artifact = { from = event_target:target_ruler to = event_target:target_heir }
+		}
 	}
-	abdicate_to = PREV
+	abdicate_to = event_target:target_heir
 	hidden_effect = {
-		move_character = PREV
-		PREV = { destroy_temporary_landless_title_effect = yes }	# Destroys title created in create_temporary_landless_title_effect
+		move_character = event_target:target_heir
+		event_target:target_heir = { destroy_temporary_landless_title_effect = yes }	# Destroys title created in create_temporary_landless_title_effect
 	}
+	
+	clear_event_target =  target_ruler
+	clear_event_target =  target_heir
 }
