@@ -3744,7 +3744,11 @@ decrease_mind_control_stage_effect = {
 support_scarlet_light_effect = {
 	# Vassals of d_order_of_the_silver_hand become vassals of d_scarlet_crusade
 	if = {
-		limit = { de_facto_liege = d_order_of_the_silver_hand }
+		limit = {
+			is_landed = yes
+			
+			de_facto_liege = d_order_of_the_silver_hand
+		}
 		set_defacto_liege = d_scarlet_crusade
 	}
 	
@@ -3760,7 +3764,8 @@ support_scarlet_light_effect = {
 
 	if = {
 		limit = {
-			is_ruler = yes
+			is_landed = yes
+			
 			higher_real_tier_than = BARON
 		}
 		capital_scope = { 
@@ -3774,17 +3779,6 @@ support_scarlet_light_effect = {
 		}
 		
 		hidden_effect = {
-			any_close_relative = {
-				limit = {
-					is_ruler = no
-					host = { character = ROOT }
-					
-					religion = holy_light
-					NOT = { religion = scarlet_light }
-				}
-				religion = scarlet_light
-				clear_secret_religion = yes
-			}
 			any_courtier_or_vassal = {
 				limit = {
 					OR = {
@@ -3797,8 +3791,8 @@ support_scarlet_light_effect = {
 					OR = {
 						trait = zealous
 						has_evil_trait_trigger = yes
-						has_unpleasant_trait_trigger = yes
-						has_impious_trait_trigger = yes
+						
+						is_close_relative = PREV	# Close relatives pick Scarlet religion
 					}
 				}
 				religion = scarlet_light
@@ -3808,9 +3802,16 @@ support_scarlet_light_effect = {
 	}
 }
 support_argent_dawn_effect = {
+	piety = 100
+	
 	# Vassals of d_order_of_the_silver_hand become vassals of d_argent_dawn
 	if = {
-		limit = { de_facto_liege = d_order_of_the_silver_hand }
+		limit = {
+			is_landed = yes
+			
+			de_facto_liege = d_order_of_the_silver_hand
+			capital_scope = { region = world_eastern_kingdoms_lordaeron }
+		}
 		set_defacto_liege = d_argent_dawn
 	}
 }
@@ -3930,6 +3931,9 @@ create_d_scarlet_crusade_effect = {
 	
 	# Creates d_scarlet_crusade
 	event_target:target_grand_crusader = {
+		# Used in scripted effects
+		save_event_target_as = target_settler
+		
 		religion = scarlet_light
 		clear_secret_religion = yes
 		
@@ -3942,6 +3946,25 @@ create_d_scarlet_crusade_effect = {
 		activate_title = { title = d_scarlet_crusade status = yes }
 		d_scarlet_crusade = { grant_title = PREV }
 		set_defacto_liege = THIS
+		
+		# Gives start lands
+		c_whispering_gardens = {
+			# event_target:target_settler and its people settle here
+			settle_as_target_settler_effect = yes
+		}
+		d_hearthglen = {
+			any_direct_de_jure_vassal_title = {
+				# event_target:target_settler and its people settle here
+				settle_as_target_settler_effect = yes
+			}
+		}
+		
+		c_whispering_gardens = {
+			# Declares war against player
+			target_settler_declare_war_effect = yes
+		}
+		
+		clear_settler_flag_effect = yes
 	}
 }
 # Creates d_church_scarlet_light

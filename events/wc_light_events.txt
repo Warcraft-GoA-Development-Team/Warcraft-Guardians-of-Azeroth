@@ -280,9 +280,10 @@ narrative_event = {
 }
 
 ### The Scarlet Crusade and the Argent Dawn ###
-# Picks characters and province
+# on_yearly_pulse
+# Fires the Scarlet Crusade and the Argent Dawn
 character_event = {
-	id = WCLAT.9000
+	id = WCLAT.8995
 
 	is_triggered_only = yes
 	hide_window = yes
@@ -295,6 +296,12 @@ character_event = {
 			is_multiplayer_host_character = yes
 		}
 
+		# To make sure the Plague is over
+		OR = {
+			NOT = { has_global_flag = plague_of_lordaeron_happened_flag }
+			had_global_flag = { flag = plague_of_lordaeron_happened_flag years = 3 }
+		}
+
 		NOT = { 	#Frozen Throne variants are handled in wc_frozen_throne_story_events
 			start_date = 605.6.6
 			has_game_rule = {
@@ -303,47 +310,22 @@ character_event = {
 			}
 		}
 
-		NOT = { d_scarlet_crusade = { has_holder = yes } }
-		OR = {
-			NOT = { has_global_flag = plague_of_lordaeron_happened_flag }
-			had_global_flag = { flag = plague_of_lordaeron_happened_flag years = 3 }
-		}
-
-		# Lordaeron
-		269 = {
-			holder_scope = {
-				OR = {
-					NOT = { religion_group = light_group }
-					NOT = { religion_group = human_group }
-				}
-				top_liege = {
-					OR = {
-						NOT = { religion_group = light_group }
-						NOT = { religion_group = human_group }
-					}
-				}
-			}
-		}
-		# Stratholme
-		324 = {
-			holder_scope = {
-				OR = {
-					NOT = { religion_group = light_group }
-					NOT = { religion_group = human_group }
-				}
-				top_liege = {
-					OR = {
-						NOT = { religion_group = light_group }
-						NOT = { religion_group = human_group }
-					}
-				}
-			}
-		}
+		argent_dawn_and_scarlet_crusade_can_be_formed_trigger = yes
 	}
 
 	immediate = {
-		log = "WCLAT.9000 fired for [Root.GetBestName]"
-		
+		# Creates d_scarlet_crusade, d_argent_dawn
+		73 = { province_event = { id = WCLAT.9000 } }
+	}
+}
+# Creates d_scarlet_crusade, d_argent_dawn
+province_event = {
+	id = WCLAT.9000
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
 		### Creates d_argent_dawn
 		create_d_argent_dawn_effect = yes
 		
@@ -355,61 +337,58 @@ character_event = {
 		religious_split_holy_light_bad_effect = yes
 		religious_split_scarlet_light_good_effect = yes
 		
-		d_scarlet_crusade = {
-			holder_scope = {
-				# Used in scripted effects
-				save_event_target_as = target_settler
-				
-				c_whispering_gardens = {
-					# event_target:target_settler and its people settle here
-					settle_as_target_settler_effect = yes
-				}
-				d_hearthglen = {
-					any_direct_de_jure_vassal_title = {
-						# event_target:target_settler and its people settle here
-						settle_as_target_settler_effect = yes
+		# Notification
+		any_playable_ruler = {	# Doesn't fire for ROOT
+			limit = {
+				OR = {
+					religion = holy_light
+					religion = scarlet_light
+					true_religion = holy_light
+					true_religion = scarlet_light
+					trigger_if = {
+						limit = { ai = no }
+						any_realm_province = { region = world_eastern_kingdoms }
 					}
 				}
-				
-				c_whispering_gardens = {
-					# Declares war against player
-					target_settler_declare_war_effect = yes
-				}
-				
-				clear_settler_flag_effect = yes
-				
-				# Notification
-				narrative_event = { id = WCLAT.9001 }
 			}
+			narrative_event = { id = WCLAT.9001 }
 		}
 	}
 }
-# Starts event
+# Notification of Argent Dawn and Scarlet Crusade
 narrative_event = {
 	id = WCLAT.9001
 	title = EVTTITLE_WLAT_9001
-	desc = EVTDESC_WLAT_9001
+	desc = {
+		trigger = { event_target:target_former_highlord = { character = yes } }
+		text = EVTDESC_WLAT_9001_highlord
+	}
+	desc = {
+		trigger = { NOT = { event_target:target_former_highlord = { character = yes } } }
+		text = EVTDESC_WLAT_9001_division
+	}
 	picture = GFX_evt_high_commander
 	portrait = event_target:target_grand_crusader
 	border = GFX_event_narrative_frame_war
 
 	is_triggered_only = yes
 
-	major = yes
-	major_trigger = {
-		OR = {
-			ai = no
-			religion_group = light_group
+	# Fools!
+	option = {
+		trigger = {
+			evil_true_religion_trigger = yes
 		}
+		name = FOOLS
 	}
-	show_root = yes
 
 	# Support the Argent Dawn
 	option = {
-		trigger = { true_religion = holy_light }
+		trigger = {
+			true_religion = holy_light
+		}
 		name = EVTOPTA_WCLAT_9001
-
-		piety = 100
+		
+		support_argent_dawn_effect = yes
 
 		ai_chance = {
 			factor = 50
@@ -421,6 +400,9 @@ narrative_event = {
 	# Support the Scarlet Crusade
 	option = {
 		trigger = {
+			NOT = {
+				evil_true_religion_trigger = yes
+			}
 			OR = {
 				true_religion = scarlet_light
 				
@@ -437,16 +419,16 @@ narrative_event = {
 			supports_scarlet_light_score = yes
 		}
 	}
-
-	# Fools!
 	option = {
 		trigger = {
-			NOR = {
+			NOT = {
+				evil_true_religion_trigger = yes
 				true_religion = holy_light
 				true_religion = scarlet_light
+				is_potential_scarlet_follower_trigger = yes
 			}
 		}
-		name = FOOLS
+		name = WHO_CARES
 	}
 	
 	after = {
