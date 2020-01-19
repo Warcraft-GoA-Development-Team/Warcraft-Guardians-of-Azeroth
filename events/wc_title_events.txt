@@ -34,6 +34,28 @@ character_event = {
 					has_title_flag = blood_flag
 				}
 			}
+			e_lordaeron = {
+				holder_scope = { character = ROOT }
+				trigger_if = {
+					limit = { ROOT = { culture = forsaken } }
+					NOT = { has_title_flag = forsaken_flag }
+				}
+				trigger_else = {
+					ROOT = { NOT = { culture = forsaken } }
+					has_title_flag = forsaken_flag
+				}
+			}
+			k_lordaeron = {
+				holder_scope = { character = ROOT }
+				trigger_if = {
+					limit = { ROOT = { culture = forsaken } }
+					NOT = { has_title_flag = forsaken_flag }
+				}
+				trigger_else = {
+					ROOT = { NOT = { culture = forsaken } }
+					has_title_flag = forsaken_flag
+				}
+			}
 		}
 	}
 	
@@ -80,6 +102,44 @@ character_event = {
 				}
 			}
 		}
+		e_lordaeron = {
+			if = {
+				limit = { holder_scope = { character = ROOT } }
+				if = {
+					limit = {
+						ROOT = { culture = forsaken }
+						NOT = { has_title_flag = forsaken_flag }
+					}
+					set_forsaken_flag_effect = yes
+				}
+				else_if = {
+					limit = {
+						ROOT = { NOT = { culture = forsaken } }
+						has_title_flag = forsaken_flag
+					}
+					clr_forsaken_flag_effect = yes
+				}
+			}
+		}
+		k_lordaeron = {
+			if = {
+				limit = { holder_scope = { character = ROOT } }
+				if = {
+					limit = {
+						ROOT = { culture = forsaken }
+						NOT = { has_title_flag = forsaken_flag }
+					}
+					set_forsaken_flag_effect = yes
+				}
+				else_if = {
+					limit = {
+						ROOT = { NOT = { culture = forsaken } }
+						has_title_flag = forsaken_flag
+					}
+					clr_forsaken_flag_effect = yes
+				}
+			}
+		}
 	}
 }
 
@@ -97,17 +157,35 @@ character_event = {
 
 	trigger = {
 		FROM = {
-			OR = {
-				title = e_quelthalas
-				title = k_quelthalas
-			}
 			trigger_if = {
-				limit = { ROOT = { culture = blood_elf } }
-				NOT = { has_title_flag = blood_flag }
+				limit = {
+					OR = {
+						title = e_quelthalas
+						title = k_quelthalas
+					}
+				}
+				trigger_if = {
+					limit = { ROOT = { culture = blood_elf } }
+					NOT = { has_title_flag = blood_flag }
+				}
+				trigger_else = {
+					ROOT = { culture = high_elf }
+					has_title_flag = blood_flag
+				}
 			}
 			trigger_else = {
-				ROOT = { culture = high_elf }
-				has_title_flag = blood_flag
+				OR = {
+					title = e_lordaeron
+					title = k_lordaeron
+				}
+				trigger_if = {
+					limit = { ROOT = { culture = forsaken } }
+					NOT = { has_title_flag = forsaken_flag }
+				}
+				trigger_else = {
+					ROOT = { NOT = { culture = forsaken } }
+					has_title_flag = forsaken_flag
+				}
 			}
 		}
 	}
@@ -116,15 +194,35 @@ character_event = {
 		FROM = {
 			if = {
 				limit = {
-					ROOT = { culture = blood_elf }
-					NOT = { has_title_flag = blood_flag }
+					OR = {
+						title = e_quelthalas
+						title = k_quelthalas
+					}
 				}
-				set_title_flag = blood_flag
-				set_coa = d_sindorei
+				if = {
+					limit = {
+						ROOT = { culture = blood_elf }
+						NOT = { has_title_flag = blood_flag }
+					}
+					set_title_flag = blood_flag
+					set_coa = d_sindorei
+				}
+				else = {
+					clr_title_flag = blood_flag
+					reset_coa = THIS
+				}
 			}
 			else = {
-				clr_title_flag = blood_flag
-				reset_coa = THIS
+				if = {
+					limit = {
+						ROOT = { culture = forsaken }
+						NOT = { has_title_flag = forsaken_flag }
+					}
+					set_forsaken_flag_effect = yes
+				}
+				else = {
+					clr_forsaken_flag_effect = yes
+				}
 			}
 		}
 	}
