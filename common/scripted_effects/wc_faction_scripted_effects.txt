@@ -7,7 +7,10 @@ become_leader_of_horde_faction_effect = {
 		}
 		add_trait = leader_of_horde_trait
 		# Creates the Horde title
-		create_e_horde_effect = yes
+		if = {
+			limit = { NOT = { has_landed_title = e_horde } }
+			create_e_horde_effect = yes
+		}
 		hidden_effect = {
 			clr_character_flag = being_joined_horde_flag
 			# add_alliances_with_faction_effect = yes
@@ -30,8 +33,23 @@ become_leader_of_alliance_faction_effect = {
 		add_trait = leader_of_alliance_trait
 		# Creates the Alliance title
 		if = {
-			limit = { has_global_flag = centralized_alliance_flag }
+			limit = {
+				NOT = { has_landed_title = e_alliance }
+				has_global_flag = centralized_alliance_flag
+			}
 			create_e_alliance_effect = yes
+		}
+		else_if = {
+			limit = { NOT = { tier = EMPEROR } }
+			creates_empire_for_alliance_leader_effect = yes
+			primary_title = {
+				save_this_title_as_temporary_alliance_title_effect = yes
+			}
+		}
+		else = {
+			primary_title = {
+				save_this_title_as_temporary_alliance_title_effect = yes
+			}
 		}
 		hidden_effect = {
 			clr_character_flag = being_joined_alliance_flag
@@ -138,6 +156,8 @@ leave_horde_faction_effect = {
 			# Destroys faction
 			any_tributary = {
 				limit = { is_tributary = { type = political_faction suzerain = suzerain } }
+				show_scope_change = no
+				
 				leave_horde_faction_effect = yes
 			}
 			remove_trait = leader_of_horde_trait		# Must be after any_tributary
@@ -156,12 +176,16 @@ leave_horde_faction_effect = {
 				e_horde = { destroy_landed_title = THIS }
 			}
 			else = {
-				narrative_event = { id = WCPLF.106 }
+				e_horde = { holder_scope = { narrative_event = { id = WCPLF.106 } } }
 			}
 		}
 		if = {
 			limit = { is_tributary = yes }
-			suzerain = { remove_tributary = PREV }
+			suzerain = {
+				show_scope_change = no
+				
+				remove_tributary = PREV
+			}
 		}
 		if = {
 			limit = {
@@ -196,6 +220,14 @@ leave_alliance_faction_effect = {
 			}
 			if = {
 				limit = {
+					# If political factions are disabled, destroys it without any chance
+					NOT = {
+						has_game_rule = {
+							name = political_factions
+							value = disabled
+						}
+					}
+					
 					NOT = { has_global_flag = centralized_alliance_flag }
 					any_independent_ruler = {
 						NOT = { character = PREV }
@@ -222,29 +254,40 @@ leave_alliance_faction_effect = {
 							}
 						}
 					}
-					add_trait = leader_of_alliance_trait
+					set_character_flag = mention_alliance_flag	# Forces event to mention alliance
 					narrative_event = { id = WCPLF.60 }
+					clr_character_flag = mention_alliance_flag
+					become_leader_of_alliance_faction_effect = yes
 				}
-				any_tributary = {
-					limit = { is_tributary = { type = political_faction suzerain = suzerain } }
-					join_alliance_faction_effect = yes
+				hidden_effect = {
+					any_tributary = {
+						limit = { is_tributary = { type = political_faction suzerain = suzerain } }
+						join_alliance_faction_effect = yes
+					}
 				}
 			}
 			else = {
 				# Destroys faction
 				any_tributary = {
 					limit = { is_tributary = { type = political_faction suzerain = suzerain } }
+					show_scope_change = no
+					
 					leave_alliance_faction_effect = yes
 				}
 				remove_trait = leader_of_alliance_trait			# Must be after any_tributary
 				narrative_event = { id = WCPLF.205 }
 				activate_title = { title = e_alliance status = no }
 				e_alliance = { destroy_landed_title = THIS }
+				clear_temporary_alliance_title_effect = yes
 			}
 		}
 		if = {
 			limit = { is_tributary = yes }
-			suzerain = { remove_tributary = PREV }
+			suzerain = {
+				show_scope_change = no
+				
+				remove_tributary = PREV
+			}
 		}
 		if = {
 			limit = {
@@ -381,7 +424,11 @@ create_e_horde_effect = {
 		}
 		# Makes the Horde centralized after revival
 		if = {
-			limit = { NOT = { has_global_flag = centralized_horde_flag } }
+			limit = {
+				trait = leader_of_horde_trait # Condition is needed in case political factions are disabled
+				
+				NOT = { has_global_flag = centralized_horde_flag }
+			}
 			set_global_flag = centralized_horde_flag
 		}
 	}
@@ -402,13 +449,21 @@ create_e_horde_effect = {
 		}
 	}
 	if = {
-		limit = { NOT = { government = faction_government } }
+		limit = {
+			NOT = { government = faction_government }
+			
+			trait = leader_of_horde_trait # Condition is needed in case political factions are disabled
+		}
 		set_government_type = faction_government
 	}
 	hidden_effect = {
 		e_horde = { change_faction_laws = yes }
 		if = {
-			limit = { has_global_flag = centralized_horde_flag }
+			limit = {
+				trait = leader_of_horde_trait # Condition is needed in case political factions are disabled
+				
+				has_global_flag = centralized_horde_flag
+			}
 			# Breaks alliances before becoming vassal
 			break_alliances_with_horde_faction_effect = yes
 			any_tributary = {
@@ -430,6 +485,8 @@ create_e_horde_effect = {
 	}
 }
 create_e_alliance_effect = {
+	clear_temporary_alliance_title_effect = yes
+	
 	if = {
 		limit = { NOT = { has_landed_title = e_alliance } }
 		primary_title = {
@@ -451,7 +508,11 @@ create_e_alliance_effect = {
 			}
 		}
 		if = {
-			limit = { NOT = { has_global_flag = centralized_alliance_flag } }
+			limit = {
+				trait = leader_of_alliance_trait # Condition is needed in case political factions are disabled
+				
+				NOT = { has_global_flag = centralized_alliance_flag }
+			}
 			set_global_flag = centralized_alliance_flag
 		}
 	}
@@ -472,13 +533,21 @@ create_e_alliance_effect = {
 		}
 	}
 	if = {
-		limit = { NOT = { government = faction_government } }
+		limit = {
+			NOT = { government = faction_government }
+			
+			trait = leader_of_alliance_trait # Condition is needed in case political factions are disabled
+		}
 		set_government_type = faction_government
 	}
 	hidden_effect = {
 		e_alliance = { change_faction_laws = yes }
 		if = {
-			limit = { has_global_flag = centralized_alliance_flag }
+			limit = {
+				trait = leader_of_alliance_trait # Condition is needed in case political factions are disabled
+				
+				has_global_flag = centralized_alliance_flag
+			}
 			# Breaks alliances before becoming vassal
 			break_alliances_with_alliance_faction_effect = yes
 			any_tributary = {
@@ -584,4 +653,40 @@ change_faction_laws = {
 		}
 		add_law = { law = succession_voting_power_1 cooldown = no opinion_effect = no }
 	}
+}
+
+# Creates empire title for Alliance leader
+creates_empire_for_alliance_leader_effect = {
+	primary_title = {
+		create_title = {
+			tier = EMPEROR
+			landless = no
+			temporary = no
+			custom_created = yes
+			culture = PREV
+			holder = PREV
+			base_title = THIS
+			copy_title_laws = yes
+		}
+
+		# new_title = {
+			# copy_title_history = PREV
+		# }
+	}
+	# hidden_effect = {
+		# primary_title = {
+			# holder_scope = {
+				# prev_empire_de_jure_claim_control_titles_effect = yes
+			# }
+		# }
+	# }
+}
+
+# Saves this title as leader of alliance
+save_this_title_as_temporary_alliance_title_effect = {
+	clear_global_event_target = target_temporary_alliance_title
+	save_global_event_target_as = target_temporary_alliance_title
+}
+clear_temporary_alliance_title_effect = {
+	clear_global_event_target = target_temporary_alliance_title
 }

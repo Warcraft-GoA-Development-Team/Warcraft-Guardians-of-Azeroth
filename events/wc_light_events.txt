@@ -263,7 +263,6 @@ narrative_event = {
 		}
 		if = {
 			limit = {
-				has_dlc = "Holy Fury"
 				is_female = yes
 			}
 			create_bloodline = {
@@ -271,11 +270,7 @@ narrative_event = {
 				inheritance = matrilineal
 			}
 		}
-		else_if = {
-			limit = {
-				has_dlc = "Holy Fury"
-				is_female = no
-			}
+		else = {
 			create_bloodline = {
 				type = ashbringer_bloodline
 			}
@@ -342,156 +337,11 @@ character_event = {
 		log = "WCLAT.9000 fired for [Root.GetBestName]"
 		
 		### Creates d_argent_dawn
-		create_character = {
-			female = no
-			dynasty = none
-			culture=lordaeronian religion=holy_light
-			trait=brilliant_strategist
-			trait=creature_human
-			trait=class_paladin_7
-			trait=kind trait=just
-			age = 50
-		}
-		new_character = {
-			activate_title = { title = d_argent_dawn status = yes }
-			d_argent_dawn = { grant_title = PREV }
-			religion_authority = {
-				modifier = religious_order_formed
-				years = 10
-			}
-			religion_authority = {
-				modifier = religious_split_bad
-				years = 10
-			}
-			set_defacto_liege = THIS
-		}
+		create_d_argent_dawn_effect = yes
 		
 		### Creates d_scarlet_crusade and d_church_scarlet_light
-		# Picks Grand Crusader
-		if = {
-			limit = {
-				c_60021 = {		# Saidan
-					ai = yes
-
-					is_alive = yes
-
-					OR = {
-						religion = holy_light
-						religion = scarlet_light
-					}
-					OR = {
-						true_religion = holy_light
-						true_religion = scarlet_light
-					}
-					culture = lordaeronian
-					trait = zealous
-				}
-			}
-			c_60021 = { save_event_target_as = target_grand_crusader }
-		}
-		else = {
-			create_character = {
-				female = no
-				dynasty = none
-				culture = lordaeronian religion = scarlet_light
-				trait=brilliant_strategist
-				trait=creature_human
-				trait=class_paladin_7
-				trait=wroth trait=zealous
-				age = 50
-			}
-			new_character = { save_event_target_as = target_grand_crusader }
-		}
-		
-		# Creates d_scarlet_crusade
-		event_target:target_grand_crusader = {
-			# Used in scripted effects
-			save_event_target_as = target_settler
-			
-			religion = scarlet_light
-			clear_secret_religion = yes
-			
-			wealth = 500
-			religion_authority = {
-				modifier = religious_order_formed
-				years = 10
-			}
-			religion_authority = {
-				modifier = religious_split_good
-				years = 10
-			}
-			
-			activate_title = { title = d_scarlet_crusade status = yes }
-			d_scarlet_crusade = { grant_title = PREV }
-			set_defacto_liege = THIS
-			
-			c_whispering_gardens = {
-				# event_target:target_settler and its people settle here
-				settle_as_target_settler_effect = yes
-			}
-			d_hearthglen = {
-				any_direct_de_jure_vassal_title = {
-					# event_target:target_settler and its people settle here
-					settle_as_target_settler_effect = yes
-				}
-			}
-			
-			c_whispering_gardens = {
-				# Declares war against player
-				target_settler_declare_war_effect = yes
-			}
-			
-			clear_settler_flag_effect = yes
-			
-			narrative_event = { id = WCLAT.9001 }
-		}
-		
-		# Picks Grand Inquisitor
-		if = {
-			limit = {
-				c_60550 = {		# Isillien
-					ai = yes
-
-					is_alive = yes
-
-					OR = {
-						religion = holy_light
-						religion = scarlet_light
-					}
-					OR = {
-						true_religion = holy_light
-						true_religion = scarlet_light
-					}
-					culture = lordaeronian
-					trait = zealous
-				}
-			}
-			c_60550 = { save_event_target_as = target_grand_inquisitor }
-		}
-		else = {
-			create_character = {
-				dynasty = none
-				culture = lordaeronian religion = scarlet_light
-				trait=scholarly_theologian
-				trait=creature_human
-				trait=class_priest_6
-				trait=wroth trait=zealous add_trait=ambitious
-				age = 50
-			}
-			new_character = { save_event_target_as = target_grand_inquisitor }
-		}
-		
-		# Creates d_church_scarlet_light
-		event_target:target_grand_inquisitor = {
-			religion = scarlet_light
-			clear_secret_religion = yes
-			
-			wealth = 500
-			
-			activate_title = { title = d_church_scarlet_light status = yes }
-			d_church_scarlet_light = { grant_title = PREV }
-			set_defacto_liege = THIS
-		}
+		create_d_scarlet_crusade_effect = yes
+		create_d_church_scarlet_light_effect = yes
 	}
 }
 # Starts event
@@ -520,55 +370,11 @@ narrative_event = {
 		name = EVTOPTA_WCLAT_9001
 
 		piety = 100
-		tooltip = {
-			d_argent_dawn = {
-				show_scope_change = no
-				holder_scope = {
-					show_scope_change = no
-					religion_authority = {
-						modifier = religious_split_bad
-						years = 10
-					}
-				}
-			}
-			d_scarlet_crusade = {
-				show_scope_change = no
-				holder_scope = {
-					show_scope_change = no
-					religion_authority = {
-						modifier = religious_split_good
-						years = 10
-					}
-				}
-			}
-		}
 
 		ai_chance = {
-			factor = 33
-			modifier = {
-				factor = 20
-				NOT = { culture = lordaeronian }
-			}
-			modifier = {
-				factor = 2
-				trait = kind
-			}
-			modifier = {
-				factor = 1.32
-				trait = just
-			}
-			modifier = {
-				factor = 1.32
-				has_benevolent_trait_trigger = yes
-			}
-			modifier = {
-				factor = 1.32
-				has_pleasant_trait_trigger = yes
-			}
-			modifier = {
-				factor = 1.32
-				has_pious_trait_trigger = yes
-			}
+			factor = 50
+			
+			supports_holy_light_score = yes
 		}
 	}
 
@@ -593,118 +399,12 @@ narrative_event = {
 		}
 		name = EVTOPTB_WCLAT_9001
 		
-		tooltip = {
-			d_argent_dawn = {
-				show_scope_change = no
-				holder_scope = {
-					show_scope_change = no
-					religion_authority = {
-						modifier = religious_split_bad
-						years = 10
-					}
-				}
-			}
-			d_scarlet_crusade = {
-				show_scope_change = no
-				holder_scope = {
-					show_scope_change = no
-					religion_authority = {
-						modifier = religious_split_good
-						years = 10
-					}
-				}
-			}
-		}
-
-		religion = scarlet_light
-		if = {
-			limit = { has_secret_religion = yes }
-			clear_secret_religion = yes
-		}
-		if = {
-			limit = { NOT = { trait = zealous } }
-			if = {
-				limit = { trait = cynical }
-				remove_trait = cynical
-			}
-			add_trait = zealous
-		}
-
-		if = {
-			limit = {
-				is_ruler = yes
-				higher_real_tier_than = BARON
-			}
-			capital_scope = { 
-				if = {
-					limit = {
-						holder_scope = { character = PREVPREV }
-						NOT = { religion = scarlet_light }
-					}
-					religion = scarlet_light
-				}
-			}
-			
-			hidden_effect = {
-				any_close_relative = {
-					limit = {
-						is_ruler = no
-						host = { character = ROOT }
-						
-						religion = holy_light
-						NOT = { religion = scarlet_light }
-					}
-					religion = scarlet_light
-					clear_secret_religion = yes
-				}
-				any_courtier_or_vassal = {
-					limit = {
-						OR = {
-							is_ruler = no
-							tier = BARON
-						}
-						
-						religion = holy_light
-						NOT = { religion = scarlet_light }
-						OR = {
-							trait = zealous
-							has_evil_trait_trigger = yes
-							has_unpleasant_trait_trigger = yes
-							has_impious_trait_trigger = yes
-						}
-					}
-					religion = scarlet_light
-					clear_secret_religion = yes
-				}
-			}
-		}
+		support_scarlet_light_effect = yes
 
 		ai_chance = {
-			factor = 66
-			modifier = {
-				factor = 2
-				trait = zealous
-			}
-			modifier = {
-				factor = 1.09
-				trait = cruel
-			}
-			modifier = {
-				factor = 1.09
-				trait = arbitrary
-			}
-			modifier = {
-				factor = 1.09
-				has_evil_trait_trigger = yes
-			}
-			modifier = {
-				factor = 1.09
-				has_unpleasant_trait_trigger = yes
-			}
-			modifier = {
-				factor = 1.09
-				has_impious_trait_trigger = yes
-			}
+			factor = 50
+			
+			supports_scarlet_light_score = yes
 		}
 	}
 
@@ -717,7 +417,8 @@ narrative_event = {
 			}
 		}
 		name = FOOLS
-		
+	}
+	after = {
 		tooltip = {
 			d_argent_dawn = {
 				show_scope_change = no
