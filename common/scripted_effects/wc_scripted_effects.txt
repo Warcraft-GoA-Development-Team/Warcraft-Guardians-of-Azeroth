@@ -39,9 +39,7 @@ remove_racial_traits_effect = {
 	rejuvenate_effect = yes
 	
 	# Add new races always at the end
-	# Humans
 	if = { limit = { trait = creature_human 				} remove_trait = creature_human 				}
-
 	if = { limit = { trait = creature_orc 					} remove_trait = creature_orc 				}
 	if = { limit = { trait = creature_ogre 					} remove_trait = creature_ogre 				}
 	if = { limit = { trait = creature_troll 				} remove_trait = creature_troll 				}
@@ -138,7 +136,7 @@ remove_racial_traits_effect = {
 	if = { limit = { trait = creature_bronze_dragon			} remove_trait = creature_bronze_dragon		}
 	if = { limit = { trait = creature_bronze_wyrm			} remove_trait = creature_bronze_wyrm			}
 
-	if = { limit = { trait = creature_ice_giant				} remove_trait = creature_ice_giant			}
+	if = { limit = { trait = creature_giant				} remove_trait = creature_giant			}
 
 	if = { limit = { trait = creature_nraqi					} remove_trait = creature_nraqi				}
 	if = { limit = { trait = creature_cthraxxi				} remove_trait = creature_cthraxxi			}
@@ -149,18 +147,27 @@ remove_racial_traits_effect = {
 	if = { limit = { trait = creature_quilboar				} remove_trait = creature_quilboar			}
 	if = { limit = { trait = creature_tolvir				} remove_trait = creature_tolvir				}
 	if = { limit = { trait = creature_qiraji				} remove_trait = creature_qiraji				}
-
 	if = { limit = { trait = creature_dryad					} remove_trait = creature_dryad			}
 	if = { limit = { trait = creature_frostnymph			} remove_trait = creature_frostnymph			}
 	if = { limit = { trait = creature_highborne				} remove_trait = creature_highborne			}
-	if = { limit = { trait = creature_vulpera				} remove_trait = creature_vulpera			}
-	if = { limit = { trait = creature_sethrak				} remove_trait = creature_sethrak			}
 
 	# Infinite dragons
 	if = { limit = { trait = creature_infinite_whelp			} remove_trait = creature_infinite_whelp		}
 	if = { limit = { trait = creature_infinite_drake			} remove_trait = creature_infinite_drake		}
 	if = { limit = { trait = creature_infinite_dragon			} remove_trait = creature_infinite_dragon		}
 	if = { limit = { trait = creature_infinite_wyrm			} remove_trait = creature_infinite_wyrm			}
+
+	if = { limit = { trait = creature_old_god						} remove_trait = creature_old_god						}
+	if = { limit = { trait = creature_vulpera						} remove_trait = creature_vulpera						}
+	if = { limit = { trait = creature_sethrak						} remove_trait = creature_sethrak						}
+	if = { limit = { trait = creature_titan_keeper				} remove_trait = creature_titan_keeper			}
+	if = { limit = { trait = creature_titan							} remove_trait = creature_titan							}
+	
+	# Ancients
+	if = { limit = { trait = creature_protector 					} remove_trait = creature_protector 					}
+	if = { limit = { trait = creature_ancient_war				} remove_trait = creature_ancient_war				}
+	if = { limit = { trait = creature_ancient_lore				} remove_trait = creature_ancient_lore			}
+	if = { limit = { trait = creature_ancient_wind				} remove_trait = creature_ancient_wind			}
 
 	# Race-related traits
 	if = { limit = { trait = twoheaded 						} remove_trait = twoheaded					}
@@ -3383,66 +3390,6 @@ remove_offmap_power_effect = {
 	remove_character_modifier = gaze_of_undeath
 }
 
-build_all_evil_buildings_title_effect = {
-	hidden_effect = {
-		if = {
-			limit = { location = { use_scourge_buildings_trigger = yes } }
-			if = {
-				limit = { holding_type = castle }
-				build_scourge_castle_buildings_effect = yes
-			}
-			else_if = {
-				limit = { holding_type = city }
-				build_scourge_city_buildings_effect = yes
-			}
-			else = {
-				build_scourge_temple_buildings_effect = yes
-			}
-		}
-		else_if = {
-			limit = { location = { use_legion_buildings_trigger = yes } }
-			if = {
-				limit = { holding_type = castle }
-				build_legion_castle_buildings_effect = yes
-			}
-			else_if = {
-				limit = { holding_type = city }
-				build_legion_city_buildings_effect = yes
-			}
-			else = {
-				build_legion_temple_buildings_effect = yes
-			}
-		}
-		else_if = {
-			limit = { location = { use_shathyar_buildings_trigger = yes } }
-			if = {
-				limit = { holding_type = castle }
-				build_shathyar_castle_buildings_effect = yes
-			}
-			else_if = {
-				limit = { holding_type = city }
-				build_shathyar_city_buildings_effect = yes
-			}
-			else = {
-				build_shathyar_temple_buildings_effect = yes
-			}
-		}
-	}
-}
-build_all_evil_buildings_province_effect = {
-	hidden_effect = {
-		any_province_holding = {
-			limit = {
-				OR = {
-					holding_type = castle
-					holding_type = city
-					holding_type = temple
-				}
-			}
-			build_all_evil_buildings_title_effect = yes
-		}
-	}
-}
 # Gives cannibal_trait to your courtiers
 court_share_cannibal_trait_effect = {
 	hidden_effect = {
@@ -3963,25 +3910,63 @@ destroy_temporary_landless_title_effect = {
 
 # THIS abdicates titles and transfers wealth to PREV
 this_abdicate_transfer_wealth_to_prev_effect = {
+	save_event_target_as = target_ruler
+	PREV = { save_event_target_as = target_heir }
+	
 	hidden_effect = {
-		PREV = { wealth = PREV }
+		# Transfers wealth and artifacts
+		event_target:target_heir = { wealth = event_target:target_ruler }
 		clear_wealth = yes
+			any_artifact = {
+			transfer_artifact = { from = event_target:target_ruler to = event_target:target_heir }
+		}
 	}
-	abdicate_to = PREV
+	abdicate_to = event_target:target_heir
+	hidden_effect = {
+		# Lose claims on target_heir titles
+		any_claim = {
+			limit = {
+				holder_scope = { character = event_target:target_heir }
+			}
+			remove_claim = event_target:target_ruler
+		}
+		move_character = event_target:target_heir
+	}
+	
+	clear_event_target =  target_ruler
+	clear_event_target =  target_heir
 }
 this_abdicate_transfer_wealth_to_play_prev_effect = {
+	save_event_target_as = target_ruler
+	PREV = { save_event_target_as = target_heir }
+	
 	hidden_effect = {
-		PREV = {
+		# Transfers wealth and artifacts
+		event_target:target_heir = {
 			create_temporary_landless_title_effect = yes	# Creates temporary landless title to avoid game over
-			wealth = PREV
+			wealth = event_target:target_ruler
 		}
-		set_player_character = PREV	# THIS start playing PREV
 		clear_wealth = yes
+		any_artifact = {
+			transfer_artifact = { from = event_target:target_ruler to = event_target:target_heir }
+		}
+		set_player_character = event_target:target_heir	# THIS start playing PREV
 	}
-	abdicate_to = PREV
+	abdicate_to = event_target:target_heir
 	hidden_effect = {
-		PREV = { destroy_temporary_landless_title_effect = yes }	# Destroys title created in create_temporary_landless_title_effect
+		# Lose claims on target_heir titles
+		any_claim = {
+			limit = {
+				holder_scope = { character = event_target:target_heir }
+			}
+			remove_claim = event_target:target_ruler
+		}
+		move_character = event_target:target_heir
+		event_target:target_heir = { destroy_temporary_landless_title_effect = yes }	# Destroys title created in create_temporary_landless_title_effect
 	}
+	
+	clear_event_target =  target_ruler
+	clear_event_target =  target_heir
 }
 
 add_artifact_frostmourne_effect = {
