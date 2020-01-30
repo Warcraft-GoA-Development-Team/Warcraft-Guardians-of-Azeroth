@@ -22,6 +22,7 @@ has_active_faction_title_trigger = {
 		}
 	}
 }
+# Common condtions to stay
 common_faction_trigger = {
 	is_untouchable_trigger = no
 	evil_government_trigger = no
@@ -46,17 +47,20 @@ common_faction_trigger = {
 	is_nomadic = no
 	higher_real_tier_than = COUNT
 }
+# If it's not true, character can't lead faction in and must be kicked
 can_lead_faction_trigger = {
 	is_republic = no
 	is_theocracy = no
 	
 	common_faction_trigger = yes
 }
+# If it's not true, character can't stay in and must be kicked
 can_be_in_faction_trigger = {
 	evil_public_religion_trigger = no
 	
 	common_faction_trigger = yes
 }
+# If it's not true, character can't stay in the Horde and must be kicked
 can_be_in_horde_faction_trigger = {
 	trigger_if = {
 		limit = { trait = leader_of_horde_trait }
@@ -81,6 +85,7 @@ can_be_in_horde_faction_trigger = {
 		e_horde = { holder_scope = { trait = leader_of_horde_trait } }
 	}
 }
+# If it's not true, character can't stay in the Alliance and must be kicked
 can_be_in_alliance_faction_trigger = {
 	trigger_if = {
 		limit = { trait = leader_of_alliance_trait }
@@ -103,6 +108,10 @@ can_be_in_alliance_faction_trigger = {
 	OR = {
 		NOT = { e_alliance = { has_holder = yes } }
 		e_alliance = { holder_scope = { trait = leader_of_alliance_trait } }
+	}
+	OR = {
+		NOT = { event_target:target_temporary_alliance_title = { has_holder = yes } }
+		event_target:target_temporary_alliance_title = { holder_scope = { trait = leader_of_alliance_trait } }
 	}
 }
 is_member_of_horde_faction_trigger = {
@@ -142,17 +151,6 @@ has_opinion_to_join_prev_faction_leader_trigger = {
 }
 # Enought opinion to stay in faction
 has_good_opinion_with_prev_faction_leader_trigger = {
-	NOT = {
-		evil_public_religion_trigger = yes
-		religion_group = elemental_lords_group
-		religion = scarlet_light
-		religion = lightbound
-		religion = cult_of_hakkar
-		
-		religion = water_deities
-		religion = cult_of_the_candle
-		religion = primitive_shamanism
-	}
 	trigger_if = {
 		limit = { ongoing_invasion_trigger = yes }
 		opinion = { who = PREV value = -50 }
@@ -228,6 +226,20 @@ has_alliance_religion_trigger = {
 		religion = rationalism
 		religion = mystery_of_the_makers
 		religion = tidemother
+	}
+}
+# If it's not true, character can't join faction
+can_join_faction_trigger = {
+	trigger_if = {
+		limit = { ai = yes }
+		custom_tooltip = {
+			text = is_aggressive_trigger_negative_tooltip
+			is_aggressive_trigger = no
+		}
+		NOT = {
+			has_landed_title = d_syndicate
+			has_landed_title = d_defias_brotherhood
+		}
 	}
 }
 can_leave_faction_trigger = {
