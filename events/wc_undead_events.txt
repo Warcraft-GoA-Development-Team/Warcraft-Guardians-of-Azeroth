@@ -1954,6 +1954,10 @@ character_event = {
 	}
 }
 
+
+#############################################
+#				Lich King Mind Control Mechanics
+#############################################
 # Increases power of mind control.
 # This stages important only for Lich King
 # Stages:
@@ -2166,10 +2170,13 @@ character_event = {
 		set_character_flag = freed_from_lich_king_flag
 		e_scourge = {
 			show_scope_change = no
+			
 			holder_scope = {
 				show_scope_change = no
+				
 				ROOT = {
 					show_scope_change = no
+					
 					if = {
 						limit = {
 							is_ruler = yes
@@ -2182,17 +2189,23 @@ character_event = {
 					remove_opinion = { modifier = opinion_loyal_servant who = PREV }
 					opinion = { modifier = opinion_evil_tyrant who = PREV }
 					
+					# Changes religion
 					if = {
-						limit = { religion = PREV }
+						limit = { religion = PREV }	#Has Lich King's religion
+						# If you have secret religion, convert to it
 						if = {
 							limit = { has_secret_religion = yes }
 							convert_to_secret_religion = yes
 							break = yes
 						}
+						# Convert to religion of your capital
 						else_if = {
 							limit = {
 								is_landed = yes
-								capital_scope = { evil_public_religion_trigger = no }
+								capital_scope = {
+									evil_public_religion_trigger = no
+									is_reformed_religion_trigger = yes
+								}
 							}
 							capital_scope = {
 								show_scope_change = no
@@ -2205,6 +2218,49 @@ character_event = {
 						else = {
 							# Fallback
 							religion = forsaken_cult
+						}
+					}
+					# Changes culture to Forsaken
+					if = {
+						limit ={ culture = scourge }
+						culture = forsaken
+					}
+					hidden_effect = {
+						# Changes religion and culture of your provinces
+						any_demesne_province = {
+							limit = {
+								OR = {
+									religion = PREVPREV #Has Lich King's religion
+									culture = scourge
+								}
+							}
+							if = {
+								limit = { religion = PREVPREV } #Has Lich King's religion
+								religion = ROOT
+							}
+							if = {
+								limit = { culture = scourge }
+								culture = ROOT
+							}
+						}
+						# Changes religion and culture of your courtiers
+						any_courtier_or_vassal = {
+							limit = {
+								OR = {
+									OR = {
+										religion = PREVPREV #Has Lich King's religion
+										culture = scourge
+									}
+								}
+							}
+							if = {
+								limit = { religion = PREVPREV } #Has Lich King's religion
+								religion = ROOT
+							}
+							if = {
+								limit = { culture = scourge }
+								culture = ROOT
+							}
 						}
 					}
 				}
@@ -2335,6 +2391,7 @@ character_event = {
 		remove_5_mind_control_power_effect = yes
 	}
 }
+#############################################
 
 # Kills Ner'zhul if he isn't a Lick King anymore
 character_event = {
