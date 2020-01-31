@@ -10,15 +10,13 @@ targetted_decisions = {
 		from_potential = { can_sacrifice_characters_to_og_potential_trigger = yes }
 
 		potential = {
-			prisoner = yes
-			can_be_sacrificed_trigger = yes
-			is_untouchable_trigger = no
+			THIS_is_prisoner_that_can_be_sacrificed_trigger = yes
 			host = { character = FROM }
 		}
 
 		allow = {
 			NOT = { diplomatic_immunity = yes }
-			FROM = { can_sacrifice_characters_to_og_allow_trigger = yes }
+			FROM = { can_sacrifice_characters_allow_trigger = yes }
 		}
 
 		effect = {
@@ -29,6 +27,7 @@ targetted_decisions = {
 					show_scope_change = no
 
 					caltulate_PREV_offmap_old_gods_currency_insanity_effect = yes
+					hidden_effect = { add_offmap_old_gods_currency_insanity_after_calculation_effect = yes }
 					PREV_sacrifice_THIS_to_old_god_effect = yes
 				}
 			}
@@ -55,6 +54,39 @@ targetted_decisions = {
 					is_landed = yes
 				}
 			}
+		}
+	}
+}
+
+decisions = {
+	wc_united_sacrifice_all_prisoners_decision = {
+		ai = no
+
+		potential = {
+			is_playable = yes
+			OR = {
+				AND = {
+					religion = old_gods_worship
+					true_religion = old_gods_worship
+				}
+				religion_have_ritual_sacrifice_trigger = yes
+			}
+			trigger_if = {
+				limit = { independent = no }
+				any_liege = { religion = ROOT }
+			}
+			any_courtier = {
+				THIS_is_prisoner_that_can_be_sacrificed_trigger = yes
+				host = { character = ROOT }
+			}
+		}
+
+		allow = { can_sacrifice_characters_allow_trigger = yes }
+
+		effect = {
+			set_character_flag = wc_do_not_show_post_sacrifice_event_flag
+			sacrifice_all_prisoners_decision_effect = yes
+			clr_character_flag = wc_do_not_show_post_sacrifice_event_flag
 		}
 	}
 }

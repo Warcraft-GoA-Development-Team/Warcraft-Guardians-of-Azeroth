@@ -1,3 +1,79 @@
+PREV_public_sacrifice_THIS_effect = {
+	save_event_target_as = target_localization_sacrifice
+	any_liege = {
+		limit = {
+			ai = no
+			NOT = { character = PREVPREV }
+		}
+		character_event = { id = SSI.60 }
+	}
+	PREV = {
+		if = {
+			limit = { NOT = { has_character_flag = wc_do_not_show_post_sacrifice_event_flag } }
+			character_event = { id = HF.23002 }
+		}
+	}
+
+	if = {
+		limit = { is_ruler = yes }
+		if = {
+			limit = { tier = BARON }
+			PREV = { piety = 15 }
+		}
+		else_if = {
+			limit = { tier = COUNT }
+			PREV = { piety = 30 }
+		}
+		else_if = {
+			limit = { tier = DUKE }
+			PREV = { piety = 75 }
+		}
+		else_if = {
+			limit = { tier = KING }
+			PREV = { piety = 150 }
+		}
+		else = {
+			limit = { tier = EMPEROR }
+			PREV = { piety = 250 }
+		}
+	}
+	else = { PREV = { piety = 5 } }
+	#Bloodthirsty Bloodline bonus.
+	if = {
+		limit = { PREV = { any_owned_bloodline = { has_bloodline_flag = bloodline_prestige_sacrifice } } }
+
+		if = {
+			limit = { is_ruler = yes }
+			if = {
+				limit = { tier = BARON }
+				PREV = { prestige = 30 }
+			}
+			else_if = {
+				limit = { tier = COUNT }
+				PREV = { prestige = 60 }
+			}
+			else_if = {
+				limit = { tier = DUKE }
+				PREV = { prestige = 150 }
+			}
+			else_if = {
+				limit = { tier = KING }
+				PREV = { prestige = 300 }
+			}
+			else = {
+				limit = { tier = EMPEROR }
+				PREV = { prestige = 500 }
+			}
+		}
+		else = { PREV = { prestige = 10 } }
+	}
+
+	death = {
+		death_reason = death_execution_aztec_sacrifice
+		killer = PREV
+	}
+}
+
 # DO NOT FORGET TO CHANGE "third_party_score" INSIDE OF "offmap_sacrifice" DECISION IF YOU CHANGE THIS!
 caltulate_PREV_offmap_old_gods_currency_insanity_effect = {
 	if = {
@@ -16,9 +92,9 @@ caltulate_PREV_offmap_old_gods_currency_insanity_effect = {
 
 			custom_tooltip = { text = gain_old_god_offmap_currency_tooltip }
 		}
-		hidden_tooltip = {
+		hidden_effect = {
 			# Base
-			change_variable = { which = local_received_offmap_old_gods_currency_insanity_variable value = 100 }
+			set_variable = { which = local_received_offmap_old_gods_currency_insanity_variable value = 100 }
 			# Priests
 			if = {
 				limit = { controls_religion = yes }
@@ -121,49 +197,35 @@ caltulate_PREV_offmap_old_gods_currency_insanity_effect = {
 }
 
 add_offmap_old_gods_currency_insanity_after_calculation_effect = {
-	if = {
-		limit = { old_gods_offmap_decisions_enabled_trigger = yes }
-
+	PREV = {
 		if = {
-			limit = { cthun_offmap_decisions_enabled_trigger = yes }
+			limit = { old_gods_offmap_decisions_enabled_trigger = yes }
 
-			add_offmap_currency = {
-				offmap = offmap_cthun
-				value = local_received_offmap_old_gods_currency_insanity_variable
+			if = {
+				limit = { cthun_offmap_decisions_enabled_trigger = yes }
+
+				add_offmap_currency = {
+					offmap = offmap_cthun
+					value = local_received_offmap_old_gods_currency_insanity_variable
+				}
+			}
+			else_if = {
+				limit = { nzoth_offmap_decisions_enabled_trigger = yes }
+
+				add_offmap_currency = {
+					offmap = offmap_nzoth
+					value = local_received_offmap_old_gods_currency_insanity_variable
+				}
+			}
+			else_if = {
+				limit = { yogg_saron_offmap_decisions_enabled_trigger = yes }
+
+				add_offmap_currency = {
+					offmap = offmap_yoggsaron
+					value = local_received_offmap_old_gods_currency_insanity_variable
+				}
 			}
 		}
-		else_if = {
-			limit = { nzoth_offmap_decisions_enabled_trigger = yes }
-
-			add_offmap_currency = {
-				offmap = offmap_nzoth
-				value = local_received_offmap_old_gods_currency_insanity_variable
-			}
-		}
-		else_if = {
-			limit = { yogg_saron_offmap_decisions_enabled_trigger = yes }
-
-			add_offmap_currency = {
-				offmap = offmap_yoggsaron
-				value = local_received_offmap_old_gods_currency_insanity_variable
-			}
-		}
-	}
-}
-
-PREV_public_sacrifice_THIS_effect = {
-	save_event_target_as = target_localization_sacrifice
-	any_liege = {
-		limit = {
-			ai = no
-			NOT = { character = PREVPREV }
-		}
-		character_event = { id = SSI.60 }
-	}
-	PREV = { character_event = { id = HF.23002 } }
-	death = {
-		death_reason = death_execution_aztec_sacrifice
-		killer = PREV
 	}
 }
 
@@ -183,5 +245,19 @@ PREV_sacrifice_THIS_to_old_god_effect = {
 			hidden_effect = { murder_bloodline_check_effect = yes }
 		}
 		from_society_sacrifice_root_effect = yes
+	}
+}
+
+sacrifice_all_prisoners_decision_effect = {
+	hidden_effect = {
+		any_courtier = {
+			limit = {
+				THIS_is_prisoner_that_can_be_sacrificed_trigger = yes
+				host = { character = ROOT }
+			}
+			caltulate_PREV_offmap_old_gods_currency_insanity_effect = yes
+			add_offmap_old_gods_currency_insanity_after_calculation_effect = yes
+			PREV_public_sacrifice_THIS_effect = yes
+		}
 	}
 }
