@@ -1394,17 +1394,7 @@ remove_3_mind_control_power_effect = {
 
 free_from_lich_king_effect = {
 	if = {
-		limit = {
-			trait = being_undead
-			NOT = { trait = champion_of_the_lich_king }
-			NOT = { has_landed_title = e_scourge }
-			e_scourge = {
-				has_holder = yes
-				holder_scope = {
-					religion = PREVPREV
-				}
-			}
-		}
+		limit = { can_break_scourge_mind_control_trigger = yes }
 		custom_tooltip = {
 			text = free_from_lich_king_effect_tooltip
 			character_event = { id = WCUND.1109 }
@@ -1453,6 +1443,7 @@ add_sunwell_effect = {
 		wonder = {
 			remove_sunwells_effect = yes
 			set_name = wonder_sunwell_sunwell
+			set_wonder_damaged = no
 		}
 	}
 }
@@ -1464,6 +1455,7 @@ add_lightwell_effect = {
 			remove_sunwells_effect = yes
 			set_wonder_flag = wonder_lightwell_flag
 			set_name = wonder_sunwell_sunwell
+			set_wonder_damaged = no
 		}
 	}
 }
@@ -1474,6 +1466,7 @@ add_deathwell_effect = {
 			remove_sunwells_effect = yes
 			set_wonder_flag = wonder_deathwell_flag
 			set_name = wonder_sunwell_deathwell
+			set_wonder_damaged = no
 		}
 	}
 }
@@ -1485,6 +1478,7 @@ add_felwell_effect = {
 			remove_sunwells_effect = yes
 			set_wonder_flag = wonder_felwell_flag
 			set_name = wonder_sunwell_felwell
+			set_wonder_damaged = no
 		}
 	}
 }
@@ -3484,12 +3478,6 @@ increase_mind_control_stage_effect = {
 						NOT = { character = ROOT }
 					
 						can_be_mind_controlled_by_scourge_trigger = yes
-						e_scourge = {
-							has_holder = yes
-							holder_scope = {
-								NOT = { religion = PREVPREV }
-							}
-						}
 					}
 					character_event = { id = WCUND.1108 days = 1 }		# Check religion
 				}
@@ -3512,12 +3500,6 @@ increase_mind_control_stage_effect = {
 							NOT = { character = ROOT }
 						
 							can_be_mind_controlled_by_scourge_trigger = yes
-							e_scourge = {
-								has_holder = yes
-								holder_scope = {
-									NOT = { religion = PREVPREV }
-								}
-							}
 						}
 						character_event = { id = WCUND.1108 days = 1 }		# Check religion
 					}
@@ -3538,12 +3520,6 @@ increase_mind_control_stage_effect = {
 							NOT = { character = ROOT }
 						
 							can_be_mind_controlled_by_scourge_trigger = yes
-							e_scourge = {
-								has_holder = yes
-								holder_scope = {
-									NOT = { religion = PREVPREV }
-								}
-							}
 						}
 						random = {
 							chance = 50
@@ -3563,12 +3539,6 @@ increase_mind_control_stage_effect = {
 							NOT = { character = ROOT }
 						
 							can_be_mind_controlled_by_scourge_trigger = yes
-							e_scourge = {
-								has_holder = yes
-								holder_scope = {
-									NOT = { religion = PREVPREV }
-								}
-							}
 						}
 						random = {
 							chance = 25
@@ -3594,13 +3564,7 @@ decrease_mind_control_stage_effect = {
 				limit = {
 					NOT = { character = ROOT }
 					
-					can_be_mind_controlled_by_scourge_trigger = yes
-					e_scourge = {
-						has_holder = yes
-						holder_scope = {
-							religion = PREVPREV
-						}
-					}
+					can_break_scourge_mind_control_trigger = yes
 				}
 				random = {
 					chance = 75
@@ -3624,13 +3588,7 @@ decrease_mind_control_stage_effect = {
 				limit = {
 					NOT = { character = ROOT }
 					
-					can_be_mind_controlled_by_scourge_trigger = yes
-					e_scourge = {
-						has_holder = yes
-						holder_scope = {
-							religion = PREVPREV
-						}
-					}
+					can_break_scourge_mind_control_trigger = yes
 				}
 				random = {
 					chance = 50
@@ -3650,13 +3608,7 @@ decrease_mind_control_stage_effect = {
 				limit = {
 					NOT = { character = ROOT }
 					
-					can_be_mind_controlled_by_scourge_trigger = yes
-					e_scourge = {
-						has_holder = yes
-						holder_scope = {
-							religion = PREVPREV
-						}
-					}
+					can_break_scourge_mind_control_trigger = yes
 				}
 				random = {
 					chance = 25
@@ -3921,7 +3873,7 @@ this_abdicate_transfer_wealth_to_prev_effect = {
 			transfer_artifact = { from = event_target:target_ruler to = event_target:target_heir }
 		}
 	}
-	abdicate_to = event_target:target_heir
+	abdicate_to = PREV
 	hidden_effect = {
 		# Lose claims on target_heir titles
 		any_claim = {
@@ -3952,7 +3904,7 @@ this_abdicate_transfer_wealth_to_play_prev_effect = {
 		}
 		set_player_character = event_target:target_heir	# THIS start playing PREV
 	}
-	abdicate_to = event_target:target_heir
+	abdicate_to = PREV
 	hidden_effect = {
 		# Lose claims on target_heir titles
 		any_claim = {
@@ -3967,4 +3919,35 @@ this_abdicate_transfer_wealth_to_play_prev_effect = {
 	
 	clear_event_target =  target_ruler
 	clear_event_target =  target_heir
+}
+
+fire_councilmember_king_effect = {
+	any_courtier_or_vassal = {
+		limit = { has_minor_title = title_councilmember_king }
+		leave_council_position_no_opinion_effect = yes
+	}
+}
+fire_councilmember_emperor_effect = {
+	any_courtier_or_vassal = {
+		limit = { has_minor_title = title_councilmember_emperor }
+		leave_council_position_no_opinion_effect = yes
+	}
+}
+
+add_artifact_frostmourne_effect = {
+	save_global_event_target_as = target_frostmourne_holder
+	add_artifact = frostmourne
+	hidden_effect = {
+		new_artifact = {
+			set_creation_date = 591.11.1
+			set_original_owner = event_target:target_lich_king
+		}
+	}
+}
+
+free_scourge_from_legion_effect = {
+	custom_tooltip = {
+		text = you_are_no_longer_pawn_of_the_legion_tooltip
+		clr_global_flag = scourge_is_under_legion_control_flag
+	}
 }

@@ -299,61 +299,58 @@ decisions = {
 			}
 		}
 	}
-}
-targetted_decisions = {
-	choose_champion_of_the_lich_king = {
+	
+	# If Lich King is in_ice_prison, she/he can merge with holder of Frostmourne
+	merge_with_champion = {
 		is_high_prio = yes
 		
-		filter = realm
-		ai_target_filter = vassals
-		ai_check_interval = 6
+		ai_check_interval = 12
 
 		only_playable = yes
+		only_independent = yes
 
-		from_potential = {
-			always = no	# TODO
+		potential = {
+			NOT = { has_character_flag = merge_with_champion_ongoing_flag }
 			
-			NOT = { champion_of_the_lich_king = { always = yes } }
+			trait = in_ice_prison
 			
 			has_landed_title = e_scourge
 		}
-		potential = {
-			always = no	# TODO
-			
-			is_adult = yes
-			is_incapable = no
-			prisoner = no
-
-			NOT = { character = FROM }
-			
-			religion = death_god
-			can_be_undead_trigger = yes
-
-			NOT = { has_global_flag = scourge_is_under_legion_control_flag }
-		}
 		allow = {
-			prisoner = no
-
-			OR = {
-				is_death_knight_class_trigger = yes
-				is_necromancer_class_trigger = yes
+			merging_lich_king_trigger = yes
+			
+			trigger_if = {
+				limit = { NOT = { event_target:target_frostmourne_holder = { always = yes } } }
+				custom_tooltip = {
+					text = someone_found_frostmourne_tooltip
+					always = no
+				}
 			}
-			OR = {
-				FROM = { ai = no }
-				reverse_opinion = { who = FROM value = 25 }
+			trigger_else = {
+				event_target:target_frostmourne_holder = {
+					is_untouchable_trigger = no
+					
+					merging_champion_trigger = yes
+				}
 			}
 		}
 		effect = {
-			tooltip = { add_trait = champion_of_the_lich_king }
-			hidden_tooltip = { narrative_event = { id = WCUND.560 } }
-		}
-		revoke_allowed = {
-			always = no
+			save_event_target_as = target_lich_king
+			
+			set_character_flag = merge_with_champion_ongoing_flag
+			
+			event_target:target_frostmourne_holder = {
+				save_event_target_as = target_champion
+				
+				narrative_event = { id = WCUND.400 }
+			}
 		}
 		ai_will_do = {
-			factor = 0.1
+			factor = 1
 		}
 	}
+}
+targetted_decisions = {
 	prisoner_drink_blood = {
 		filter = court
 		ai_target_filter = none
