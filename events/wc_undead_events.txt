@@ -2134,6 +2134,68 @@ character_event = {
 	}
 }
 
+#####################
+# End of the Scourge
+#####################
+narrative_event = {
+	id = WCUND.1010
+	title = EVTTITLE_WCUND_1010
+	desc = EVTDESC_WCUND_1010
+	picture = GFX_evt_scourge_army
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+	
+	major = yes
+	major_trigger = {
+		ai = no
+	}
+	show_root = yes
+	hide_from = yes
+	hide_new = yes
+	
+	trigger = {
+		has_landed_title = e_scourge
+	}
+
+	immediate = {
+		activate_title = { title = e_scourge status = no }
+		e_scourge = { destroy_landed_title = THIS }
+	}
+
+	# It's not over yet!
+	option = {
+		trigger = {
+			OR = {
+				true_religion = death_god
+				true_religion = burning_legion_religion
+			}
+		}
+		name = ITS_NOT_OVER_YET
+	}
+	# We can sleep peacefully now
+	option = {
+		trigger = {
+			NOT = {
+				true_religion = death_god
+				true_religion = burning_legion_religion
+			}
+			is_aggressive_trigger = no
+		}
+		name = WE_CAN_SLEEP_PEACEFULLY_NOW
+	}
+	# Who cares?
+	option = {
+		trigger = {
+			NOT = {
+				true_religion = death_god
+				true_religion = burning_legion_religion
+				is_aggressive_trigger = no
+			}
+		}
+		name = WHO_CARES
+	}
+}
 
 #############################################
 #				Lich King Mind Control Mechanics
@@ -2194,16 +2256,6 @@ character_event = {
 	option = {
 		name = EXCELLENT
 
-		# Converts your provinces
-		hidden_effect = {
-			any_demesne_province = {
-				limit = {
-					NOT = { religion = ROOT }
-					has_province_modifier = undead_province
-				}
-				religion = ROOT
-			}
-		}
 		# Increases stage of Mind Control and makes undead loyal
 		increase_mind_control_stage_effect = yes
 	}
@@ -2270,17 +2322,9 @@ character_event = {
 	picture = GFX_evt_scourge_army
 
 	is_triggered_only = yes
-
+	
 	trigger = {
-		trait = being_undead
-		NOT = { has_character_flag = freed_from_lich_king_flag }
-		NOT = { has_landed_title = e_scourge }
-		e_scourge = {
-			has_holder = yes
-			holder_scope = {
-				NOT = { religion = PREVPREV }
-			}
-		}
+		can_be_mind_controlled_by_scourge_trigger = yes
 	}
 
 	immediate = {
@@ -2296,6 +2340,8 @@ character_event = {
 				show_scope_change = no
 				ROOT = {
 					show_scope_change = no
+					
+					# Changes religion
 					if = {
 						limit = { NOT = { religion = PREV } }
 						religion = PREV
@@ -2307,26 +2353,15 @@ character_event = {
 					hidden_effect = {
 						if = {
 							limit = {
-								is_ruler = yes
-								higher_tier_than = COUNT
+								is_landed = yes
+								higher_tier_than = BARON
 							}
-							any_demesne_province = {
-								limit = {
-									NOT = { religion = PREVPREV }
-									has_province_modifier = undead_province
-								}
-								religion = PREVPREV
-							}
+							# Changes religion of your provinces
+							change_undead_demesne_provinces_religion_to_root_effect = yes
 						}
 					}
-					if = {
-						limit = { has_opinion_modifier = { who = PREV  modifier = opinion_evil_tyrant } }
-						remove_opinion = { modifier = opinion_evil_tyrant who = PREV }
-					}
-					if = {
-						limit = { NOT = { has_opinion_modifier = { who = PREV  modifier = opinion_loyal_servant } } }
-						opinion = { modifier = opinion_loyal_servant who = PREV }
-					}
+					remove_opinion = { modifier = opinion_evil_tyrant who = PREV }
+					opinion = { modifier = opinion_loyal_servant who = PREV }
 				}
 			}
 		}
@@ -2339,6 +2374,10 @@ character_event = {
 	picture = GFX_evt_scourge_army
 
 	is_triggered_only = yes
+	
+	trigger = {
+		can_break_scourge_mind_control_trigger = yes
+	}
 	
 	immediate = {
 		log = "WCUND.1109 fired for [Root.GetBestName]"
@@ -2430,40 +2469,52 @@ character_event = {
 						culture = event_target:target_culture
 					}
 					hidden_effect = {
-						# Changes religion and culture of your provinces
-						any_demesne_province = {
+						if = {
 							limit = {
-								OR = {
-									religion = PREVPREV #Has Lich King's religion
-									culture = scourge
-								}
+								is_landed = yes
+								higher_tier_than = BARON
 							}
-							if = {
-								limit = { religion = PREVPREV } #Has Lich King's religion
-								religion = ROOT
-							}
-							if = {
-								limit = { culture = scourge }
-								culture = ROOT
-							}
-						}
-						# Changes religion and culture of your courtiers
-						any_courtier_or_vassal = {
-							limit = {
-								OR = {
+							# Changes religion and culture of your provinces
+							any_demesne_province = {
+								limit = {
 									OR = {
 										religion = PREVPREV #Has Lich King's religion
 										culture = scourge
 									}
 								}
+								if = {
+									limit = { religion = PREVPREV } #Has Lich King's religion
+									religion = ROOT
+								}
+								if = {
+									limit = { culture = scourge }
+									culture = ROOT
+								}
 							}
-							if = {
-								limit = { religion = PREVPREV } #Has Lich King's religion
-								religion = ROOT
+						}
+						if = {
+							limit = {
+								is_ruler = yes
 							}
-							if = {
-								limit = { culture = scourge }
-								culture = ROOT
+							# Changes religion and culture of your courtiers
+							any_courtier_or_vassal = {
+								limit = {
+									ai = yes
+									
+									OR = {
+										religion = PREVPREV #Has Lich King's religion
+										culture = scourge
+									}
+									can_break_scourge_mind_control_trigger = yes
+								}
+								if = {
+									limit = { religion = PREVPREV } #Has Lich King's religion
+									religion = ROOT
+								}
+								if = {
+									limit = { culture = scourge }
+									culture = ROOT
+								}
 							}
 						}
 					}
