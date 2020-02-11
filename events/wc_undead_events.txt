@@ -2137,6 +2137,33 @@ character_event = {
 #####################
 # End of the Scourge
 #####################
+# Delayer event
+character_event = {
+	id = WCUND.1009
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	trigger = {
+		has_landed_title = e_scourge
+	}
+	
+	immediate = {
+		activate_title = { title = e_scourge status = no }
+		e_scourge = { destroy_landed_title = THIS }
+		
+		any_playable_ruler = {
+			limit = {
+				OR = {
+					ai = no
+					has_character_flag = is_kaelthas_flag
+				}
+			}
+			narrative_event = { id = WCUND.1010 }
+		}
+	}
+}
+# Delayed event
 narrative_event = {
 	id = WCUND.1010
 	title = EVTTITLE_WCUND_1010
@@ -2145,31 +2172,31 @@ narrative_event = {
 	border = GFX_event_narrative_frame_war
 
 	is_triggered_only = yes
-	
-	major = yes
-	major_trigger = {
-		ai = no
-	}
-	show_root = yes
-	hide_from = yes
-	hide_new = yes
-	
-	trigger = {
-		has_landed_title = e_scourge
-	}
 
-	immediate = {
-		activate_title = { title = e_scourge status = no }
-		e_scourge = { destroy_landed_title = THIS }
-	}
+	hide_new = yes
 
 	# Kael'thas: It's time to get home
 	option = {
+		trigger = {
+			has_character_flag = is_kaelthas_flag
+			kaelthas_can_return_to_quelthalas_trigger = yes
+		}
 		name = ITS_TIME_TO_GET_HOME
+		
+		save_event_target_as = target_kaelthas
+		
+		# End of Thalassian Regency
+		73 = { province_event = { id = WCTFT.495 days = 30 random = 30 } }
 	}
 	# It's not over yet!
 	option = {
 		trigger = {
+			NOT = {
+				trigger_if = {
+					limit = { has_character_flag = is_kaelthas_flag }
+					kaelthas_can_return_to_quelthalas_trigger = yes
+				}
+			}
 			OR = {
 				true_religion = death_god
 				true_religion = burning_legion_religion
@@ -2181,6 +2208,10 @@ narrative_event = {
 	option = {
 		trigger = {
 			NOT = {
+				trigger_if = {
+					limit = { has_character_flag = is_kaelthas_flag }
+					kaelthas_can_return_to_quelthalas_trigger = yes
+				}
 				true_religion = death_god
 				true_religion = burning_legion_religion
 			}
@@ -2192,6 +2223,10 @@ narrative_event = {
 	option = {
 		trigger = {
 			NOT = {
+				trigger_if = {
+					limit = { has_character_flag = is_kaelthas_flag }
+					kaelthas_can_return_to_quelthalas_trigger = yes
+				}
 				true_religion = death_god
 				true_religion = burning_legion_religion
 				is_aggressive_trigger = no

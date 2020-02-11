@@ -1054,14 +1054,29 @@ narrative_event = {
 
 	is_triggered_only = yes
 	
+	immediate = {
+		if = {
+			limit = { has_character_flag = is_kaelthas_flag }
+			any_playable_ruler = {
+				limit = { has_character_flag = is_lorthemar_flag }
+				save_event_target_as = target_regent_lord
+			}
+		}
+	}
+	
 	### Kael'thas options
 	# It's time to get home
 	option = {
 		trigger = {
 			has_character_flag = is_kaelthas_flag
-			kaelthas_can_return_to_quelthalas = yes
+			kaelthas_can_return_to_quelthalas_trigger = yes
 		}
 		name = ITS_TIME_TO_GET_HOME
+		
+		save_event_target_as = target_kaelthas
+		
+		# End of Thalassian Regency
+		73 = { province_event = { id = WCTFT.495 days = 30 random = 30 } }
 		
 		ai_chance = {
 			factor = 50
@@ -1105,6 +1120,27 @@ narrative_event = {
 		}
 		
 		name = EVTOPTA_WCTFT_400_follow_illidan
+		
+		if = {
+			limit = {
+				ai = no
+				event_target:target_regent_lord = { ai = yes }
+			}
+			set_player_character = event_target:target_regent_lord
+		}
+		else = {
+			custom_tooltip = { text = get_game_over_tooltip }
+		}
+		hidden_effect = {
+			e_scourge = {
+				holder_scope = {
+					ROOT = {
+						this_abdicate_transfer_wealth_to_prev_effect = yes
+						death = { death_reason = death_missing }
+					}
+				}
+			}
+		}
 		
 		ai_chance = {
 			factor = 50
@@ -1166,8 +1202,211 @@ narrative_event = {
 		}
 		name = INTERESTING
 	}
+	# Who cares?
+	option = {
+		trigger = {
+			NOT = {
+				has_character_flag = is_kaelthas_flag
+				e_scourge = {
+					holder_scope = {
+						religion = { target = PREVPREV target_type = true }
+					}
+				}
+				OR = {
+					character = event_target:target_illidan
+					suzerain = { character = event_target:target_illidan }
+					top_liege = {
+						OR = {
+							character = event_target:target_illidan
+							suzerain = { character = event_target:target_illidan }
+						}
+					}
+				}
+			}
+		}
+		name = WHO_CARES
+	}
 }
 
 #################################
 ### End of Thalassian Regency ###
 #################################
+### End of Thalassian Regency
+# Delayer event
+province_event = {
+	id = WCTFT.495
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
+		event_target:target_kaelthas = {
+			if = {
+				limit = { kaelthas_can_return_to_quelthalas_trigger = yes }
+				
+				# Abdication
+				set_defacto_liege = THIS
+				suzerain = { remove_tributary = PREV }
+				e_quelthalas = {
+					if = {
+						limit = { kaelthas_can_return_to_this_trigger = yes }
+						
+						holder_scope = {
+							save_event_target_as = target_regent_lord
+						}
+						grant_title_no_opinion = event_target:target_kaelthas
+					}
+				}
+				k_quelthalas = {
+					if = {
+						limit = { kaelthas_can_return_to_this_trigger = yes }
+						
+						holder_scope = {
+							save_event_target_as = target_regent_lord
+						}
+						grant_title_no_opinion = event_target:target_kaelthas
+					}
+				}
+				d_silvermoon = {
+					if = {
+						limit = { kaelthas_can_return_to_this_trigger = yes }
+						
+						holder_scope = {
+							save_event_target_as = target_regent_lord
+						}
+						grant_title_no_opinion = event_target:target_kaelthas
+					}
+				}
+				c_silvermoon = {
+					if = {
+						limit = { kaelthas_can_return_to_this_trigger = yes }
+						
+						grant_title_no_opinion = event_target:target_kaelthas
+					}
+				}
+				c_falconwing_square = {
+					if = {
+						limit = { kaelthas_can_return_to_this_trigger = yes }
+						
+						grant_title_no_opinion = event_target:target_kaelthas
+					}
+				}
+				capital = c_silvermoon
+				
+				any_player = {
+					narrative_event = { id = WCTFT.500 }
+				}
+				
+				event_target:target_regent_lord = { remove_special_character_title = REGENT_LORD_TITLE }
+			}
+			else = {
+				# Fail fallback
+				character_event = { id = WCTFT.550 }
+			}
+		}
+	}
+}
+# Delayed event
+narrative_event = {
+	id = WCTFT.500
+	title = EVTTITLE_WCTFT_500
+	desc = EVTDESC_WCTFT_500
+	picture = GFX_evt_sunwell
+	border = GFX_event_narrative_frame_economy
+	portrait = event_target:target_kaelthas
+
+	is_triggered_only = yes
+	
+	# Kael'thas: I'm back
+	option = {
+		trigger = {
+			character = event_target:target_kaelthas
+		}
+		name = KING_RETURNED
+	}
+	# The king has returned!
+	option = {
+		trigger = {
+			NOT = {
+				character = event_target:target_kaelthas
+			}
+			opinion = { who = event_target:target_kaelthas value = 0 }
+			
+			realm = {
+				OR = {
+					title = e_quelthalas
+					title = k_quelthalas
+					title = d_silvermoon
+				}
+			}
+		}
+		name = KING_RETURNED
+	}
+	# It would be better if he didn't return
+	option = {
+		trigger = {
+			NOT = {
+				character = event_target:target_kaelthas
+				opinion = { who = event_target:target_kaelthas value = 0 }
+			}
+			
+			realm = {
+				OR = {
+					title = e_quelthalas
+					title = k_quelthalas
+					title = d_silvermoon
+				}
+			}
+		}
+		name = EVTOPTA_WCTFT_500_negative
+	}
+	# Interesting...
+	option = {
+		trigger = {
+			NOT = {
+				character = event_target:target_kaelthas
+				opinion = { who = event_target:target_kaelthas value = 0 }
+				realm = {
+					OR = {
+						title = e_quelthalas
+						title = k_quelthalas
+						title = d_silvermoon
+					}
+				}
+			}
+		}
+		name = INTERESTING
+	}
+	# Who cares?
+	option = {
+		trigger = {
+			NOT = {
+				character = event_target:target_kaelthas
+				opinion = { who = event_target:target_kaelthas value = 0 }
+				realm = {
+					OR = {
+						title = e_quelthalas
+						title = k_quelthalas
+						title = d_silvermoon
+					}
+				}
+			}
+		}
+		name = WHO_CARES
+	}
+}
+### End of Thalassian Regency: fail fallback
+character_event = {
+	id = WCTFT.550
+	desc = EVTDESC_WCTFT_550
+	picture = GFX_evt_sunwell
+	border = GFX_event_normal_frame_economy
+	
+	is_triggered_only = yes
+	
+	show_root = yes
+	
+	option = {
+		name = ALAS
+	}
+}
