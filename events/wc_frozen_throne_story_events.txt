@@ -1036,27 +1036,97 @@ character_event = {
 ################################
 ### War of the Frozen Throne ###
 ################################
-
-# Illidari Defeat: Illidari Lost
+# War of the Frozen Throne: Illidari Lost
 narrative_event = {
 	id = WCTFT.400
 	title = EVTTITLE_WCTFT_400
-	desc = EVTDESC_WCTFT_400
+	desc = {
+		trigger = { NOT = { has_character_flag = is_kaelthas_flag } }
+		text = EVTDESC_WCTFT_400
+	}
+	desc = {
+		trigger = { has_character_flag = is_kaelthas_flag }
+		text = EVTDESC_WCTFT_400_kaelthas
+	}
 	picture = GFX_evt_scourge_army
 	border = GFX_event_narrative_frame_war
 	portrait = event_target:target_illidan
 
 	is_triggered_only = yes
 	
+	### Kael'thas options
+	# It's time to get home
 	option = {
 		trigger = {
+			has_character_flag = is_kaelthas_flag
+			kaelthas_can_return_to_quelthalas = yes
+		}
+		name = ITS_TIME_TO_GET_HOME
+		
+		ai_chance = {
+			factor = 50
+			# Positive
+			modifier = { # Want to be a king
+				factor = 2
+				trait = ambitious
+			}
+			modifier = { # Don't like ventures
+				factor = 2
+				trait = craven
+			}
+			modifier = { # Don't care what I did
+				factor = 2
+				trait = arbitrary
+			}
+			
+			# Negative
+			modifier = { # Don't want to be a king
+				factor = 0.5
+				trait = content
+			}
+			modifier = { # Like ventures
+				factor = 0.5
+				trait = brave
+			}
+			modifier = { # How can I do it after what I did?
+				factor = 0.5
+				trait = just
+			}
+			modifier = { # It makes me depressed
+				factor = 0.5
+				trait = depressed
+			}
+		}
+	}
+	# We will follow Illidan
+	option = {
+		trigger = {
+			has_character_flag = is_kaelthas_flag
+		}
+		
+		name = EVTOPTA_WCTFT_400_follow_illidan
+		
+		ai_chance = {
+			factor = 50
+		}
+	}
+	
+	# Death is eternal!
+	option = {
+		trigger = {
+			NOT = {
+				has_character_flag = is_kaelthas_flag
+			}
+			
 			e_scourge = { holder_scope = { religion = { target = PREVPREV target_type = true } } }
 		}
 		name = EVTOPTA_WCTFT_400_scourge
 	}
+	# We were not prepared...
 	option = {
 		trigger = {
 			NOT = {
+				has_character_flag = is_kaelthas_flag
 				e_scourge = { holder_scope = { religion = { target = PREVPREV target_type = true } } }
 			}
 			OR = {
@@ -1072,9 +1142,11 @@ narrative_event = {
 		}
 		name = EVTOPTA_WCTFT_400_illidari
 	}
+	# Interesting...
 	option = {
 		trigger = {
 			NOT = {
+				has_character_flag = is_kaelthas_flag
 				e_scourge = {
 					holder_scope = {
 						religion = { target = PREVPREV target_type = true }
@@ -1095,3 +1167,7 @@ narrative_event = {
 		name = INTERESTING
 	}
 }
+
+#################################
+### End of Thalassian Regency ###
+#################################
