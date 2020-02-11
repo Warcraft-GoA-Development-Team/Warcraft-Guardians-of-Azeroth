@@ -626,7 +626,54 @@ narrative_event = {
 			create_e_horde_effect = yes
 		}
 		
-		# Grant titles to trolls
+		# Grants titles to trolls and invited clan
+		73 = { province_event = { id = WCTHW.125 days = 1 } } # Needs 1 day to prevent crash
+	}
+
+	option = {
+		trigger = {
+			OR = {
+				character = ROOT
+				primary_title = {
+					OR = {
+						has_title_flag = clan_sailed_to_kalimdor_flag
+						has_title_flag = trolls_sailed_to_kalimdor_flag
+					}
+				}
+			}
+		}
+		name = EVTOPTA_WCTHW_120
+		
+		# if = {
+			# limit = { trait = travelling }
+			# remove_trait = travelling
+		# }
+	}
+
+	option = {
+		trigger = {
+			NOR = {
+				character = ROOT
+				primary_title = {
+					OR = {
+						has_title_flag = clan_sailed_to_kalimdor_flag
+						has_title_flag = trolls_sailed_to_kalimdor_flag
+					}
+				}
+			}
+		}
+		name = INTERESTING
+	}
+}
+# Grants titles to trolls and invited clan
+province_event = {
+	id = WCTHW.125
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
+		# Grants titles to trolls
 		event_target:target_trolls = {
 			if = {
 				limit = { has_title_flag = trolls_sailed_to_kalimdor_flag }
@@ -718,7 +765,7 @@ narrative_event = {
 			}
 		}
 		
-		# Grant title to invited clan
+		# Grants title to invited clan
 		event_target:target_clan = {
 			if = {
 				limit = { has_title_flag = clan_sailed_to_kalimdor_flag }
@@ -753,41 +800,6 @@ narrative_event = {
 				}
 			}
 		}
-	}
-
-	option = {
-		trigger = {
-			OR = {
-				character = ROOT
-				primary_title = {
-					OR = {
-						has_title_flag = clan_sailed_to_kalimdor_flag
-						has_title_flag = trolls_sailed_to_kalimdor_flag
-					}
-				}
-			}
-		}
-		name = EVTOPTA_WCTHW_120
-		
-		# if = {
-			# limit = { trait = travelling }
-			# remove_trait = travelling
-		# }
-	}
-
-	option = {
-		trigger = {
-			NOR = {
-				character = ROOT
-				primary_title = {
-					OR = {
-						has_title_flag = clan_sailed_to_kalimdor_flag
-						has_title_flag = trolls_sailed_to_kalimdor_flag
-					}
-				}
-			}
-		}
-		name = INTERESTING
 	}
 }
 
@@ -1065,7 +1077,28 @@ narrative_event = {
 		# Spawns army for start
 		spawn_colonial_troops_effect = yes
 		
-		# Grant titles to refugees
+		# Grants titles to refugees
+		73 = { province_event = { id = WCTHW.160 days = 1 } } # Needs 1 day to prevent crash
+	}
+
+	option = {
+		trigger = { character = ROOT }
+		name = EVTOPTA_WCTHW_155
+	}
+
+	option = {
+		trigger = { NOT = { character = ROOT } }
+		name = INTERESTING
+	}
+}
+# Grants titles to refugees
+province_event = {
+	id = WCTHW.160
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
 		event_target:target_refugees = {
 			if = {
 				limit = { has_title_flag = refugees_sailed_to_kalimdor_flag }
@@ -1096,16 +1129,6 @@ narrative_event = {
 			}
 		}
 	}
-
-	option = {
-		trigger = { character = ROOT }
-		name = EVTOPTA_WCTHW_155
-	}
-
-	option = {
-		trigger = { NOT = { character = ROOT } }
-		name = INTERESTING
-	}
 }
 
 ### Corruption of the Sunwell ###
@@ -1125,8 +1148,8 @@ character_event = {
 			is_capital = yes
 
 			location = {
+				has_wonder = wonder_sunwell
 				wonder = {
-					has_wonder = wonder_sunwell
 					NOR = {
 						has_wonder_flag = wonder_lightwell_flag
 						has_wonder_flag = wonder_deathwell_flag
@@ -1319,22 +1342,6 @@ narrative_event = {
 		name = EVTOPTA_WCTHW_1010
 
 		become_blood_elf_effect = yes
-		
-		hidden_effect = {
-			# I see e_quelthalas and k_quelthalas and I want them painted red... in case no one holds it
-			e_quelthalas = {
-				if = {
-					limit = { has_holder = no }
-					set_coa = d_sindorei
-				}
-			}
-			k_quelthalas = {
-				if = {
-					limit = { has_holder = no }
-					set_coa = d_sindorei
-				}
-			}
-		}
 
 		custom_tooltip = {
 			text = proclaims_your_people_the_blood_elves
@@ -2775,13 +2782,7 @@ narrative_event = {
 	option = {
 		name = ALAS
 
-		add_artifact = frostmourne
-		hidden_effect = {
-			new_artifact = {
-				set_creation_date = 591.11.1
-				set_original_owner = event_target:target_lich_king
-			}
-		}
+		add_artifact_frostmourne_effect = yes
 	}
 }
 # Close relative's reaction to target_champion's arrival in Northrend
@@ -2969,13 +2970,7 @@ narrative_event = {
 	option = {
 		name = EVTOPTA_WCTHW_2046
 
-		add_artifact = frostmourne
-		hidden_effect = {
-			new_artifact = {
-				set_creation_date = 591.11.1
-				set_original_owner = event_target:target_lich_king
-			}
-		}
+		add_artifact_frostmourne_effect = yes
 
 		hidden_effect = { narrative_event = { id = WCTHW.2050 days = 1 } }
 	}
@@ -3055,36 +3050,41 @@ narrative_event = {
 			}
 			abdicate = yes
 		}
+		
+		# Picks description
+		# You're independent, you do massacre
 		if = {
 			limit = {
 				is_ruler = yes
 				independent = yes
 			}
 			set_character_flag = homecoming_inde_ruler_desc_flag
-			break = yes
 		}
-		event_target:target_realm = {
-			if = {
-				limit = {
-					has_holder = yes
+		# Kill your king, do massacre
+		else_if = {
+			limit = {
+				event_target:target_realm = {
 					holder_scope = {
 						independent = yes
 
 						evil_public_religion_trigger = no
 					}
 				}
-				holder_scope = { save_event_target_as = target_ruler }
-				ROOT  = {
-					if = {
-						limit = { event_target:target_ruler = { is_close_relative = ROOT } }
-						set_character_flag = homecoming_close_relative_desc_flag
-					}
-					else = { set_character_flag = homecoming_not_close_relative_desc_flag }
-				}
 			}
+			event_target:target_realm = { holder_scope = { save_event_target_as = target_ruler } }
+			# King is your close relative
+			if = {
+				limit = { event_target:target_ruler = { is_close_relative = ROOT } }
+				set_character_flag = homecoming_close_relative_desc_flag
+			}
+			# King isn't your close relative
 			else = {
-				ROOT = { set_character_flag = homecoming_ruined_homeland_desc_flag }
+				set_character_flag = homecoming_not_close_relative_desc_flag
 			}
+		}
+		# Your king is corrupted, homeland is ruined
+		else = {
+			set_character_flag = homecoming_ruined_homeland_desc_flag
 		}
 	}
 
@@ -3142,6 +3142,10 @@ narrative_event = {
 				}
 			}
 		}
+	}
+	
+	after = {
+		set_character_flag = finished_champion_event_chain_flag
 	}
 }
 # target_ruler's reaction
