@@ -2787,3 +2787,169 @@ character_event = {
 		}
 	}
 }
+
+#############################
+#		Random events					#
+#############################
+### Random Necromantic events
+character_event = {
+	id = WCUND.9900
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	min_age = 16
+	only_playable = yes
+	only_capable = yes
+	prisoner = no
+
+	trigger = {
+		is_alive = yes
+		is_dying = no
+
+		can_be_undead_trigger = yes
+	}
+
+	weight_multiplier = {
+		days = 1
+		modifier = {
+			factor = 2
+			OR = {
+				is_death_knight_class_trigger = yes
+				is_necromancer_class_trigger = yes
+				true_religion_group = necromancy_group
+			}
+		}
+		modifier = {
+			factor = 1.6
+			trait = cynical
+		}
+		modifier = {
+			factor = 1.6
+			trait = being_undead
+		}
+		modifier = {
+			factor = 1.2
+			trait = ambitious
+		}
+		modifier = {
+			factor = 1.2
+			is_mage_class_trigger = yes
+		}
+	}
+
+	immediate = {
+		random_list = {
+			10 = {
+				trigger = {
+					is_inaccessible_trigger = no
+					
+					NOT = { has_character_flag = lich_king_vision_happend_flag }	# Happens once in lifetime
+					
+					lich_king_vision_trigger = yes
+				}
+				set_character_flag = lich_king_vision_happend_flag
+				
+				character_event = { id = WCUND.9910 }	# Lich King vision
+			}
+		}
+	}
+}
+
+### Lich King vision ###
+### Travel to Frozen Throne?
+character_event = {
+	id = WCUND.9910
+	desc = EVTDESC_WCUND_9910
+	picture = GFX_evt_icecrown
+	border = GFX_event_normal_frame_intrigue
+	
+	is_triggered_only = yes
+	
+	immediate = {
+		add_trait = travelling
+	}
+	
+	# Travel to Frozen Throne
+	option = {
+		name = EVTOPTA_WCUND_9910
+		
+		character_event = { id = WCUND.9915 days = 15 random = 15 }
+		
+		ai_chance = {
+			factor = 50
+			
+			evil_ai_chance_score = yes
+		}
+	}
+	# No thanks
+	option = {
+		name = EVTOPTB_WCUND_9910
+		
+		remove_trait = travelling
+		
+		ai_chance = {
+			factor = 50
+		}
+	}
+}
+### Blizzard
+character_event = {
+	id = WCUND.9915
+	desc = EVTDESC_WCUND_9915
+	picture = GFX_evt_scourge_army
+	border = GFX_event_normal_frame_intrigue
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		lich_king_vision_trigger = yes
+	}
+	
+	fail_trigger_effect = {
+		# Travel failed
+		character_event = { id = WCUND.9920 }
+	}
+	
+	immediate = {
+		e_scourge = {
+			holder_scope = {
+				save_event_target_as = target_lich_king
+			}
+		}
+	}
+	
+	# Bow to Death God
+	option = {
+		name = EVTOPTA_WCUND_9915
+		
+		set_secret_religion = event_target:target_lich_king
+		
+		remove_trait = travelling
+	}
+	# I prefer death
+	option = {
+		name = EVTOPTB_WCUND_9915
+		
+		death = { death_reason = death_vanished }
+		
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+### Travel failed
+character_event = {
+	id = WCUND.9920
+	desc = EVTDESC_WCUND_9920
+	picture = GFX_evt_icecrown
+	border = GFX_event_normal_frame_intrigue
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = ALAS
+		
+		remove_trait = travelling
+	}
+}
