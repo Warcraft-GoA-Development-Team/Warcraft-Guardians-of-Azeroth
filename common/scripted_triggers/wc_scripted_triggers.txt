@@ -1,9 +1,10 @@
-# IMPORTANT, WIDELY USED TRIGGERS
+### IMPORTANT, WIDELY USED TRIGGERS ###
 # YOU CAN NOT INTERACT WITH THEM
 is_untouchable_trigger = {
-	hidden_tooltip = {
-		trait = sleeping_trait
-	}
+	always = no
+	# hidden_tooltip = {
+		# trait = sleeping_trait
+	# }
 }
 
 # FORBIDS AI TO ATTACK THEM
@@ -299,6 +300,50 @@ can_switch_culture_character_trigger = {
 		}
 	}
 }
+# CAN'T CHANGE CULTURE TO PREV CULTURE IF IT'S NOT TRUE
+can_switch_culture_to_prev_character_trigger = {
+	trigger_if = {
+		limit = { PREV = { culture_group = aqir_group } }
+		is_aqir_trigger = yes
+	}
+	trigger_else_if = {
+		limit = {
+			PREV = {
+				OR = {
+					culture_group = demonic_group
+					culture_group = satyr_group
+				}
+			}
+		}
+		OR = {
+			trait = being_demon
+			true_religion = burning_legion_religion
+		}
+	}
+	trigger_else_if = {
+		limit = {
+			PREV = {
+				OR = {
+					culture_group = naga_group
+					culture_group = shathyar_group
+				}
+			}
+		}
+		OR = {
+			trait = being_void
+			true_religion = old_gods_worship
+		}
+	}
+	trigger_else_if = {
+		limit = {
+			PREV = { culture_group = undead_group }
+		}
+		OR = {
+			trait = being_undead
+			true_religion = death_god
+		}
+	}
+}
 can_switch_culture_province_trigger = {
 	trigger_if = {
 		limit = {
@@ -335,7 +380,10 @@ title_can_be_lost_trigger = {
 	mercenary = no
 	holy_order = no
 	clan = no
-	NOT = { holding_type = family_palace }
+	trigger_if = {
+		limit = { tier = BARON }
+		NOT = { holding_type = family_palace }
+	}
 	invader_title_trigger = no
 	dragonflight_title_trigger = no
 }
@@ -356,6 +404,7 @@ character_can_be_vassalized_trigger = {
 	NOT = { is_offmap_governor = yes }
 	is_nomadic = no
 	in_revolt = no
+	NOT = { government = society_government }
 }
 # CAN'T GET SICK IF IT'S NOT TRUE
 # Associated with text_effect_can_not_get_diseases
@@ -660,6 +709,13 @@ can_be_adventurer_trigger = {
 		can_declare_wars_trigger = yes
 	}
 }
+# CAN'T GO HUNTING IF IT'S NOT TRUE
+can_go_hunting_trigger = {
+	evil_public_religion_trigger = no
+	NOT = { religion_group = druidism_group }
+	is_plant_race_trigger = no
+}
+### IMPORTANT, WIDELY USED TRIGGERS ###
 
 has_invader_title_trigger = {
 	OR = {
@@ -724,6 +780,17 @@ is_aggressive_religion_trigger = {
 		religion = scarlet_light
 		religion = lightbound
 		religion = cult_of_hakkar
+		religion_group = primitive_group
+		religion_group = vrykul_religion_group
+	}
+}
+like_raiding_adventure_triggger = {
+	OR = {
+		culture = pirate_culture
+		
+		evil_public_religion_trigger = yes
+		religion = orcish_fel
+		religion_group = elemental_lords_group
 		religion_group = primitive_group
 		religion_group = vrykul_religion_group
 	}
@@ -914,7 +981,7 @@ is_large_humanoid_trigger = {
 		trait = creature_magnataur
 		trait = creature_taunka
 		trait = creature_kvaldir
-		trait = creature_ice_giant
+		trait = creature_giant
 		trait = creature_nraqi
 		trait = creature_cthraxxi
 		trait = creature_tauren
@@ -1279,9 +1346,12 @@ potential_race_earthen_trigger = {
 	graphical_culture = earthengfx
 	NOT = { trait = creature_earthen }
 }
-potential_race_ice_giant_trigger = {
-	graphical_culture = icegiantgfx
-	NOT = { trait = creature_ice_giant }
+potential_race_giant_trigger = {
+	OR = {
+		graphical_culture = icegiantgfx
+		graphical_culture = stormgiantgfx
+	}
+	NOT = { trait = creature_giant }
 }
 potential_race_nraqi_trigger = {
 	graphical_culture = nraqigfx
@@ -1436,7 +1506,7 @@ potential_race_trigger = {
 			potential_race_harpy_trigger = yes
 			potential_race_mechagnome_trigger = yes
 			potential_race_earthen_trigger = yes
-			potential_race_ice_giant_trigger = yes
+			potential_race_giant_trigger = yes
 
 			potential_race_nraqi_trigger = yes
 			potential_race_cthraxxi_trigger = yes
@@ -1560,7 +1630,7 @@ has_race_trait_trigger = {
 		trait = creature_bronze_dragon
 		trait = creature_bronze_wyrm
 
-		trait = creature_ice_giant
+		trait = creature_giant
 
 		trait = creature_nraqi
 		trait = creature_cthraxxi
@@ -1673,7 +1743,7 @@ has_prev_race_trigger = {
 	# Bronze dragons
 	trigger_else_if = { limit = { is_bronze_dragon_trigger = yes		} PREV = { is_bronze_dragon_trigger = yes			} }
 	
-	trigger_else_if = { limit = { trait = creature_ice_giant 			} PREV = { trait = creature_ice_giant 				} }
+	trigger_else_if = { limit = { trait = creature_giant 			} PREV = { trait = creature_giant 				} }
 
 	trigger_else_if = { limit = { is_nraqi_trigger = yes				} PREV = { is_nraqi_trigger = yes 					} }
 
@@ -2037,7 +2107,6 @@ is_susceptible_to_plague_province_trigger = {
 has_pet_trigger = {
 	OR = {
 		has_character_modifier = pet_imp
-		has_character_modifier = pet_succubus
 		has_character_modifier = pet_felhunter
 		has_character_modifier = pet_felguard
 	}
@@ -2415,27 +2484,21 @@ has_access_to_this_source_trigger = {
 	}
 }
 has_3_powerful_magical_artifact_trigger = {
-	trigger_if = {
-		limit = { has_dlc = "Mystics" }
-		custom_tooltip = {
-			text = has_3_powerful_magical_artifact_trigger_tooltip
-			hidden_tooltip = {
-				any_artifact = {
-					count = 3
-					has_artifact_flag = powerful_magical_artifact
-				}
+	custom_tooltip = {
+		text = has_3_powerful_magical_artifact_trigger_tooltip
+		hidden_tooltip = {
+			any_artifact = {
+				count = 3
+				has_artifact_flag = powerful_magical_artifact
 			}
 		}
 	}
 }
 has_powerful_magical_artifact_trigger = {
-	trigger_if = {
-		limit = { has_dlc = "Mystics" }
-		custom_tooltip = {
-			text = has_powerful_magical_artifact_trigger_tooltip
-			hidden_tooltip = {
-				any_artifact = { has_artifact_flag = powerful_magical_artifact }
-			}
+	custom_tooltip = {
+		text = has_powerful_magical_artifact_trigger_tooltip
+		hidden_tooltip = {
+			any_artifact = { has_artifact_flag = powerful_magical_artifact }
 		}
 	}
 }
@@ -2915,44 +2978,27 @@ true_religion_associated_with_sunwell_trigger = {
 # Needed for status_of_magic
 ai_like_dark_magic_trigger = {
 	OR = {
-		NOR = {
-			trait = zealous
-			true_religion = scarlet_light
-			true_religion = lightbound
-		}
 		is_dark_being_trigger = yes
 		is_warlock_class_trigger = yes
 		is_necromancer_class_trigger = yes
 		is_shadow_priest_class_trigger = yes
 		dark_true_religion_trigger = yes
+		trait = cynical
 	}
 }
 ai_dislike_dark_magic_trigger = {
-	is_dark_being_trigger = no
-	is_warlock_class_trigger = no
-	is_necromancer_class_trigger = no
-	is_shadow_priest_class_trigger = no
-	dark_true_religion_trigger = no
-	NOT = { trait = content }
+	ai_like_dark_magic_trigger = no
 	OR = {
 		trait = zealous
 		true_religion = scarlet_light
 		true_religion = lightbound
 	}
 }
-ai_dislike_normal_magic_trigger = {
-	is_dark_being_trigger = no
-	is_mage_class_trigger = no
-	is_warlock_class_trigger = no
-	is_necromancer_class_trigger = no
-	is_shadow_priest_class_trigger = no
-	dark_true_religion_trigger = no
-	secular_true_religion_trigger = no
-	NOT = { trait = content }
+ai_like_normal_magic_trigger = {
 	OR = {
-		trait = zealous
-		true_religion = scarlet_light
-		true_religion = lightbound
+		ai_like_dark_magic_trigger = yes
+		is_mage_class_trigger = yes
+		arcane_true_religion_trigger = yes
 	}
 }
 
@@ -3656,7 +3702,7 @@ is_mammal_trigger = {
 		trait = creature_taunka
 		trait = creature_kvaldir
 
-		trait = creature_ice_giant
+		trait = creature_giant
 
 		trait = creature_night_elf
 		trait = creature_tauren
@@ -4034,11 +4080,8 @@ theramore_founding_refugees_trigger = {
 	# NOT = { has_character_flag = invitation_to_sail_is_sent_flag }
 	NOT = { has_character_flag = foundation_theramore_declined_flag }
 
-	evil_public_religion_trigger = no
-	OR = {
-		has_alliance_religion_trigger = yes
-		has_alliance_culture_trigger = yes
-	}
+	has_alliance_religion_trigger = yes
+	has_alliance_culture_trigger = yes
 
 	can_resettle_trigger = yes
 	is_member_of_horde_faction_trigger = no
@@ -4137,45 +4180,6 @@ fury_of_wolf_human_event_trigger = {
 	is_susceptible_to_worgen_curse_character_trigger = yes
 	NOT = { religion_group = druidism_group }
 	NOT = { true_religion_group = druidism_group }
-}
-
-is_potential_mind_control_target_trigger = {
-	is_alive = yes
-	is_dying = no
-	
-	ai = yes
-	is_adult = yes
-	is_incapable = no
-	prisoner = no
-	is_inaccessible_trigger = no
-
-	NOT = { character = ROOT }
-	NOT = { has_character_flag = mind_control_attempt_flag }
-
-	is_dark_being_trigger = no
-	is_humanoid_trigger = yes
-	
-	has_weak_character_trigger = yes
-	is_in_society = no
-	NOT = { has_opinion_modifier = { who = ROOT modifier = opinion_loyal_servant } }
-}
-is_potential_turn_into_undead_target_trigger = {
-	is_alive = yes
-	is_dying = no
-	
-	ai = yes
-	is_adult = yes
-	is_incapable = no
-	prisoner = no
-	is_inaccessible_trigger = no
-
-	NOT = { character = ROOT }
-	NOT = { has_character_flag = being_raised_flag }
-
-	is_dark_being_trigger = no
-	can_be_undead_trigger = yes
-	
-	is_in_society = no
 }
 
 can_improve_relations_with_root_trigger = {
@@ -4409,4 +4413,116 @@ is_in_player_sphere_of_influence_trigger = {
 
 special_succession_type_trigger = {
 	 has_law = succ_evil_elective
+}
+
+# Is NOT raising or creating an undead being
+not_raising_undead_flag_trigger = {
+	custom_tooltip = {
+		text = raising_undead_flag_trigger_tooltip
+		NOT = { has_character_flag = raising_undead_flag }
+	}
+}
+
+# Triggers used in mind control events
+can_be_mind_controlled_by_scourge_trigger = {
+	trait = being_undead
+	
+	NOT = { has_character_flag = freed_from_lich_king_flag }
+	NOT = { has_landed_title = e_scourge }
+	e_scourge = {
+		has_holder = yes
+		holder_scope = {
+			NOT = { religion = PREVPREV }
+		}
+	}
+}
+can_break_scourge_mind_control_trigger = {
+	trait = being_undead
+	
+	trigger_if = {
+		limit = { religion = death_god }
+		NOT = { has_artifact = frostmourne }
+	}
+	NOT = { has_landed_title = e_scourge }
+	e_scourge = {
+		has_holder = yes
+		holder_scope = {
+			religion = PREVPREV
+		}
+	}
+}
+
+is_completely_incapable_trigger = {
+	is_incapable = yes
+	OR = {
+		trait = incapable
+		trait = uncolonized_trait
+		trait = sleeping_trait
+		trait = mindless_worgen
+		# trait = in_twisting_nether
+		# trait = lost_corporeal_body
+	}
+}
+
+# Used in events of Merging with Lich King
+merging_lich_king_trigger = {
+	is_untouchable_trigger = no
+	
+	prisoner = no
+	
+	religion = death_god
+	true_religion = death_god
+	custom_tooltip = {
+		text = imprisoned_in_ice_tooltip
+		trait = in_ice_prison
+	}
+	
+	has_landed_title = e_scourge
+	scourge_is_free_trigger = yes
+}
+merging_champion_trigger = {
+	is_alive = yes
+	is_dying = no
+	is_untouchable_trigger = no
+	
+	is_adult = yes
+	is_incapable = no
+	prisoner = no
+	
+	religion = death_god
+	
+	has_artifact = frostmourne
+	can_be_undead_trigger = yes
+}
+
+scourge_is_free_trigger = {
+	custom_tooltip = {
+		text = scourge_is_free_tooltip
+		NOT = { has_global_flag = scourge_is_under_legion_control_flag }
+	}
+}
+
+# Trigger used in Lich King vision events
+lich_king_vision_trigger = {
+	is_alive = yes
+	is_dying = no
+	
+	is_untouchable_trigger = no
+	
+	is_adult = yes
+	is_incapable = no
+	prisoner = no
+
+	can_be_undead_trigger = yes
+	location = { region = world_northrend }
+	e_scourge = {
+		holder_scope = {
+			PREVPREV = {
+				NOT = {
+					religion = PREV
+					true_religion = PREVPREV
+				}
+			}
+		}
+	}
 }
