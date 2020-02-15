@@ -299,6 +299,56 @@ decisions = {
 			}
 		}
 	}
+	
+	# If Lich King is in_ice_prison, she/he can merge with holder of Frostmourne
+	merge_with_champion = {
+		is_high_prio = yes
+		
+		ai_check_interval = 12
+
+		only_playable = yes
+		only_independent = yes
+
+		potential = {
+			NOT = { has_character_flag = merge_with_champion_ongoing_flag }
+			
+			trait = in_ice_prison
+			
+			has_landed_title = e_scourge
+		}
+		allow = {
+			merging_lich_king_trigger = yes
+			
+			trigger_if = {
+				limit = { NOT = { event_target:target_frostmourne_holder = { always = yes } } }
+				custom_tooltip = {
+					text = someone_found_frostmourne_tooltip
+					always = no
+				}
+			}
+			trigger_else = {
+				event_target:target_frostmourne_holder = {
+					is_untouchable_trigger = no
+					
+					merging_champion_trigger = yes
+				}
+			}
+		}
+		effect = {
+			save_event_target_as = target_lich_king
+			
+			set_character_flag = merge_with_champion_ongoing_flag
+			
+			event_target:target_frostmourne_holder = {
+				save_event_target_as = target_champion
+				
+				narrative_event = { id = WCUND.400 }
+			}
+		}
+		ai_will_do = {
+			factor = 1
+		}
+	}
 }
 targetted_decisions = {
 	prisoner_drink_blood = {
