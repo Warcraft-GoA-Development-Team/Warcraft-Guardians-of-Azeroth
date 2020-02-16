@@ -13,25 +13,54 @@ character_event = {
 	trigger = {
 		OR = {
 			e_quelthalas = {
-				holder_scope = { character = ROOT }
 				trigger_if = {
-					limit = { ROOT = { culture = blood_elf } }
-					NOT = { has_title_flag = blood_flag }
-				}
-				trigger_else = {
-					ROOT = { culture = high_elf }
-					has_title_flag = blood_flag
+					limit = { holder_scope = { character = ROOT } }
+					holder_scope = { character = ROOT }
+					trigger_if = {
+						limit = { ROOT = { culture = blood_elf } }
+						NOT = { has_title_flag = blood_flag }
+					}
+					trigger_else = {
+						ROOT = { culture = high_elf }
+						has_title_flag = blood_flag
+					}
 				}
 			}
 			k_quelthalas = {
-				holder_scope = { character = ROOT }
 				trigger_if = {
-					limit = { ROOT = { culture = blood_elf } }
-					NOT = { has_title_flag = blood_flag }
+					limit = { holder_scope = { character = ROOT } }
+					trigger_if = {
+						limit = { ROOT = { culture = blood_elf } }
+						NOT = { has_title_flag = blood_flag }
+					}
+					trigger_else = {
+						ROOT = { culture = high_elf }
+						has_title_flag = blood_flag
+					}
 				}
-				trigger_else = {
-					ROOT = { culture = high_elf }
-					has_title_flag = blood_flag
+			}
+			e_lordaeron = {
+				trigger_if = {
+					limit = { holder_scope = { character = ROOT } }
+					can_change_forsaken_flag_trigger = yes
+				}
+			}
+			k_lordaeron = {
+				trigger_if = {
+					limit = { holder_scope = { character = ROOT } }
+					can_change_forsaken_flag_trigger = yes
+				}
+			}
+			d_lordaeron = {
+				trigger_if = {
+					limit = { holder_scope = { character = ROOT } }
+					can_change_forsaken_flag_trigger = yes
+				}
+			}
+			c_lordaeron = {
+				trigger_if = {
+					limit = { holder_scope = { character = ROOT } }
+					can_change_forsaken_flag_trigger = yes
 				}
 			}
 		}
@@ -80,6 +109,30 @@ character_event = {
 				}
 			}
 		}
+		e_lordaeron = {
+			if = {
+				limit = { holder_scope = { character = ROOT } }
+				change_forsaken_flag_effect = yes
+			}
+		}
+		k_lordaeron = {
+			if = {
+				limit = { holder_scope = { character = ROOT } }
+				change_forsaken_flag_effect = yes
+			}
+		}
+		d_lordaeron = {
+			if = {
+				limit = { holder_scope = { character = ROOT } }
+				change_undercity_flag_effect = yes
+			}
+		}
+		c_lordaeron = {
+			if = {
+				limit = { holder_scope = { character = ROOT } }
+				change_undercity_flag_effect = yes
+			}
+		}
 	}
 }
 
@@ -97,17 +150,30 @@ character_event = {
 
 	trigger = {
 		FROM = {
-			OR = {
-				title = e_quelthalas
-				title = k_quelthalas
-			}
 			trigger_if = {
-				limit = { ROOT = { culture = blood_elf } }
-				NOT = { has_title_flag = blood_flag }
+				limit = {
+					OR = {
+						title = e_quelthalas
+						title = k_quelthalas
+					}
+				}
+				trigger_if = {
+					limit = { ROOT = { culture = blood_elf } }
+					NOT = { has_title_flag = blood_flag }
+				}
+				trigger_else = {
+					ROOT = { culture = high_elf }
+					has_title_flag = blood_flag
+				}
 			}
 			trigger_else = {
-				ROOT = { culture = high_elf }
-				has_title_flag = blood_flag
+				OR = {
+					title = e_lordaeron
+					title = k_lordaeron
+					title = d_lordaeron
+					title = c_lordaeron
+				}
+				can_change_forsaken_flag_trigger = yes
 			}
 		}
 	}
@@ -116,15 +182,35 @@ character_event = {
 		FROM = {
 			if = {
 				limit = {
-					ROOT = { culture = blood_elf }
-					NOT = { has_title_flag = blood_flag }
+					OR = {
+						title = e_quelthalas
+						title = k_quelthalas
+					}
 				}
-				set_title_flag = blood_flag
-				set_coa = d_sindorei
+				if = {
+					limit = {
+						ROOT = { culture = blood_elf }
+						NOT = { has_title_flag = blood_flag }
+					}
+					set_title_flag = blood_flag
+					set_coa = d_sindorei
+				}
+				else = {
+					clr_title_flag = blood_flag
+					reset_coa = THIS
+				}
+			}
+			else_if = {
+				limit = {
+					OR = {
+						title = e_lordaeron
+						title = k_lordaeron
+					}
+				}
+				change_forsaken_flag_effect = yes
 			}
 			else = {
-				clr_title_flag = blood_flag
-				reset_coa = THIS
+				change_undercity_flag_effect = yes
 			}
 		}
 	}
