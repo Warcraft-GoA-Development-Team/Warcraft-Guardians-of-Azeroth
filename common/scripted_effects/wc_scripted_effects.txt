@@ -91,7 +91,6 @@ remove_racial_traits_effect = {
 	if = { limit = { trait = creature_banshee 				} remove_trait = creature_banshee 			}
 	if = { limit = { trait = creature_plague_eruptor 		} remove_trait = creature_plague_eruptor 		}
 	if = { limit = { trait = creature_abomination 			} remove_trait = creature_abomination 		}
-	if = { limit = { trait = creature_skeleton 				} remove_trait = creature_skeleton 			}
 	if = { limit = { trait = creature_lich 					} remove_trait = creature_lich 				}
 
 	# Demons
@@ -811,38 +810,37 @@ prev_burn_evil_being_this_effect = {
 				}
 			}
 		}
-		custom_tooltip = {
-			text = burn_evil_being_effect_tooltip
-			hidden_tooltip = {
-				if = {
-					limit = { is_ruler = no }
-					random_list = {
-						80 = {
-							death = { death_reason = death_execution_burning killer = PREV }
-						}
-						20 = {
-							banish = yes
-							
-							is_good_intrigue_character_score = yes
-							
-							modifier = {
-								factor = 0
-								PREV = { ai = yes }		# AI always kill
-							}
-						}
+		if = {
+			limit = { is_ruler = no }
+			random_list = {
+				80 = {
+					custom_tooltip = {
+						text = burn_evil_being_effect_tooltip
+						death = { death_reason = death_execution_burning killer = PREV }
 					}
+					add_kinslayer_trait_to_prev_effect = yes
 				}
-				else = {
-					any_demesne_title = {
-						limit = {
-							title_can_be_lost_trigger = yes
-							lower_tier_than = DUKE
-						}
-						grant_title_no_opinion = { target = PREVPREV type = claim }
+				20 = {
+					banish = yes
+					
+					is_good_intrigue_character_score = yes
+					
+					modifier = {
+						factor = 0
+						PREV = { ai = yes }		# AI always kill
 					}
-					death = { death_reason = death_execution_burning killer = PREV }
 				}
 			}
+		}
+		else = {
+			any_demesne_title = {
+				limit = {
+					title_can_be_lost_trigger = yes
+					lower_tier_than = DUKE
+				}
+				grant_title_no_opinion = { target = PREVPREV type = claim }
+			}
+			death = { death_reason = death_execution_burning killer = PREV }
 		}
 	}
 	else = {
