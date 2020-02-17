@@ -1,0 +1,148 @@
+namespace = WCLOA
+
+### Blood Rituals ###
+# Start
+character_event = {
+	id = WCLOA.100
+	picture = GFX_evt_hakkar
+	desc = EVTDESC_WCLOA_100
+	border = GFX_event_normal_frame_war
+
+	is_triggered_only = yes
+
+	# Praise Hakkar!
+	option = {
+		name = EVTOPTA_WCLOA_100
+
+		if = {
+			limit = { num_of_prisoners = 8 }
+			hidden_effect = { set_variable = { which = hakkar_favor value = 5 } }
+		}
+		else = {
+			if = {
+				limit = { num_of_prisoners = 4 }
+				hidden_effect = { set_variable = { which = hakkar_favor value = 3 } }
+			}
+			else = {
+				hidden_effect = { set_variable = { which = hakkar_favor value = 0 } }
+			}
+		}
+		ROOT = {
+			show_scope_change = no
+			
+			sacrifice_all_prisoners_effect = yes
+		}
+
+		# Plan of the feast ;)
+		hidden_effect = {
+			random = {
+				chance = 33
+				character_event = { id = WCLOA.105 days = 7 random = 76 }	# Hakkar demands your blood
+				modifier = {
+					factor = 0
+					OR = {
+						trait = wounded
+						trait = severely_injured
+					}
+				}
+			}
+			random = {
+				chance = 33
+				character_event = { id = WCLOA.110 days = 7 random = 76 }	# Cannibalism
+				modifier = {
+					factor = 0
+					trait = cannibal_trait
+				}
+			}
+			character_event = { id = WCLOA.500 days = 90 }
+		}
+	}
+}
+# Notifies you have been sacrificed
+character_event = {
+	id = WCLOA.101
+	picture = GFX_evt_hakkar
+	desc = EVTDESC_WCLOA_101
+	border = GFX_event_normal_frame_war
+
+	is_triggered_only = yes
+
+	option = {
+		name = ALAS
+	}
+}
+# Hakkar demands your blood
+character_event = {
+	id = WCLOA.105
+	picture = GFX_evt_hakkar
+	desc = EVTDESC_WCLOA_105
+	border = GFX_event_normal_frame_war
+
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCLOA_105
+
+		add_trait_wounded_effect = yes
+		random = {
+			chance = 25
+			add_trait_brave_effect = yes
+			remove_trait_craven_effect = yes
+		}
+
+		piety = 50
+		hidden_effect = { change_variable = { which = hakkar_favor value = 2 } }
+		
+		ai_chance = {
+			factor = 90
+		}
+	}
+	option = {
+		name = EVTOPTB_WCLOA_105
+
+		add_trait_silently_craven_effect = yes
+		if = {
+			limit = { trait = brave }
+			remove_trait = brave
+		}
+		health = -0.25
+
+		hidden_effect = { change_variable = { which = hakkar_favor value = -2 } }
+		
+		ai_chance = {
+			factor = 10
+			modifier = {
+				factor = 9
+				trait = craven
+			}
+		}
+	}
+}
+# End
+character_event = {
+	id = WCLOA.500
+	picture = GFX_evt_hakkar
+	desc = EVTDESC_WCLOA_500
+	border = GFX_event_normal_frame_war
+
+	is_triggered_only = yes
+
+	# Praise Hakkar!
+	option = {
+		name = EVTOPTA_WCLOA_100
+		
+		clr_character_flag = do_not_disturb
+
+		if = {
+			limit = { check_variable = { which = hakkar_favor value = 6 } }
+			add_character_modifier = { name = hakkar_blessing_3 years = 1 }
+		}
+		else = {
+			if = {
+				limit = { check_variable = { which = hakkar_favor value = 3 } }
+				add_character_modifier = { name = hakkar_blessing_2 years = 1 }
+			}
+			else = { add_character_modifier = { name = hakkar_blessing_1 years = 1 } }
+		}
+	}
+}
