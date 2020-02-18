@@ -91,7 +91,6 @@ remove_racial_traits_effect = {
 	if = { limit = { trait = creature_banshee 				} remove_trait = creature_banshee 			}
 	if = { limit = { trait = creature_plague_eruptor 		} remove_trait = creature_plague_eruptor 		}
 	if = { limit = { trait = creature_abomination 			} remove_trait = creature_abomination 		}
-	if = { limit = { trait = creature_skeleton 				} remove_trait = creature_skeleton 			}
 	if = { limit = { trait = creature_lich 					} remove_trait = creature_lich 				}
 
 	# Demons
@@ -811,38 +810,37 @@ prev_burn_evil_being_this_effect = {
 				}
 			}
 		}
-		custom_tooltip = {
-			text = burn_evil_being_effect_tooltip
-			hidden_tooltip = {
-				if = {
-					limit = { is_ruler = no }
-					random_list = {
-						80 = {
-							death = { death_reason = death_execution_burning killer = PREV }
-						}
-						20 = {
-							banish = yes
-							
-							is_good_intrigue_character_score = yes
-							
-							modifier = {
-								factor = 0
-								PREV = { ai = yes }		# AI always kill
-							}
-						}
+		if = {
+			limit = { is_ruler = no }
+			random_list = {
+				80 = {
+					custom_tooltip = {
+						text = burn_evil_being_effect_tooltip
+						death = { death_reason = death_execution_burning killer = PREV }
 					}
+					add_kinslayer_trait_to_prev_effect = yes
 				}
-				else = {
-					any_demesne_title = {
-						limit = {
-							title_can_be_lost_trigger = yes
-							lower_tier_than = DUKE
-						}
-						grant_title_no_opinion = { target = PREVPREV type = claim }
+				20 = {
+					banish = yes
+					
+					is_good_intrigue_character_score = yes
+					
+					modifier = {
+						factor = 0
+						PREV = { ai = yes }		# AI always kill
 					}
-					death = { death_reason = death_execution_burning killer = PREV }
 				}
 			}
+		}
+		else = {
+			any_demesne_title = {
+				limit = {
+					title_can_be_lost_trigger = yes
+					lower_tier_than = DUKE
+				}
+				grant_title_no_opinion = { target = PREVPREV type = claim }
+			}
+			death = { death_reason = death_execution_burning killer = PREV }
 		}
 	}
 	else = {
@@ -1394,17 +1392,7 @@ remove_3_mind_control_power_effect = {
 
 free_from_lich_king_effect = {
 	if = {
-		limit = {
-			trait = being_undead
-			NOT = { trait = champion_of_the_lich_king }
-			NOT = { has_landed_title = e_scourge }
-			e_scourge = {
-				has_holder = yes
-				holder_scope = {
-					religion = PREVPREV
-				}
-			}
-		}
+		limit = { can_break_scourge_mind_control_trigger = yes }
 		custom_tooltip = {
 			text = free_from_lich_king_effect_tooltip
 			character_event = { id = WCUND.1109 }
@@ -1453,6 +1441,7 @@ add_sunwell_effect = {
 		wonder = {
 			remove_sunwells_effect = yes
 			set_name = wonder_sunwell_sunwell
+			set_wonder_damaged = no
 		}
 	}
 }
@@ -1464,6 +1453,7 @@ add_lightwell_effect = {
 			remove_sunwells_effect = yes
 			set_wonder_flag = wonder_lightwell_flag
 			set_name = wonder_sunwell_sunwell
+			set_wonder_damaged = no
 		}
 	}
 }
@@ -1474,6 +1464,7 @@ add_deathwell_effect = {
 			remove_sunwells_effect = yes
 			set_wonder_flag = wonder_deathwell_flag
 			set_name = wonder_sunwell_deathwell
+			set_wonder_damaged = no
 		}
 	}
 }
@@ -1485,6 +1476,7 @@ add_felwell_effect = {
 			remove_sunwells_effect = yes
 			set_wonder_flag = wonder_felwell_flag
 			set_name = wonder_sunwell_felwell
+			set_wonder_damaged = no
 		}
 	}
 }
@@ -1907,7 +1899,7 @@ add_default_traits = {
 				chance = 20
 				stereotypical_traits_game_rule_score = yes
 				
-				if = { limit = { NOT = { trait = erudite } add_trait = erudite } }
+				if = { limit = { NOT = { trait = erudite } } add_trait = erudite }
 			}
 		}
 		
@@ -1994,7 +1986,7 @@ add_default_traits = {
 				chance = 20
 				stereotypical_traits_game_rule_score = yes
 				
-				if = { limit = { NOT = { trait = stubborn } add_trait = stubborn } }
+				if = { limit = { NOT = { trait = stubborn } } add_trait = stubborn }
 			}
 		}
 		
@@ -2310,8 +2302,8 @@ cleanup_province_as_target_settler_effect = {
 					has_province_modifier = undead_province
 					event_target:target_settler = {
 						NOT = {
-							trait = undead
-							
+							trait = being_undead
+
 							religion_group = necromancy_group
 						}
 					}
@@ -2523,10 +2515,19 @@ target_settler_declare_war_effect = {
 						reverse_unsafe_war = {
 							target = event_target:target_settler
 							casus_belli = claim_all
-							thirdparty_title = THIS
 						}
 					}
-					else = {
+					else_if = {
+						limit = {
+							event_target:target_settler = {
+								can_use_cb = {
+									target = PREV
+									casus_belli = claim
+									thirdparty_title = PREVPREVPREV
+									only_check_triggers = yes
+								}
+							}
+						}
 						reverse_unsafe_war = {
 							target = event_target:target_settler
 							casus_belli = claim
@@ -2942,7 +2943,7 @@ ruler_sell_land_to_holy_order_effect = {
 				show_scope_change = no
 
 				if = {
-					limit = { limit = { holder_scope = { character = event_target:target_ruler } } }
+					limit = { holder_scope = { character = event_target:target_ruler } }
 					ruler_grant_land_to_holy_order_effect = yes
 				}
 			}
@@ -3464,6 +3465,11 @@ remove_mind_control_modifier_effect = {
 }
 # Increases stage of Mind Control and makes undead loyal
 increase_mind_control_stage_effect = {
+	hidden_effect = {
+		# Changes religion of your provinces
+		change_undead_demesne_provinces_religion_to_root_effect = yes
+	}
+	
 	if = {
 		limit = {
 			NOR = {
@@ -3484,12 +3490,6 @@ increase_mind_control_stage_effect = {
 						NOT = { character = ROOT }
 					
 						can_be_mind_controlled_by_scourge_trigger = yes
-						e_scourge = {
-							has_holder = yes
-							holder_scope = {
-								NOT = { religion = PREVPREV }
-							}
-						}
 					}
 					character_event = { id = WCUND.1108 days = 1 }		# Check religion
 				}
@@ -3512,12 +3512,6 @@ increase_mind_control_stage_effect = {
 							NOT = { character = ROOT }
 						
 							can_be_mind_controlled_by_scourge_trigger = yes
-							e_scourge = {
-								has_holder = yes
-								holder_scope = {
-									NOT = { religion = PREVPREV }
-								}
-							}
 						}
 						character_event = { id = WCUND.1108 days = 1 }		# Check religion
 					}
@@ -3538,12 +3532,6 @@ increase_mind_control_stage_effect = {
 							NOT = { character = ROOT }
 						
 							can_be_mind_controlled_by_scourge_trigger = yes
-							e_scourge = {
-								has_holder = yes
-								holder_scope = {
-									NOT = { religion = PREVPREV }
-								}
-							}
 						}
 						random = {
 							chance = 50
@@ -3563,12 +3551,6 @@ increase_mind_control_stage_effect = {
 							NOT = { character = ROOT }
 						
 							can_be_mind_controlled_by_scourge_trigger = yes
-							e_scourge = {
-								has_holder = yes
-								holder_scope = {
-									NOT = { religion = PREVPREV }
-								}
-							}
 						}
 						random = {
 							chance = 25
@@ -3590,17 +3572,13 @@ decrease_mind_control_stage_effect = {
 		}
 		add_character_modifier = { name = mind_control_4 duration = -1 }
 		hidden_effect = {
-			any_realm_character = {
+			any_realm_lord = {
 				limit = {
 					NOT = { character = ROOT }
 					
-					can_be_mind_controlled_by_scourge_trigger = yes
-					e_scourge = {
-						has_holder = yes
-						holder_scope = {
-							religion = PREVPREV
-						}
-					}
+					NOT = { tier = BARON } #Barons stay loyal
+					
+					can_break_scourge_mind_control_trigger = yes
 				}
 				random = {
 					chance = 75
@@ -3620,17 +3598,13 @@ decrease_mind_control_stage_effect = {
 		}
 		add_character_modifier = { name = mind_control_3 duration = -1 }
 		hidden_effect = {
-			any_realm_character = {
+			any_realm_lord = {
 				limit = {
 					NOT = { character = ROOT }
 					
-					can_be_mind_controlled_by_scourge_trigger = yes
-					e_scourge = {
-						has_holder = yes
-						holder_scope = {
-							religion = PREVPREV
-						}
-					}
+					NOT = { tier = BARON } #Barons stay loyal
+					
+					can_break_scourge_mind_control_trigger = yes
 				}
 				random = {
 					chance = 50
@@ -3646,17 +3620,13 @@ decrease_mind_control_stage_effect = {
 	else = {
 		add_character_modifier = { name = mind_control_2 duration = -1 }
 		hidden_effect = {
-			any_realm_character = {
+			any_realm_lord = {
 				limit = {
 					NOT = { character = ROOT }
 					
-					can_be_mind_controlled_by_scourge_trigger = yes
-					e_scourge = {
-						has_holder = yes
-						holder_scope = {
-							religion = PREVPREV
-						}
-					}
+					NOT = { tier = BARON } #Barons stay loyal
+					
+					can_break_scourge_mind_control_trigger = yes
 				}
 				random = {
 					chance = 25
@@ -3921,7 +3891,7 @@ this_abdicate_transfer_wealth_to_prev_effect = {
 			transfer_artifact = { from = event_target:target_ruler to = event_target:target_heir }
 		}
 	}
-	abdicate_to = event_target:target_heir
+	abdicate_to = PREV
 	hidden_effect = {
 		# Lose claims on target_heir titles
 		any_claim = {
@@ -3952,7 +3922,7 @@ this_abdicate_transfer_wealth_to_play_prev_effect = {
 		}
 		set_player_character = event_target:target_heir	# THIS start playing PREV
 	}
-	abdicate_to = event_target:target_heir
+	abdicate_to = PREV
 	hidden_effect = {
 		# Lose claims on target_heir titles
 		any_claim = {
@@ -3967,4 +3937,47 @@ this_abdicate_transfer_wealth_to_play_prev_effect = {
 	
 	clear_event_target =  target_ruler
 	clear_event_target =  target_heir
+}
+
+fire_councilmember_king_effect = {
+	any_courtier_or_vassal = {
+		limit = { has_minor_title = title_councilmember_king }
+		leave_council_position_no_opinion_effect = yes
+	}
+}
+fire_councilmember_emperor_effect = {
+	any_courtier_or_vassal = {
+		limit = { has_minor_title = title_councilmember_emperor }
+		leave_council_position_no_opinion_effect = yes
+	}
+}
+
+add_artifact_frostmourne_effect = {
+	save_global_event_target_as = target_frostmourne_holder
+	add_artifact = frostmourne
+	hidden_effect = {
+		new_artifact = {
+			set_creation_date = 591.11.1
+			set_original_owner = event_target:target_lich_king
+		}
+	}
+}
+
+free_scourge_from_legion_effect = {
+	custom_tooltip = {
+		text = you_are_no_longer_pawn_of_the_legion_tooltip
+		clr_global_flag = scourge_is_under_legion_control_flag
+	}
+}
+
+# Changes religion of your undead provinces
+change_undead_demesne_provinces_religion_to_root_effect = {
+	any_demesne_province = {
+		limit = {
+			NOT = { religion = ROOT }
+			
+			has_province_modifier = undead_province
+		}
+		religion = ROOT
+	}
 }
