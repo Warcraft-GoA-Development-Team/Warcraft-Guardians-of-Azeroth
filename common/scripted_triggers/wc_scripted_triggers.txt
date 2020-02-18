@@ -1,7 +1,10 @@
 ### IMPORTANT, WIDELY USED TRIGGERS ###
 # YOU CAN NOT INTERACT WITH THEM
 is_untouchable_trigger = {
-	trait = sleeping_trait
+	always = no
+	# hidden_tooltip = {
+		# trait = sleeping_trait
+	# }
 }
 
 # FORBIDS AI TO ATTACK THEM
@@ -945,7 +948,6 @@ is_medium_humanoid_trigger = {
 		is_eredar_trigger = yes
 		trait = creature_arakkoa_corrupted
 		trait = creature_ghoul
-		# trait = creature_skeleton
 		trait = creature_satyr
 		trait = creature_sayaadi
 		trait = creature_moarg
@@ -1183,10 +1185,6 @@ potential_race_arakkoa_corrupted_trigger = {
 # potential_race_ghoul_trigger = {
 	# graphical_culture = ghoulgfx
 	# has_race_trait_trigger = no
-# }
-# potential_race_skeleton_trigger = {
-	# graphical_culture = skeletongfx
-	# NOT = { trait = creature_skeleton }
 # }
 potential_race_wraith_trigger = {
 	graphical_culture = wraithgfx
@@ -1578,7 +1576,6 @@ has_race_trait_trigger = {
 
 		# Undeads
 		trait = creature_ghoul
-		trait = creature_skeleton
 		trait = creature_wraith
 		trait = creature_banshee
 		trait = creature_plague_eruptor
@@ -1702,7 +1699,6 @@ has_prev_race_trigger = {
 	trigger_else_if = { limit = { trait = creature_banshee 				} PREV = { trait = creature_banshee 				} }
 	trigger_else_if = { limit = { trait = creature_plague_eruptor 		} PREV = { trait = creature_plague_eruptor 		} }
 	trigger_else_if = { limit = { trait = creature_abomination 			} PREV = { trait = creature_abomination 			} }
-	trigger_else_if = { limit = { trait = creature_skeleton 			} PREV = { trait = creature_skeleton 				} }
 	trigger_else_if = { limit = { trait = creature_lich 				} PREV = { trait = creature_lich 					} }
 	
 	# Demons
@@ -3013,7 +3009,6 @@ require_cannot_marry_flag_trigger = {
 		trait = creature_banshee
 		trait = creature_plague_eruptor
 		trait = creature_abomination
-		trait = creature_skeleton
 		trait = creature_lich
 		# trait = creature_fel_orc
 		# trait = creature_felblood_elf
@@ -4420,11 +4415,33 @@ not_raising_undead_flag_trigger = {
 	}
 }
 
-# Trigger used in mind control events
+# Triggers used in mind control events
 can_be_mind_controlled_by_scourge_trigger = {
 	trait = being_undead
+	
 	NOT = { has_character_flag = freed_from_lich_king_flag }
 	NOT = { has_landed_title = e_scourge }
+	e_scourge = {
+		has_holder = yes
+		holder_scope = {
+			NOT = { religion = PREVPREV }
+}
+	}
+}
+can_break_scourge_mind_control_trigger = {
+	trait = being_undead
+
+	trigger_if = {
+		limit = { religion = death_god }
+		NOT = { has_artifact = frostmourne }
+	}
+	NOT = { has_landed_title = e_scourge }
+	e_scourge = {
+		has_holder = yes
+		holder_scope = {
+			religion = PREVPREV
+		}
+	}
 }
 
 is_completely_incapable_trigger = {
@@ -4436,6 +4453,69 @@ is_completely_incapable_trigger = {
 		trait = mindless_worgen
 		# trait = in_twisting_nether
 		# trait = lost_corporeal_body
+	}
+}
+
+# Used in events of Merging with Lich King
+merging_lich_king_trigger = {
+	is_untouchable_trigger = no
+	
+	prisoner = no
+	
+	religion = death_god
+	true_religion = death_god
+	custom_tooltip = {
+		text = imprisoned_in_ice_tooltip
+		trait = in_ice_prison
+	}
+	
+	has_landed_title = e_scourge
+	scourge_is_free_trigger = yes
+}
+merging_champion_trigger = {
+	is_alive = yes
+	is_dying = no
+	is_untouchable_trigger = no
+	
+	is_adult = yes
+	is_incapable = no
+	prisoner = no
+	
+	religion = death_god
+	
+	has_artifact = frostmourne
+	can_be_undead_trigger = yes
+}
+
+scourge_is_free_trigger = {
+	custom_tooltip = {
+		text = scourge_is_free_tooltip
+		NOT = { has_global_flag = scourge_is_under_legion_control_flag }
+	}
+}
+
+# Trigger used in Lich King vision events
+lich_king_vision_trigger = {
+	is_alive = yes
+	is_dying = no
+	
+	is_untouchable_trigger = no
+	
+	is_adult = yes
+	is_incapable = no
+	prisoner = no
+
+	can_be_undead_trigger = yes
+	location = { region = world_northrend }
+	e_scourge = {
+		holder_scope = {
+			PREVPREV = {
+				NOT = {
+					religion = PREV
+					true_religion = PREVPREV
+				}
+			}
+		}
 	}
 }
 
