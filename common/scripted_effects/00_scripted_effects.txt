@@ -19350,7 +19350,10 @@ add_kinslayer_trait_effect = {
 	if = { #Parents, children, direct ancestors or descendants
 		limit = {
 			NOT = { trait = kinslayer }
-			NOT = { religion_group = muslim }
+			
+			# Warcraft
+			# NOT = { religion_group = muslim }
+			
 			OR = {
 				is_ancestor_of = event_target:kinslayer_target
 				is_descendant_of = event_target:kinslayer_target
@@ -19374,7 +19377,10 @@ add_kinslayer_trait_effect = {
 				trait = kinslayer
 				trait = familial_kinslayer
 			}
-			NOT = { religion_group = muslim }
+			
+			# Warcraft
+			# NOT = { religion_group = muslim }
+			
 			OR = {
 				is_cousin_of = event_target:kinslayer_target
 				is_aunt_uncle_of = event_target:kinslayer_target
@@ -19399,7 +19405,10 @@ add_kinslayer_trait_effect = {
 				trait = familial_kinslayer
 				trait = dynastic_kinslayer
 			}
-			NOT = { religion_group = muslim }
+			
+			# Warcraft
+			# NOT = { religion_group = muslim }
+			
 			is_lowborn = no
 			dynasty = event_target:kinslayer_target
 			OR = {
@@ -19422,7 +19431,10 @@ add_kinslayer_trait_effect = {
 				trait = dynastic_kinslayer
 				trait = tribal_kinslayer
 			}
-			NOT = { religion_group = muslim }
+			
+			# Warcraft
+			# NOT = { religion_group = muslim }
+			
 			is_lowborn = no
 
 			OR = {
@@ -19448,6 +19460,156 @@ add_kinslayer_trait_effect = {
 	else = {
 	}
 	clear_event_target = kinslayer_target
+}
+# Warcraft
+# Uses PREV instead of kinslayer_target so you can see you will become kinslayer
+add_kinslayer_trait_to_prev_effect = {
+	if = { #Parents, children, direct ancestors or descendants
+		limit = {
+			PREV = { NOT = { trait = kinslayer } }
+			
+			# Warcraft
+			# NOT = { religion_group = muslim }
+			
+			OR = {
+				is_ancestor_of = PREV
+				is_descendant_of = PREV
+				sibling = PREV
+			}
+			PREV = {
+				OR = {
+					NOT = { has_dlc = "Holy Fury" }
+					is_tribal = no
+				}
+			}
+		}
+		custom_tooltip = {
+			text = EXECUTION_KINSLAYER_DESC
+			PREV = {
+				add_trait = kinslayer
+				hidden_effect = {
+					character_event = {
+						id = 38287 #Notify Kinslayer
+					}
+				}
+			}
+		}
+	}
+	else_if = { #Cousins, aunts/uncles (blood ones only), nieces/nephews
+		limit = {
+			PREV = {
+				NOR = {
+					trait = kinslayer
+					trait = familial_kinslayer
+				}
+			}
+			
+			# Warcraft
+			# NOT = { religion_group = muslim }
+			
+			OR = {
+				is_cousin_of = PREV
+				is_aunt_uncle_of = PREV
+				is_nibling_of = PREV
+			}
+			PREV = {
+				OR = {
+					NOT = { has_dlc = "Holy Fury" }
+					is_tribal = no
+				}
+			}
+		}
+		custom_tooltip = {
+			text = EXECUTION_KINSLAYER_DESC
+			PREV = {
+				add_trait = familial_kinslayer
+				hidden_effect = {
+					character_event = {
+						id = 38287 #Notify Kinslayer
+					}
+				}
+			}
+		}
+	}
+	else_if = { #Dynasty members
+		limit = {
+			PREV = {
+				NOR = {
+					trait = kinslayer
+					trait = familial_kinslayer
+					trait = dynastic_kinslayer
+				}
+			}
+			
+			# Warcraft
+			# NOT = { religion_group = muslim }
+			
+			PREV = { is_lowborn = no }
+			dynasty = PREV
+			PREV = {
+				OR = {
+					NOT = { has_dlc = "Holy Fury" }
+					is_tribal = no
+				}
+			}
+		}
+		custom_tooltip = {
+			text = EXECUTION_KINSLAYER_DESC
+			PREV = {
+				add_trait = dynastic_kinslayer
+				hidden_effect = {
+					character_event = {
+						id = 38287 #Notify Kinslayer
+					}
+				}
+			}
+		}
+	}
+	else_if = { #Holy Fury Tribal only: any relative
+		limit = {
+			PREV = {
+				NOR = {
+					trait = kinslayer
+					trait = familial_kinslayer
+					trait = dynastic_kinslayer
+					trait = tribal_kinslayer
+				}
+			}
+			
+			# Warcraft
+			# NOT = { religion_group = muslim }
+			
+			PREV = { is_lowborn = no }
+
+			OR = {
+				is_cousin_of = PREV
+				is_aunt_uncle_of = PREV
+				is_nibling_of = PREV
+				dynasty = PREV
+				is_ancestor_of = PREV
+				is_descendant_of = PREV
+				sibling = PREV
+			}
+
+			PREV = {
+				has_dlc = "Holy Fury"
+				is_tribal = yes
+			}
+		}
+		custom_tooltip = {
+			text = EXECUTION_KINSLAYER_DESC
+			PREV = {
+				add_trait = tribal_kinslayer
+				hidden_effect = {
+					character_event = {
+						id = 38287 #Notify Kinslayer
+					}
+				}
+			}
+		}
+	}
+	else = {
+	}
 }
 
 set_higher_quality_of_book_flags_effect = {
