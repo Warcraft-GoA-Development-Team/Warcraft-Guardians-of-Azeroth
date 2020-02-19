@@ -10486,37 +10486,63 @@ character_event = {
 	is_triggered_only = yes
 
 	immediate = { 
-		killer = { 
+		killer = {
+
+			# Warcraft
 			#Bonus points first.
-			if = { #The gods appreciate your sacrifice.
-				limit = {
-					is_adult = no
-					ROOT = { is_child_of = PREV } 
-				}
+			if = { # Has more blood than small humanoids.
+				limit = { ROOT = { is_medium_humanoid_trigger = yes } }
 				change_variable = { which = burned_hearts_points value = 1 }
 			}
-			if = { #And a divine child is even better.
-				limit = {
-					is_adult = no
-					ROOT = { religion = PREV } 
-					OR = { 
-						has_religion_feature = religion_holy_family 
-						has_religion_feature = religion_feature_zun
-					} 
+			else_if = { # Has more blood than medium humanoids.
+				limit = { ROOT = { is_large_humanoid_trigger = yes } }
+				change_variable = { which = burned_hearts_points value = 2 }
+			}
+			else_if = { # Dragons are magical!
+				limit = { ROOT = { is_dragon_race_trigger = yes } }
+				if = {
+					limit = { ROOT = { is_whelp_trigger = yes } }
+					change_variable = { which = burned_hearts_points value = 1 }
 				}
+				else_if = {
+					limit = { ROOT = { is_drake_trigger = yes } }
+					change_variable = { which = burned_hearts_points value = 2 }
+				}
+				else_if = {
+					limit = { ROOT = { is_dragon_trigger = yes } }
+					change_variable = { which = burned_hearts_points value = 3 }
+				}
+				else = { change_variable = { which = burned_hearts_points value = 4 } }
+			}
+			if = { # Innocent souls!
+				limit = { ROOT = { is_adult = no } }
 				change_variable = { which = burned_hearts_points value = 1 }
+			}
+			if = { #The gods appreciate your sacrifice.
+				limit = { ROOT = { is_child_of = PREV } }
+				change_variable = { which = burned_hearts_points value = 1 }
+
+				if = { #And a divine child is even better.
+					limit = {
+						OR = {
+							has_religion_feature = religion_holy_family
+							has_religion_feature = religion_feature_zun
+						} 
+					}
+					change_variable = { which = burned_hearts_points value = 1 }
+				}
 			}
 			if = { #A foreign religious head is also quite good.
 				limit = {
 					NOT = { religion = ROOT } 
-					controls_religion = yes
+					ROOT = { controls_religion = yes }
 				}
 				change_variable = { which = burned_hearts_points value = 2 }
 			}
 			if = { #A foreign emperor is also well accepted.
 				limit = {
-					NOT = { religion = ROOT } 
-					higher_tier_than = KING
+					NOT = { religion = ROOT }
+					ROOT = { higher_tier_than = KING }
 				}
 				change_variable = { which = burned_hearts_points value = 2 }
 			}
