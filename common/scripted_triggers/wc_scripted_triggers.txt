@@ -817,6 +817,14 @@ evil_public_religion_trigger = {
 		religion = old_gods_worship
 	}
 }
+evil_secret_religion_trigger = {
+	OR = {
+		secret_religion = death_god
+		# secret_religion = orcish_fel
+		secret_religion = burning_legion_religion
+		secret_religion = old_gods_worship
+	}
+}
 dark_public_religion_trigger = {
 	OR = {
 		religion_group = fel_group
@@ -2820,13 +2828,7 @@ is_plant_race_trigger = {
 
 # Can be appointed marshal, regent, steward etc (basically, all importrant titles)
 can_be_appointed_trigger = {
-	trigger_if = {
-		limit = { liege = { evil_public_religion_trigger = yes } }
-		religion = liege
-	}
-	trigger_else = {
-		evil_public_religion_trigger = no
-	}
+	liege = { can_positive_interact_with_prev_publicly_trigger = yes }
 }
 
 # Analogs of the Hermetics in the Warcraft universe
@@ -4175,22 +4177,10 @@ fury_of_wolf_human_event_trigger = {
 }
 
 can_improve_relations_with_root_trigger = {
-	trigger_if = {
-		limit = { ROOT = { evil_public_religion_trigger = yes } }
-		religion = ROOT
-	}
-	trigger_else = {
-		evil_public_religion_trigger = no
-	}
+	ROOT = { can_positive_interact_with_prev_publicly_trigger = yes }
 }
 can_improve_relations_with_from_trigger = {
-	trigger_if = {
-		limit = { FROM = { evil_public_religion_trigger = yes } }
-		religion = FROM
-	}
-	trigger_else = {
-		evil_public_religion_trigger = no
-	}
+	FROM = { can_positive_interact_with_prev_publicly_trigger = yes }
 }
 
 ashbringer_owner_event_trigger = {
@@ -4516,5 +4506,46 @@ lich_king_vision_trigger = {
 				}
 			}
 		}
+	}
+}
+
+can_positive_interact_with_prev_hiddenly_trigger = {
+	# PREV can interact with those who shares PREV's religion publicly or secretly
+	trigger_if = {
+		limit = {
+			PREV = { evil_public_religion_trigger = yes }
+		}
+		OR = {
+			religion = PREV
+			secret_religion = { target = PREV target_type = public }
+		}
+	}
+	# PREV can interact with those who shares PREV's religion publicly or secretly or who doesn't follow evil religions
+	trigger_else_if = {
+		limit = {
+			PREV = { evil_secret_religion_trigger = yes }
+		}
+		OR = {
+			evil_public_religion_trigger = no
+			secret_religion = PREV
+			religion = { target = PREV target_type = secret }
+		}
+	}
+	# Otherwise, PREV can interact with those who doesn't follow evil religions
+	trigger_else = {
+		evil_public_religion_trigger = no
+	}
+}
+can_positive_interact_with_prev_publicly_trigger = {
+	# PREV can interact with those who shares PREV's religion publicly
+	trigger_if = {
+		limit = {
+			PREV = { evil_public_religion_trigger = yes }
+		}
+		religion = PREV
+	}
+	# Otherwise, PREV can interact with those who doesn't follow evil religions
+	trigger_else = {
+		evil_public_religion_trigger = no
 	}
 }
