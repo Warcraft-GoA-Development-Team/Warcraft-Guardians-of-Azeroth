@@ -1,13 +1,12 @@
 offmap_decisions = {
 	offmap_sacrifice = {
-		only_playable = yes
+		ai = no
 		button_name = offmap_gifts
 
 		third_party_filter = home_court
-		ai_third_party_filter = home_court
-		third_party = FROM
-		ai_check_interval = 24
 		show_third_party_potential = yes
+
+		diplomacy_icon = GFX_old_gods_sacrifice_decision
 
 		potential = {
 			OR = {
@@ -25,20 +24,15 @@ offmap_decisions = {
 				}
 			}
 		}
-
-		from_potential = {
-			mercenary = no
-			holy_order = no
-			is_landed = yes
-		}
-
+		
+		from_potential = { can_sacrifice_characters_to_og_potential_trigger = yes }
+		
 		allow = {
 			FROM = {
+				show_only_failed_conditions = yes
 				show_scope_change = no
 
-				prisoner = no
-				is_incapable = no
-				is_inaccessible_trigger = no
+				can_sacrifice_characters_allow_trigger = yes
 
 				trigger_if = {
 					limit = { ROOT = { is_offmap_tag = offmap_cthun } }
@@ -55,10 +49,10 @@ offmap_decisions = {
 		}
 
 		third_party_potential = {
-			show_only_failed_conditions = yes
 			FROMFROM = {
 				show_scope_change = no
-				prisoner = yes
+
+				THIS_is_prisoner_that_can_be_sacrificed_trigger = yes
 				host = { character = ROOT_FROM }
 			}
 		}
@@ -67,6 +61,9 @@ offmap_decisions = {
 			#show_only_failed_conditions = yes
 		}
 
+		# DO NOT FORGET TO CHANGE "caltulate_PREV_offmap_old_gods_currency_insanity_effect" IF YOU CHANGE THIS!
+		# THIS IS ONLY NEEDED FOR SHOWING OFFMAP CURRENCY AMOUNT THAT YOUR CHARACTER WILL RECEIVE ON OG SCREEN THIRD PARTY SELECTOR
+		
 		third_party_score = {
 			factor = 100
 
@@ -282,91 +279,18 @@ offmap_decisions = {
 		}
 
 		effect = {
-			log = "[From.GetBestName] sacrificed [FromFrom.GetBestName] to the Old Gods"
-
 			FROM = {
 				show_scope_change = no
+				ROOT_FROMFROM = {
+					show_scope_change = no
 
-				if = {
-					limit = { ROOT = { offmap_power = { is_offmap_tag = offmap_cthun } } }
-					add_offmap_currency = {
-						offmap = offmap_cthun
-						value = local_third_party_score
-					}
-				}
-				else_if = {
-					limit = { ROOT = { offmap_power = { is_offmap_tag = offmap_nzoth } } }
-					add_offmap_currency = {
-						offmap = offmap_nzoth
-						value = local_third_party_score
-					}
-				}
-				else = {
-					add_offmap_currency = {
-						offmap = offmap_yoggsaron
-						value = local_third_party_score
-					}
-				}
-			}
-			FROMFROM = {
-				show_scope_change = no
-
-				death = { death_reason = death_sacrificed }
-			}
-			if = {
-				limit = {
-					FROMFROM = { is_virgin_trigger = yes }
-					FROM = {
-						has_quest = quest_the_devil_worshipers_sacrifice_virgin
-					}
-				}
-				FROM = {
-					clr_quest = quest_the_devil_worshipers_sacrifice_virgin
-					add_society_currency_major_effect = yes
-				}
-			}
-			if = {
-				limit = {
-					FROMFROM = {
-						dark_public_religion_trigger = no
-						secular_public_religion_trigger = no
-						OR = {
-							is_priest = yes
-							is_ascetic_trigger = yes
-						}
-					}
-					FROM = {
-						has_quest = quest_the_devil_worshipers_sacrifice_holy_person
-					}
-				}
-				FROM = {
-					clr_quest = quest_the_devil_worshipers_sacrifice_holy_person
-					add_society_currency_major_effect = yes
-				}
-			}
-			if = {
-				limit = {
-					FROMFROM = { is_landed = yes }
-					FROM = {
-						has_quest = quest_the_devil_worshipers_sacrifice_ruler
-					}
-				}
-				FROM = {
-					clr_quest = quest_the_devil_worshipers_sacrifice_ruler
-					add_society_currency_major_effect = yes
+					PREV_sacrifice_THIS_to_old_god_effect = yes
 				}
 			}
 		}
 
 		revoke_allowed = {
 			always = no
-		}
-
-		ai_will_do = {
-			factor = 1
-			modifier = {
-				factor = 0.3 # slow down
-			}
 		}
 	}
 	request_army_offmap = {
