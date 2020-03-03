@@ -84,12 +84,32 @@ character_event = {
 			limit = { trait = cannot_marry_trait }
 			log = "(IMPORTANT) [This.GetBestName] cannot_marry, but tried to marry"
 		}
-		remove_spouse = event_target:target_other_spouse
-		break_betrothal = event_target:target_other_spouse
+		
+		if = {
+			limit = {
+				OR = {
+					is_betrothed = yes
+					is_marriage_adult = no
+					event_target:target_other_spouse = { is_marriage_adult = no }
+				}
+			}
+			break_betrothal = event_target:target_other_spouse
+			
+			# target_other_spouse and her/his relatives get bad opinion of FROM, the one who organized marriage
+			event_target:target_other_spouse = {
+				opinion = { modifier = opinion_betrothal_broken who = FROM }
+				any_close_relative = { opinion = { modifier = opinion_betrothal_broken who = FROM } }
+			}
+		}
+		else = {
+			remove_spouse = event_target:target_other_spouse
+			
+			opinion = { modifier = opinion_divorced who = event_target:target_other_spouse }
+			any_close_relative = { opinion = { modifier = opinion_divorced_relative who = event_target:target_other_spouse } }
+		}
+		
 		character_event = { id = WCCLN.102 }
 
-		opinion = { modifier = opinion_divorced who = event_target:target_other_spouse }
-		any_close_relative = { opinion = { modifier = opinion_divorced_relative who = event_target:target_other_spouse } }
 		if = {
 			limit = {
 				is_pregnant = yes 
