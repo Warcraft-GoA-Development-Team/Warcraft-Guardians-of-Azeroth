@@ -425,17 +425,11 @@ narrative_event = {
 	border = GFX_event_narrative_frame_intrigue
 
 	is_triggered_only = yes
-	
-	immediate = {
-		clr_global_flag = scourge_is_under_legion_control_flag
-	}
 
 	option = {
 		name = EVTOPTA_WCUND_110
 
-		custom_tooltip = {
-			text = you_are_no_longer_pawn_of_the_legion_tooltip
-		}
+		free_scourge_from_legion_effect = yes
 	}
 }
 # on_avoided_imprison_started_war
@@ -565,17 +559,6 @@ narrative_event = {
 		name = EVTOPTA_WCUND_110
 
 		hidden_effect = { e_burning_legion = { holder_scope = { add_rival = ROOT } } }
-		# e_burning_legion = {
-			# holder_scope = {
-				# war = {
-					# casus_belli = rivalry_cb
-					# target = ROOT
-				# }
-			# }
-		# }
-		custom_tooltip = {
-			text = you_are_no_longer_pawn_of_the_legion_tooltip
-		}
 
 		ai_chance = {
 			factor = 50
@@ -585,13 +568,15 @@ narrative_event = {
 			}
 		}
 		
-		clr_global_flag = scourge_is_under_legion_control_flag
+		free_scourge_from_legion_effect = yes
 	}
 
 	after = {
 		e_burning_legion = { holder_scope = { narrative_event = { id = WCUND.135 } } }
 		
-		clr_global_flag = scourge_is_under_legion_control_flag
+		hidden_effect = {
+			free_scourge_from_legion_effect = yes
+		}
 	}
 }
 # Notificates the Legion about the decision
@@ -1097,7 +1082,7 @@ character_event = {
 	# Just an undead
 	option = {
 		trigger = {
-			event_target:target_undead = { NOT = { trait = undead } }
+			event_target:target_undead = { NOT = { trait = being_undead } }
 			
 			event_target:target_necromancer = {
 				OR = {
@@ -1632,103 +1617,321 @@ character_event = {
 }
 
 ###############################
-# The Merging with a Lich King
+# Merging with Lich King
 ###############################
-# Want you merge?
+### Saves owner of Frostmourne as global event target
+character_event = {
+	id = WCUND.395
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	trigger = {
+		FROM = { artifact_type = frostmourne }
+	}
+	
+	immediate = {
+		save_global_event_target_as = target_frostmourne_holder
+	}
+}
+### Merge intro
 narrative_event = {
-	id = WCUND.500
-	title = EVTTITLE_WCUND_500
-	desc = EVTDESC_WCUND_500
+	id = WCUND.400
+	title = EVTTITLE_WCUND_400
+	desc = EVTDESC_WCUND_400
 	picture = GFX_evt_icecrown
-	border = GFX_event_narrative_frame_war
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+	
+	immediate = {
+		add_trait = travelling
+		
+		# You feel guilt of killing that character
+		if = {
+			limit = { any_kill_list_character = { is_close_relative = ROOT } }
+			random_kill_list_character = {
+				limit = { is_close_relative = ROOT }
+				save_event_target_as = target_killed_character
+			}
+		}
+	}
+
+	option = { #For the champion
+		name = EVTOPTA_WCUND_400
+		
+		# If you finished the Champion event chain, you get +1 event
+		if = {
+			limit = { has_character_flag = finished_champion_event_chain_flag }
+			73 = { province_event = { id = WCUND.410 days = 30 } }
+		}
+		else = {
+			73 = { province_event = { id = WCUND.524 days = 60 } }
+		}
+	}
+}
+### Return to Northrend
+# Delayed event
+province_event = {
+	id = WCUND.410
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
+		# If... these conditions are met, event chain can go on
+		if = {
+			limit = {
+				event_target:target_lich_king = { merging_lich_king_trigger = yes }
+				event_target:target_champion = { merging_champion_trigger = yes }
+			}
+			event_target:target_champion = { narrative_event = { id = WCUND.411 } }
+		}
+		# Else... notify that event chain failed
+		else = {
+			event_target:target_lich_king = { character_event = { id = WCUND.540 } }
+			event_target:target_champion = { character_event = { id = WCUND.540 } }
+		}
+	}
+}
+# Delayer event
+narrative_event = {
+	id = WCUND.411
+	title = EVTTITLE_WCUND_400
+	desc = EVTDESC_WCUND_411
+	picture = GFX_evt_icecrown
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+	
+	option = {
+		name = EVTOPTA_WCUND_411
+		
+		remove_slothful_or_add_diligent_silently_effect = yes
+		
+		73 = { province_event = { id = WCUND.524 days = 30 } }
+	}
+}
+### Merges with Lich King
+# Delayer event
+province_event = {
+	id = WCUND.524
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
+		# If... these conditions are met, event chain can go on
+		if = {
+			limit = {
+				event_target:target_lich_king = { merging_lich_king_trigger = yes }
+				event_target:target_champion = { merging_champion_trigger = yes }
+			}
+			event_target:target_champion = { narrative_event = { id = WCUND.525 } }
+		}
+		# Else... notify that event chain failed
+		else = {
+			event_target:target_lich_king = { character_event = { id = WCUND.540 } }
+			event_target:target_champion = { character_event = { id = WCUND.540 } }
+		}
+	}
+}
+# Delayed event
+narrative_event = {
+	id = WCUND.525
+	title = EVTTITLE_WCUND_400
+	desc = EVTDESC_WCUND_525
+	picture = GFX_evt_icecrown
+	border = GFX_event_narrative_frame_intrigue
 
 	is_triggered_only = yes
 
-	min_age = 16
-	only_playable = yes
-	only_capable = yes
-	prisoner = no
-
-	trigger = {
-		always = no	# TODO
+	# Consume Lich King's soul - if Lich King is player, Lich King gets game over :3
+	option = {
+		trigger = {
+			event_target:target_lich_king = { ai = no }
+		}
+		name = EVTOPTA_WCUND_525
 		
-		is_adult = yes
-		is_incapable = no
-		prisoner = no
-		is_inaccessible_trigger = no
-
-		e_scourge = {
-			holder_scope = {
-				trait = creature_wraith
-				trait = lich_king
-				OR = {
-					has_character_modifier = mind_control_3
-					has_character_modifier = mind_control_4
-				}
+		hidden_effect = {
+			if = {
+				limit = { OR = { is_republic = yes is_theocracy = yes is_nomadic = yes } }
+				abdicate = yes
 			}
 		}
-
-		trait = champion_of_the_lich_king				# You're the champion
-	}
-
-	immediate = {
-		e_scourge = { holder_scope = { save_event_target_as = target_lich_king } }
-		set_global_flag = merging_with_the_lich_king
-	}
-
-	option = {
-		name = EVTOPTA_WCUND_500
-		narrative_event = { id = WCUND.550 days = 30 }
-	}
-	option = {
-		name = EVTOPTB_WCUND_500
-
-		clr_global_flag = merging_with_the_lich_king
-
+		event_target:target_lich_king = {
+			show_scope_change = no
+			
+			this_abdicate_transfer_wealth_to_prev_effect = yes
+			hidden_effect = { death = { death_reason = death_merged killer = ROOT } }
+		}
+		
 		ai_chance = {
 			factor = 0
 		}
 	}
+	
+	# Merge with Lich King's soul
+	option = {
+		name = EVTOPTB_WCUND_525
+		
+		hidden_effect = {
+			if = {
+				limit = { OR = { is_republic = yes is_theocracy = yes is_nomadic = yes } }
+				abdicate = yes
+			}
+		}
+		event_target:target_lich_king = {
+			show_scope_change = no
+			
+			this_abdicate_transfer_wealth_to_play_prev_effect = yes
+			hidden_effect = { death = { death_reason = death_merged killer = ROOT } }
+		}
+	}
+	
+	after = {
+		remove_trait = travelling
+		add_trait = sleeping_trait
+		
+		clear_delayed_event = { id = WCUND.530 }			# Must be here because 2 characters can fire this event due to set_player_character inside of this_abdicate_transfer_wealth_to_play_prev_effect
+		narrative_event = { id = WCUND.530 years = 2 }
+	}
 }
-# Merges you
+### Visions
 narrative_event = {
-	id = WCUND.550
-	title = EVTTITLE_WCUND_550
-	desc = EVTDESC_WCUND_550
+	id = WCUND.530
+	title = EVTTITLE_WCUND_400
+	desc = EVTDESC_WCUND_530
 	picture = GFX_evt_icecrown
-	border = GFX_event_narrative_frame_war
+	border = GFX_event_narrative_frame_intrigue
 
 	is_triggered_only = yes
+	
+	trigger = {
+		trait = sleeping_trait
+		
+		has_landed_title = e_scourge
+	}
 
-	trigger = { has_global_flag = merging_with_the_lich_king }
-
+	# Kill both visions
 	option = {
-		name = EVTOPTA_WCUND_550
+		name = EVTOPTA_WCUND_530
+		
+		remove_content_or_add_ambitious_silently_effect = yes	# You're the only king!
+		remove_trusting_or_add_paranoid_silently_effect = yes 	# Traitors! They all are traitors!
+		
+		# Effects of both options
+		# Kill humanity
+		remove_patient_or_add_wroth_silently_effect = yes		# Humanity is patient, you killed it
+		remove_humble_or_add_proud_silently_effect = yes		# Humanity is humble, you killed it
+		remove_just_or_add_arbitrary_silently_effect = yes		# Humanity is just, you killed it
+		# Kill Ner'zhul
+		remove_honest_or_add_deceitful_silently_effect = yes	# Ner'zhul trusted you!
+	}
+	# Kill your humanity
+	option = {
+		name = EVTOPTB_WCUND_530
+		
+		add_trait_silently_erudite_effect = yes					# Ner'zhul knows many things
+		remove_patient_or_add_wroth_silently_effect = yes		# Humanity is patient, you killed it
+		remove_humble_or_add_proud_silently_effect = yes		# Humanity is humble, you killed it
+		remove_just_or_add_arbitrary_silently_effect = yes		# Humanity is just, you killed it
+		
+		ai_chance = {
+			factor = 0
+		}
+	}
+	# Kill Ner'zhul
+	option = {
+		name = EVTOPTC_WCUND_530
+		
+		remove_honest_or_add_deceitful_silently_effect = yes	# Ner'zhul trusted you!
+		remove_wroth_or_add_patient_silently_effect = yes		# Humanity is patient, you saved it
+		remove_proud_or_add_humble_silently_effect = yes		# Humanity is humble, you saved it
+		remove_arbitrary_or_add_just_silently_effect = yes		# Humanity is just, you saved it
+		
+		set_character_flag = killed_nerzhul_soul_flag
+		
+		ai_chance = {
+			factor = 0
+		}
+	}
+	
+	after = {
+		narrative_event = { id = WCUND.535 years = 2 }
+	}
+}
+### Dream Over
+narrative_event = {
+	id = WCUND.535
+	title = EVTTITLE_WCUND_400
+	desc = EVTDESC_WCUND_535
+	picture = GFX_evt_icecrown
+	border = GFX_event_narrative_frame_intrigue
 
-		if = {
-			limit = { OR = { is_republic = yes is_theocracy = yes is_tribal = yes } }
-			abdicate = yes
+	is_triggered_only = yes
+	
+	trigger = {
+		trait = sleeping_trait
+		
+		has_landed_title = e_scourge
+	}
+
+	# Remove heart
+	option = {
+		trigger = { NOT = { has_character_flag = killed_nerzhul_soul_flag } }
+		name = EVTOPTA_WCUND_535
+		
+		remove_kind_or_add_envious_and_cruel_silently_effect = yes	# No mercy!
+	}
+	# Keep heart
+	option = {
+		name = EVTOPTB_WCUND_535
+		
+		remove_envious_and_cruel_or_add_kind_silently_effect = yes	# My undead servans deserve love!
+		
+		ai_chance = {
+			factor = 0
 		}
+	}
+	
+	after = {
+		remove_trait = sleeping_trait
+	}
+}
+### Merging failed
+character_event = {
+	id = WCUND.540
+	desc = {
+		trigger = { character = event_target:target_lich_king }
+		text = EVTDESC_WCUND_540_lich_king
+	}
+	desc = {
+		trigger = { character = event_target:target_champion }
+		text = EVTDESC_WCUND_540_champion
+	}
+	picture = GFX_evt_icecrown
+	border = GFX_event_normal_frame_intrigue
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = ALAS
+	}
+
+	after = {
+		clr_character_flag = merge_with_champion_ongoing_flag
 		if = {
-			limit = { is_female = no }
-			custom_tooltip = { text = becomes_the_new_lich_king_tooltip }
-		}
-		if = {
-			limit = { is_female = yes }
-			custom_tooltip = { text = becomes_the_new_lich_queen_tooltip }
-		}
-		hidden_tooltip = {
-			e_scourge = {
-				holder_scope = {
-					ROOT = { wealth = PREV }
-					clear_wealth = yes
-					abdicate_to = ROOT
-					death = { death_reason = death_merged killer = ROOT }
-				}
+			limit = {
+				trait = travelling
+				
+				character = event_target:target_champion
 			}
+			remove_trait = travelling
 		}
 	}
 }
+
 # The New Lich King
 narrative_event = {
 	id = WCUND.551
@@ -1758,8 +1961,6 @@ narrative_event = {
 		ai = no
 	}
 	show_root = yes
-
-	immediate = { clr_global_flag = merging_with_the_lich_king }
 
 	option = {
 		name = {
@@ -1821,10 +2022,6 @@ character_event = {
 			character_event = { id = WCPOD.5013 }
 		}
 		add_trait = lich_king
-		if = {
-			limit = { trait = champion_of_the_lich_king }
-			remove_trait = champion_of_the_lich_king
-		}
 		FROMFROM = {
 			if = {
 				limit = { is_alive = yes }
@@ -1833,23 +2030,6 @@ character_event = {
 		}
 		character_event = { id = WCUND.1106 days = 1 }
 		narrative_event = { id = WCUND.551 }
-	}
-}
-
-# Becomes the champion of the lich king
-narrative_event = {
-	id = WCUND.560
-	title = EVTTITLE_WCUND_560
-	desc = EVTDESC_WCUND_560
-	picture = GFX_evt_icecrown
-	border = GFX_event_narrative_frame_diplomacy
-
-	is_triggered_only = yes
-
-	option = {
-		name = EXCELLENT
-
-		add_trait = champion_of_the_lich_king
 	}
 }
 
@@ -1954,6 +2134,75 @@ character_event = {
 	}
 }
 
+#####################
+# End of the Scourge
+#####################
+narrative_event = {
+	id = WCUND.1010
+	title = EVTTITLE_WCUND_1010
+	desc = EVTDESC_WCUND_1010
+	picture = GFX_evt_scourge_army
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+	
+	major = yes
+	major_trigger = {
+		ai = no
+	}
+	show_root = yes
+	hide_from = yes
+	hide_new = yes
+	
+	trigger = {
+		has_landed_title = e_scourge
+	}
+
+	immediate = {
+		e_scourge = { holder_scope = { save_event_target_as = target_lich_king } }
+		
+		activate_title = { title = e_scourge status = no }
+		e_scourge = { destroy_landed_title = THIS }
+		event_target:target_lich_king = { death = { death_reason = death_missing } } # The Lich King goes down with the Scourge
+	}
+
+	# It's not over yet!
+	option = {
+		trigger = {
+			OR = {
+				true_religion = death_god
+				true_religion = burning_legion_religion
+			}
+		}
+		name = ITS_NOT_OVER_YET
+	}
+	# We can sleep peacefully now
+	option = {
+		trigger = {
+			NOT = {
+				true_religion = death_god
+				true_religion = burning_legion_religion
+			}
+			is_aggressive_trigger = no
+		}
+		name = WE_CAN_SLEEP_PEACEFULLY_NOW
+	}
+	# Who cares?
+	option = {
+		trigger = {
+			NOT = {
+				true_religion = death_god
+				true_religion = burning_legion_religion
+				is_aggressive_trigger = no
+			}
+		}
+		name = WHO_CARES
+	}
+}
+
+#############################################
+#				Lich King Mind Control Mechanics
+#############################################
 # Increases power of mind control.
 # This stages important only for Lich King
 # Stages:
@@ -2010,16 +2259,6 @@ character_event = {
 	option = {
 		name = EXCELLENT
 
-		# Converts your provinces
-		hidden_effect = {
-			any_demesne_province = {
-				limit = {
-					NOT = { religion = ROOT }
-					has_province_modifier = undead_province
-				}
-				religion = ROOT
-			}
-		}
 		# Increases stage of Mind Control and makes undead loyal
 		increase_mind_control_stage_effect = yes
 	}
@@ -2086,17 +2325,9 @@ character_event = {
 	picture = GFX_evt_scourge_army
 
 	is_triggered_only = yes
-
+	
 	trigger = {
-		trait = being_undead
-		NOT = { has_character_flag = freed_from_lich_king_flag }
-		NOT = { has_landed_title = e_scourge }
-		e_scourge = {
-			has_holder = yes
-			holder_scope = {
-				NOT = { religion = PREVPREV }
-			}
-		}
+		can_be_mind_controlled_by_scourge_trigger = yes
 	}
 
 	immediate = {
@@ -2112,6 +2343,8 @@ character_event = {
 				show_scope_change = no
 				ROOT = {
 					show_scope_change = no
+					
+					# Changes religion
 					if = {
 						limit = { NOT = { religion = PREV } }
 						religion = PREV
@@ -2123,26 +2356,15 @@ character_event = {
 					hidden_effect = {
 						if = {
 							limit = {
-								is_ruler = yes
-								higher_tier_than = COUNT
+								is_landed = yes
+								higher_tier_than = BARON
 							}
-							any_demesne_province = {
-								limit = {
-									NOT = { religion = PREVPREV }
-									has_province_modifier = undead_province
-								}
-								religion = PREVPREV
-							}
+							# Changes religion of your provinces
+							change_undead_demesne_provinces_religion_to_root_effect = yes
 						}
 					}
-					if = {
-						limit = { has_opinion_modifier = { who = PREV  modifier = opinion_evil_tyrant } }
-						remove_opinion = { modifier = opinion_evil_tyrant who = PREV }
-					}
-					if = {
-						limit = { NOT = { has_opinion_modifier = { who = PREV  modifier = opinion_loyal_servant } } }
-						opinion = { modifier = opinion_loyal_servant who = PREV }
-					}
+					remove_opinion = { modifier = opinion_evil_tyrant who = PREV }
+					opinion = { modifier = opinion_loyal_servant who = PREV }
 				}
 			}
 		}
@@ -2155,9 +2377,62 @@ character_event = {
 	picture = GFX_evt_scourge_army
 
 	is_triggered_only = yes
-
+	
+	trigger = {
+		can_break_scourge_mind_control_trigger = yes
+	}
+	
 	immediate = {
 		log = "WCUND.1109 fired for [Root.GetBestName]"
+		
+		e_scourge = {
+			holder_scope = {
+				ROOT = {
+					# Picks religion to convert to
+					if = {
+						limit = { religion = PREV }	#Has Lich King's religion
+						# If you have secret religion, convert to it
+						if = {
+							limit = { has_secret_religion = yes }
+							secret_religion_scope = { save_event_target_as = target_religion }
+						}
+						# Convert to religion of your capital
+						else_if = {
+							limit = {
+								is_landed = yes
+								capital_scope = {
+									evil_public_religion_trigger = no
+									is_reformed_religion_trigger = yes
+								}
+							}
+							capital_scope = { religion_scope = { save_event_target_as = target_religion } }
+						}
+						else = {
+							# Fallback
+							forsaken_cult = { save_event_target_as = target_religion }
+						}
+					}
+					# Picks culture to convert to
+					# Changes culture to Forsaken
+					if = {
+						limit = {
+							OR = {
+								culture = scourge
+								AND = {
+									event_target:target_religion = { dark_public_religion_trigger = yes }
+									OR = {
+										culture_group = high_elf_group
+										culture_group = human_group
+										culture_group = night_elf_group
+									}
+								}
+							}
+						}
+						forsaken = { save_event_target_as = target_culture }
+					}
+				}
+			}
+		}
 	}
 
 	option = {
@@ -2166,10 +2441,13 @@ character_event = {
 		set_character_flag = freed_from_lich_king_flag
 		e_scourge = {
 			show_scope_change = no
+			
 			holder_scope = {
 				show_scope_change = no
+				
 				ROOT = {
 					show_scope_change = no
+					
 					if = {
 						limit = {
 							is_ruler = yes
@@ -2184,29 +2462,65 @@ character_event = {
 					remove_opinion = { modifier = opinion_loyal_servant who = PREV }
 					opinion = { modifier = opinion_evil_tyrant who = PREV }
 					
+					# Changes religion
 					if = {
-						limit = { religion = PREV }
+						limit = { event_target:target_religion = { always = yes } }
+						religion = event_target:target_religion
+						if = { limit = { has_secret_religion = yes } clear_secret_religion = yes }
+					}
+					# Changes culture
+					if = {
+						limit = { event_target:target_culture = { always = yes } }
+						culture = event_target:target_culture
+					}
+					hidden_effect = {
 						if = {
-							limit = { has_secret_religion = yes }
-							convert_to_secret_religion = yes
-							break = yes
-						}
-						else_if = {
 							limit = {
 								is_landed = yes
-								capital_scope = { evil_public_religion_trigger = no }
+								higher_tier_than = BARON
 							}
-							capital_scope = {
-								show_scope_change = no
-								ROOT = {
-									show_scope_change = no
-									religion = PREV
+							# Changes religion and culture of your provinces
+							any_demesne_province = {
+								limit = {
+									OR = {
+										religion = PREVPREV #Has Lich King's religion
+										culture = scourge
+									}
+								}
+								if = {
+									limit = { religion = PREVPREV } #Has Lich King's religion
+									religion = ROOT
+								}
+								if = {
+									limit = { culture = scourge }
+									culture = ROOT
 								}
 							}
 						}
-						else = {
-							# Fallback
-							religion = forsaken_cult
+						if = {
+							limit = {
+								is_ruler = yes
+							}
+							# Changes religion and culture of your courtiers
+							any_courtier_or_vassal = {
+								limit = {
+									ai = yes
+									
+									OR = {
+										religion = PREVPREV #Has Lich King's religion
+										culture = scourge
+									}
+									can_break_scourge_mind_control_trigger = yes
+								}
+								if = {
+									limit = { religion = PREVPREV } #Has Lich King's religion
+									religion = ROOT
+								}
+								if = {
+									limit = { culture = scourge }
+									culture = ROOT
+								}
+							}
 						}
 					}
 				}
@@ -2315,20 +2629,7 @@ character_event = {
 		remove_5_mind_control_power_effect = yes
 	}
 }
-
-# Kills Ner'zhul if he isn't a Lick King anymore
-character_event = {
-	id = WCUND.1200
-
-	is_triggered_only = yes
-	hide_window = yes
-	
-	has_character_flag = is_nerzhul
-
-	immediate = {
-		death = { death_reason = death_missing }
-	}
-}
+#############################################
 
 # If character isn't a dark worshipper, converts to the necromantic religions
 character_event = {
@@ -2405,5 +2706,171 @@ character_event = {
 		ai_chance = {
 			factor = 0
 		}
+	}
+}
+
+#############################
+#		Random events					#
+#############################
+### Random Necromantic events
+character_event = {
+	id = WCUND.9900
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	min_age = 16
+	only_playable = yes
+	only_capable = yes
+	prisoner = no
+
+	trigger = {
+		is_alive = yes
+		is_dying = no
+
+		can_be_undead_trigger = yes
+	}
+
+	weight_multiplier = {
+		days = 1
+		modifier = {
+			factor = 2
+			OR = {
+				is_death_knight_class_trigger = yes
+				is_necromancer_class_trigger = yes
+				true_religion_group = necromancy_group
+			}
+		}
+		modifier = {
+			factor = 1.6
+			trait = cynical
+		}
+		modifier = {
+			factor = 1.6
+			trait = being_undead
+		}
+		modifier = {
+			factor = 1.2
+			trait = ambitious
+		}
+		modifier = {
+			factor = 1.2
+			is_mage_class_trigger = yes
+		}
+	}
+
+	immediate = {
+		random_list = {
+			10 = {
+				trigger = {
+					is_inaccessible_trigger = no
+					
+					NOT = { has_character_flag = lich_king_vision_happend_flag }	# Happens once in lifetime
+					
+					lich_king_vision_trigger = yes
+				}
+				set_character_flag = lich_king_vision_happend_flag
+				
+				character_event = { id = WCUND.9910 }	# Lich King vision
+			}
+		}
+	}
+}
+
+### Lich King vision ###
+### Travel to Frozen Throne?
+character_event = {
+	id = WCUND.9910
+	desc = EVTDESC_WCUND_9910
+	picture = GFX_evt_icecrown
+	border = GFX_event_normal_frame_intrigue
+	
+	is_triggered_only = yes
+	
+	immediate = {
+		add_trait = travelling
+	}
+	
+	# Travel to Frozen Throne
+	option = {
+		name = EVTOPTA_WCUND_9910
+		
+		character_event = { id = WCUND.9915 days = 15 random = 15 }
+		
+		ai_chance = {
+			factor = 50
+			
+			evil_ai_chance_score = yes
+		}
+	}
+	# No thanks
+	option = {
+		name = EVTOPTB_WCUND_9910
+		
+		remove_trait = travelling
+		
+		ai_chance = {
+			factor = 50
+		}
+	}
+}
+### Blizzard
+character_event = {
+	id = WCUND.9915
+	desc = EVTDESC_WCUND_9915
+	picture = GFX_evt_scourge_army
+	border = GFX_event_normal_frame_intrigue
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		lich_king_vision_trigger = yes
+	}
+	
+	fail_trigger_effect = {
+		# Travel failed
+		character_event = { id = WCUND.9920 }
+	}
+	
+	immediate = {
+		e_scourge = {
+			holder_scope = {
+				save_event_target_as = target_lich_king
+			}
+		}
+	}
+	
+	# Bow to Death God
+	option = {
+		name = EVTOPTA_WCUND_9915
+		
+		set_secret_religion = event_target:target_lich_king
+		
+		remove_trait = travelling
+	}
+	# I prefer death
+	option = {
+		name = EVTOPTB_WCUND_9915
+		
+		death = { death_reason = death_vanished }
+		
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+### Travel failed
+character_event = {
+	id = WCUND.9920
+	desc = EVTDESC_WCUND_9920
+	picture = GFX_evt_icecrown
+	border = GFX_event_normal_frame_intrigue
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = ALAS
+		
+		remove_trait = travelling
 	}
 }
