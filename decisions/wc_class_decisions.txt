@@ -789,6 +789,69 @@ decisions = {
 			}
 		}
 	}
+	### Demon Hunter ###
+	teach_yourself_demon_hunter = {
+		is_high_prio = yes
+
+		ai_check_interval = 60
+
+		ai = no
+		only_playable = yes
+
+		potential = {
+			is_untouchable_trigger = no
+
+			is_adult = yes
+			is_incapable = no
+			prisoner = no
+			
+			NOT = { has_character_flag = hide_class_training_decisions_flag }
+			
+			potential_demon_hunter_trigger = yes
+		}
+		allow = {
+			show_only_failed_conditions = yes
+			
+			is_inaccessible_trigger = no
+			
+			allow_demon_hunter_trigger = yes
+			OR = {
+				AND = {
+					is_ruler = yes
+					wealth = 25
+				}
+				is_ruler = no
+			}
+		}
+		effect = {
+			if = {
+				limit = { ai = no }
+				wealth = -25
+			}
+			character_event = { id = WCCLS.1301 }
+		}
+		revoke_allowed = {
+			always = no
+		}
+		ai_will_do = {
+			factor = 0.05
+
+			modifier = {
+				factor = 10
+
+				religion = illidari
+				true_religion = illidari
+			}
+			modifier = {
+				factor = 2
+				trait = ambitious
+			}
+			modifier = {
+				factor = 2
+				trait = brave
+			}
+		}
+	}
 
 	# Hide class training decisions
 	# Always must be after these decisions
@@ -3789,6 +3852,179 @@ targetted_decisions = {
 
 		ai_will_do = {
 			factor = 0.25
+		}
+	}
+	### Demon Hunter ###
+	# Eat demon
+	drain_demon_energy = {
+		filter = court
+		ai_target_filter = court
+		ai_check_interval = 12
+
+		only_playable = yes
+
+		from_potential = {
+			has_dlc = "Mystics"
+			
+			is_untouchable_trigger = no
+
+			is_adult = yes
+			is_incapable = no
+			prisoner = no
+			NOT = { has_character_modifier = bad_ritual }
+			is_demon_hunter_class_trigger = yes
+		}
+
+		potential = {
+			is_untouchable_trigger = no
+
+			prisoner = yes
+
+			host = { character = FROM }
+		}
+
+		allow = {
+			show_only_failed_conditions = yes
+			
+			trait = being_demon
+			is_humanoid_trigger = yes
+
+			NOT = { diplomatic_immunity = yes }
+			FROM = {
+				is_inaccessible_trigger = no
+			}
+		}
+
+		effect = {
+			trigger_switch = {
+				on_trigger = culture
+				sayaadi = {
+					FROM = {
+						random_list = {
+							98 = {	# Success
+											add_character_modifier = sayaadi_energy
+											add_character_modifier = { name = bad_ritual years = 2 }
+							}
+							2 = {	# Fail
+								FROM = { death = { death_reason = death_missing } }
+							}
+						}
+					} 
+				}
+				moarg = {
+					FROM = {
+						random_list = {
+							99 = {	# Success
+											add_character_modifier = moarg_energy
+											add_character_modifier = { name = bad_ritual years = 2 }
+							}
+							1 = {	# Fail
+								FROM = { death = { death_reason = death_missing } }
+							}
+						}
+					} 
+				}
+				shivarra = {
+					FROM = {
+						random_list = {
+							97 = {	# Success
+											add_character_modifier = shivarra_energy
+											add_character_modifier = { name = bad_ritual years = 2 }
+							}
+							3 = {	# Fail
+								FROM = { death = { death_reason = death_missing } }
+							}
+						}
+					} 
+				}
+				satyr = {
+					FROM = {
+						random_list = {
+							95 = {	# Success
+											add_character_modifier = satyr_energy
+											add_character_modifier = { name = bad_ritual years = 2 }
+							}
+							5 = {	# Fail
+								FROM = { death = { death_reason = death_missing } }
+							}
+						}
+					} 
+				}
+				eredar = {
+					FROM = {
+						random_list = {
+							80 = {	# Success
+											add_character_modifier = eredar_energy
+											add_character_modifier = { name = bad_ritual years = 2 }
+							}
+							20 = {	# Fail
+								FROM = { death = { death_reason = death_missing } }
+							}
+						}
+					} 
+				}
+				nathrezim = {
+					FROM = {
+						random_list = {
+							80 = {	# Success
+											add_character_modifier = nathrezim_energy
+											add_character_modifier = { name = bad_ritual years = 2 }
+							}
+							20 = {	# Fail
+								FROM = { death = { death_reason = death_missing } }
+							}
+						}
+					} 
+				}
+				annihilan = {
+					FROM = {
+						random_list = {
+							90 = {	# Success
+											add_character_modifier = annihilan_energy
+											add_character_modifier = { name = bad_ritual years = 2 }
+							}
+							10 = {	# Fail
+								FROM = { death = { death_reason = death_missing } }
+							}
+						}
+					} 
+				}
+				eredruin = {
+					FROM = {
+						random_list = {
+							90 = {	# Success
+											add_character_modifier = eredruin_energy
+											add_character_modifier = { name = bad_ritual years = 2 }
+							}
+							10 = {	# Fail
+								FROM = { death = { death_reason = death_missing } }
+							}
+						}
+					} 
+				}
+			}
+			death = { death_reason = death_missing }
+			hidden_effect = { character_event = { id = MNM.7506 } }
+			FROM = {
+				add_5_fel_corruption_effect = yes
+				major_soul_corruption_effect = yes
+				# How many people you killed?
+				hidden_effect = { murder_bloodline_check_effect = yes }
+			}
+		}
+
+		ai_will_do = {
+			factor = 1
+			modifier = {
+				factor = 0.01
+				NOR = {
+					trait = dwarf
+					is_priest = yes
+					is_ascetic_trigger = yes
+					is_virgin_trigger = yes
+					is_landed = yes
+				}
+			}
 		}
 	}
 }

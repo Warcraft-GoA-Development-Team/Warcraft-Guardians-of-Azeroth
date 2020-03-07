@@ -14,6 +14,7 @@ is_training_self_trigger = {
 		has_character_modifier = training_self_death_knight
 		has_character_modifier = training_self_necromancer
 		has_character_modifier = training_self_shadow_priest
+		has_character_modifier = training_self_demon_hunter
 		
 		has_character_flag = magical_secrets_necromancy_flag
 		has_character_flag = magical_secrets_fel_flag
@@ -35,6 +36,7 @@ is_training_mentor_trigger = {
 		has_character_modifier = training_mentor_death_knight
 		has_character_modifier = training_mentor_necromancer
 		has_character_modifier = training_mentor_shadow_priest
+		has_character_modifier = training_mentor_demon_hunter
 		
 		has_character_flag = sent_letter_to_mentor
 	}
@@ -95,6 +97,7 @@ is_combined_class_trigger = {
 		is_alternative_class_trigger = yes
 		is_paladin_class_trigger = yes
 		is_death_knight_class_trigger = yes
+		is_demon_hunter_class_trigger = yes
 		custom_tooltip = {
 			text = is_combined_class_trigger_tooltip
 			hidden_tooltip = {
@@ -287,6 +290,8 @@ is_1_2_magic_class_trigger = {
 		trait = class_necromancer_2
 		trait = class_shadow_priest_1
 		trait = class_shadow_priest_2
+		trait = class_demon_hunter_1
+		trait = class_demon_hunter_2
 	}
 }
 is_3_4_magic_class_trigger = {
@@ -311,6 +316,8 @@ is_3_4_magic_class_trigger = {
 		trait = class_necromancer_4
 		trait = class_shadow_priest_3
 		trait = class_shadow_priest_4
+		trait = class_demon_hunter_3
+		trait = class_demon_hunter_4
 	}
 }
 is_5_6_magic_class_trigger = {
@@ -335,6 +342,8 @@ is_5_6_magic_class_trigger = {
 		trait = class_necromancer_6
 		trait = class_shadow_priest_5
 		trait = class_shadow_priest_6
+		trait = class_demon_hunter_5
+		trait = class_demon_hunter_6
 	}
 }
 is_7_8_magic_class_trigger = {
@@ -359,6 +368,8 @@ is_7_8_magic_class_trigger = {
 		trait = class_necromancer_8
 		trait = class_shadow_priest_7
 		trait = class_shadow_priest_8
+		trait = class_demon_hunter_7
+		trait = class_demon_hunter_8
 	}
 }
 is_9_10_magic_class_trigger = {
@@ -383,6 +394,8 @@ is_9_10_magic_class_trigger = {
 		trait = class_necromancer_10
 		trait = class_shadow_priest_9
 		trait = class_shadow_priest_10
+		trait = class_demon_hunter_9
+		trait = class_demon_hunter_10
 	}
 }
 
@@ -459,6 +472,7 @@ has_max_level_trigger = {
 		trait = class_death_knight_10
 		trait = class_necromancer_10
 		trait = class_shadow_priest_10
+		trait = class_demon_hunter_10
 		
 		check_variable = { which = wc_experience value = 10 }
 	}
@@ -712,6 +726,25 @@ is_shadow_priest_class_trigger = {
 		}
 	}
 }
+is_demon_hunter_class_trigger = {
+	custom_tooltip = {
+		text = is_demon_hunter_class_trigger_tooltip
+		hidden_tooltip = {
+			OR = {
+				trait = class_demon_hunter_1
+				trait = class_demon_hunter_2
+				trait = class_demon_hunter_3
+				trait = class_demon_hunter_4
+				trait = class_demon_hunter_5
+				trait = class_demon_hunter_6
+				trait = class_demon_hunter_7
+				trait = class_demon_hunter_8
+				trait = class_demon_hunter_9
+				trait = class_demon_hunter_10
+			}
+		}
+	}
+}
 is_alternative_class_trigger = {
 	custom_tooltip = {
 		text = is_alternative_class_trigger_tooltip
@@ -869,6 +902,14 @@ is_weak_shadow_priest_class_trigger = {
 		trait = class_shadow_priest_4
 	}
 }
+is_weak_demon_hunter_class_trigger = {
+	OR = {
+		trait = class_demon_hunter_1
+		trait = class_demon_hunter_2
+		trait = class_demon_hunter_3
+		trait = class_demon_hunter_4
+	}
+}
 
 has_class_trait_wo_training_trigger = {
 	custom_tooltip = {
@@ -888,6 +929,7 @@ has_class_trait_wo_training_trigger = {
 				is_death_knight_class_trigger = yes
 				is_necromancer_class_trigger = yes
 				is_shadow_priest_class_trigger = yes
+				is_demon_hunter_class_trigger = yes
 
 				is_alternative_class_trigger = yes
 			}
@@ -1811,6 +1853,61 @@ prev_void_magic_is_visible_to_this_trigger = {
 		}
 	}
 }
+#Demon Hunter
+potential_demon_hunter_wo_training_trigger = {
+	age = 11
+	
+	can_be_demon_hunter_trigger = yes
+	
+	OR = {
+		NOT = { has_class_trait_wo_training_trigger = yes }
+		AND = {
+			is_demon_hunter_class_trigger = no
+			OR = {
+				is_warrior_class_trigger = yes
+				is_mage_class_trigger = yes
+			}
+			is_combined_class_trigger = no
+		}
+	}
+}
+potential_demon_hunter_trigger = {
+	potential_demon_hunter_wo_training_trigger = yes
+
+	is_training_self_trigger = no
+	is_training_mentor_trigger = no
+}
+allow_demon_hunter_trigger = {
+	OR = {
+		trigger_if = {
+			limit = { is_adult = no }
+			is_adult = no
+		}
+		AND = {
+			trigger_if = {
+				limit = { any_owned_bloodline = { has_bloodline_flag = bloodline_mage_training } }
+				martial = 8
+			}
+			trigger_else = {
+				martial = 12
+			}
+			OR = {
+				learning = 6
+				has_magical_potential_trigger = yes
+			}
+		}
+	}
+}
+# If this trigger isn't true, a character can not be a demon hunter
+can_be_demon_hunter_trigger = {
+	religion = illidari
+	true_religion = illidari
+	NOT = { trait = being_demon }
+}
+united_demon_hunter_trigger = {
+	potential_demon_hunter_trigger = yes
+	allow_demon_hunter_trigger = yes
+}
 
 potential_class_trigger = {
 	OR = {
@@ -1826,6 +1923,7 @@ potential_class_trigger = {
 		potential_loa_priest_trigger = yes
 		potential_necromancer_trigger = yes
 		potential_shadow_priest_trigger = yes
+		potential_demon_hunter_trigger = yes
 	}
 }
 united_class_trigger = {
@@ -1842,6 +1940,7 @@ united_class_trigger = {
 		united_loa_priest_trigger = yes
 		united_necromancer_trigger = yes
 		united_shadow_priest_trigger = yes
+		united_demon_hunter_trigger = yes
 	}
 }
 
@@ -2031,6 +2130,20 @@ potential_mentor_shadow_priest_trigger = {
 		trait = class_shadow_priest_8
 		trait = class_shadow_priest_9
 		trait = class_shadow_priest_10
+	}
+
+	is_training_self_trigger = no
+	is_training_mentor_trigger = no
+}
+potential_mentor_demon_hunter_trigger = {
+	is_demon_hunter_class_trigger = yes
+	OR = {
+		trait = class_demon_hunter_5
+		trait = class_demon_hunter_6
+		trait = class_demon_hunter_7
+		trait = class_demon_hunter_8
+		trait = class_demon_hunter_9
+		trait = class_demon_hunter_10
 	}
 
 	is_training_self_trigger = no
