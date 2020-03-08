@@ -44,21 +44,8 @@ character_event = {
 				set_defacto_liege = e_horde
 			}
 			set_government_type = tribal_monarchy_government
-			spawn_unit = {
-				owner = THIS
-				province = 73
-				home = 73
-				troops = {
-					archers = { 200 200 }
-					light_infantry = { 400 400 }
-					heavy_infantry = { 300 300 }
-					light_cavalry = { 50 50 }
-					knights = { 50 50 }
-				}
-				attrition = 0
-				maintenance = no
-				earmark = horde_forces
-			}
+			
+			spawn_horde_troops_effect = yes
 		}
 	}
 }
@@ -109,21 +96,9 @@ character_event = {
 				set_defacto_liege = e_horde
 			}
 			set_government_type = tribal_monarchy_government
-			spawn_unit = {
-				owner = THIS
-				province = 73
-				home = 73
-				troops = {
-					archers = { 200 200 }
-					light_infantry = { 400 400 }
-					heavy_infantry = { 300 300 }
-					light_cavalry = { 50 50 }
-					knights = { 50 50 }
-				}
-				attrition = 0
-				maintenance = no
-				earmark = horde_forces
-			}
+			
+			spawn_horde_troops_effect = yes
+			
 			create_character = {
 				name=Nekros
 				dynasty = 2400
@@ -169,7 +144,11 @@ character_event = {
 		new_character = {
 			wealth = 500
 			prestige = 500
+			
+			add_artifact = warsong_battle_drums
+			add_artifact = gorehowl
 			set_character_flag = wc_raiding_adventurer_flag
+			73 = { save_event_target_as = target_province }
 			character_event = { id = HL.100 }
 		}
 	}
@@ -309,8 +288,8 @@ character_event = {
 			# home = 73
 			# troops = {
 				# archers = { 200 200 }
-				# light_infantry = { 400 400 }
-				# heavy_infantry = { 300 300 }
+				# light_infantry = { 80 80 }
+				# heavy_infantry = { 620 620 }
 				# light_cavalry = { 50 50 }
 				# knights = { 50 50 }
 			# }
@@ -325,7 +304,7 @@ character_event = {
 	# }
 # }
 
-# Прототип цепи эвентов на пленение Алекстразы
+# ???????? ???? ??????? ?? ???????? ??????????
 # character_event = {
 	# id = WCSDW.120
 	# desc = EVTDESC_WCSDW_120
@@ -361,8 +340,8 @@ character_event = {
 			# home = 73
 			# troops = {
 				# archers = { 200 200 }
-				# light_infantry = { 400 400 }
-				# heavy_infantry = { 300 300 }
+				# light_infantry = { 80 80 }
+				# heavy_infantry = { 620 620 }
 				# light_cavalry = { 100 100 }
 			# }
 			# attrition = 0
@@ -497,6 +476,8 @@ character_event = {
 	}
 	
 	immediate = {
+		FROM = { location = { save_event_target_as = target_province } }
+		
 		narrative_event = { id = WCSDW.250 }
 	}
 }
@@ -506,6 +487,8 @@ character_event = {
 	
 	is_triggered_only = yes
 	hide_window = yes
+	
+	only_playable = yes
 	
 	trigger = {
 		FROM = {
@@ -518,6 +501,8 @@ character_event = {
 	}
 	
 	immediate = {
+		FROM = { location = { save_event_target_as = target_province } }
+		
 		narrative_event = { id = WCSDW.250 }
 	}
 }
@@ -549,11 +534,10 @@ narrative_event = {
 
 	immediate = {
 		log = "WCSDW.250 fired for [Root.GetBestName]"
-		FROM = {
-			location = {
-				remove_province_modifier = dark_portal_is_open_2
-				add_province_modifier = { name = dark_portal_is_open_1 duration = -1 }
-			}
+		
+		event_target:target_province = {
+			remove_province_modifier = dark_portal_is_open_2
+			add_province_modifier = { name = dark_portal_is_open_1 duration = -1 }
 		}
 	}
 
@@ -599,27 +583,31 @@ narrative_event = {
 	min_age = 16
 	only_capable = yes
 	prisoner = no
+	only_playable = yes
+	has_global_flag = orcish_invasion_flag
 
 	trigger = {
+		is_alive = yes
+		is_dying = no
+		
 		is_adult = yes
 		is_incapable = no
 		prisoner = no
-
-		is_alive = yes
-		is_dying = no
 		is_inaccessible_trigger = no
 
 		NOT = { has_global_flag = first_death_knight_happened_flag }
 		NOT = { has_character_flag = first_death_knight_fired_flag }
 
 		is_warlock_class_trigger = yes
-		is_7_8_magic_class_trigger = yes
+		has_7_8_magic_class_or_higher_trigger = yes
 		OR = {
 			religion = orcish_fel
 			religion = burning_legion_religion
 			culture_group = orc_group
 		}
-		has_3_mana_trigger = yes
+		
+		has_global_flag = orcish_invasion_flag
+		NOT = { has_global_flag = lich_king_happened }
 		realm = { title = e_horde }
 	}
 
@@ -636,10 +624,6 @@ narrative_event = {
 		}
 		modifier = {
 			factor = 1.5
-			trait = cruel
-		}
-		modifier = {
-			factor = 1.25
 			trait = ambitious
 		}
 	}
@@ -652,7 +636,6 @@ narrative_event = {
 	option = {
 		name = EVTOPTA_WCFTW_1000
 
-		remove_3_mana_effect = yes
 		save_event_target_as = target_necromancer	# Needed for WCPOD.5013
 
 		hidden_effect = { narrative_event = { id = WCSDW.1011 days = 30 } }
@@ -691,7 +674,6 @@ narrative_event = {
 				capital_scope = { save_event_target_as = target_province }
 			}
 		}
-		set_global_flag = fel_death_knight_flag
 		create_character = {
 			dynasty = actually_culture
 			religion = orcish_fel
@@ -733,6 +715,9 @@ narrative_event = {
 				
 				set_character_flag = transition_into_death_knight_flag
 				character_event = { id = WCPOD.5013 }
+
+				# Fixes immortal age
+				add_age_back_effect = yes
 				
 				move_character = ROOT
 			}
@@ -761,23 +746,15 @@ narrative_event = {
 				
 				set_character_flag = transition_into_death_knight_flag
 				character_event = { id = WCPOD.5013 }
+
+				# Fixes immortal age
+				add_age_back_effect = yes
 				
 				move_character = ROOT
 			}
 		}
 		event_target:target_owner = {
-			spawn_unit = {
-				owner = event_target:target_owner
-				province = event_target:target_province
-				home = event_target:target_province
-				troops = {
-					death_knights = { 100 100 }
-				}
-				attrition = 0
-				reinforces = yes
-				maintenance = no
-				earmark = death_knights_forces
-			}
+			spawn_death_knight_troops_effect = yes
 		}
 	}
 

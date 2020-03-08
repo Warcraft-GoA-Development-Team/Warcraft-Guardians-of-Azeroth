@@ -174,14 +174,43 @@ character_event = {
 	is_triggered_only = yes
 	
 	only_playable = yes
-	min_age = 16
+	min_age = 50
 	prisoner = no
 	
 	trigger = {
+		mercenary = no
+		holy_order = no
+		NOT = { is_offmap_governor = yes }
+		is_theocracy = no
+		OR = {
+			is_republic = no
+			is_patrician = yes
+		}
+
+		trigger_if = {
+			limit = {
+				has_game_rule = {
+					name = adoption
+					value = no_player_dynastly
+				}
+				ai = yes
+			}
+			NOT = { any_dynasty_member = { ai = no } }
+		}
+		trigger_else = {
+			NOT = {
+				has_game_rule = {
+					name = adoption
+					value = disabled
+				}
+			}
+		}
+
 		is_alive = yes
 		is_dying = no
-		
+
 		is_lowborn = no
+
 		OR = {
 			can_marry_trigger = no
 			can_has_children_trigger = no
@@ -190,7 +219,7 @@ character_event = {
 			has_living_children = no
 			NOT = { num_of_children = 5 }
 		}
-		plant_race = no
+		is_plant_race_trigger = no
 	}
 	
 	weight_multiplier = {
@@ -217,7 +246,7 @@ character_event = {
 				dynasty = none
 				culture = ROOT religion = ROOT
 				random_traits = yes
-				age = 20
+				age = 30
 				flag = race_delay_flag
 			}
 			new_character = {
@@ -265,6 +294,7 @@ character_event = {
 				set_father = ROOT
 			}
 			# opinion = { modifier = opinion_loyal_servant who = ROOT }
+			add_trait = adopted
 		}
 	}
 	
@@ -293,8 +323,13 @@ character_event = {
 	immediate = {
 		log = "(IMPORTANT) Court of [Root.GetBestName] was purged"
 		any_courtier = {
-			limit = { is_unimportant_trigger = yes }
-			death = { death_reason = death_missing }
+			limit = {
+				is_alive = yes
+				is_dying = no
+				
+				is_unimportant_trigger = yes
+			}
+			death = { death_reason = death_purged }
 		}
 	}
 }

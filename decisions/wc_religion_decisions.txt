@@ -195,14 +195,6 @@ decisions = {
 			}
 			#Event for picking loa
 			character_event = { id = WCLOA.1010 }
-
-			#Starts main loa events
-			hidden_tooltip = {
-				if = {
-					limit = { follower_of_loa = no }
-					character_event = { id = WCLOA.1000 days = 10 }
-				}
-			}
 		}
 
 		revoke_allowed = {
@@ -213,58 +205,6 @@ decisions = {
 			factor = 1
 		}
 	} #end of pick_main_loa
-	blood_rituals = {
-		ai_check_interval = 24
-
-		only_playable = yes
-
-		potential = {
-			is_adult = yes
-			is_incapable = no
-
-			religion = cult_of_hakkar
-
-			higher_real_tier_than = BARON
-		}
-
-		allow = {
-			prisoner = no
-			is_inaccessible_trigger = no
-
-			custom_tooltip = {
-				text = is_not_busy_trigger_tooltip
-				hidden_tooltip = { NOT = { has_character_flag = do_not_disturb } }
-			}
-			custom_tooltip = {
-				text = has_not_used_decision_3_years_tooltip
-				hidden_tooltip = {
-					OR = {
-						NOT = { has_character_flag = blood_rituals_cooldown_flag }
-						had_character_flag = { flag = blood_rituals_cooldown_flag years = 3 }
-					}
-				}
-			}
-
-			num_of_prisoners = 1
-		}
-
-		effect = {
-			set_character_flag = do_not_disturb
-			set_character_flag = blood_rituals_cooldown_flag
-
-			major_soul_corruption_effect = yes
-
-			character_event = { id = WCLOA.100 }
-		}
-
-		revoke_allowed = {
-			always = no
-		}
-
-		ai_will_do = {
-			factor = 0.25
-		}
-	}
 
 	# primitive_group
 	primitive_rites = {
@@ -396,7 +336,7 @@ decisions = {
 					}
 				}
 			}
-			capital = {
+			capital_scope = {
 				NOR = {
 					has_province_modifier = friendly_spirits
 					has_province_modifier = unfriendly_spirits
@@ -620,7 +560,7 @@ decisions = {
 					}
 				}
 			}
-			capital = {
+			capital_scope = {
 				NOR = {
 					has_province_modifier = lesser_tidesages_blessing
 					has_province_modifier = tidesages_blessing
@@ -712,14 +652,22 @@ decisions = {
 			is_susceptible_to_worgen_curse_character_trigger = yes
 		}
 		allow = {
-			prestige = 500
-			piety = 250
 			war = no
 			prisoner = no
 			is_inaccessible_trigger = no
+			
+			custom_tooltip = {
+				text = is_not_busy_trigger_tooltip
+				hidden_tooltip = { NOT = { has_character_flag = do_not_disturb } }
+			}
+			
+			prestige = 500
+			piety = 250
 		}
 
 		effect = {
+			set_character_flag = do_not_disturb
+			
 			prestige = -500
 			piety = -250
 			hidden_tooltip = {
@@ -993,51 +941,6 @@ decisions = {
 		}
 		ai_will_do = {
 			factor = 0.25
-		}
-	}
-}
-targetted_decisions = {
-	# druidism_group
-	send_to_temple = {
-		only_playable = yes
-		filter = court
-		ai_target_filter = court
-		ai_check_interval = 36 #Check every 36 months
-		from_potential = {
-			is_playable = yes
-			has_regent = no
-			prisoner = no
-			is_adult = yes
-			religion = kaldorei_religion
-		}
-		potential = {
-			is_adult = no
-			is_ruler = no
-			religion = kaldorei_religion
-			is_priest_class_trigger = no
-			is_female = yes
-			is_close_relative = FROM
-		}
-		allow = {
-			is_heir = no
-			age = 6
-		}
-		effect = {
-			character_event = { id = WCSE.30 }
-		}
-		revoke_allowed = {
-			always = no
-		}
-		ai_will_do = {
-			factor = 0.25
-			modifier = {
-				factor = 1.5
-				FROM = { trait = zealous }
-			}
-			modifier = {
-				factor = 1.5
-				FROM = { num_of_children > 4 }
-			}
 		}
 	}
 }

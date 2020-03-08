@@ -1,30 +1,35 @@
 decisions = {
 	become_ogre_mage = {
 		is_high_prio = yes # Will show an alert once decision is enabled
-		potential = {
+		
+		ai_check_interval = 36
+		
+		only_playable = yes
+		
+		potential = {				# Player should see such decision
 			trait = creature_ogre
+			
 			NOT = { trait = twoheaded }
-			OR = {
-				has_artifact = remnant_of_caer_darrow
-				any_artifact = {
-					has_artifact_flag = powerful_magical_artifact
-				}
-			}
-			is_magic_class_trigger = yes
 		}
 		allow = {
+			custom_tooltip = {
+				text = is_not_busy_trigger_tooltip
+				hidden_tooltip = { NOT = { has_character_flag = do_not_disturb } }
+			}
+			
+			is_magic_class_trigger = yes
+			
 			OR = {
-				has_artifact = remnant_of_caer_darrow
-				AND = {
-					any_artifact = {
-						has_artifact_flag = powerful_magical_artifact
-						is_artifact_active = yes
-					}
-					NOT = { has_character_flag = recently_turned_magi }
+				has_access_to_powerful_source_of_magic_trigger = yes			# Otherwise, people without DLC can't use iit at all
+				custom_tooltip = {
+					text = has_remnant_of_caer_darrow
+					hidden_tooltip = { has_artifact = remnant_of_caer_darrow }
 				}
+				has_powerful_magical_artifact_trigger = yes
 			}
 		}
 		effect = {
+			set_character_flag = do_not_disturb
 			character_event = { id = WCOE.1 }
 		}
 		ai_will_do = {
@@ -34,31 +39,58 @@ decisions = {
 }
 targetted_decisions = { 
 	turn_into_ogre_mage = {
+		only_playable = yes
 		filter = sub_realm
 		ai_target_filter = dynasty
-		ai_check_interval = 24
+		ai_check_interval = 36
 		from_potential = {
-			OR = {
-				has_artifact = remnant_of_caer_darrow
-				any_artifact = {
-					has_artifact_flag = powerful_magical_artifact
-					is_artifact_active = yes
-				}
-			}
-			is_magic_class_trigger = yes
+			always = yes
 		}
 		potential = {
 			trait = creature_ogre
+			
 			NOT = { trait = twoheaded }
-			is_magic_class_trigger = yes
 		}
 		allow = {
+			custom_tooltip = {
+				text = is_not_busy_trigger_tooltip
+				hidden_tooltip = { NOT = { has_character_flag = do_not_disturb } }
+			}
+			
 			FROM = {
-				NOT = { has_character_flag = recently_turned_magi }
+				custom_tooltip = {
+					text = recently_turned_magi_tooltip
+					hidden_tooltip = {
+						OR = {
+							NOT = { has_character_flag = recently_turned_magi }
+							had_character_flag = { flag = recently_turned_magi months = 12 }
+						}
+					}
+				}
+				custom_tooltip = {
+					text = is_not_busy_trigger_tooltip
+					hidden_tooltip = { NOT = { has_character_flag = do_not_disturb } }
+				}
+				
+				is_magic_class_trigger = yes
+				
+				OR = {
+					has_access_to_powerful_source_of_magic_trigger = yes				# Otherwise, people without DLC can't use iit at all
+					custom_tooltip = {
+						text = has_remnant_of_caer_darrow
+						hidden_tooltip = { has_artifact = remnant_of_caer_darrow }
+					}
+					has_powerful_magical_artifact_trigger = yes
+				}
 			}
 		}
 		effect = {
-			ROOT = { character_event = { id = WCOE.5 } }
+			FROM = { set_character_flag = do_not_disturb }
+			ROOT = {
+				set_character_flag = do_not_disturb
+				
+				character_event = { id = WCOE.5 } 
+			}
 		}
 		
 		revoke_allowed = {

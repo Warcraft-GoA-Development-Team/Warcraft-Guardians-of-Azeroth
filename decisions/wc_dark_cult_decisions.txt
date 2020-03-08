@@ -11,16 +11,11 @@ decisions = {
 		potential = {
 			is_untouchable_trigger = no
 
-			is_landed = yes
 			independent = yes
-			mercenary = no
-			holy_order = no
-			is_nomadic = no
 
 			religion = death_god
 
-			in_revolt = no
-			NOT = { is_offmap_governor = yes }
+			character_can_be_vassalized_trigger = yes
 			NOT = { has_landed_title = e_scourge }
 			e_scourge = { has_holder = yes }
 		}
@@ -30,6 +25,7 @@ decisions = {
 
 			war = no
 			
+			government = scourge_government
 			e_scourge = { holder_scope = { NOT = { reverse_has_opinion_modifier = { who = ROOT modifier = opinion_granted_independence } } } }
 		}
 
@@ -74,6 +70,7 @@ decisions = {
 			NOT = { government = scourge_government }
 			
 			is_government_potential = scourge_government
+			NOT = { has_landed_title = k_cenarion_circle }
 		}
 		allow = {
 			war = no
@@ -99,21 +96,7 @@ decisions = {
 				show_scope_change = no
 				ROOT = {
 					show_scope_change = no
-					spawn_unit = {
-						province = PREV
-						home = PREV
-						owner = THIS
-						troops = {
-							archers = { 375 375 }
-							light_infantry = { 525 525 }
-							golems = { 100 100 }
-						}
-						cannot_inherit = yes
-						attrition = 0
-						scaled_by_biggest_garrison = 1
-						reinforces = yes
-						maintenance = no
-					}
+					spawn_scourge_government_troops_effect = yes
 				}
 			}
 		}
@@ -138,16 +121,11 @@ decisions = {
 		potential = {
 			is_untouchable_trigger = no
 
-			is_landed = yes
 			independent = yes
-			mercenary = no
-			holy_order = no
-			is_nomadic = no
 
 			religion = burning_legion_religion
 
-			in_revolt = no
-			NOT = { is_offmap_governor = yes }
+			character_can_be_vassalized_trigger = yes
 			NOT = { has_landed_title = e_burning_legion }
 			e_burning_legion = { has_holder = yes }
 		}
@@ -157,6 +135,7 @@ decisions = {
 
 			war = no
 			
+			government = legion_government
 			e_burning_legion = { holder_scope = { NOT = { reverse_has_opinion_modifier = { who = ROOT modifier = opinion_granted_independence } } } }
 		}
 
@@ -201,6 +180,7 @@ decisions = {
 			NOT = { government = legion_government }
 			
 			is_government_potential = legion_government
+			NOT = { has_landed_title = k_cenarion_circle }
 		}
 
 		allow = {
@@ -227,19 +207,7 @@ decisions = {
 				show_scope_change = no
 				ROOT = {
 					show_scope_change = no
-					spawn_unit = {
-						province = PREV
-						home = PREV
-						owner = THIS
-						troops = {
-							demonicshock = { 500 500 }
-						}
-						cannot_inherit = yes
-						attrition = 0
-						scaled_by_biggest_garrison = 0.5
-						reinforces = yes
-						maintenance = no
-					}
+					spawn_legion_government_troops_effect = yes
 				}
 			}
 		}
@@ -264,16 +232,11 @@ decisions = {
 		potential = {
 			is_untouchable_trigger = no
 
-			is_landed = yes
 			independent = yes
-			mercenary = no
-			holy_order = no
-			is_nomadic = no
 
 			religion = old_gods_worship
 
-			in_revolt = no
-			NOT = { is_offmap_governor = yes }
+			character_can_be_vassalized_trigger = yes
 			NOT = { has_landed_title = e_black_empire }
 			e_black_empire = { has_holder = yes }
 		}
@@ -283,6 +246,7 @@ decisions = {
 
 			war = no
 			
+			government = black_pact_government
 			e_black_empire = { holder_scope = { NOT = { reverse_has_opinion_modifier = { who = ROOT modifier = opinion_granted_independence } } } }
 		}
 
@@ -327,6 +291,8 @@ decisions = {
 			NOT = { government = black_pact_government }
 			
 			is_government_potential = black_pact_government
+			
+			NOT = { has_landed_title = k_cenarion_circle }
 		}
 		allow = {
 			war = no
@@ -352,21 +318,7 @@ decisions = {
 				show_scope_change = no
 				ROOT = {
 					show_scope_change = no
-					spawn_unit = {
-						province = PREV
-						home = PREV
-						owner = THIS
-						troops = {
-							archers = { 180 180 }
-							heavy_infantry = { 270 270 }
-							golems = { 50 50 }
-						}
-						cannot_inherit = yes
-						attrition = 0
-						scaled_by_biggest_garrison = 0.5
-						reinforces = yes
-						maintenance = no
-					}
+					spawn_black_pact_government_troops_effect = yes
 				}
 			}
 		}
@@ -383,11 +335,18 @@ decisions = {
 	summon_the_burning_legion = {
 		is_high_prio = yes
 
-		ai_check_interval = 6
+		ai_check_interval = 12
 
 		only_playable = yes
 
 		potential = {
+			NOT = {
+				has_game_rule = {
+					name = legion_invasion
+					value = off
+				}
+			}
+			
 			is_untouchable_trigger = no
 
 			is_adult = yes
@@ -398,40 +357,63 @@ decisions = {
 			prisoner = no
 			is_inaccessible_trigger = no
 
+			year = 603											# Let's say the Legion needs time to prepare
 			NOT = { e_burning_legion = { has_holder = yes } }
 			OR = {
 				true_religion = orcish_fel
 				true_religion = burning_legion_religion
 				# Subjects of the Scourge can summon the Legion as Kel'thusad did in the lore
 				AND = {
-					has_global_flag = the_scourge_is_under_the_legion_control_flag
+					has_global_flag = scourge_is_under_legion_control_flag
 					true_religion = death_god
 				}
 			}
 		}
 
 		allow = {
+			custom_tooltip = {
+				text = legion_is_destroyed_tooltip
+				NOT = { has_global_flag = biggest_legion_invasion_flag }
+			}
+			custom_tooltip = {
+				text = legion_cooldown_tooltip
+				hidden_tooltip = {
+					OR = {
+						NOT = { has_global_flag = legion_cooldown_flag }
+						had_global_flag = { flag = legion_cooldown_flag years = 25 }
+					}
+				}
+			}
+			
 			OR = {
-				is_9_10_magic_class_trigger = yes
+				has_7_8_magic_class_or_higher_trigger = yes
 				trigger_if = {
-					limit = { has_global_flag = the_scourge_is_under_the_legion_control_flag }
+					limit = { has_global_flag = scourge_is_under_legion_control_flag }
 					has_landed_title = e_scourge
 				}
 			}
 			OR = {
+				trigger_if = {
+					limit = {
+						ai = yes
+						NOT = { true_religion = death_god }
+					}
+					has_9_10_magic_class_trigger = yes
+				}
 				has_access_to_powerful_source_of_magic_trigger = yes
 				has_3_powerful_magical_artifact_trigger = yes
 			}
 		}
 
 		effect = {
+			clr_global_flag = legion_cooldown_flag
+			
 			if = {
 				limit = { has_secret_religion = yes }
 				convert_to_secret_religion = yes
 			}
 			custom_tooltip = {
 				text = summon_the_burning_legion_tooltip
-				location = { save_event_target_as = target_summoning_location }
 				hidden_effect = { character_event = { id = WCFEL.1000 } }
 			}
 			# remove_5_mana_effect = yes
@@ -502,89 +484,88 @@ decisions = {
 			}
 		}
 	}
-	old_gods_worship_decision = {
-		is_high_prio = yes
+	# old_gods_worship_decision = {
+		# is_high_prio = yes
 
-		ai_check_interval = 36
+		# ai_check_interval = 36
 
-		only_playable = yes
+		# only_playable = yes
 
-		potential = {
-			NOT = { has_dlc = "Jade Dragon" }
-		
-			is_untouchable_trigger = no
+		# potential = {
+			# is_untouchable_trigger = no
 
-			is_adult = yes
-			is_incapable = no
-			prisoner = no
+			# is_adult = yes
+			# is_incapable = no
+			# prisoner = no
 
-			true_religion = old_gods_worship
-		}
+			# true_religion = old_gods_worship
+		# }
 
-		allow = {
-			is_inaccessible_trigger = no
+		# allow = {
+			# is_inaccessible_trigger = no
 
-			custom_tooltip = {
-				text = has_not_used_decision_3_years_tooltip
-				hidden_tooltip = {
-					OR = {
-						NOT = { has_character_flag = old_gods_worship_decision_cooldown_flag }
-						had_character_flag = { flag = old_gods_worship_decision_cooldown_flag years = 3 }
-					}
-				}
-			}
+			# custom_tooltip = {
+				# text = has_not_used_decision_3_years_tooltip
+				# hidden_tooltip = {
+					# OR = {
+						# NOT = { has_character_flag = old_gods_worship_decision_cooldown_flag }
+						# had_character_flag = { flag = old_gods_worship_decision_cooldown_flag years = 3 }
+					# }
+				# }
+			# }
 
-			OR = {
-				has_character_modifier = follower_of_cthun
-				has_character_modifier = follower_of_yogg_saron
-				has_character_modifier = follower_of_yshaarj
-				has_character_modifier = follower_of_nzoth
-			}
+			# OR = {
+				# has_character_modifier = follower_of_cthun
+				# has_character_modifier = follower_of_yogg_saron
+				# has_character_modifier = follower_of_yshaarj
+				# has_character_modifier = follower_of_nzoth
+			# }
 
-			OR = {
-				piety = 200
-				num_of_prisoners = 1
-			}
-		}
+			# OR = {
+				# piety = 200
+				# num_of_prisoners = 1
+			# }
+		# }
 
-		effect = {
-			set_character_flag = old_gods_worship_decision_cooldown_flag
+		# effect = {
+			# set_character_flag = old_gods_worship_decision_cooldown_flag
 
-			character_event = { id = WCDAC.5125 }
+			# character_event = { id = WCDAC.5125 }
 
-			minor_soul_corruption_effect = yes
-		}
+			# minor_soul_corruption_effect = yes
+		# }
 
-		revoke_allowed = {
-			always = no
-		}
+		# revoke_allowed = {
+			# always = no
+		# }
 
-		ai_will_do = {
-			factor = 0.25
-		}
-	}
+		# ai_will_do = {
+			# factor = 0.25
+		# }
+	# }
 	found_cult_of_the_damned_society = {
 		is_high_prio = yes
 
 		ai_check_interval = 36
 		
-		is_in_society = no
+		only_playable = yes
 
 		potential = {
-			has_dlc = "Mystics"
 			is_untouchable_trigger = no
 
 			is_adult = yes
 			is_incapable = no
 			prisoner = no
+			
+			NOT = { cult_of_the_damned = { society_is_active = yes } }
 
 			OR = {
 				is_necromancer_class_trigger = yes
 				true_religion = death_god
 			}
+			has_cult_of_the_damned_prerequisites = yes
 			e_scourge = { has_holder = yes }
 			NOT = { has_landed_title = e_scourge }
-			NOT = { any_society_member = { society_member_of = cult_of_the_damned } }
 		}
 
 		allow = {
@@ -594,11 +575,11 @@ decisions = {
 				limit = { ai = no }
 				piety = 250
 			}
-			NOT = { is_in_society = yes }
+			is_in_society = no
 		}
 
 		effect = {
-			leave_society = yes
+			set_global_flag = cult_of_the_damned_active_flag
 			join_society_cult_of_the_damned_effect = yes
 			set_society_grandmaster = yes # Set character as Grand Master
 			add_society_currency_massive_effect = yes # Give the Grand Master a start-up capital to induct members
@@ -630,14 +611,21 @@ decisions = {
 		only_independent = yes
 
 		potential = {
+			NOT = {
+				has_game_rule = {
+					name = black_empire_invasion
+					value = off
+				}
+			}
+			
 			is_untouchable_trigger = no
 
 			# is_adult = yes
 			# is_incapable = no
 			
 			OR = {
-				NOT = { has_global_flag = black_empire_was_created_flag }
-				had_global_flag = { flag = black_empire_was_created_flag years = 50 }
+				NOT = { has_global_flag = black_empire_cooldown_flag }
+				had_global_flag = { flag = black_empire_cooldown_flag years = 50 }
 			}
 
 			religion = old_gods_worship
@@ -650,6 +638,8 @@ decisions = {
 			is_inaccessible_trigger = no
 			independent = yes
 			
+			government = black_pact_government
+			
 			religion_authority = 0.75
 			num_of_holy_sites = 4
 		}
@@ -658,17 +648,12 @@ decisions = {
 			custom_tooltip = {
 				text = reborn_black_empire_tt
 			}
-			if = {
-				limit = {
-					has_dlc = "Holy Fury"
-				}
-				custom_tooltip = {
-					text = gain_twilight_viceroy_bloodline_tt
-				}
-			}			
-			
-			clr_global_flag = black_empire_was_created_flag
-			set_global_flag = black_empire_was_created_flag
+			custom_tooltip = {
+				text = gain_twilight_viceroy_bloodline_tt
+			}
+
+			clr_global_flag = black_empire_cooldown_flag
+			set_global_flag = black_empire_cooldown_flag
 
 			73 = { province_event = { id = WCTHW.50 } } # When shit happens, Medivh tries to fix it
 			
@@ -695,6 +680,8 @@ decisions = {
 			
 			is_incapable = no
 			
+			NOT = { has_character_flag = transformation_into_cthraxxi_ongoing_flag }
+			
 			trait = creature_nraqi
 			religion = old_gods_worship
 			true_religion = old_gods_worship
@@ -709,6 +696,8 @@ decisions = {
 		}
 		
 		effect = {
+			set_character_flag = transformation_into_cthraxxi_ongoing_flag
+			
 			prestige = -5000
 			piety = -2500
 			
@@ -834,6 +823,9 @@ targetted_decisions = {
 			NOT = { character = FROM }
 			from_in_range_to_hurt_this_trigger = yes
 			
+			NOT = { trait = being_demon }
+			is_susceptible_to_fel_corruption_trigger = yes
+			
 			#Makes sure the AI does good choices
 			ai_from_prefer_to_hurt_this_trigger = yes
 		}
@@ -904,6 +896,9 @@ targetted_decisions = {
 
 			NOT = { character = FROM }
 			from_in_range_to_hurt_this_trigger = yes
+			
+			NOT = { trait = being_void }
+			is_susceptible_to_void_corruption_trigger = yes
 
 			#Makes sure the AI does good choices
 			ai_from_prefer_to_hurt_this_trigger = yes
@@ -978,6 +973,8 @@ targetted_decisions = {
 			is_untouchable_trigger = no
 
 			is_adult = yes
+			
+			NOT = { has_character_flag = void_mutation_ongoing_flag } # Prevents multiple firing
 
 			NOT = { trait = being_void }
 			is_susceptible_to_void_corruption_trigger = yes
@@ -1036,6 +1033,7 @@ society_decisions = {
 			NOT = { has_character_flag = being_raised_flag }
 			NOT = { trait = creature_lich }
 			NOT = { trait = vampire }
+			NOT = { is_death_knight_class_trigger = yes }
 
 			society_member_of = cult_of_the_damned
 			society_rank > 2
@@ -1052,16 +1050,28 @@ society_decisions = {
 		}
 
 		effect = {
-			hidden_effect = { set_character_flag = being_raised_flag }
-
 			save_event_target_as = target_undead
-			set_character_flag = transition_into_lich_flag
-			e_scourge = {
-				holder_scope = {
-					save_event_target_as = target_necromancer
-					character_event = { id = WCDAC.3910 }
+			if = {
+				limit = {
+					e_scourge = { has_holder = yes }
+				}
+				e_scourge = { holder_scope = { save_event_target_as = target_necromancer } }
+			}
+			else = {
+				cult_of_the_damned = {
+					random_society_member = {
+						limit = {
+							is_society_grandmaster = yes
+						}
+						save_event_target_as = target_necromancer
+					}
 				}
 			}
+			
+			set_character_flag = being_raised_flag
+			set_character_flag = ask_for_dark_gift_used_flag
+						
+			character_event = { id = WCUND.300 }
 
 			change_society_currency = -5000
 		}
@@ -1085,7 +1095,6 @@ title_decisions = {
 		is_in_society = yes
 
 		from_potential = {
-			has_dlc = "Mystics"
 			is_untouchable_trigger = no
 
 			prisoner = no
@@ -1136,7 +1145,7 @@ title_decisions = {
 						}
 					}
 				}
-				hidden_effect = { long_character_event = { id = WCDAC.7025 days = 7 } }
+				hidden_effect = { long_character_event = { id = WCQUE.310 days = 7 } }
 			}
 		}
 		revoke_allowed = {

@@ -3557,45 +3557,43 @@ character_event = {
 }
 
 
-# Warcraft
-# ## upgrade_strategic_exclaves effect.
+## upgrade_strategic_exclaves effect.
+# Fired from on_action when the upgrades finishes construction
+province_event = {
+	id = LT.20700
+	title = EVT_TITLE_LT_20700
+	desc = EVTDESC_LT_20700
+	trigger = {
+		FROM = { has_wonder_upgrade = upgrade_strategic_exclaves }
+	}
 
-# # Fired from on_action when the upgrades finishes construction
-# province_event = {
-	# id = LT.20700
-	# title = EVT_TITLE_LT_20700
-	# desc = EVTDESC_LT_20700
-	# trigger = {
-		# FROM = { has_wonder_upgrade = upgrade_strategic_exclaves }
-	# }
+	picture = GFX_evt_castle_construction
+	border = GFX_event_normal_frame_war
 
-	# picture = GFX_evt_castle_construction
-	# border = GFX_event_normal_frame_war
+	is_triggered_only = yes
 
-	# is_triggered_only = yes
-
-	# immediate = {
-		# FROM = { save_event_target_as = target_upgrade }
-		# FROMFROM = { save_event_target_as = target_wonder }
-		# FROMFROMFROM = {
-			# save_event_target_as = target_province
-			# any_province_holding = {
-				# trigger_switch = {
-					# on_trigger = holding_type
-					# city = { add_building = ct_wall_5 }
-					# temple = { add_building = tp_wall_5 }
-					# castle = { add_building = ca_wall_5 }
-					# tribal = { add_building = tb_hillfort_4 }
-					# nomad = { add_building = no_camp_fortifications_8 }
-				# }
-			# }
-		# }
-	# }
-	# option = {  # ok
-		# name = EVTOPTA_LT_20700
-		# custom_tooltip = { text = EVTOPTA_LT_20700_TT }
-	# }
-# }
+	immediate = {
+		FROM = { save_event_target_as = target_upgrade }
+		FROMFROM = { save_event_target_as = target_wonder }
+		FROMFROMFROM = {
+			save_event_target_as = target_province
+			any_province_holding = {
+				trigger_switch = {
+					on_trigger = holding_type
+					city = { add_building = ct_wall_5 }
+					temple = { add_building = tp_wall_5 }
+					castle = { add_building = ca_wall_5 }
+					tribal = { add_building = tb_hillfort_4 }
+					nomad = { add_building = no_camp_fortifications_8 }
+				}
+			}
+		}
+	}
+	option = {  # ok
+		name = EVTOPTA_LT_20700
+		custom_tooltip = { text = EVTOPTA_LT_20700_TT }
+	}
+}
 
 ## Looting Events
 
@@ -3885,13 +3883,14 @@ character_event = {
 	}
 	desc = {
 		trigger = { NOT =  { event_target:target_chaplain = { always = yes } } }
-		text = EVTDESC_LT_20900	
+		text = EVTDESC_LT_20900
 	}
 
 	trigger = {
 		OR = {
 			AND = {
 				any_realm_wonder = {
+					NOT = { has_wonder_flag = Hagia_Sophia_catholic_cult }
 					OR = {
 						has_wonder_flag = Hagia_Sophia_orthodox_cult
 						has_wonder_flag = Hagia_Sophia_muslim_cult
@@ -3901,6 +3900,7 @@ character_event = {
 			}
 			AND = {
 				any_realm_wonder = {
+					NOT = { has_wonder_flag = Hagia_Sophia_orthodox_cult }
 					OR = {
 						has_wonder_flag = Hagia_Sophia_catholic_cult
 						has_wonder_flag = Hagia_Sophia_muslim_cult
@@ -3910,6 +3910,7 @@ character_event = {
 			}
 			AND = {
 				any_realm_wonder = {
+					NOT = { has_wonder_flag = Hagia_Sophia_muslim_cult }
 					OR = {
 						has_wonder_flag = Hagia_Sophia_orthodox_cult
 						has_wonder_flag = Hagia_Sophia_catholic_cult
@@ -3959,11 +3960,27 @@ character_event = {
     option = { #Convert
 		name = EVTOPTA_LT_20900
 		event_target:target_wonder = { clear_flags_with_prefix = Hagia_Sophia_ }
-		trigger_switch = {
-			on_trigger = religion
-			catholic = { event_target:target_wonder = { set_wonder_flag = Hagia_Sophia_catholic_cult } }
-			orthodox = { event_target:target_wonder = { set_wonder_flag = Hagia_Sophia_orthodox_cult } }
-			muslim = { event_target:target_wonder = { set_wonder_flag = Hagia_Sophia_muslim_cult } }	
+		if = {
+			limit = { religion = catholic }
+			event_target:target_wonder = {
+				set_wonder_flag = Hagia_Sophia_catholic_cult
+				set_wonder_model = wonder_hagia_sophia
+			}
+			
+		}
+		else_if = {
+			limit = { religion = orthodox }
+			event_target:target_wonder = {
+				set_wonder_flag = Hagia_Sophia_orthodox_cult
+				set_wonder_model = wonder_hagia_sophia
+			}
+		}
+		else_if = {
+			limit = { religion_group = muslim }
+			event_target:target_wonder = {
+				set_wonder_flag = Hagia_Sophia_muslim_cult
+				set_wonder_model = wonder_hagia_sophia_minarets
+			}
 		}
 		piety = 200
 		reverse_opinion = {
@@ -4032,6 +4049,9 @@ character_event = {
 			}
 			num_of_buildings = 4
 			location = {
+				# Warcraft
+				evil_public_religion_trigger = no
+				
 				NOT = {
 					has_province_modifier = recently_burnt_the_land_not_owner
 				}

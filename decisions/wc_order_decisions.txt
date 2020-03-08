@@ -1,34 +1,4 @@
 decisions = {
-	destroy_brotherhood_of_the_horse = {
-		ai_check_interval = 6
-		
-		only_playable = yes
-		
-		potential = {
-			ai = yes
-
-			has_landed_title = d_brotherhood_of_the_horse
-			k_stormwind = { has_holder = no }
-			NOT = { e_azeroth = { holder_scope = { culture = azerothian } } }
-		}
-		allow = {
-			always = yes
-		}
-		effect = {
-			d_brotherhood_of_the_horse = {
-				activate_title = { title = THIS status = no }
-				destroy_landed_title = THIS
-			}
-			set_global_flag = the_brotherhood_of_the_horse_was_destroyed_flag
-			narrative_event = { id = WCORD.2 }
-		}
-		revoke_allowed = {
-			always = no
-		}
-		ai_will_do = {
-			factor = 1
-		}
-	}
 	create_order_of_the_silver_hand = {
 		ai_check_interval = 12
 		
@@ -62,24 +32,34 @@ decisions = {
 		}
 	}
 	create_nethergarde = {
-		ai_check_interval = 12
+		ai_check_interval = 24
 		
 		only_playable = yes
 		
 		potential = {
+			d_nethergarde = { has_holder = no }
+
+			government = magocracy_government
+
+			has_alliance_religion_trigger = yes
+			has_alliance_culture_trigger = yes
+			
 			OR = {
 				has_landed_title = k_dalaran
 				has_landed_title = d_dalaran
-				government = magocracy_government
 			}
 			has_global_flag = dark_portal_was_opened_flag
-			is_member_of_alliance_faction_trigger = yes
-			c_dark_portal = {
+			c_nether_hill = {
 				holder_scope = {
-					top_liege = { is_member_of_alliance_faction_trigger = yes }
+					has_alliance_religion_trigger = yes
+					has_alliance_culture_trigger = yes
+
+					top_liege = {
+						has_alliance_religion_trigger = yes
+						has_alliance_culture_trigger = yes
+					}
 				}
 			}
-			d_nethergarde = { has_holder = no }
 		}
 		allow = {
 			always = yes
@@ -90,6 +70,116 @@ decisions = {
 		revoke_allowed = {
 			always = no
 		}
+		ai_will_do = {
+			factor = 1
+		}
+	}
+	form_korkron = {
+		is_high_prio = yes
+
+		ai_check_interval = 12
+
+		only_playable = yes
+		only_independent = yes
+
+		potential = {
+			d_korkron = { has_holder = no }
+			
+			trait = creature_orc
+			culture_group = orc_group
+			trait = leader_of_horde_trait
+			
+			has_landed_title = e_horde
+			has_global_flag = centralized_horde_flag
+		}
+
+		allow = {
+			wealth = 250
+			prestige = 1000
+		}
+
+		effect = {
+			save_event_target_as = target_warchief
+			
+			wealth = -250
+			prestige = -1000
+			
+			any_vassal = {
+				limit = {
+					NOT = { culture_group = orc_group }
+				}
+				show_scope_change = no
+				
+				opinion = { modifier = opinion_shocked who = ROOT years = 10 }
+			}
+			any_tributary = {
+				limit = {
+					NOT = { culture_group = orc_group }
+				}
+				show_scope_change = no
+				
+				opinion = { modifier = opinion_shocked who = ROOT years = 10 }
+			}
+			
+			hidden_effect = {
+				if = {
+					limit = {
+						job_marshal = {
+							is_ruler = no
+							is_heir = no
+							
+							trait = creature_orc
+							culture_group = orc_group
+						}
+					}
+					job_marshal = {
+						save_event_target_as = target_overlord
+					}
+				}
+				else_if = {
+					limit = {
+						any_courtier = {
+							is_ruler = no
+							is_heir = no
+							
+							trait = creature_orc
+							culture_group = orc_group
+							
+							has_minor_title = title_commander
+						}
+					}
+					random_courtier = {
+						limit = {
+							is_ruler = no
+							is_heir = no
+							
+							trait = creature_orc
+							culture_group = orc_group
+							
+							has_minor_title = title_commander
+						}
+						save_event_target_as = target_overlord
+					}
+				}
+				else = {
+					spawn_fantastic_commander_effect = yes
+					new_character = {
+						save_event_target_as = target_overlord
+					}
+				}
+				
+				event_target:target_overlord = {
+					wealth = 500
+					
+					activate_title = { title = d_korkron status = yes }
+					d_korkron = { grant_title = PREV }
+					set_defacto_liege = ROOT
+					
+					character_event = { id = WCORD.405 }
+				}
+			}
+		}
+
 		ai_will_do = {
 			factor = 1
 		}
@@ -106,24 +196,34 @@ targetted_decisions = {
 			is_playable = yes
 			
 			OR = {
-				ai = no
 				AND = {
-					religion = ROOT
-					wealth = 1000
-					NOR = {
-						trait = cynical
-						piety = 50
+					OR = {
+						NOR = {
+							trait = cynical
+							piety = 300
+						}
+						AND = {
+							trait = zealous
+							trait = charitable
+						}
 					}
+					wealth = 600
 				}
+				ai = no
 			}
-			holy_order = no
+			
+			NOT = { government = order_government }
 		}
 		
 		potential = {
 			holy_order = yes 
-			liege = { NOT = { character = ROOT } }
+			
+			liege = { NOT = { character = FROM } }
 			OR = {
-				opinion = { who = FROM value = 5 }
+				AND = {
+					opinion = { who = FROM value = 5 }
+					FROM = { ai = no }
+				}
 				religion = FROM
 			}
 		}
@@ -131,6 +231,12 @@ targetted_decisions = {
 		allow = {
 			FROM = {
 				show_scope_change = no
+				
+				custom_tooltip = {
+					text = holy_order_donate_cooldown_tt
+					NOT = { has_character_modifier = donate_to_holy_order_cooldown }
+				}
+				
 				wealth = 300
 			}
 		}
@@ -139,13 +245,21 @@ targetted_decisions = {
 			FROM = {
 				show_scope_change = no
 				
+				hidden_effect = {
+					add_character_modifier = {
+						modifier = donate_to_holy_order_cooldown
+						hidden = yes
+						years = 1
+					}
+				}
+				
 				wealth = -300
 				if = {
 					limit = { religion = ROOT }
 					piety = 300
 				}
 				else = {
-					prestige = 150
+					prestige = 300
 				}
 				
 				if = {

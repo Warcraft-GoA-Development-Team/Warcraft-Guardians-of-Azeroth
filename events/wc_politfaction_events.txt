@@ -86,13 +86,12 @@ character_event = {
 	
 	immediate = {
 		log = "WCPLF.40 fired for [Root.GetBestName]"
+		
 		if = {
 			limit = {
 				FROMFROM = {
-					AND = {
-						is_tributary = { type = political_faction suzerain = suzerain }
-						suzerain = { trait = leader_of_horde_trait }
-					}
+					is_tributary = { type = political_faction suzerain = suzerain }
+					suzerain = { trait = leader_of_horde_trait }
 				}
 			}
 			join_horde_faction_effect = yes
@@ -101,28 +100,42 @@ character_event = {
 		else_if = {
 			limit = {
 				FROMFROM = {
-					AND = {
-						is_tributary = { type = political_faction suzerain = suzerain }
-						suzerain = { trait = leader_of_alliance_trait }
-					}
+					is_tributary = { type = political_faction suzerain = suzerain }
+					suzerain = { trait = leader_of_alliance_trait }
 				}
 			}
 			join_alliance_faction_effect = yes
 			FROMFROM = { leave_alliance_faction_effect = yes }
 		}
-		FROMFROM = {
-			trigger_switch = {
-				on_trigger = trait
-				leader_of_horde_trait = {
-					ROOT = { become_leader_of_horde_faction_effect = yes }
-					break_alliances_with_horde_faction_effect = yes
-					remove_trait = leader_of_horde_trait
+		else_if = {
+			limit = {
+				FROMFROM = {
+					trait = leader_of_horde_trait
 				}
-				leader_of_alliance_trait = {
-					ROOT = { become_leader_of_alliance_faction_effect = yes }
-					break_alliances_with_alliance_faction_effect = yes
-					remove_trait = leader_of_alliance_trait
+			}
+			FROMFROM = {
+				remove_trait = leader_of_horde_trait
+				# Transfers tributaries now since the game do it when the last title is transferred
+				any_tributary = {
+					limit = { is_tributary = { type = political_faction suzerain = suzerain } }
+					suzerain = { remove_tributary = PREV }
+					ROOT = { make_tributary = { who = PREV tributary_type = political_faction } }
 				}
+				ROOT = { become_leader_of_horde_faction_effect = yes }
+				break_alliances_with_horde_faction_effect = yes
+			}
+		}
+		else = {
+			FROMFROM = {
+				remove_trait = leader_of_alliance_trait
+				# Transfers tributaries now since the game do it when the last title is transferred
+				any_tributary = {
+					limit = { is_tributary = { type = political_faction suzerain = suzerain } }
+					suzerain = { remove_tributary = PREV }
+					ROOT = { make_tributary = { who = PREV tributary_type = political_faction } }
+				}
+				ROOT = { become_leader_of_alliance_faction_effect = yes }
+				break_alliances_with_alliance_faction_effect = yes
 			}
 		}
 	}
@@ -159,6 +172,7 @@ character_event = {
 	trigger = {
 		is_alive = yes
 		is_dying = no
+		
 		is_in_political_faction_trigger = yes
 	}
 	
@@ -234,8 +248,9 @@ character_event = {
 	}
 
 	immediate = {
-		log = "WCPLF.52 fired for [Root.GetBestName]"
+		log = "WCPLF.52 fired for [Root.GetBestName]..."
 		
+		# Clear alliances
 		if = {
 			limit = { is_in_political_faction_trigger = no }
 			break_alliances_with_horde_faction_effect = yes
@@ -256,7 +271,8 @@ character_event = {
 		}
 	}
 }
-# One of members takes faction under control
+
+# New faction leader because prev leader leaves faction
 narrative_event = {
 	id = WCPLF.60
 	title = EVTTITLE_WCPLF_60
@@ -365,7 +381,7 @@ narrative_event = {
 		name = INTERESTING
 	}
 }
-# "Revolution" of the Horde
+# Horde's leader disband faction
 narrative_event = {
 	id = WCPLF.106
 	title = EVTTITLE_WCPLF_100
@@ -412,7 +428,6 @@ narrative_event = {
 		name = INTERESTING
 	}
 }
-
 
 # FROM asks you to accept FROM into your faction
 letter_event = {
@@ -713,17 +728,17 @@ narrative_event = {
 	}
 }
 
-# The faction was centralized
+# The faction was united
 narrative_event = {
 	id = WCPLF.280
 	title = EVTTITLE_WCPLF_280
 	desc = {
-		trigger = { has_landed_title = e_horde }
+		trigger = { ROOT = { has_landed_title = e_horde } }
 		text = EVTDESC_WCPLF_280
 		picture = GFX_evt_warcraft_3_orc_shield
 	}
 	desc = {
-		trigger = { has_landed_title = e_alliance }
+		trigger = { ROOT = { has_landed_title = e_alliance } }
 		text = EVTDESC_WCPLF_280
 		picture = GFX_evt_warcraft_3_human_shield
 	}
@@ -732,28 +747,35 @@ narrative_event = {
 
 	is_triggered_only = yes
 	
-	major = yes
-	major_trigger = {
-		ai = no
-	}
 	show_root = yes
+	
+	option = {
+		trigger = { evil_true_religion_trigger = yes }
+		name = FOOLS
+	}
 
 	option = {
-		name = {
-			trigger = {
-				OR = {
-					character = ROOT
-					opinion = { who = ROOT value = 10 }
-				}
+		trigger = {
+			NOT = {
+				evil_true_religion_trigger = yes
 			}
-			text = EXCELLENT
-		}
-		name = {
-			trigger = {
-				NOT = { character = ROOT }
-				NOT = { opinion = { who = ROOT value = 10 } }
+			OR = {
+				is_in_political_faction_trigger = yes
+				top_liege = { is_in_political_faction_trigger = yes }
 			}
-			text = ALAS
 		}
+		name = FOR_THE_FACTION
+	}
+	option = {
+		trigger = {
+			NOT = {
+				evil_true_religion_trigger = yes
+				is_member_of_horde_faction_trigger = yes
+				top_liege = { is_member_of_horde_faction_trigger = yes }
+				is_member_of_alliance_faction_trigger = yes
+				top_liege = { is_member_of_alliance_faction_trigger = yes }
+			}
+		}
+		name = INTERESTING
 	}
 }

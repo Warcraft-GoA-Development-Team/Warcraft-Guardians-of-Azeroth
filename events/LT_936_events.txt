@@ -1,0 +1,1009 @@
+# namespace = LT
+
+# # Written by Joachim
+
+# ### Kievan Rus Events ###
+# # Turn Yngvar/Igor Russian to simulate that the AI uses the decision at the start of the game
+# character_event = {
+	# id = LT.40001
+	# hide_window = yes
+	# is_triggered_only = yes
+
+	# trigger = {
+		# start_date = 936.8.7
+		# is_save_game = no
+		# c_600 = {
+			# character = root
+		# }
+	# }
+
+	# immediate = {
+		# if = {
+			# limit = {
+				# ai = yes
+			# }
+			# culture = russian
+			# religion = slavic_pagan
+			# any_close_relative = {
+				# limit = {
+					# is_alive = yes
+				# }
+				# culture = russian
+				# religion = slavic_pagan
+			# }
+		# }
+		# character_event = { id = LT.40002 days = 2920 }
+	# }
+# }
+
+# # Potential birth of Sviatoslav I of Kiev
+# character_event = {
+	# id = LT.40002
+	# hide_window = yes
+	# is_triggered_only = yes
+
+	# trigger = {    
+        # NOT = {
+            # has_game_rule = {
+                # name = otto_story
+                # value = off
+            # }
+        # }
+		# spouse = { has_character_flag = is_olga }
+	# }
+
+	# immediate = {
+		# spouse = { impregnate = root }
+	# }
+# }
+
+# ### Otto the Great Events ###
+# ## Otto wants Lorraine ##
+# # Choice given to Otto about invading Lorraine
+# narrative_event = {
+    # id = LT.40003
+    # desc = EVTDESC_LT_40003
+    # title = EVTTITLE_LT_40003
+    # picture = GFX_evt_large_army
+    # border = GFX_event_narrative_frame_war
+    # portrait = event_target:giselbert
+    # is_triggered_only = yes
+    # has_character_flag = is_otto
+    # only_playable = yes
+    # prisoner = no
+    # war = no
+
+    # trigger = {
+        # NOT = {
+            # has_game_rule = {
+                # name = otto_story
+                # value = off
+            # }
+        # }
+        # NOT = { year_950_trigger = yes }
+    	# OR = {
+    		# has_character_flag = otto_thankmars_rebellion_event
+    		# year_950_trigger = yes
+    	# }
+    	# NOT = { has_character_flag = otto_traitor_lorraine_event }
+    	# any_character = {
+    		# is_alive = yes
+    		# has_character_flag = is_giselbert
+    		# OR = {
+    			# has_landed_title = d_upper_lorraine
+    			# has_landed_title = d_lower_lorraine
+    		# }
+    	# }
+    	# NOR = {
+    		# has_landed_title = d_upper_lorraine
+    		# any_realm_lord = {
+    			# has_landed_title = d_upper_lorraine
+    		# }
+    	# }
+    # }
+
+    # immediate = {
+    	# set_character_flag = otto_traitor_lorraine_event
+    	# any_character = {
+    		# limit = {
+    			# has_character_flag = is_giselbert
+    		# }
+    		# save_event_target_as = giselbert
+    	# }
+    # }
+
+    # option = {      
+        # name = EVTOPTA_LT_40003
+        # event_target:giselbert = {
+        	# show_scope_change = no
+        	# any_demesne_title = {
+        		# show_scope_change = no
+        		# root = {
+        			# show_scope_change = no
+        			# add_claim = PREV
+        		# }
+        	# }
+            # narrative_event = { id = LT.40004 }
+        # }
+        # war = {
+    		# target = event_target:giselbert
+    		# casus_belli = claim_all
+    	# }
+    # }
+    # option = {      
+        # name = EVTOPTB_LT_40003
+        # trigger = {
+            # ai = no
+        # }
+    # }
+# }
+
+# # Giselbert is informed about Otto's attack
+# narrative_event = {
+    # id = LT.40004
+    # desc = EVTDESC_LT_40004
+    # title = EVTTITLE_LT_40004
+    # picture = GFX_evt_large_army
+    # border = GFX_event_narrative_frame_war
+    # portrait = event_target:otto
+    # is_triggered_only = yes
+
+    # trigger = {
+        # NOT = {
+            # has_game_rule = {
+                # name = otto_story
+                # value = off
+            # }
+        # }
+        # has_character_flag = is_giselbert
+    # }
+
+    # immediate = {
+        # any_character = {
+            # limit = {
+                # has_character_flag = is_otto
+            # }
+            # save_event_target_as = otto
+        # }
+    # }
+
+    # option = {
+        # name = EVTOPTA_LT_40004
+        # custom_tooltip = { text = EVTOPTA_LT_40004_TT }
+    # }
+# }
+
+# ## Thankmar's Rebellion ##
+# # Thankmar is given the chance of rebelling against Otto
+# narrative_event = {
+    # id = LT.40005
+    # desc = EVTDESC_LT_40005
+    # title = EVTTITLE_LT_40005
+    # picture = GFX_evt_large_army
+    # border = GFX_event_narrative_frame_war
+    # is_triggered_only = yes
+    # portrait = event_target:otto
+    # has_character_flag = is_thankmar
+    # only_playable = yes
+    # prisoner = no
+    # war = no
+
+    # trigger = {
+        # NOT = {
+            # has_game_rule = {
+                # name = otto_story
+                # value = off
+            # }
+        # }
+        # NOT = { has_character_flag = thankmar_rebellion }
+        # NOT = { year_950_trigger = yes }
+        # any_character = {
+            # has_character_flag = is_otto
+            # NOT = { has_character_flag = otto_thankmars_rebellion_event }
+        # }
+    # }
+
+    # immediate = {
+        # set_character_flag = thankmar_rebellion
+        # random_character = {
+            # limit = {
+                # has_character_flag = is_otto
+            # }
+            # save_event_target_as = otto
+        # }
+    # }
+
+    # option = {
+        # name = EVTOPTA_LT_40005
+        # unsafe_war = {
+            # target = event_target:otto
+            # casus_belli = thankmars_rebellion
+        # }
+        # event_target:otto = {
+            # set_character_flag = otto_thankmars_rebellion_event
+            # any_vassal = {
+                # limit = {
+                    # higher_tier_than = BARON
+                    # government = feudal_government
+                    # OR = {
+                        # de_jure_liege = k_germany
+                        # de_jure_liege = k_frisia
+                    # }
+                # }
+                # narrative_event = { id = LT.40006 }
+            # }
+            # narrative_event = { id = LT.40007 }
+        # }
+    # }
+
+    # option = {
+        # name = EVTOPTB_LT_40005
+        # trigger = {
+            # OR = {
+                # ai = no
+                # event_target:otto = {
+                    # ai = yes
+                # }
+            # }
+        # }
+    # }
+# }
+
+# # Dukes are invited to join the rebellion
+# narrative_event = {
+    # id = LT.40006
+    # desc = EVTDESC_LT_40006
+    # title = EVTTITLE_LT_40006
+    # picture = GFX_evt_large_army
+    # border = GFX_event_narrative_frame_war
+    # is_triggered_only = yes
+    # only_playable = yes
+    # prisoner = no
+
+    # trigger = {
+        # NOT = {
+            # has_game_rule = {
+                # name = otto_story
+                # value = off
+            # }
+        # }
+    # }
+
+    # immediate = {
+        # random_character = {
+            # limit = {
+                # has_character_flag = is_thankmar
+            # }
+            # save_event_target_as = thankmar
+        # }
+    # }
+
+    # option = {
+        # name = EVTOPTA_LT_40006
+        # set_defacto_liege = this
+        # join_attacker_wars = event_target:thankmar
+        # ai_chance = {
+            # factor = 2
+            # modifier = {
+                # factor = 1.5
+                # tier = DUKE
+            # }
+            # modifier = {
+                # factor = 2
+                # trait = ambitious
+            # }
+            # modifier = {
+                # factor = 1.5
+                # likes_better_than = {
+                    # who = event_target:thankmar
+                    # than = event_target:otto
+                # }
+            # }
+        # }
+    # }
+
+    # option = {
+        # trigger = {
+            # OR = {
+                # ai = no
+                # NOR = {
+                    # has_landed_title = d_franconia
+                    # has_landed_title = c_ostfriesland
+                # }
+            # }
+        # }
+        # name = EVTOPTB_LT_40006
+        # ai_chance = {
+            # factor = 98
+            # modifier = {
+                # factor = 1.5
+                # tier = COUNT
+            # }
+            # modifier = {
+                # factor = 1.5
+                # trait = content
+            # }
+            # modifier = {
+                # factor = 1.5
+                # likes_better_than = {
+                    # who = event_target:otto
+                    # than = event_target:thankmar
+                # }
+            # }
+        # }
+    # }
+# }
+
+# # Otto is informed of Thankmar's betrayal
+# narrative_event = {
+    # id = LT.40007
+    # desc = EVTDESC_LT_40007
+    # title = EVTTITLE_LT_40007
+    # picture = GFX_evt_large_army
+    # border = GFX_event_narrative_frame_war
+    # is_triggered_only = yes
+
+    # trigger = {
+        # NOT = {
+            # has_game_rule = {
+                # name = otto_story
+                # value = off
+            # }
+        # }
+    # }
+
+    # immediate = {
+
+    # }
+
+    # option = {
+        # name = EVTOPTA_LT_40007
+    # }
+# }
+
+# # Thankmar won rebellion
+# narrative_event = {
+    # id = LT.40009
+    # desc = EVTDESC_LT_40009
+    # title = EVTTITLE_LT_40009
+    # picture = GFX_evt_magnificent_castle
+    # border = GFX_event_narrative_frame_war
+    # is_triggered_only = yes
+
+    # trigger = {
+        # NOT = {
+            # has_game_rule = {
+                # name = otto_story
+                # value = off
+            # }
+        # }
+    # }
+
+    # option = {
+        # name = EVTOPTA_LT_40009
+        # prestige = 250
+    # }
+
+    # option = {
+        # name = EVTOPTB_LT_40009
+        # trigger = {
+            # ai = no
+        # }
+        # prestige = 500
+        # custom_tooltip = { text = EVTOPTB_LT_40009_TT }
+        # hidden_tooltip = {
+            # # Narrative event
+            # any_playable_ruler = {
+                # limit = {
+                    # is_within_diplo_range = ROOT
+                # }
+                # narrative_event = { id = LT.40010 days = 1 }                
+            # }
+            # # Set De Jure Saxony
+            # d_saxony = {
+                # de_jure_liege = k_saxony
+            # }
+            # d_munster_germany = {
+                # de_jure_liege = k_saxony
+            # }
+            # d_angria = {
+                # de_jure_liege = k_saxony
+            # }
+            # d_bremen = {
+                # de_jure_liege = k_saxony
+            # }
+            # # Set De Jure Thuringia
+            # d_thuringia = {
+                # de_jure_liege = k_thuringia_otto
+            # }
+            # # Set De Jure Franconia
+            # d_hesse = {
+                # de_jure_liege = k_franconia_otto
+            # }
+            # d_rhine = {
+                # de_jure_liege = k_franconia_otto
+            # }
+            # d_franconia = {
+                # de_jure_liege = k_franconia_otto
+            # }
+            # # Set De Jure Swabia
+            # d_swabia = {
+                # de_jure_liege = k_swabia_otto
+            # }
+            # d_baden = {
+                # de_jure_liege = k_swabia_otto
+            # }
+            # d_alsace = {
+                # de_jure_liege = k_swabia_otto
+            # }
+            # d_thurgau = {
+                # de_jure_liege = k_swabia_otto
+            # }
+            # d_raetia = {
+                # de_jure_liege = k_swabia_otto
+            # }
+            # # Move all old kingdoms into Empire of Germania
+            # e_hre = {
+                # any_direct_de_jure_vassal_title = {
+                    # de_jure_liege = e_germany
+                # }
+            # }
+            # # Fix Thankmar's title
+            # k_saxony = {
+                # grant_title = ROOT
+                # copy_title_laws = k_germany
+                # copy_title_history = k_germany
+            # }
+            # k_germany = {
+                # unsafe_destroy_landed_title = THIS
+            # }
+            # ## Grant titles ##
+            # # Franconia #
+            # if = {
+                # limit = {
+                    # any_vassal = {
+                        # has_landed_title = d_franconia
+                    # }
+                # }
+                # d_franconia = {
+                    # holder_scope = {
+                        # grant_title_no_opinion = k_franconia_otto
+                        # save_event_target_as = franconia_king
+                    # }
+                # }
+                # any_vassal = {
+                    # limit = {
+                        # de_jure_liege = k_franconia_otto
+                    # }
+                    # set_defacto_liege = event_target:franconia_king
+                # }
+            # }
+            # else_if = {
+                # limit = {
+                    # any_vassal = {
+                        # has_landed_title = c_wurzburg
+                    # }
+                # }
+                # c_wurzburg = {
+                    # holder_scope = {
+                        # grant_title_no_opinion = k_franconia_otto
+                        # save_event_target_as = franconia_king
+                    # }
+                # }
+                # any_vassal = {
+                    # limit = {
+                        # de_jure_liege = k_franconia_otto
+                    # }
+                    # set_defacto_liege = event_target:franconia_king
+                # }
+            # }
+            # # Swabia #
+            # if = {
+                # limit = {
+                    # any_vassal = {
+                        # has_landed_title = d_swabia
+                    # }
+                # }
+                # d_swabia = {
+                    # holder_scope = {
+                        # grant_title_no_opinion = k_swabia_otto
+                        # save_event_target_as = swabia_king
+                    # }
+                # }
+                # any_vassal = {
+                    # limit = {
+                        # de_jure_liege = k_swabia_otto
+                    # }
+                    # set_defacto_liege = event_target:swabia_king
+                # }
+            # }
+            # else_if = {
+                # limit = {
+                    # any_vassal = {
+                        # has_landed_title = c_schwaben
+                    # }
+                # }
+                # c_schwaben = {
+                    # holder_scope = {
+                        # grant_title_no_opinion = k_swabia_otto
+                        # save_event_target_as = swabia_king
+                    # }
+                # }
+                # any_vassal = {
+                    # limit = {
+                        # de_jure_liege = k_swabia_otto
+                    # }
+                    # set_defacto_liege = event_target:swabia_king
+                # }
+            # }
+            # # Thuringia #
+            # if = {
+                # limit = {
+                    # any_vassal = {
+                        # has_landed_title = d_thuringia
+                    # }
+                # }
+                # d_thuringia = {
+                    # holder_scope = {
+                        # grant_title_no_opinion = k_thuringia_otto
+                        # save_event_target_as = thuringia_king
+                    # }
+                # }
+                # any_vassal = {
+                    # limit = {
+                        # de_jure_liege = k_thuringia_otto
+                    # }
+                    # set_defacto_liege = event_target:thuringia_king
+                # }
+            # }
+            # else_if = {
+                # limit = {
+                    # any_vassal = {
+                        # has_landed_title = c_thuringen
+                    # }
+                # }
+                # c_thuringen = {
+                    # holder_scope = {
+                        # grant_title_no_opinion = k_thuringia_otto
+                        # save_event_target_as = thuringia_king
+                    # }
+                # }
+                # any_vassal = {
+                    # limit = {
+                        # de_jure_liege = k_thuringia_otto
+                    # }
+                    # set_defacto_liege = event_target:thuringia_king
+                # }
+            # }
+            # # Bavaria #
+            # if = {
+                # limit = {
+                    # any_vassal = {
+                        # has_landed_title = d_bavaria
+                    # }
+                # }
+                # d_bavaria = {
+                    # holder_scope = {
+                        # grant_title_no_opinion = k_bavaria
+                        # save_event_target_as = bavaria_king
+                    # }
+                # }
+                # any_vassal = {
+                    # limit = {
+                        # de_jure_liege = k_bavaria
+                    # }
+                    # set_defacto_liege = event_target:bavaria_king
+                # }
+            # }
+            # else_if = {
+                # limit = {
+                    # any_vassal = {
+                        # has_landed_title = c_regensburg
+                    # }
+                # }
+                # c_regensburg = {
+                    # holder_scope = {
+                        # grant_title_no_opinion = k_bavaria
+                        # save_event_target_as = bavaria_king
+                    # }
+                # }
+                # any_vassal = {
+                    # limit = {
+                        # de_jure_liege = k_bavaria
+                    # }
+                    # set_defacto_liege = event_target:bavaria_king
+                # }
+            # }
+            # # Set independence for remaining Duke vassals outside of the north
+            # any_vassal = {
+                # limit = {
+                    # tier = DUKE
+                    # primary_title = {
+                        # NOR = {
+                            # de_jure_liege = k_saxony
+                            # de_jure_liege = k_pomerania
+                            # de_jure_liege = k_frisia
+                        # }
+                    # }
+                # }
+                # set_defacto_liege = THIS
+            # }
+            # # Deactivate Titles
+            # activate_title = {
+                # title = k_germany
+                # status = no
+            # }
+            # activate_title = {
+                # title = e_hre
+                # status = no
+            # }
+            # activate_title = {
+                # title = e_germany
+                # status = yes
+            # }
+            # set_global_flag = hre_removed
+        # }
+    # }
+# }
+
+# # A return to the old ways
+# narrative_event = {
+    # id = LT.40010
+    # desc = EVTDESC_LT_40010
+    # title = EVTTITLE_LT_40010
+    # picture = GFX_evt_magnificent_castle
+    # border = GFX_event_narrative_frame_war
+    # is_triggered_only = yes
+
+    # trigger = {
+        # NOT = {
+            # has_game_rule = {
+                # name = otto_story
+                # value = off
+            # }
+        # }
+    # }
+
+    # immediate = {
+
+    # }
+
+    # option = {
+        # name = EVTOPTA_LT_40010
+    # }
+# }
+
+# # Otto won against rebellion
+# narrative_event = {
+    # id = LT.40011
+    # desc = EVTDESC_LT_40011
+    # title = EVTTITLE_LT_40011
+    # picture = GFX_evt_magnificent_castle
+    # border = GFX_event_narrative_frame_war
+    # is_triggered_only = yes
+
+    # trigger = {
+        # NOT = {
+            # has_game_rule = {
+                # name = otto_story
+                # value = off
+            # }
+        # }
+    # }
+
+    # immediate = {
+
+    # }
+
+    # option = {
+        # name = EVTOPTA_LT_40011
+        # prestige = 500
+    # }
+# }
+
+# ## Otto's Invasion of Italy ##
+# # Choice given to Otto about enforcing his rights on the Italian lands
+# narrative_event = {
+    # id = LT.40012
+    # desc = EVTDESC_LT_40012
+    # title = EVTTITLE_LT_40012
+    # picture = GFX_evt_large_army
+    # border = GFX_event_narrative_frame_war
+    # is_triggered_only = yes
+    # portrait = event_target:italian_king
+    # has_character_flag = is_otto
+    # only_playable = yes
+    # prisoner = no
+    # war = no
+
+    # trigger = {
+        # NOT = {
+            # has_game_rule = {
+                # name = otto_story
+                # value = off
+            # }
+        # }
+        # year_950_trigger = yes
+        # NOT = { has_character_flag = otto_italian_campaign_event }
+        # has_landed_title = k_germany
+        # tier = KING
+        # NOR = { 
+            # has_landed_title = k_italy 
+            # has_landed_title = e_hre
+        # }
+        # k_italy = {
+            # has_holder = yes
+        # }
+        # k_italy = {
+            # holder_scope = {
+                # independent = yes
+            # }
+        # }
+    # }
+
+    # immediate = {
+        # set_character_flag = otto_italian_campaign_event
+        # random_character = {
+            # limit = {
+                # has_landed_title = k_italy
+            # }
+            # save_event_target_as = italian_king
+        # }
+    # }
+
+    # option = {
+        # name = EVTOPTA_LT_40012
+        # hidden_tooltip = {
+            # add_claim = k_italy
+        # }
+        # war = {
+            # target = event_target:italian_king
+            # casus_belli = claim
+            # thirdparty_title = k_italy
+        # }
+        # event_target:italian_king = {
+            # narrative_event = { id = LT.40013 days = 1 }
+            # any_vassal = {
+                # narrative_event = { id = LT.40013 }
+            # }
+        # }
+    # }
+
+    # option = {
+        # name = EVTOPTB_LT_40012
+        # trigger = {
+            # ai = no
+        # }
+    # }
+# }
+
+# # Italians informed about Otto's attack
+# narrative_event = {
+    # id = LT.40013
+    # desc = EVTDESC_LT_40013
+    # title = EVTTITLE_LT_40013
+    # picture = GFX_evt_large_army
+    # border = GFX_event_narrative_frame_war
+    # is_triggered_only = yes
+
+    # trigger = {
+        # NOT = {
+            # has_game_rule = {
+                # name = otto_story
+                # value = off
+            # }
+        # }
+    # }
+
+    # immediate = {
+
+    # }
+
+    # option = {
+        # name = EVTOPTA_LT_40013
+        # trigger = {
+            # has_landed_title = k_italy
+        # }
+    # }
+
+    # option = {
+        # name = EVTOPTB_LT_40013
+        # trigger = {
+            # NOT = { has_landed_title = k_italy }
+        # }
+    # }
+# }
+
+# ## Otto the Great ##
+# # Pre-requisites Done
+# narrative_event = {
+    # id = LT.40014
+    # desc = EVTDESC_LT_40014
+    # title = EVTTITLE_LT_40014
+    # picture = GFX_evt_magnificent_castle
+    # border = GFX_event_narrative_frame_war
+    # is_triggered_only = yes
+    # has_character_flag = is_otto
+    # only_playable = yes
+    # prisoner = no
+    # war = no
+
+    # trigger = {
+        # NOT = {
+            # has_game_rule = {
+                # name = otto_story
+                # value = off
+            # }
+        # }
+        # NOT = { has_character_flag = otto_coronation_event }
+        # year_950_trigger = yes
+        # has_landed_title = k_germany
+        # has_landed_title = k_italy
+        # NOT = { has_landed_title = e_hre }
+        # tier = KING
+    # }
+
+    # immediate = {
+        # set_character_flag = otto_coronation_event
+    # }
+
+    # option = {
+        # name = EVTOPTA_LT_40014
+        # narrative_event = { id = LT.40015 }
+        # any_playable_ruler = {
+            # limit = {
+                # is_within_diplo_range = ROOT
+            # }
+            # narrative_event = { id = LT.40015 }
+        # }
+        # if = {
+            # limit = { has_nickname = no }
+            # give_nickname = nick_the_great
+        # }
+        # if = {
+            # limit = {
+                # has_character_flag = is_otto
+            # }
+            # create_bloodline = {
+                # type = otto
+            # }
+        # }
+        # add_artifact = crown_hre
+        # primary_title = {
+            # show_scope_change = no
+            # e_hre = {
+                # show_scope_change = no
+                # grant_title = ROOT
+                # copy_title_laws = PREV
+                # add_law = succ_hre_elective
+            # }
+        # }
+
+        # hidden_tooltip = {
+            # princely_elective_german_elector_setup_effect = yes
+        # }
+        # any_demesne_title = {
+            # limit = {
+                # OR = {
+                    # tier = KING
+                    # AND = {
+                        # tier = EMPEROR
+                        # NOT = {
+                            # title = e_hre
+                        # }
+                    # }
+                # }
+            # }
+            # destroy_landed_title = THIS
+        # }
+    # }
+
+    # option = {
+        # name = EVTOPTB_LT_40014
+        # trigger = {
+            # ai = no
+        # }
+    # }
+# }
+
+# # Coronation
+# narrative_event = {
+    # id = LT.40015
+    # desc = EVTDESC_LT_40015
+    # title = EVTTITLE_LT_40015
+    # picture = GFX_evt_found_hre
+    # border = GFX_event_narrative_frame_war
+    # is_triggered_only = yes
+
+    # trigger = {
+        # NOT = {
+            # has_game_rule = {
+                # name = otto_story
+                # value = off
+            # }
+        # }
+    # }
+
+    # immediate = {
+
+    # }
+
+    # option = {
+        # name = EVTOPTA_LT_40015
+        # trigger = {
+            # has_character_flag = is_otto
+        # }
+        # prestige = 1000
+    # }
+
+    # option = {
+        # name = EVTOPTB_LT_40015
+        # trigger = {
+            # NOT = { has_character_flag = is_otto }
+        # }
+    # }
+# }
+
+# ### Fatimids ###
+# narrative_event = {
+    # id = LT.40016
+    # desc = EVTDESC_LT_40016
+    # title = EVTTITLE_LT_40016
+    # picture = GFX_evt_battle
+    # border = GFX_event_narrative_frame_war
+    # is_triggered_only = yes
+    # portrait = event_target:sultan_egypt
+
+    # min_age = 16
+    # only_playable = yes
+    # prisoner = no
+    # war = no
+    # religion = shiite
+
+    # trigger = {
+        # year_950_trigger = yes
+        # NOT = { has_global_flag = fatimid_invasion_egypt }
+        # NOT = {
+            # has_game_rule = {
+                # name = otto_story
+                # value = off
+            # }
+        # }
+        # has_landed_title = k_africa
+        # k_egypt = { has_holder = yes }
+        # k_egypt = {
+            # holder_scope = {
+                # NOT = { character = ROOT }
+                # religion = sunni
+            # }
+        # }
+    # }
+
+    # immediate = {
+        # set_global_flag = fatimid_invasion_egypt
+        # random_character = {
+            # limit = {
+                # has_landed_title = k_egypt
+            # }
+            # save_event_target_as = sultan_egypt
+        # }
+    # }
+
+    # option = {
+        # name = EVTOPTA_LT_40016
+        # hidden_tooltip = {
+            # add_claim = k_egypt
+            # add_claim = c_cairo
+        # }
+        # war = {
+            # target = event_target:sultan_egypt
+            # casus_belli = claim_all
+        # }
+    # }
+
+    # option = {
+        # name = EVTOPTB_LT_40016
+        # prestige = -250
+        # piety = -100
+    # }
+# }

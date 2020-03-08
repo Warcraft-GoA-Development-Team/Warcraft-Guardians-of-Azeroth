@@ -95,7 +95,6 @@ character_event = {
 			limit = { graphical_culture = orcbrowngfx }
 			set_graphical_culture = warsong
 		}
-		set_demon_gfx_effect = yes
 	}
 	
 	after = {
@@ -299,19 +298,7 @@ character_event = {
 		else = { set_secret_religion = illidari }
 
 		ai_chance = {
-			factor = 60
-			modifier = {
-				factor = 2
-				has_benevolent_trait_trigger = yes
-			}
-			modifier = {
-				factor = 1.5
-				has_pleasant_trait_trigger = yes
-			}
-			modifier = {
-				factor = 1.5
-				has_pious_trait_trigger = yes
-			}
+			factor = 50
 		}
 	}
 
@@ -338,19 +325,9 @@ character_event = {
 		else = { set_secret_religion = burning_legion_religion }
 
 		ai_chance = {
-			factor = 40
-			modifier = {
-				factor = 2.25
-				has_impious_trait_trigger = yes
-			}
-			modifier = {
-				factor = 1.75
-				has_evil_trait_trigger = yes
-			}
-			modifier = {
-				factor = 1.75
-				has_unpleasant_trait_trigger = yes
-			}
+			factor = 50
+			
+			evil_ai_chance_score = yes
 		}
 	}
 	
@@ -795,14 +772,15 @@ character_event = {
 	immediate = {
 		log = "WCFEL.1000 fired for [Root.GetBestName]"
 
-		3204 = { save_event_target_as = target_summoning_location }		# Zin-Malor
+		3201 = { save_event_target_as = target_summoning_location }		# Xonulzis
 
 		# Archimonde the Defiler
 		if = {
 			limit = { NOT = { has_global_flag = archimonde_was_summoned_flag } }
+			set_global_flag = archimonde_was_summoned_flag
+			
 			create_character = {
 				name = Archimonde
-				nickname = nick_the_defiler
 				dynasty = 46000
 				religion = burning_legion_religion
 				culture = eredar
@@ -815,17 +793,25 @@ character_event = {
 				trait = mastermind_theologian
 				trait = aggressive_leader
 				trait = creature_eredar
-				trait = class_warlock_9
+				trait = class_warlock_8
+				trait = class_warrior_1
 				trait = being_demon
+				trait = archimonde_trait
 				trait = proud trait = patient trait = ambitious trait = arbitrary trait = cynical trait = cruel trait = stubborn trait = temperate
 			}
-			set_global_flag = archimonde_was_summoned_flag
-			new_character = { narrative_event = { id = WCFEL.1005 } }
-			break = yes
+			new_character = {
+				give_nickname = nick_the_defiler
+				add_artifact = legion_doomhorn
+				add_artifact = warblade_of_archimonde
+				
+				narrative_event = { id = WCFEL.1005 }
+			}
 		}
 		# Kil'jaeden the Deceiver
-		if = {
+		else_if = {
 			limit = { NOT = { has_global_flag = kiljaeden_was_summoned_flag } }
+			set_global_flag = kiljaeden_was_summoned_flag
+			
 			create_character = {
 				name = Kil'jaeden
 				nickname = nick_the_deceiver
@@ -843,58 +829,67 @@ character_event = {
 				trait = creature_eredar
 				trait = class_warlock_9
 				trait = being_demon
+				trait = kiljaeden_trait
 				trait = fair trait = proud trait = patient trait = deceitful trait = arbitrary trait = cynical trait = cruel trait = envious
 			}
-			set_global_flag = kiljaeden_was_summoned_flag
-			new_character = { narrative_event = { id = WCFEL.1005 } }
-			break = yes
-		}
-		# Random eredar
-		create_character = {
-			dynasty = random
-			religion = burning_legion_religion
-			culture = eredar
-			female = no
-			age = 300
-			trait = creature_eredar
-			trait = class_warlock_8
-			trait = being_demon
-			trait = cruel
-			random_traits = yes
-		}
-		new_character = {
-			remove_education_effect = yes
-			random_list = {
-				45 = { add_trait = brilliant_strategist }
-				20 = { add_trait = elusive_shadow }
-				35 = { add_trait = mastermind_theologian }
+			new_character = {
+				give_nickname = nick_the_deceiver
+				add_artifact = legion_doomhorn
+				add_artifact = scepter_of_sargeras
+
+				narrative_event = { id = WCFEL.1005 }
 			}
-
-			#Up intrigue and martial
-			random_list = {
-				33 = {
-					change_martial = 2
-					change_intrigue = 1
-				}
-				33 = {
-					change_martial = 3
-					change_intrigue = 2
-				}
-				33 = {
-					change_martial = 4
-					change_intrigue = 3
-				}
+		}
+		else = {
+			set_global_flag = biggest_legion_invasion_flag
+			
+			# Random eredar
+			create_character = {
+				dynasty = random
+				religion = burning_legion_religion
+				culture = eredar
+				female = no
+				age = 300
+				trait = creature_eredar
+				trait = class_warlock_8
+				trait = being_demon
+				trait = cruel
+				random_traits = no
 			}
+			new_character = {
+				remove_education_effect = yes
+				random_list = {
+					45 = { add_trait = brilliant_strategist }
+					20 = { add_trait = elusive_shadow }
+					35 = { add_trait = mastermind_theologian }
+				}
 
-			# Removes wrong traits
-			remove_trait = chariable
-			remove_trait = humble
-			remove_trait = honest
-			remove_trait = content
-			remove_trait = zealous
-			remove_trait = trusting
+				#Up intrigue and martial
+				random_list = {
+					33 = {
+						change_martial = 2
+						change_intrigue = 1
+					}
+					33 = {
+						change_martial = 3
+						change_intrigue = 2
+					}
+					33 = {
+						change_martial = 4
+						change_intrigue = 3
+					}
+				}
 
-			narrative_event = { id = WCFEL.1005 }
+				# Removes wrong traits
+				remove_trait = charitable
+				remove_trait = humble
+				remove_trait = honest
+				remove_trait = content
+				remove_trait = zealous
+				remove_trait = trusting
+
+				narrative_event = { id = WCFEL.1005 }
+			}
 		}
 	}
 }
@@ -915,46 +910,73 @@ narrative_event = {
 		ai = no
 	}
 	show_root = yes
+	hide_from = yes
+	hide_new = yes
 
 	immediate = {
+		# Used in scripted effects
+		save_event_target_as = target_settler
+		
 		73 = { province_event = { id = WCTHW.50 } } # When shit happens, Medivh tries to fix it
+		
+		wealth = 1000
+		prestige = 1000
+		piety = 250
+		
+		c_xonulzis = {
+			# event_target:target_settler and its people settle here
+			settle_as_target_settler_effect = yes
+		}
+		
+		d_haldarr = {
+			any_direct_de_jure_vassal_title = {
+				# event_target:target_settler and its people settle here
+				settle_as_target_settler_effect = yes
+			}
+		}
 
 		activate_title = { title = e_burning_legion status = yes }
-		set_global_flag = burning_legion_invasion_flag
-		# Enables new buildings
-		if = {
-			limit = { NOT = { has_global_flag = advanced_legion_buildings_enabled } }
-			set_global_flag = advanced_legion_buildings_enabled
-		}
 		e_burning_legion = { gain_title = ROOT }
+		
+		set_legion_government_effect = yes
+		
+		c_xonulzis = {
+			# Declares war against player
+			target_settler_declare_war_effect = yes
+		}
+		
+		clear_settler_flag_effect = yes
+		
 		FROM = {
 			if = {
 				limit = {
-					is_landed = yes
-					in_revolt = no
-					is_nomadic = no
 					NOT = { tier = EMPEROR }
+					
+					character_can_be_vassalized_trigger = yes
 
 					NOT = { religion = death_god }
-
-					NOT = { is_offmap_governor = yes }
 				}
 				prev_subjugate_this_destroy_titles_effect = yes
 			}
 		}
-		set_legion_government_effect = yes
-		wealth = 1000
-		prestige = 500
-		piety = 250
 
 		# Spawns troops
 		spawn_legion_troops_effect = yes
 		spawn_legion_troops_effect = yes
 		spawn_legion_troops_effect = yes
-		# spawn_legion_troops_effect = yes
-		# spawn_legion_troops_effect = yes
+		spawn_legion_troops_effect = yes
+		if = {
+			limit = { has_global_flag = kiljaeden_was_summoned_flag }
+			spawn_legion_troops_effect = yes
+			spawn_legion_troops_effect = yes
+		}
+		if = {
+			limit = { has_global_flag = biggest_legion_invasion_flag }
+			spawn_legion_troops_effect = yes
+			spawn_legion_troops_effect = yes
+		}
 
-		# The Scourge forms an alliance with the Legion (or not) when it arrived
+		# The Scourge forms an alliance with the Legion (or not) when it arrives
 		e_scourge = { holder_scope = { narrative_event = { id = WCUND.130 days = 7 } } }
 		# Declares war against the night elves
 		3264 = {
@@ -992,29 +1014,6 @@ narrative_event = {
 		}
 	}
 }
-# character_event = {
-	# id = WCFEL.1009
-
-	# hide_window = yes
-
-	# only_playable = yes
-	# has_global_flag = burning_legion_invasion_flag
-
-	# trigger = {
-		# has_landed_title = e_burning_legion
-		# has_regiments = no
-		# is_landed = no
-	# }
-
-	# mean_time_to_happen = {
-		# days = 1
-	# }
-
-	# immediate = {
-		# clr_character_flag = burning_legion_invasion_flag
-		# narrative_event = { id = WCFEL.1010 }
-	# }
-# }
 # The Burning Legion was defeated
 narrative_event = {
 	id = WCFEL.1010
@@ -1030,8 +1029,16 @@ narrative_event = {
 		ai = no
 	}
 	show_root = yes
+	hide_from = yes
+	hide_new = yes
+	
+	trigger = {
+		has_landed_title = e_burning_legion
+	}
 
 	immediate = {
+		set_global_flag = legion_cooldown_flag
+		
 		activate_title = { title = e_burning_legion status = no }
 		e_burning_legion = { destroy_landed_title = THIS }
 	}
@@ -1069,10 +1076,6 @@ character_event = {
 		is_dying = no
 
 		is_susceptible_to_fel_corruption_trigger = yes
-		OR = {
-			NOT = { trait = being_demon }
-			NOT = { has_character_modifier = inflow_of_the_fel }
-		}
 	}
 
 	weight_multiplier = {
@@ -1108,53 +1111,29 @@ character_event = {
 			factor = 1.2
 			is_mage_class_trigger = yes
 		}
-		modifier = {
-			factor = 1.2
-			location = { has_province_modifier = fel_presence_1 }
-		}
-		modifier = {
-			factor = 1.2
-			location = { has_province_modifier = fel_presence_2 }
-		}
-		modifier = {
-			factor = 1.2
-			location = { has_province_modifier = fel_presence_3 }
-		}
-		modifier = {
-			factor = 1.2
-			location = { has_province_modifier = fel_presence_4 }
-		}
 	}
 
 	immediate = {
 		random_list = {
 			10 = {
+				trigger = {
+					NOT = { has_character_modifier = inflow_of_the_fel }
+				}
 				character_event = { id = WCFEL.9950 }	# Founds a fel crystal
-				modifier = {
-					factor = 0
-					has_character_modifier = inflow_of_the_fel
-				}
 			}
 			10 = {
+				trigger = {
+					is_ruler = yes
+					NOT = { trait = being_demon }
+					NOT = { has_character_modifier = drank_demon_blood }
+				}
 				character_event = { id = WCFEL.9960 }	# Founds a chaos well
-				modifier = {
-					factor = 0
-					OR = {
-						ai = yes
-						is_ruler = no
-						trait = being_demon
-						has_character_modifier = drank_demon_blood
-					}
-				}
 			}
 			10 = {
-				narrative_event = { id = WCFEL.9970 }	# The Voice in the Head
-				modifier = {
-					factor = 0
-					is_ruler = no
+				trigger = {
+					is_landed = yes
 				}
-			}
-			1 = {	# Small chance of nothing
+				narrative_event = { id = WCFEL.9970 }	# The Voice in the Head
 			}
 		}
 	}
@@ -1185,24 +1164,9 @@ character_event = {
 		add_character_modifier = { name = inflow_of_the_fel duration = 1825 }
 
 		ai_chance = {
-			factor = 26
-			modifier = {
-				factor = 3
-				has_impious_trait_trigger = yes
-			}
-			modifier = {
-				factor = 2.5
-				has_evil_trait_trigger = yes
-			}
-			modifier = {
-				factor = 2.5
-				has_unpleasant_trait_trigger = yes
-			}
-			modifier = {
-				factor = 0.01
-				trait = zealous
-				NOT = { true_religion_group = fel_group }
-			}
+			factor = 50
+			
+			evil_ai_chance_score = yes
 		}
 	}
 
@@ -1215,23 +1179,7 @@ character_event = {
 			75 = { remove_15_fel_corruption_effect = yes }
 		}
 		ai_chance = {
-			factor = 74
-			modifier = {
-				factor = 2
-				has_benevolent_trait_trigger = yes
-			}
-			modifier = {
-				factor = 1.5
-				has_pleasant_trait_trigger = yes
-			}
-			modifier = {
-				factor = 1.5
-				has_pious_trait_trigger = yes
-			}
-			modifier = {
-				factor = 0.01
-				true_religion_group = fel_group
-			}
+			factor = 50
 		}
 	}
 }
@@ -1255,24 +1203,9 @@ character_event = {
 		drink_demon_blood_effect = yes
 
 		ai_chance = {
-			factor = 18
-			modifier = {
-				factor = 3.5
-				has_impious_trait_trigger = yes
-			}
-			modifier = {
-				factor = 3
-				has_evil_trait_trigger = yes
-			}
-			modifier = {
-				factor = 3
-				has_unpleasant_trait_trigger = yes
-			}
-			modifier = {
-				factor = 0.01
-				trait = zealous
-				NOT = { true_religion_group = fel_group }
-			}
+			factor = 50
+			
+			evil_ai_chance_score = yes
 		}
 	}
 
@@ -1281,23 +1214,7 @@ character_event = {
 		name = EVTOPTC_WCFEL_9960
 
 		ai_chance = {
-			factor = 82
-			modifier = {
-				factor = 2
-				has_benevolent_trait_trigger = yes
-			}
-			modifier = {
-				factor = 1.5
-				has_pleasant_trait_trigger = yes
-			}
-			modifier = {
-				factor = 1.5
-				has_pious_trait_trigger = yes
-			}
-			modifier = {
-				factor = 0.01
-				true_religion_group = fel_group
-			}
+			factor = 50
 		}
 	}
 }
@@ -1323,32 +1240,9 @@ character_event = {
 		drink_demon_blood_effect = yes
 
 		ai_chance = {
-			factor = 30
-			modifier = {
-				factor = 2
-				has_impious_trait_trigger = yes
-			}
-			modifier = {
-				factor = 2
-				has_evil_trait_trigger = yes
-			}
-			modifier = {
-				factor = 2
-				has_unpleasant_trait_trigger = yes
-			}
-			modifier = {
-				factor = 2
-				opinion = { who = FROM value = 25 }
-			}
-			modifier = {
-				factor = 2
-				opinion = { who = FROM value = 50 }
-			}
-			modifier = {
-				factor = 0.01
-				trait = zealous
-				NOT = { true_religion_group = fel_group }
-			}
+			factor = 50
+			
+			evil_ai_chance_score = yes
 		}
 	}
 
@@ -1357,26 +1251,10 @@ character_event = {
 		name = EVTOPTB_WCFEL_9961
 
 		reverse_opinion = { modifier = opinion_hatred who = FROM years = 10 }
-		FROM = { letter_event = { id = WCFEL.9965 } }
+		FROM = { letter_event = { id = WCFEL.9965 days = 1 random = 29 } }
 
 		ai_chance = {
-			factor = 70
-			modifier = {
-				factor = 2.43
-				has_benevolent_trait_trigger = yes
-			}
-			modifier = {
-				factor = 2.43
-				has_pleasant_trait_trigger = yes
-			}
-			modifier = {
-				factor = 2.43
-				has_pious_trait_trigger = yes
-			}
-			modifier = {
-				factor = 0.01
-				true_religion_group = fel_group
-			}
+			factor = 50
 		}
 	}
 }
@@ -1416,24 +1294,7 @@ narrative_event = {
 			text = stops_the_event_chain
 		}
 		ai_chance = {
-			factor = 75
-			modifier = {
-				factor = 2
-				has_benevolent_trait_trigger = yes
-			}
-			modifier = {
-				factor = 1.5
-				has_pleasant_trait_trigger = yes
-			}
-			modifier = {
-				factor = 1.5
-				has_pious_trait_trigger = yes
-			}
-			modifier = {
-				factor = 0.01
-				true_religion_group = fel_group
-				NOT = { religion = illidari }
-			}
+			factor = 40
 		}
 	}
 	# Try to ignore
@@ -1457,24 +1318,7 @@ narrative_event = {
 			add_trait = depressed
 		}
 		ai_chance = {
-			factor = 75
-			modifier = {
-				factor = 2
-				has_benevolent_trait_trigger = yes
-			}
-			modifier = {
-				factor = 1.5
-				has_pleasant_trait_trigger = yes
-			}
-			modifier = {
-				factor = 1.5
-				has_pious_trait_trigger = yes
-			}
-			modifier = {
-				factor = 0.01
-				true_religion_group = fel_group
-				NOT = { religion = illidari }
-			}
+			factor = 10
 		}
 	}
 	# Contact a demon
@@ -1487,24 +1331,9 @@ narrative_event = {
 			hidden_effect = { narrative_event = { id = WCFEL.9971 days = 3 } }
 		}
 		ai_chance = {
-			factor = 25
-			modifier = {
-				factor = 3
-				has_impious_trait_trigger = yes
-			}
-			modifier = {
-				factor = 2.5
-				has_evil_trait_trigger = yes
-			}
-			modifier = {
-				factor = 2.5
-				has_unpleasant_trait_trigger = yes
-			}
-			modifier = {
-				factor = 0.01
-				trait = zealous
-				NOT = { true_religion_group = fel_group }
-			}
+			factor = 50
+			
+			evil_ai_chance_score = yes
 		}
 	}
 }
@@ -1573,25 +1402,29 @@ narrative_event = {
 		if = {
 			limit = {
 				any_courtier = {
-					can_be_sacrificed_trigger = yes
+					is_alive = yes
+					is_dying = no
 					
 					is_adult = yes
 					prisoner = no
 					
 					is_ruler = no
 					
+					can_be_sacrificed_trigger = yes
 					NOT = { is_close_relative = ROOT }
 				}
 			}
 			random_courtier = {
 				limit = {
-					can_be_sacrificed_trigger = yes
+					is_alive = yes
+					is_dying = no
 					
 					is_adult = yes
 					prisoner = no
 					
 					is_ruler = no
 					
+					can_be_sacrificed_trigger = yes
 					NOT = { is_close_relative = ROOT }
 				}
 				save_event_target_as = target_victim_for_ritual
@@ -1619,7 +1452,6 @@ narrative_event = {
 	# Use a soul shard
 	option = {
 		trigger = {
-			has_dlc = "Mystics"
 			has_artifact = soul_shard
 		}
 		name = EVTOPTC_WCFEL_9972
@@ -1713,6 +1545,20 @@ narrative_event = {
 		random_list = {
 			# Bad cases
 			10 = {
+				trigger = {
+					ai = yes
+					
+					is_ruler = yes
+					independent = yes
+					OR = {
+						is_feudal = yes
+						is_tribal = yes
+					}
+					
+					NOT = { trait = being_demon }
+					evil_true_religion_trigger = no
+					evil_public_religion_trigger = no
+				}
 				set_character_flag = summoned_deceitful_nathrezim_flag
 				create_character = {
 					dynasty = none
@@ -1731,24 +1577,15 @@ narrative_event = {
 					trait = cruel
 					random_traits = yes
 				}
-				modifier = {
-					factor = 0
-					OR = {
-						ai = no
-
-						is_ruler = no
-						NOR = {
-							is_feudal = yes
-							is_tribal = yes
-						}
-
-						trait = being_demon
-						true_religion = burning_legion_religion
-						true_religion = orcish_fel
-					}
-				}
 			}
 			10 = {
+				trigger = {
+					ai = no
+					
+					NOT = { trait = being_demon }
+					evil_true_religion_trigger = no
+					evil_public_religion_trigger = no
+				}
 				set_character_flag = summoned_ambitious_annihilan_flag
 				create_character = {
 					dynasty = none
@@ -1770,19 +1607,16 @@ narrative_event = {
 					trait = cruel
 				}
 				modifier = {
-					factor = 1500
+					factor = 100
 					has_character_flag = debug_mode_flag
-				}
-				modifier = {
-					factor = 0
-					OR = {
-						trait = being_demon
-						true_religion = burning_legion_religion
-						true_religion = orcish_fel
-					}
 				}
 			}
 			10 = {
+				trigger = {
+					NOT = { trait = being_demon }
+					evil_true_religion_trigger = no
+					evil_public_religion_trigger = no
+				}
 				set_character_flag = summoned_deceitful_observer_flag
 				create_character = {
 					dynasty = none
@@ -1800,14 +1634,6 @@ narrative_event = {
 					trait = deceitful
 					trait = cruel
 					trait = erudite
-				}
-				modifier = {
-					factor = 0
-					OR = {
-						trait = being_demon
-						true_religion = burning_legion_religion
-						true_religion = orcish_fel
-					}
 				}
 			}
 
@@ -1832,6 +1658,14 @@ narrative_event = {
 				}
 			}
 			60 = {
+				trigger = {
+					is_ruler = yes
+					
+					NOT = { trait = being_demon }
+					
+					is_susceptible_to_fel_corruption_trigger = yes
+					NOT = { has_character_modifier = drank_demon_blood }
+				}
 				set_character_flag = summoned_normal_annihilan_flag
 				create_character = {
 					dynasty = none
@@ -1849,17 +1683,6 @@ narrative_event = {
 					trait = brilliant_strategist
 					trait = brave
 					trait = cruel
-				}
-				modifier = {
-					factor = 0
-					OR = {
-						ai = yes
-
-						has_character_modifier = drank_demon_blood
-
-						trait = being_demon
-						is_susceptible_to_fel_corruption_trigger = no
-					}
 				}
 			}
 			60 = {
@@ -1884,10 +1707,14 @@ narrative_event = {
 
 			# Good cases
 			30 = {
+				trigger = {
+					religion_group = fel_group
+					true_religion_group = fel_group
+				}
 				set_character_flag = summoned_content_nathrezim_flag
 				create_character = {
 					dynasty = none
-					religion = burning_legion_religion
+					religion = ROOT
 					culture = nathrezim
 					female = no
 					age = 300
@@ -1908,10 +1735,20 @@ narrative_event = {
 				}
 			}
 			30 = {
+				trigger = {
+					is_ruler = yes
+					
+					NOT = { trait = being_demon }
+					religion_group = fel_group
+					true_religion_group = fel_group
+					
+					is_susceptible_to_fel_corruption_trigger = yes
+					NOT = { has_character_modifier = drank_demon_blood }
+				}
 				set_character_flag = summoned_content_annihilan_flag
 				create_character = {
 					dynasty = none
-					religion = burning_legion_religion
+					religion = ROOT
 					culture = annihilan
 					female = no
 					age = 300
@@ -1928,26 +1765,19 @@ narrative_event = {
 					trait = cruel
 				}
 				modifier = {
-					factor = 0
-					OR = {
-						ai = yes
-
-						has_character_modifier = drank_demon_blood
-
-						trait = being_demon
-						is_susceptible_to_fel_corruption_trigger = no
-					}
-				}
-				modifier = {
 					factor = 0.5
 					NOT = { has_character_flag = made_deal_with_demon_flag }
 				}
 			}
 			30 = {
+				trigger  = {
+					religion_group = fel_group
+					true_religion_group = fel_group
+				}
 				set_character_flag = summoned_content_observer_flag
 				create_character = {
 					dynasty = none
-					religion = burning_legion_religion
+					religion = ROOT
 					culture = observer
 					female = no
 					age = 300

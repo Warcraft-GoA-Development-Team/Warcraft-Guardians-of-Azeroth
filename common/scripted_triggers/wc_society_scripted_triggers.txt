@@ -1,0 +1,356 @@
+# IMPORTANT! Trigger from  MNM.10011 that fires joining chain if you're interested in society
+# When add new society, change join_interesting_society_effect
+is_interested_in_joining_trigger = {
+	OR = {
+		# Warcraft
+		
+		interested_in_society = secret_religious_cult
+
+		# Warcraft
+		interested_in_society = shadow_council
+		interested_in_society = cult_of_the_damned
+		interested_in_society = twilights_hammer_cult
+	}
+}
+# IMPORTANT! Trigger from  MNM.4450 that welcome you in society if you want to
+is_welcome_in_society_trigger = {
+	OR = {
+		# Warcraft
+		society_member_of = cenarion_circle
+		society_member_of = sisterhood_of_elune
+	}
+}
+
+is_startup_member_trigger = {
+	ai = yes
+	
+	controls_religion = no
+	holy_order = no
+	mercenary = no
+	NOT = { higher_tier_than = DUKE }
+}
+# Blocks recruit decision
+from_recruit_block_trigger = {
+	custom_tooltip = {
+		text = recruit_block_tooltip
+		trigger_if = {
+			limit = { FROM = { society_member_of = cult_of_the_damned } }
+			OR = {
+				NOT = { has_character_flag = cult_of_the_damned_attempted_recruitment }
+				interested_in_society = cult_of_the_damned
+			}
+		}
+		trigger_else_if = {
+			limit = { FROM = { society_member_of = shadow_council  } }
+			OR = {
+				NOT = { has_character_flag = shadow_council_attempted_recruitment }
+				interested_in_society = shadow_council
+			}
+		}
+		trigger_else = {
+			OR = {
+				NOT = { has_character_flag = twilights_hammer_cult_attempted_recruitment }
+				interested_in_society = twilights_hammer_cult
+			}
+		}
+		
+		has_society_recruitment_flags_trigger = no
+	}
+}
+has_society_recruitment_flags_trigger = {
+	OR = {
+		has_character_flag = being_recruited_by_cult_of_the_damned
+		has_character_flag = being_recruited_by_shadow_council
+		has_character_flag = being_recruited_by_twilights_hammer_cult
+	}
+}
+did_not_betray_society_trigger = {
+	custom_tooltip = {
+		text = did_not_betray_society
+		trigger_if = {
+			limit = { FROM = { is_society = cenarion_circle } }
+			NOT = { has_character_flag = cenarion_circle_betrayed_flag }
+		}
+		trigger_else_if = {
+			limit = { FROM = { is_society = sisterhood_of_elune } }
+			NOT = { has_character_flag = sisterhood_of_elune_betrayed_flag }
+		}
+	}
+}
+
+# _preferences triggers mean that character prefers to join this society
+has_common_dark_cult_preferences = {
+	OR = {
+		evil_true_religion_trigger = yes
+		has_impious_trait_trigger = yes
+		has_unpleasant_trait_trigger = yes
+		trait = drunkard
+		trait = lunatic
+	}
+}
+has_common_religious_preferences = {
+	OR = {
+		trait = zealous
+		trait = scholar
+		trait = theologian
+		trait = gardener
+		trait = monk
+		trait = nun
+		learning = 16
+		is_priest = yes
+	}
+}
+has_common_learning_preferences = {
+	is_dumb_trigger = no
+	OR = { 
+		learning = 12
+		trait = scholar
+		trait = erudite
+		trait = genius
+		trait = mystic
+	}
+}
+
+# _prerequisites triggers mean that character can join this society
+has_common_society_prerequisites = {
+	is_untouchable_trigger = no
+	has_invader_title_trigger = no
+	
+	is_adult = yes
+	is_incapable = no
+	prisoner = no
+	is_inaccessible_trigger = no
+	
+	is_humanoid_trigger = yes
+	
+	did_not_betray_society_trigger = yes
+	hidden_trigger = {
+		NOT = { has_character_flag = society_join_block }
+	}
+}
+has_common_dark_cult_prerequisites = {
+	has_common_society_prerequisites = yes
+
+	has_common_dark_cult_preferences = yes
+}
+has_cult_of_the_damned_prerequisites = {
+	has_common_dark_cult_prerequisites = yes
+	
+	trigger_if = {
+		limit = { NOT = { society_member_of = cult_of_the_damned } }
+		is_in_society = no
+		OR = {
+			AND = {
+				NOT = { government = tribal_government }
+				is_nomadic = no
+			}
+			true_religion_associated_with_cult_of_the_damned_trigger = yes
+			true_religion_group = necromancy_group
+		}
+	}
+	
+	NOR = {
+		true_religion = orcish_fel
+		true_religion = burning_legion_religion
+		true_religion = old_gods_worship
+	}
+}
+has_shadow_council_prerequisites = {
+	has_common_dark_cult_prerequisites = yes
+	
+	trigger_if = {
+		limit = { NOT = { society_member_of = shadow_council } }
+		is_in_society = no
+		OR = {
+			AND = {
+				NOT = { government = tribal_government }
+				is_nomadic = no
+			}
+			true_religion_associated_with_shadow_council_trigger = yes
+			true_religion_group = fel_group
+		}
+	}
+	
+	NOR = {
+		true_religion = death_god
+		true_religion = old_gods_worship
+	}
+}
+has_twilights_hammer_cult_prerequisites = {
+	has_common_dark_cult_prerequisites = yes
+	
+	trigger_if = {
+		limit = { NOT = { society_member_of = twilights_hammer_cult } }
+		is_in_society = no
+		OR = {
+			AND = {
+				NOT = { government = tribal_government }
+				is_nomadic = no
+			}
+			true_religion_associated_with_twilights_hammer_cult_trigger = yes
+			true_religion_group = void_group
+		}
+	}
+	
+	NOR = {
+		true_religion = death_god
+		true_religion = orcish_fel
+		true_religion = burning_legion_religion
+	}
+}
+has_cenarion_circle_prerequisites = {
+	has_common_society_prerequisites = yes
+	
+	trigger_if = {
+		limit = { religion = kaldorei_religion }
+		is_female = no
+	}
+	
+	trigger_if = {
+		limit = { has_class_trait_wo_training_trigger = no }
+		OR = {
+			learning = 10
+			has_education_learning_trigger = yes
+			is_ascetic_trigger = yes
+		}
+	}
+	trigger_else = {
+		is_druid_class_trigger = yes
+	}
+	religion_group = druidism_group
+	
+	cenarion_circle_is_visible_trigger = yes
+}
+has_sisterhood_of_elune_prerequisites = {
+	has_common_society_prerequisites = yes
+	
+	is_female = yes
+	
+	trigger_if = {
+		limit = { has_class_trait_wo_training_trigger = no }
+		OR = {
+			learning = 10
+			has_education_learning_trigger = yes
+			is_ascetic_trigger = yes
+		}
+	}
+	trigger_else = {
+		is_priest_class_trigger = yes
+	}
+	religion = kaldorei_religion
+	
+	sisterhood_of_elune_is_visible_trigger = yes
+}
+
+# _is_visible_trigger triggers mean that character see this society
+cenarion_circle_is_visible_trigger = {
+	OR = {
+		is_plant_race_trigger = yes
+		is_druid_class_trigger = yes
+		religion_group = druidism_group
+	}
+}
+sisterhood_of_elune_is_visible_trigger = {
+	OR = {
+		is_priest_class_trigger = yes
+		religion = kaldorei_religion
+	}
+}
+
+# _potential triggers mean that character can be in this society
+cenarion_circle_potential_trigger = {
+	OR = {
+		has_class_trait_wo_training_trigger = no
+		is_druid_class_trigger = yes
+	}
+	religion_group = druidism_group
+}
+sisterhood_of_elune_potential_trigger = {
+	OR = {
+		has_class_trait_wo_training_trigger = no
+		is_priest_class_trigger = yes
+	}
+	religion = kaldorei_religion
+}
+
+### QUEST TRIGGERS ###
+# Turn into Undead
+quest_turn_into_undead_smart_target_trigger = {
+	OR = {
+		trait = quick
+		trait = genius
+	}
+}
+quest_turn_into_undead_strong_target_trigger = {
+	trait = strong
+}
+quest_turn_into_undead_fair_target_trigger = {
+	trait = fair
+}
+has_quest_turn_into_undead_trigger = {
+	OR = {
+		has_quest = quest_turn_into_undead_smart
+		has_quest = quest_turn_into_undead_strong
+		has_quest = quest_turn_into_undead_fair
+	}
+}
+quest_turn_into_undead_prev_target_trigger = {
+	trigger_if = {
+		limit = { PREV = { has_quest = quest_turn_into_undead_smart } }
+		quest_turn_into_undead_smart_target_trigger = yes
+	}
+	trigger_else_if = {
+		limit = { PREV = { has_quest = quest_turn_into_undead_strong } }
+		quest_turn_into_undead_strong_target_trigger = yes
+	}
+	trigger_else_if = {
+		limit = { PREV = { has_quest = quest_turn_into_undead_fair } }
+		quest_turn_into_undead_fair_target_trigger = yes
+	}
+}
+
+# Mind Control
+quest_control_mind_smart_target_trigger = {
+	OR = {
+		trait = quick
+		trait = genius
+	}
+}
+quest_control_mind_strong_target_trigger = {
+	trait = strong
+}
+quest_control_mind_fair_target_trigger = {
+	trait = fair
+}
+has_quest_control_mind_trigger = {
+	OR = {
+		has_quest = quest_control_mind_smart
+		has_quest = quest_control_mind_strong
+		has_quest = quest_control_mind_fair
+	}
+}
+quest_control_mind_prev_target_trigger = {
+	trigger_if = {
+		limit = { PREV = { has_quest = quest_control_mind_smart } }
+		quest_control_mind_smart_target_trigger = yes
+	}
+	trigger_else_if = {
+		limit = { PREV = { has_quest = quest_control_mind_strong } }
+		quest_control_mind_strong_target_trigger = yes
+	}
+	trigger_else_if = {
+		limit = { PREV = { has_quest = quest_control_mind_fair } }
+		quest_control_mind_fair_target_trigger = yes
+	}
+}
+
+### SOCIETY POWERS TRIGGERS ###
+# twilights_hammer_cult
+can_use_society_power_write_whispers_trigger = { # If your character don't meet these requirements, "fail_trigger_effect" in events will fire
+	is_untouchable_trigger = no
+	society_member_of = twilights_hammer_cult
+	religion = old_gods_worship
+	true_religion = old_gods_worship
+	prisoner = no
+	NOT = { is_incapable = yes }
+}

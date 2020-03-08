@@ -16,7 +16,20 @@ decisions = {
 					has_province_modifier = the_gilnean_wall
 				}
 			}
-
+			
+			# AI doesn't use it if it's open to world
+			trigger_if = {
+				limit = { ai = yes }
+				NOT = {
+					diplomacy = 10
+					
+					trait = charitable
+					trait = kind
+					trait = ambitious
+					trait = gregarious
+				}
+			}
+			completely_controls = c_hothills
 			has_landed_title = k_gilneas
 		}
 
@@ -24,33 +37,56 @@ decisions = {
 			war = no
 
 			wealth = 500
-			TECH_CASTLE_CONSTRUCTION = 4
-
+			
 			is_in_political_faction_trigger = no
+			275 = {
+				TECH_FORTIFICATIONS_CONSTRUCTION = 3
+				TECH_CONSTRUCTION = 3
+			}
 		}
 
 		effect = {
-			wealth = -500
-			prestige = 500
 			if = {
 				limit = { dynasty = 24000 }
-				275 = { add_province_modifier = { name = the_greymane_wall duration = -1 } }
+				275 = {
+					show_scope_change = no
+					
+					add_province_modifier = { name = the_greymane_wall duration = -1 }
+				}
 			}
-			if = {
-				limit = { NOT = { dynasty = 24000 } }
-				275 = { add_province_modifier = { name = the_gilnean_wall duration = -1 } }
+			else = {
+				275 = {
+					show_scope_change = no
+					
+					add_province_modifier = { name = the_gilnean_wall duration = -1 }
+				}
 			}
+			
+			wealth = -500
+			prestige = 500
+			
 			custom_tooltip = {
 				text = all_rulers_behind_wall_worsens_attitude_tooltip
 				hidden_effect = {
-					any_vassal = {
-						limit = { any_demesne_province = { region = world_eastern_kingdoms_lordaeron_gilnean_peninsula } }
+					any_realm_lord = {
+						limit = {
+							is_landed = yes
+							higher_tier_than = BARON
+							
+							capital_scope = { region = world_eastern_kingdoms }
+							any_realm_province = { NOT = { region = world_eastern_kingdoms_lordaeron_gilnean_peninsula } }
+						}
 						opinion = { modifier = opinion_extremely_disappointed who = ROOT years = 25 }
 					}
 					any_independent_ruler = {
 						limit = {
-							NOT = { any_demesne_province = { region = world_eastern_kingdoms_lordaeron_gilnean_peninsula } }
-							any_demesne_province = { region = world_eastern_kingdoms }
+							is_landed = yes
+							higher_tier_than = BARON
+							
+							capital_scope = {
+								region = world_eastern_kingdoms
+								NOT = { region = world_eastern_kingdoms_lordaeron_gilnean_peninsula }
+							}
 						}
 						opinion = { modifier = opinion_extremely_disappointed who = ROOT years = 10 }
 					}
@@ -211,32 +247,15 @@ decisions = {
 	}
 	# Ability to get rid of all evil characters without penalties
 	burn_evil_beings = {
-		ai_check_interval = 60
+		ai_check_interval = 36
 
 		only_playable = yes
 
 		potential = {
-			any_courtier = {
-				is_alive = yes
-				is_adult = yes
-				is_inaccessible_trigger = no
-
-				is_ruler = no
-
-				host = { character = ROOT }
-				is_unholy_creature_to_prev_trigger = yes
-
-				# AI, plz, stop killing your relatives
-				OR = {
-					ROOT = { ai = no }
-					NAND = {
-						ROOT = { trait = kind }
-						OR = {
-							is_close_relative = ROOT
-							is_friend = ROOT
-							is_lover = ROOT
-						}
-					}
+			ROOT = {
+				any_courtier_or_vassal = {
+					is_burnable_potential_trigger = yes
+					is_burnable_allow_trigger = yes
 				}
 			}
 		}
@@ -245,32 +264,18 @@ decisions = {
 		}
 
 		effect = {
-			any_courtier = {
-				limit = {
-					is_alive = yes
-					is_adult = yes
-					is_inaccessible_trigger = no
-
-					is_ruler = no
-
-					host = { character = ROOT }
-					is_unholy_creature_to_prev_trigger = yes
-
-					# AI, plz, stop killing your relatives
-					OR = {
-						ROOT = { ai = no }
-						NAND = {
-							ROOT = { trait = kind }
-							OR = {
-								is_close_relative = ROOT
-								is_friend = ROOT
-								is_lover = ROOT
-							}
-						}
-					}
-				}
+			ROOT = {
 				show_scope_change = no
-				prev_burn_evil_being_this_effect = yes
+
+				any_courtier_or_vassal = {
+					limit = {
+						is_burnable_potential_trigger = yes
+						is_burnable_allow_trigger = yes
+					}
+					show_scope_change = no
+					
+					prev_burn_evil_being_this_effect = yes
+				}
 			}
 		}
 
@@ -310,11 +315,10 @@ decisions = {
 			trigger_else = {
 				liege = {
 					OR = {
-						is_feudal = yes
-						is_republic = yes
-						is_theocracy = yes
+						is_tribal = no
 						government = tribal_monarchy_government
 					}
+					is_nomadic = no
 				}
 			}
 			
@@ -539,11 +543,49 @@ decisions = {
 			factor = 1
 		}
 	}
+	
+	awaken_ymiron = {
+		is_high_prio = yes
+		
+		ai_check_interval = 24
+		
+		only_playable = yes
+		
+		potential = {
+			is_untouchable_trigger = no
+			
+			is_adult = yes
+			is_incapable = no
+			
+			NOT = { has_global_flag = ymiron_happend_flag }
+
+			culture_group = vrykul_group
+			
+			has_character_flag = is_angerboda_flag
+		}
+		
+		allow = {
+			prisoner = no
+			is_inaccessible_trigger = no
+			
+			completely_controls = c_gjalerbron
+		}
+		
+		effect = {
+			set_global_flag = ymiron_happend_flag
+			
+			character_event = { id = WCRLM.799 }
+		}
+		
+		ai_will_do = {
+			factor = 1
+		}
+	}
 }
 targeted_decisions = {
 	# Ability to get rid of evil character without penalties
 	burn_evil_being = {
-		filter = court
+		filter = sub_realm
 		ai_target_filter = court
 		ai_check_interval = 24
 
@@ -551,40 +593,26 @@ targeted_decisions = {
 		only_playable = yes
 
 		from_potential = {
-			OR = {
-				ai = no
-				NAND = {
-					trait = kind
-					OR = {
-						is_close_relative = ROOT
-						is_friend = ROOT
-						is_lover = ROOT
-					}
-				}
-			}
 		}
 
 		potential = {
-			is_adult = yes
-
-			is_ruler = no
-
-			host = { character = FROM }
 			FROM = {
 				ROOT = {
-					is_unholy_creature_to_prev_trigger = yes
+					is_burnable_potential_trigger = yes
 				}
 			}
 		}
 
 		allow = {
 			show_only_failed_conditions = yes
-			is_inaccessible_trigger = no
 
-			top_liege = {
+			FROM = {
 				show_scope_change = no
+
 				ROOT = {
-					is_unholy_creature_to_prev_trigger = yes
+					show_scope_change = no
+					
+					is_burnable_allow_trigger = yes
 				}
 			}
 		}
@@ -592,8 +620,10 @@ targeted_decisions = {
 		effect = {
 			FROM = {
 				show_scope_change = no
+				
 				ROOT = {
 					show_scope_change = no
+					
 					prev_burn_evil_being_this_effect = yes
 				}
 			}
@@ -628,7 +658,14 @@ title_decisions = {
 			owner = { character = FROM }
 			location = {
 				NOT = { true_religion = FROM }
-				NOT = { culture_group = FROM }
+				# Forsaken and Scourge are in the same group, but can purge each other
+				trigger_if = {
+					limit = { culture_group = undead_group }
+					NOT = { culture = FROM }
+				}
+				trigger_else = {
+					NOT = { culture_group = FROM }
+				}
 			}
 
 			OR = {
@@ -671,6 +708,8 @@ title_decisions = {
 
 			FROM = {
 				show_scope_change = no
+				
+				completely_controls = ROOT
 				top_liege = {
 					show_scope_change = no
 					ROOT = {
@@ -679,7 +718,14 @@ title_decisions = {
 							trigger_if = {
 								limit = { independent = no }
 								NOT = { religion = PREVPREV }
-								NOT = { culture_group = PREVPREV }
+								# Forsaken and Scourge are in the same group, but can purge each other
+								trigger_if = {
+									limit = { culture_group = undead_group }
+									NOT = { culture = PREVPREV }
+								}
+								trigger_else = {
+									NOT = { culture_group = PREVPREV }
+								}
 							}
 							NOT = { has_province_modifier = nomad_agitation }
 							is_occupied = no
@@ -734,6 +780,8 @@ title_decisions = {
 			}
 
 			location = {
+				show_scope_change = no
+
 				set_province_flag = recent_genocide_attempt_flag
 				add_province_modifier = { name = ongoing_genocide years = 2 }
 				custom_tooltip = {
@@ -804,6 +852,8 @@ title_decisions = {
 
 			FROM = {
 				show_scope_change = no
+				
+				completely_controls = ROOT
 				trigger_if = {
 					limit = { independent = no }
 					top_liege = {
@@ -863,6 +913,8 @@ title_decisions = {
 			}
 
 			location = {
+				show_scope_change = no
+
 				set_province_flag = recent_genocide_attempt_flag
 				add_province_modifier = { name = ongoing_culling years = 2 }
 				custom_tooltip = {
@@ -931,6 +983,8 @@ title_decisions = {
 
 			FROM = {
 				show_scope_change = no
+				
+				completely_controls = ROOT
 				trigger_if = {
 					limit = { independent = no }
 					top_liege = {
@@ -990,6 +1044,8 @@ title_decisions = {
 			}
 
 			location = {
+				show_scope_change = no
+
 				set_province_flag = recent_genocide_attempt_flag
 				add_province_modifier = { name = spreading_of_death years = 2 }
 				custom_tooltip = {
@@ -1018,7 +1074,9 @@ title_decisions = {
 	sunwell_ruler_convert_county = {
 		is_high_prio = yes
 
-		ai_check_interval = 60
+		filter = owned
+		ai_target_filter = owned
+		ai_check_interval = 12
 
 		only_playable = yes
 		only_independent = yes
@@ -1038,6 +1096,8 @@ title_decisions = {
 			tier = COUNT
 
 			location = {
+				from_can_switch_religion_province_trigger = yes
+				
 				NOT = { religion = FROM }
 				culture_group = high_elf_group
 			}
@@ -1087,10 +1147,10 @@ settlement_decisions = {
 	corrupt_world_tree = {
 		is_high_prio = yes
 
-		ai_check_interval = 120
+		ai_check_interval = 60
 
 		filter = sub_realm_owned
-		ai_target_filter = vassal_owned
+		ai_target_filter = sub_realm_owned
 
 		only_playable = yes
 
@@ -1126,7 +1186,7 @@ settlement_decisions = {
 			FROM = {
 				true_religion = old_gods_worship
 
-				wealth = 1000
+				wealth = 250
 				piety = 5000
 			}
 		}
@@ -1137,7 +1197,7 @@ settlement_decisions = {
 			FROM = {
 				save_event_target_as = target_corruptor
 
-				wealth = -1000
+				wealth = -250
 				piety = -5000
 			}
 
@@ -1167,7 +1227,7 @@ settlement_decisions = {
 		ai_check_interval = 60
 
 		filter = sub_realm_owned
-		ai_target_filter = vassal_owned
+		ai_target_filter = sub_realm_owned
 
 		only_playable = yes
 

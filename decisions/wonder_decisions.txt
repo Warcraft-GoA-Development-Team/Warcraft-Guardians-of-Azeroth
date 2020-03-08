@@ -39,8 +39,7 @@ decisions = {
 							home = PREV
 							earmark = wonder_guard
 							troops = {
-								light_infantry = { 1000 1000 }
-								heavy_infantry = { 500 500 }
+								heavy_infantry = { 1000 1000 }
 							}
 							attrition = 1.0
 							maintenance_multiplier = 0.5
@@ -166,12 +165,14 @@ decisions = {
 				has_wonder_upgrade = upgrade_fountain_of_youth
 				is_active = yes
 			}
-			NOT = {
-				has_game_rule = {
-					name = supernatural_events
-					value = off
-				}
-			}
+			
+			# Warcraft
+			# NOT = {
+				# has_game_rule = {
+					# name = supernatural_events
+					# value = off
+				# }
+			# }
 		}
 		allow = {
 			is_inaccessible_trigger = no
@@ -206,13 +207,17 @@ decisions = {
 	store_relic_in_wonder = {
 		only_independent = yes
 		is_high_prio = yes
+		ai_check_interval = 6
 
+		# Warcraft
+		only_playable = yes
 
 		potential = {
 			is_playable = yes
 			any_realm_wonder_upgrade = {
 				has_wonder_upgrade_flag = stores_relic
 				is_active = no
+				NOT = { has_wonder_upgrade_flag = is_storing_relic }
 				is_building_wonder_upgrade = no
 				wonder = { is_active = yes }
 			}
@@ -233,59 +238,64 @@ decisions = {
 		}
 
 		effect = {
-			random_realm_wonder_upgrade = {
+			if = { #Since the decision updates every 6 month this check is to make sure you actually still have an artifact!
 				limit = {
-					has_wonder_upgrade_flag = stores_relic
-					is_active = no
-					is_building_wonder_upgrade = no
+					any_artifact = { always = yes }
 				}
-				save_event_target_as = target_upgrade
-				wonder = { save_event_target_as = target_wonder }
-			}
-			random_artifact = {
-				limit = { 
-					has_artifact_flag = religious
-					is_artifact_active = yes
+				random_realm_wonder_upgrade = {
+					limit = {
+						has_wonder_upgrade_flag = stores_relic
+						is_active = no
+						is_building_wonder_upgrade = no
+					}
+					save_event_target_as = target_upgrade
+					wonder = { save_event_target_as = target_wonder }
 				}
-				set_artifact_flag = target_artifact_1
-				save_event_target_as = target_artifact_1
-			}
-			random_artifact = {
-				limit = { 
-					has_artifact_flag = religious
-					is_artifact_active = yes
-					NOT = { artifact = event_target:target_artifact_1 }
+				random_artifact = {
+					limit = { 
+						has_artifact_flag = religious
+						is_artifact_active = yes
+					}
+					set_artifact_flag = target_artifact_1
+					save_event_target_as = target_artifact_1
 				}
-				set_artifact_flag = target_artifact_2
-				save_event_target_as = target_artifact_2
-			}
-			random_artifact = {
-				limit = { 
-					has_artifact_flag = religious
-					is_artifact_active = yes
-					NOT = { artifact = event_target:target_artifact_1 }
-					NOT = { artifact = event_target:target_artifact_2 }
+				random_artifact = {
+					limit = { 
+						has_artifact_flag = religious
+						is_artifact_active = yes
+						NOT = { artifact = event_target:target_artifact_1 }
+					}
+					set_artifact_flag = target_artifact_2
+					save_event_target_as = target_artifact_2
 				}
-				set_artifact_flag = target_artifact_3
-				save_event_target_as = target_artifact_3
-			}
-			random_artifact = {
-				limit = { 
-					has_artifact_flag = religious
-					is_artifact_active = yes
-					NOT = { artifact = event_target:target_artifact_1 }
-					NOT = { artifact = event_target:target_artifact_2 }
-					NOT = { artifact = event_target:target_artifact_3 }
+				random_artifact = {
+					limit = { 
+						has_artifact_flag = religious
+						is_artifact_active = yes
+						NOT = { artifact = event_target:target_artifact_1 }
+						NOT = { artifact = event_target:target_artifact_2 }
+					}
+					set_artifact_flag = target_artifact_3
+					save_event_target_as = target_artifact_3
 				}
-				set_artifact_flag = target_artifact_4
-				save_event_target_as = target_artifact_4
-			}
+				random_artifact = {
+					limit = { 
+						has_artifact_flag = religious
+						is_artifact_active = yes
+						NOT = { artifact = event_target:target_artifact_1 }
+						NOT = { artifact = event_target:target_artifact_2 }
+						NOT = { artifact = event_target:target_artifact_3 }
+					}
+					set_artifact_flag = target_artifact_4
+					save_event_target_as = target_artifact_4
+				}
 
-			hidden_effect = { set_character_flag = taking_relic_decision }
+				hidden_effect = { set_character_flag = taking_relic_decision }
 
-			character_event = { id = LT.20601 }
+				character_event = { id = LT.20601 }
 
-			custom_tooltip = { text = store_relic_TT }
+				custom_tooltip = { text = store_relic_TT }
+			}
 		}
 
 		revoke_allowed = {
@@ -428,7 +438,7 @@ targetted_decisions = {
 		from_potential = {
 			is_playable = yes
 			is_adult = yes
-			NOT = { trait = incapable }
+			NOT = { is_incapable = yes }
 			any_realm_wonder_upgrade = {
     			is_active = yes
     			has_wonder_upgrade_flag = scary
@@ -534,7 +544,7 @@ targetted_decisions = {
 		from_potential = {
 			is_playable = yes
 			is_adult = yes
-			NOT = { trait = incapable }
+			NOT = { is_incapable = yes }
 			any_realm_wonder_upgrade = {
     			is_active = yes
     			has_wonder_upgrade_flag = secluded

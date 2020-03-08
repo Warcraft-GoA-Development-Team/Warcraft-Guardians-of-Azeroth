@@ -8,9 +8,7 @@ become_leader_of_horde_faction_effect = {
 		add_trait = leader_of_horde_trait
 		# Creates the Horde title
 		if = {
-			limit = {
-				NOT = { has_landed_title = e_horde }
-			}
+			limit = { NOT = { has_landed_title = e_horde } }
 			create_e_horde_effect = yes
 		}
 		hidden_effect = {
@@ -21,8 +19,8 @@ become_leader_of_horde_faction_effect = {
 	}
 	# Something went wrong, cleanup
 	else = {
+		add_trait = leader_of_horde_trait # Must be there to classify character as leader
 		leave_horde_faction_effect = yes
-		narrative_event = { id = WCPLF.105 }	# Destroys Horde faction
 	}
 }
 become_leader_of_alliance_faction_effect = {
@@ -35,12 +33,22 @@ become_leader_of_alliance_faction_effect = {
 		add_trait = leader_of_alliance_trait
 		# Creates the Alliance title
 		if = {
-			limit = { has_global_flag = centralized_alliance_flag }
-			if = {
-				limit = {
-					NOT = { has_landed_title = e_alliance }
-				}
-				create_e_alliance_effect = yes
+			limit = {
+				NOT = { has_landed_title = e_alliance }
+				has_global_flag = centralized_alliance_flag
+			}
+			create_e_alliance_effect = yes
+		}
+		else_if = {
+			limit = { NOT = { tier = EMPEROR } }
+			creates_empire_for_alliance_leader_effect = yes
+			primary_title = {
+				save_this_title_as_temporary_alliance_title_effect = yes
+			}
+		}
+		else = {
+			primary_title = {
+				save_this_title_as_temporary_alliance_title_effect = yes
 			}
 		}
 		hidden_effect = {
@@ -51,8 +59,8 @@ become_leader_of_alliance_faction_effect = {
 	}
 	# Something went wrong, cleanup
 	else = {
+		add_trait = leader_of_alliance_trait # Must be there to classify character as leader
 		leave_alliance_faction_effect = yes
-		narrative_event = { id = WCPLF.205 }	# Destroys faction
 	}
 }
 join_horde_faction_effect = {
@@ -72,7 +80,13 @@ join_horde_faction_effect = {
 			}
 			e_horde = { holder_scope = { set_defacto_vassal = PREVPREV } }
 		}
-		else = { leader_of_horde_trait = { make_tributary = { who = PREV tributary_type = political_faction } } }
+		else = {
+			leader_of_horde_trait = {
+				log = "[Prev.GetBestName] becomes faction tributary of [This.GetBestName]"
+				
+				make_tributary = { who = PREV tributary_type = political_faction }
+			}
+		}
 		hidden_effect = {
 			clr_character_flag = being_joined_horde_flag
 			add_alliances_with_faction_effect = yes
@@ -100,7 +114,13 @@ join_alliance_faction_effect = {
 			}
 			e_alliance = { holder_scope = { set_defacto_vassal = PREVPREV } }
 		}
-		else = { leader_of_alliance_trait = { make_tributary = { who = PREV tributary_type = political_faction } } }
+		else = {
+			leader_of_alliance_trait = {
+				log = "[Prev.GetBestName] becomes faction tributary of [This.GetBestName]"
+				
+				make_tributary = { who = PREV tributary_type = political_faction }
+			}
+		}
 		hidden_effect = {
 			clr_character_flag = being_joined_alliance_flag
 			add_alliances_with_faction_effect = yes
@@ -117,15 +137,30 @@ leave_horde_faction_effect = {
 			is_alive = yes
 			is_dying = no
 		}
+		log = "[This.GetBestName] leaves the Horde"
+		primary_title = {
+			log = "...[This.GetName] is primary title"
+		}
+		any_tributary = {
+			log = "...[This.GetBestName] is tributary"
+		}
+		
 		break_alliances_with_horde_faction_effect = yes
 		if = {
-			limit = { trait = leader_of_horde_trait }
-			remove_trait = leader_of_horde_trait
+			limit = {
+				OR = {
+					trait = leader_of_horde_trait
+					has_landed_title = e_horde
+				}
+			}
 			# Destroys faction
 			any_tributary = {
 				limit = { is_tributary = { type = political_faction suzerain = suzerain } }
+				show_scope_change = no
+				
 				leave_horde_faction_effect = yes
 			}
+			remove_trait = leader_of_horde_trait		# Must be after any_tributary
 			if = {
 				limit = {
 					OR = {
@@ -141,12 +176,16 @@ leave_horde_faction_effect = {
 				e_horde = { destroy_landed_title = THIS }
 			}
 			else = {
-				narrative_event = { id = WCPLF.106 }
+				e_horde = { holder_scope = { narrative_event = { id = WCPLF.106 } } }
 			}
 		}
 		if = {
 			limit = { is_tributary = yes }
-			suzerain = { remove_tributary = PREV }
+			suzerain = {
+				show_scope_change = no
+				
+				remove_tributary = PREV
+			}
 		}
 		if = {
 			limit = {
@@ -163,12 +202,32 @@ leave_alliance_faction_effect = {
 			is_alive = yes
 			is_dying = no
 		}
+		log = "[This.GetBestName] leaves the Alliance"
+		primary_title = {
+			log = "...[This.GetName] is primary title"
+		}
+		any_tributary = {
+			log = "...[This.GetBestName] is tributary"
+		}
+		
 		break_alliances_with_alliance_faction_effect = yes
 		if = {
-			limit = { trait = leader_of_alliance_trait }
-			remove_trait = leader_of_alliance_trait
+			limit = {
+				OR = {
+					trait = leader_of_alliance_trait
+					has_landed_title = e_alliance
+				}
+			}
 			if = {
 				limit = {
+					# If political factions are disabled, destroys it without any chance
+					NOT = {
+						has_game_rule = {
+							name = political_factions
+							value = disabled
+						}
+					}
+					
 					NOT = { has_global_flag = centralized_alliance_flag }
 					any_independent_ruler = {
 						NOT = { character = PREV }
@@ -177,6 +236,7 @@ leave_alliance_faction_effect = {
 						is_tributary = { type = political_faction suzerain = PREV }
 					}
 				}
+				remove_trait = leader_of_alliance_trait
 				random_independent_ruler = {
 					limit = {
 						NOT = { character = PREV }
@@ -194,28 +254,40 @@ leave_alliance_faction_effect = {
 							}
 						}
 					}
-					add_trait = leader_of_alliance_trait
+					set_character_flag = mention_alliance_flag	# Forces event to mention alliance
 					narrative_event = { id = WCPLF.60 }
+					clr_character_flag = mention_alliance_flag
+					become_leader_of_alliance_faction_effect = yes
 				}
-				any_tributary = {
-					limit = { is_tributary = { type = political_faction suzerain = suzerain } }
-					join_alliance_faction_effect = yes
+				hidden_effect = {
+					any_tributary = {
+						limit = { is_tributary = { type = political_faction suzerain = suzerain } }
+						join_alliance_faction_effect = yes
+					}
 				}
 			}
 			else = {
 				# Destroys faction
 				any_tributary = {
 					limit = { is_tributary = { type = political_faction suzerain = suzerain } }
+					show_scope_change = no
+					
 					leave_alliance_faction_effect = yes
 				}
+				remove_trait = leader_of_alliance_trait			# Must be after any_tributary
+				narrative_event = { id = WCPLF.205 }
 				activate_title = { title = e_alliance status = no }
 				e_alliance = { destroy_landed_title = THIS }
-				narrative_event = { id = WCPLF.205 }
+				clear_temporary_alliance_title_effect = yes
 			}
 		}
 		if = {
 			limit = { is_tributary = yes }
-			suzerain = { remove_tributary = PREV }
+			suzerain = {
+				show_scope_change = no
+				
+				remove_tributary = PREV
+			}
 		}
 		if = {
 			limit = {
@@ -238,8 +310,8 @@ add_alliances_with_faction_effect = {
 					NOT = { character = PREVPREV }
 					is_tributary = { type = political_faction suzerain = suzerain }
 				}
-				opinion = { modifier = in_non_aggression_pact who = PREVPREV years = 1 }
-				reverse_opinion = { modifier = in_non_aggression_pact who = PREVPREV years = 1 }
+				opinion = { modifier = in_non_aggression_pact who = PREVPREV years = 1 origin_description = TRIBUTARY_POLITICAL_FACTION_NAME }
+				reverse_opinion = { modifier = in_non_aggression_pact who = PREVPREV years = 1 origin_description = TRIBUTARY_POLITICAL_FACTION_NAME }
 				add_alliance = { who = PREVPREV years = 9999 }
 			}
 		}
@@ -251,6 +323,8 @@ break_alliances_with_horde_faction_effect = {
 			is_alive = yes
 			is_dying = no
 		}
+		log = "[This.GetBestName] breaks alliances with the Horde"
+		
 		any_independent_ruler = {
 			limit = {
 				NOT = { character = PREV }
@@ -267,7 +341,15 @@ break_alliances_with_horde_faction_effect = {
 						modifier = broken_non_aggression_pact
 						who = PREV
 					}
+					reverse_opinion = {
+						modifier = broken_non_aggression_pact
+						who = PREV
+					}
 					opinion = {
+						modifier = dissolved_alliance
+						who = PREV
+					}
+					reverse_opinion = {
 						modifier = dissolved_alliance
 						who = PREV
 					}
@@ -282,6 +364,8 @@ break_alliances_with_alliance_faction_effect = {
 			is_alive = yes
 			is_dying = no
 		}
+		log = "[This.GetBestName] breaks alliances with the Alliance"
+		
 		any_independent_ruler = {
 			limit = {
 				NOT = { character = PREV }
@@ -298,7 +382,15 @@ break_alliances_with_alliance_faction_effect = {
 						modifier = broken_non_aggression_pact
 						who = PREV
 					}
+					reverse_opinion = {
+						modifier = broken_non_aggression_pact
+						who = PREV
+					}
 					opinion = {
+						modifier = dissolved_alliance
+						who = PREV
+					}
+					reverse_opinion = {
 						modifier = dissolved_alliance
 						who = PREV
 					}
@@ -309,107 +401,170 @@ break_alliances_with_alliance_faction_effect = {
 }
 
 create_e_horde_effect = {
-	primary_title = {
-		show_scope_change = no
-		hidden_effect = {
-			if = {
-				limit = { NOT = { is_title_active = e_horde } }
-				activate_title = { title = e_horde status = yes }
+	if = {
+		limit = { NOT = { has_landed_title = e_horde } }
+		primary_title = {
+			show_scope_change = no
+			hidden_effect = {
+				if = {
+					limit = { NOT = { is_title_active = e_horde } }
+					activate_title = { title = e_horde status = yes }
+				}
+			}
+			e_horde = {
+				show_scope_change = no
+				gain_title = PREVPREV
+				# set_name = "HORDE"
+				# adjective = "HORDE_ADJ"
+				hidden_effect = {
+					copy_title_laws = PREV
+					make_primary_title = yes
+				}
 			}
 		}
-		e_horde = {
-			show_scope_change = no
-			gain_title = PREVPREV
-			# set_name = "HORDE"
-			# adjective = "HORDE_ADJ"
-			hidden_effect = {
-				copy_title_laws = PREV
-				make_primary_title = yes
-				change_faction_laws = yes
+		# Makes the Horde centralized after revival
+		if = {
+			limit = {
+				trait = leader_of_horde_trait # Condition is needed in case political factions are disabled
+				
+				NOT = { has_global_flag = centralized_horde_flag }
 			}
+			set_global_flag = centralized_horde_flag
 		}
 	}
 	if = {
 		limit = {
 			any_demesne_title = {
 				tier = EMPEROR
-				NOT = { title = e_horde }
-				NOT = { title = e_alliance }
+				faction_title_trigger = no
 			}
 		}
 		any_demesne_title = {
 			limit = {
 				tier = EMPEROR
-				NOT = { title = e_horde }
-				NOT = { title = e_alliance }
+				faction_title_trigger = no
 			}
 			show_scope_change = no
 			destroy_landed_title = THIS
 		}
 	}
-	hidden_effect = {
-		if = {
-			limit = { NOT = { has_global_flag = centralized_horde_flag } }
-			set_global_flag = centralized_horde_flag
+	if = {
+		limit = {
+			NOT = { government = faction_government }
+			
+			trait = leader_of_horde_trait # Condition is needed in case political factions are disabled
 		}
-		any_tributary = {
+		set_government_type = faction_government
+	}
+	hidden_effect = {
+		e_horde = { change_faction_laws = yes }
+		if = {
 			limit = {
-				is_tributary = { type = political_faction suzerain = suzerain }
-				NOT = { tier = EMPEROR }
+				trait = leader_of_horde_trait # Condition is needed in case political factions are disabled
+				
+				has_global_flag = centralized_horde_flag
 			}
-			set_defacto_liege = PREV
+			# Breaks alliances before becoming vassal
+			break_alliances_with_horde_faction_effect = yes
+			any_tributary = {
+				limit = {
+					is_tributary = { type = political_faction suzerain = suzerain }
+					NOT = { tier = EMPEROR }
+				}
+				break_alliances_with_horde_faction_effect = yes
+			}
+			# Becomes vassal
+			any_tributary = {
+				limit = {
+					is_tributary = { type = political_faction suzerain = suzerain }
+					NOT = { tier = EMPEROR }
+				}
+				set_defacto_liege = PREV
+			}
 		}
 	}
 }
 create_e_alliance_effect = {
-	primary_title = {
-		show_scope_change = no
-		hidden_effect = {
-			if = {
-				limit = { NOT = { is_title_active = e_alliance } }
-				activate_title = { title = e_alliance status = yes }
+	clear_temporary_alliance_title_effect = yes
+	
+	if = {
+		limit = { NOT = { has_landed_title = e_alliance } }
+		primary_title = {
+			show_scope_change = no
+			hidden_effect = {
+				if = {
+					limit = { NOT = { is_title_active = e_alliance } }
+					activate_title = { title = e_alliance status = yes }
+				}
+			}
+			e_alliance = {
+				show_scope_change = no
+				gain_title = PREVPREV
+				hidden_effect = {
+					set_coa = PREV
+					copy_title_laws = PREV
+					make_primary_title = yes
+				}
 			}
 		}
-		e_alliance = {
-			show_scope_change = no
-			gain_title = PREVPREV
-			hidden_effect = {
-				set_coa = PREV
-				copy_title_laws = PREV
-				make_primary_title = yes
-				change_faction_laws = yes
+		if = {
+			limit = {
+				trait = leader_of_alliance_trait # Condition is needed in case political factions are disabled
+				
+				NOT = { has_global_flag = centralized_alliance_flag }
 			}
+			set_global_flag = centralized_alliance_flag
 		}
 	}
 	if = {
 		limit = {
 			any_demesne_title = {
 				tier = EMPEROR
-				NOT = { title = e_horde }
-				NOT = { title = e_alliance }
+				faction_title_trigger = no
 			}
 		}
 		any_demesne_title = {
 			limit = {
 				tier = EMPEROR
-				NOT = { title = e_horde }
-				NOT = { title = e_alliance }
+				faction_title_trigger = no
 			}
 			show_scope_change = no
 			destroy_landed_title = THIS
 		}
 	}
-	hidden_effect = {
-		if = {
-			limit = { NOT = { has_global_flag = centralized_alliance_flag } }
-			set_global_flag = centralized_alliance_flag
+	if = {
+		limit = {
+			NOT = { government = faction_government }
+			
+			trait = leader_of_alliance_trait # Condition is needed in case political factions are disabled
 		}
-		any_tributary = {
+		set_government_type = faction_government
+	}
+	hidden_effect = {
+		e_alliance = { change_faction_laws = yes }
+		if = {
 			limit = {
-				is_tributary = { type = political_faction suzerain = suzerain }
-				NOT = { tier = EMPEROR }
+				trait = leader_of_alliance_trait # Condition is needed in case political factions are disabled
+				
+				has_global_flag = centralized_alliance_flag
 			}
-			set_defacto_liege = PREV
+			# Breaks alliances before becoming vassal
+			break_alliances_with_alliance_faction_effect = yes
+			any_tributary = {
+				limit = {
+					is_tributary = { type = political_faction suzerain = suzerain }
+					NOT = { tier = EMPEROR }
+				}
+				break_alliances_with_alliance_faction_effect = yes
+			}
+			# Becomes vassal
+			any_tributary = {
+				limit = {
+					is_tributary = { type = political_faction suzerain = suzerain }
+					NOT = { tier = EMPEROR }
+				}
+				set_defacto_liege = PREV
+			}
 		}
 	}
 }
@@ -420,6 +575,27 @@ change_faction_laws = {
 			NOT = { has_law = succ_feudal_elective }
 		}
 		add_law = { law = succ_feudal_elective cooldown = no opinion_effect = no }
+	}
+	if = {
+		limit = {
+			is_law_potential = cognatic_succession
+			NOT = { has_law = cognatic_succession }
+		}
+		add_law = { law = cognatic_succession cooldown = no opinion_effect = no }
+	}
+	if = {
+		limit = {
+			is_law_potential = revoke_title_law_0
+			NOT = { has_law = revoke_title_law_0 }
+		}
+		add_law = { law = revoke_title_law_0 cooldown = no opinion_effect = no }
+	}
+	if = {
+		limit = {
+			is_law_potential = crown_authority_1
+			NOT = { has_law = crown_authority_1 }
+		}
+		add_law = { law = crown_authority_1 cooldown = no opinion_effect = no }
 	}
 	if = {
 		limit = {
@@ -477,18 +653,40 @@ change_faction_laws = {
 		}
 		add_law = { law = succession_voting_power_1 cooldown = no opinion_effect = no }
 	}
-	if = {
-		limit = {
-			is_law_potential = crown_authority_1
-			NOT = { has_law = crown_authority_1 }
+}
+
+# Creates empire title for Alliance leader
+creates_empire_for_alliance_leader_effect = {
+	primary_title = {
+		create_title = {
+			tier = EMPEROR
+			landless = no
+			temporary = no
+			custom_created = yes
+			culture = PREV
+			holder = PREV
+			base_title = THIS
+			copy_title_laws = yes
 		}
-		add_law = { law = crown_authority_1 cooldown = no opinion_effect = no }
+
+		# new_title = {
+			# copy_title_history = PREV
+		# }
 	}
-	if = {
-		limit = {
-			is_law_potential = revoke_title_law_1
-			NOT = { has_law = revoke_title_law_1 }
-		}
-		add_law = { law = revoke_title_law_1 cooldown = no opinion_effect = no }
-	}
+	# hidden_effect = {
+		# primary_title = {
+			# holder_scope = {
+				# prev_empire_de_jure_claim_control_titles_effect = yes
+			# }
+		# }
+	# }
+}
+
+# Saves this title as leader of alliance
+save_this_title_as_temporary_alliance_title_effect = {
+	clear_global_event_target = target_temporary_alliance_title
+	save_global_event_target_as = target_temporary_alliance_title
+}
+clear_temporary_alliance_title_effect = {
+	clear_global_event_target = target_temporary_alliance_title
 }

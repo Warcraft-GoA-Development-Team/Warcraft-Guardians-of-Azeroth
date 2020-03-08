@@ -1,6 +1,9 @@
-name = "Warcraft: Guardians of Azeroth"
+name = "Warcraft:_Guardians_of_Azeroth"
 path = "mod/Guardians of Azeroth"
-picture="GoA.jpg"
+picture="GoAPreview.jpg"
+tags = {
+	"Warcraft" "Fantasy" "WoW" "World of Wacraft" "Azeroth" "Total Conversion"
+}
 
 user_dir = "Guardians of Azeroth"
 
@@ -11,9 +14,6 @@ replace_path = "history/technology"
 replace_path = "history/titles"
 replace_path = "history/wars"
 replace_path = "common/artifact_spawns"
-# replace_path = "common/artifacts"
-# replace_path = "common/bloodlines"
-# replace_path = "common/buildings"
 replace_path = "common/cultures"
 replace_path = "common/dynasties"
 replace_path = "common/landed_titles"
@@ -29,4 +29,3 @@ replace_path = "gfx/flags"
 replace_path = "events"
 replace_path = "decisions"
 replace_path = "map\statics"
-replace_path = "music"

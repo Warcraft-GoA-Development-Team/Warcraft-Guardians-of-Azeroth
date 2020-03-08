@@ -6,7 +6,112 @@ namespace = WCDRU
 #####################################
 
 ### Fury of the Wolf ###
-# You got war troubles, help is needed, worgens seem legit
+### You got war troubles, help is needed, worgens seem legit
+# Picks characters
+character_event = {
+	id = WCDRU.299
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	only_playable = yes
+	min_age = 16
+	only_capable = yes
+	prisoner = no
+	only_independent = yes
+	
+	trigger = {
+		fury_of_wolf_human_event_trigger = yes
+		
+		NOT = { has_global_flag = ongoing_fury_of_wolf_chain_flag }
+		
+		is_primary_war_defender = yes
+	}
+	
+	weight_multiplier = {
+		days = 1
+		modifier = {
+			factor = 2
+			any_war = { war_score = -50 }
+		}
+		modifier = {
+			factor = 2
+			any_war = { war_score = -25 }
+		}
+	}
+	
+	immediate = {
+		save_event_target_as = target_liege
+		
+		set_global_flag = ongoing_fury_of_wolf_chain_flag
+		
+		# If you're mage, fires for you
+		if = {
+			limit = {
+				OR = {
+					is_mage_class_trigger = yes
+					is_shaman_class_trigger = yes
+					is_druid_class_trigger = yes
+					is_loa_priest_class_trigger = yes
+				}
+				has_5_6_magic_class_or_higher_trigger = yes
+			}
+			save_event_target_as = target_mage
+		}
+		else_if = {
+			limit = {
+				any_courtier = {
+					fury_of_wolf_human_event_trigger = yes
+					
+					OR = {
+						is_mage_class_trigger = yes
+						is_shaman_class_trigger = yes
+						is_druid_class_trigger = yes
+						is_loa_priest_class_trigger = yes
+					}
+					has_5_6_magic_class_or_higher_trigger = yes
+				}
+			}
+			random_courtier = {
+				limit = {
+					fury_of_wolf_human_event_trigger = yes
+					
+					OR = {
+						is_mage_class_trigger = yes
+						is_shaman_class_trigger = yes
+						is_druid_class_trigger = yes
+						is_loa_priest_class_trigger = yes
+					}
+					has_5_6_magic_class_or_higher_trigger = yes
+				}
+				preferred_limit = {
+					trait = cynical
+				}
+				
+				save_event_target_as = target_mage
+			}
+		}
+		else = {
+			create_character = {
+				dynasty = none
+				religion = ROOT culture = dalaranian
+				age = 50
+				trait = class_mage_7
+				trait = cynical trait = erudite trait = quick trait = arbitrary
+				random_traits = yes
+			}
+			new_character = {
+				save_event_target_as = target_mage
+			}
+		}
+		
+		event_target:target_mage = { narrative_event = { id = WCDRU.300 } }
+		
+		# Cleanup
+		73 = { province_event = { id = WCDRU.340 days = 365 } }
+	}
+}
+# Starts story
 narrative_event = {
 	id = WCDRU.300
 	title = EVTTITLE_WCDRU_300
@@ -15,71 +120,6 @@ narrative_event = {
 	border = GFX_event_narrative_frame_war
 
 	is_triggered_only = yes
-
-	min_age = 16
-	only_capable = yes
-	prisoner = no
-
-	trigger = {
-		is_untouchable_trigger = no
-		can_rule_peacefully_trigger = yes
-		
-		is_alive = yes
-		is_dying = no
-		is_inaccessible_trigger = no
-
-		NOT = { has_global_flag = ongoing_fury_of_wolf_chain_flag }
-		
-		trait = creature_human
-		is_susceptible_to_worgen_curse_character_trigger = yes
-		top_liege = {
-			is_untouchable_trigger = no
-			can_rule_peacefully_trigger = yes
-			
-			trait = creature_human
-			is_susceptible_to_worgen_curse_character_trigger = yes
-		}
-		OR = {
-			is_mage_class_trigger = yes
-			is_shaman_class_trigger = yes
-			is_druid_class_trigger = yes
-			is_loa_priest_class_trigger = yes
-		}
-		is_5_6_magic_class_trigger = yes
-		
-		OR = {
-			is_primary_war_defender = yes
-			top_liege = { is_primary_war_defender = yes }
-		}
-	}
-
-	weight_multiplier = {
-		days = 1
-		modifier = {
-			factor = 2
-			OR = {
-				top_liege = { any_war = { war_score = -50 } }
-				any_war = { war_score = -50 }
-			}
-		}
-		modifier = {
-			factor = 2
-			OR = {
-				top_liege = { any_war = { war_score = -25 } }
-				any_war = { war_score = -25 }
-			}
-		}
-	}
-	
-	immediate = {
-		save_event_target_as = target_mage
-		top_liege = { save_event_target_as = target_liege }
-		
-		set_global_flag = ongoing_fury_of_wolf_chain_flag
-		
-		# Cleanup
-		province_event = { id = WCDRU.340 days = 365 }
-	}
 
 	option = {
 		trigger = { independent = no }
@@ -253,7 +293,7 @@ narrative_event = {
 			dynasty = 100000
 			religion = wolf_cult_religion
 			culture = night_elf
-			age = 12000
+			age = 300
 			attributes = {
 				martial=6 diplomacy=4 stewardship=4 intrigue=6 learning=5
 			}
@@ -335,52 +375,85 @@ province_event = {
 }
 
 # Creates pack leader and pick province
-province_event = {
+character_event = {
 	id = WCDRU.350
-
+	
+	is_triggered_only = yes
 	hide_window = yes
 	
+	only_playable = yes
+	only_independent = yes
 	has_global_flag = worgens_in_azeroth_flag
 	
 	trigger = {
-		OR = {
-			terrain = forest
-			terrain = woods
+		# Warcraft
+		can_be_attacked_by_adventurer_trigger = yes
+		
+		NOT = {
+			has_game_rule = {
+				name = adventurers
+				value = none
+			}
+		}
+		
+		any_realm_province = {
+			OR = {
+				terrain = forest
+				terrain = woods
+			}
+			num_of_settlements = 1
+			is_occupied = no
+			holder_scope = { is_nomadic = no }
 		}
 	}
 	
-	mean_time_to_happen = {
-		years = 600
+	weight_multiplier = {
+		modifier = {
+			factor = 0.02
+			has_game_rule = {
+				name = adventurers
+				value = rare
+			}
+		}
 	}
 	
 	immediate = {
-		save_event_target_as = target_province
-		create_character = {
-			dynasty = none
-			religion = wolf_cult_religion
-			culture = night_elf
-			age = 12000
-			attributes = {
-				martial=5 diplomacy=5 stewardship=5 intrigue=5 learning=5
+		random_realm_province = {
+			limit = {
+				OR = {
+					terrain = forest
+					terrain = woods
+				}
+				num_of_settlements = 1
+				is_occupied = no
+				holder_scope = { is_nomadic = no }
 			}
-			trait = creature_night_elf
-			trait = martial_cleric
-			trait = worgen
-			trait = wroth
-			random_traits = yes
-		}
-		new_character = {
-			remove_education_effect = yes
-			random_list = {
-				10 = { add_trait = martial_cleric add_trait = class_druid_2 }
-				10 = { add_trait = scholarly_theologian add_trait = class_druid_4 }
-				10 = { add_trait = mastermind_theologian add_trait = class_druid_6 }
-				10 = { add_trait = tough_soldier add_trait = class_warrior_2 }
-				10 = { add_trait = skilled_tactician add_trait = class_warrior_4 }
-				10 = { add_trait = brilliant_strategist add_trait = class_warrior_6 }
+			preferred_limit = {
+				is_susceptible_to_worgen_curse_province_trigger = yes
 			}
 			
-			character_event = { id = WCDRU.365 }
+			save_event_target_as = target_province
+			
+			create_character = {
+				dynasty = none
+				religion = wolf_cult_religion
+				culture = night_elf
+				age = 300
+				attributes = {
+					martial=5 diplomacy=5 stewardship=5 intrigue=5 learning=5
+				}
+				trait = creature_night_elf
+				trait = worgen
+				trait = wroth
+				random_traits = yes
+			}
+			new_character = {
+				remove_education_effect = yes
+				add_random_martial_education_effect = yes
+				ai_add_druid_class_effect = yes
+				
+				character_event = { id = WCDRU.365 }
+			}
 		}
 	}
 }
@@ -397,9 +470,10 @@ character_event = {
 	prisoner = no
 
 	immediate = {
-		log = "WCDRU.365 fired for [This.GetBestName]"
+		log = "[This.GetBestName] created worgen pack"
+		
 		end_inaccessibility_effect = yes #removes in hiding or in_seclusion
-		set_defacto_liege = ROOT
+
 		create_title = {
 			tier = DUKE
 			landless = yes
@@ -409,42 +483,27 @@ character_event = {
 			holder = ROOT
 			base_title = THIS
 		}
+		
 		set_character_flag = raiding_adventurer
 		set_character_flag = alpha_worgen_flag
-		create_random_soldier = {
-			random_traits = yes
-			dynasty = none
-			religion = ROOT
-			culture = ROOT
-			female = no
-			age = 30
-			trait = worgen
-		}
-		create_random_soldier = {
-			random_traits = yes
-			dynasty = none
-			religion = ROOT
-			culture = ROOT
-			female = no
-			age = 25
-			trait = worgen
-		}
-		spawn_unit = {
-			province = event_target:target_province
-			home = event_target:target_province
-			owner = ROOT
-			troops = {
-				light_infantry = { 1250 1250 }
-			}
-			cannot_inherit = yes
-			attrition = 1.0
-			scaled_by_biggest_garrison = 1.5
-			merge = yes
-			can_toggle_looting = no
-			is_looter = yes
-			reinforces = yes
-			maintenance = no
-		}
+		
+		# Gives gold, prestige and piety
+		wealth = 100
+		prestige = 500
+		piety = 250
+		
+		# Counts
+		change_variable = { which = global_worgen_pack_spawn value = 1 }
+
+		# Create some decent commander characters
+		spawn_great_commander_effect = yes
+		spawn_great_commander_effect = yes
+		spawn_great_commander_effect = yes
+		spawn_great_commander_effect = yes
+		spawn_great_commander_effect = yes
+		
+		spawn_pack_troops_effect = yes
+		
 		character_event = { id = WCDRU.370 days = 1825 } # Finishes hunting after 5 years
 	}
 }
@@ -481,6 +540,7 @@ character_event = {
 		death = { death_reason = death_worgen }
 	}
 }
+
 ### Mindless worgen events ###
 # Event tombola
 character_event = {
@@ -816,44 +876,40 @@ character_event = {
 	immediate = {
 		FROM = {
 			location = {
+				save_event_target_as = target_province
+				
 				if = {
 					limit = { is_susceptible_to_worgen_curse_province_trigger = yes }
 					ROOT = {
-						spawn_unit = {
-							province = PREV
-							home = PREV
-							owner = ROOT
-							troops = {
-								light_infantry = { 1 1 }
-							}
-							cannot_inherit = yes
-							attrition = 1.0
-							scaled_by_biggest_garrison = 0.2
-							merge = yes
-							can_toggle_looting = no
-							is_looter = yes
-							reinforces = yes
-							maintenance = no
-						}
+						spawn_bitten_troops_effect = yes
 					}
 					holder_scope = {
 						character_event = { id = WCDRU.5005 }
 						any_liege = {
+							limit = { NOT = { character = PREV } }
 							character_event = { id = WCDRU.5005 }
 						}
 					}
 				}
-			}
-			holder_scope = {
-				any_courtier = {
+				holder_scope = {
 					if = {
 						limit = {
 							at_location = ROOT
-							is_susceptible_to_worgen_curse_character_trigger = yes 
+							is_susceptible_to_worgen_curse_character_trigger = yes
 						}
 						random = {
-							chance = 20
-							become_mindless_worgen_effect = yes
+							chance = 25
+							character_event = { id = WCDRU.5013 }
+						}
+					}
+					any_courtier = {
+						limit = {
+							at_location = ROOT
+							is_susceptible_to_worgen_curse_character_trigger = yes
+						}
+						random = {
+							chance = 25
+							character_event = { id = WCDRU.5013 }
 						}
 					}
 				}
@@ -861,7 +917,7 @@ character_event = {
 		}
 	}
 }
-# Notification
+# Notification about worgens in province
 character_event = {
 	id = WCDRU.5005
 	desc = EVTDESC_WCDRU_5005
@@ -872,16 +928,16 @@ character_event = {
 	
 	option = {
 		name = {
-			trigger = { true_religion = wolf_cult }
+			trigger = { true_religion = wolf_cult_religion }
 			text = EXCELLENT
 		}
 		name = {
-			trigger = { NOT = { true_religion = wolf_cult } }
+			trigger = { NOT = { true_religion = wolf_cult_religion } }
 			text = ALAS
 		}
 	}
 }
-# Notifies about turning into worgen
+# Worgen bites you
 character_event = {
 	id = WCDRU.5013
 	desc = EVTDESC_WCDRU_5013
@@ -893,10 +949,7 @@ character_event = {
 	option = {
 		name = RAWR
 		
-		tooltip = {
-			if = { limit = { trait = worgen } add_trait = worgen }
-			if = { limit = { trait = mindless_worgen } add_trait = mindless_worgen }
-		}
+		become_mindless_worgen_effect = yes
 	}
 }
 

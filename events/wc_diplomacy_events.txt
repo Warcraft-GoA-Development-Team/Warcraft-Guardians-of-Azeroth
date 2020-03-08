@@ -1,0 +1,177 @@
+namespace=WCDIP
+
+### Dwarf-gnome relationships
+# on_new_holder on_new_holder_inheritance on_new_holder_usurpation
+# You're new ruler, do you want to continue friend relationships with gnomes/dwarves
+# Delayer event
+character_event = {
+	id = WCDIP.9
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	only_playable = yes
+	
+	trigger = {
+		# Isn't king of both gnomes and dwarves
+		NAND = {
+			has_landed_title = k_gnomeregan
+			has_landed_title = k_ironforge
+		}
+		
+		FROM = {
+			OR = {
+				title = k_gnomeregan
+				title = k_ironforge
+			}
+		}
+		
+		k_gnomeregan = {
+			holder_scope = {
+				is_untouchable_trigger = no
+				
+				# is_landed = yes
+				
+				has_alliance_religion_trigger = yes
+				OR = {
+					culture_group = dwarf_group
+					culture_group = gnome_group
+				}
+			}
+		}
+		k_ironforge = {
+			holder_scope = {
+				is_untouchable_trigger = no
+				
+				# is_landed = yes
+				
+				has_alliance_religion_trigger = yes
+				OR = {
+					culture_group = dwarf_group
+					culture_group = gnome_group
+				}
+			}
+		}
+	}
+	
+	immediate = {
+		character_event = { id = WCDIP.10 days = 2 }
+	}
+}
+# Delayed event
+character_event = {
+	id = WCDIP.10
+	desc = EVTDESC_WCDIP_10
+	picture = GFX_evt_dwarffortress
+	border = GFX_event_normal_frame_diplomacy
+	
+	is_triggered_only = yes
+	
+	immediate = {
+		if = {
+			limit = { has_landed_title = k_ironforge }
+			k_gnomeregan = { holder_scope = { save_event_target_as = target_neighbour } }
+		}
+		else = {
+			k_ironforge = { holder_scope = { save_event_target_as = target_neighbour } }
+		}
+	}
+	
+	# We will make an alliance
+	option = {
+		name = EVTOPTA_WCDIP_10
+		
+		prestige = 100
+		piety = 50
+		
+		event_target:target_neighbour = { letter_event = { id = WCDIP.15 days = 7 } }
+		
+		ai_chance = {
+			factor = 10
+		}
+	}
+	# I have another plans
+	option = {
+		name = EVTOPTB_WCDIP_10
+		
+		ai_chance = {
+			factor = 90
+			modifier = {
+				factor = 0
+				opinion = { who = event_target:target_neighbour value = -30 }
+			}
+		}
+	}
+}
+# FROM wants to make an alliance
+letter_event = {
+	id = WCDIP.15
+	desc = EVTDESC_WCDIP_15
+	border = GFX_event_letter_frame_diplomacy
+	
+	is_triggered_only = yes
+	
+	# We will make an alliance
+	option = {
+		name = EVTOPTA_WCDIP_10
+		
+		prestige = 100
+		piety = 50
+		
+		opinion = { modifier = in_non_aggression_pact who = FROM years = 10 origin_description = dwarven_gnomish_alliance_origin_description }
+		reverse_opinion = { modifier = in_non_aggression_pact who = FROM years = 10 origin_description = dwarven_gnomish_alliance_origin_description }
+		add_alliance = { who = FROM years = 100 }
+		
+		FROM = { letter_event = { id = WCDIP.20 } }
+		
+		ai_chance = {
+			factor = 10
+		}
+	}
+	# I have another plans
+	option = {
+		name = EVTOPTB_WCDIP_10
+		
+		reverse_opinion = { modifier = broke_alliance who = FROM }
+		
+		FROM = { letter_event = { id = WCDIP.25 } }
+		
+		ai_chance = {
+			factor = 90
+			modifier = {
+				factor = 0
+				opinion = { who = FROM value = -30 }
+			}
+		}
+	}
+}
+# FROM accepts your alliance
+letter_event = {
+	id = WCDIP.20
+	desc = EVTDESC_WCDIP_15
+	border = GFX_event_letter_frame_diplomacy
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = EXCELLENT
+		
+		tooltip = {
+			opinion = { modifier = in_non_aggression_pact who = FROM years = 10 origin_description = dwarven_gnomish_alliance_origin_description }
+			reverse_opinion = { modifier = in_non_aggression_pact who = FROM years = 10 origin_description = dwarven_gnomish_alliance_origin_description }
+			add_alliance = { who = FROM years = 100 }
+		}
+	}
+}
+# FROM refuses your alliance
+letter_event = {
+	id = WCDIP.25
+	desc = EVTDESC_WCDIP_25
+	border = GFX_event_letter_frame_diplomacy
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = ALAS
+	}
+}

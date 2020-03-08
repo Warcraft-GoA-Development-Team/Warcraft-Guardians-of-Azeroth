@@ -36,64 +36,38 @@ character_event = {
 	trigger = {
 		is_untouchable_trigger = no
 
-		is_lowborn = yes
-		is_patrician = no
-		
-		OR = {
-			is_ruler = no
-			is_theocracy = yes
-			tier = BARON
+
+		trigger_if = {
+			limit = {	# Gives class traits to members of CC and SoE no matter what
+				NOT = {
+					society_member_of = cenarion_circle
+					society_member_of = sisterhood_of_elune
+				}
+			}
+			is_lowborn = yes
+			
+			OR = {
+				is_ruler = no
+				is_theocracy = yes
+				tier = BARON
+			}
 		}
 		
 		is_save_game = no
 		has_class_trait_trigger = no
-		potential_class_trigger = yes
+		united_class_trigger = yes
 	}
 	immediate = {
-		ai_add_random_class_effect = yes
-	}
-}
-
-# Lothar's joke
-character_event = {
-	id = WCSUP.6
-	
-	hide_window = yes
-	is_triggered_only = yes
-	
-	trigger = {
-		is_save_game = no
-		character = 1008	# Anduin Lothar
-	}
-	
-	immediate = {
 		if = {
-			limit = {
-				has_game_rule = {
-					name = sir_anduin_lothar
-					value = anduin_n_lothar_d
-				}
-			}
-			dynasty = 108
+			limit = { society_member_of = cenarion_circle }
+			ai_add_druid_class_effect = yes
 		}
-		if = {
-			limit = {
-				has_game_rule = {
-					name = sir_anduin_lothar
-					value = anduin_n_lothar_n
-				}
-			}
-			set_name = "Anduin Lothar"
+		else_if = {
+			limit = { society_member_of = sisterhood_of_elune }
+			ai_add_priest_class_effect = yes
 		}
-		if = {
-			limit = {
-				has_game_rule = {
-					name = sir_anduin_lothar
-					value = anduin_n_lothar_n_arathi_d
-				}
-			}
-			set_name = "Anduin Lothar"
-			dynasty = 16110
+		else = {
+			ai_add_random_class_effect = yes
 		}
 	}
 }
@@ -107,7 +81,7 @@ character_event = {
 	
 	trigger = {
 		is_save_game = no
-		is_1_2_magic_class_trigger = yes
+		has_1_2_magic_class_or_higher_trigger = yes
 		NOR = {
 			has_character_modifier = mana_1
 			has_character_modifier = mana_2
@@ -131,6 +105,7 @@ character_event = {
 	
 	trigger = {
 		is_save_game = no
+		
 		any_demesne_title = {
 			NOT = { has_law = succ_evil_elective }
 			is_law_potential = succ_evil_elective
@@ -178,5 +153,70 @@ character_event = {
 			}
 			add_province_modifier = { name = undead_province duration = -1 }
 		}
+	}
+}
+
+# on_startup
+# Gives infertile trait
+character_event = {
+	id = WCSUP.40
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	trigger = {
+		need_infertile_trait_trigger = yes
+	}
+	
+	immediate = {
+		character_event = { id = WCRAC.400 }
+	}
+}
+
+# on_startup
+# Fixes child portraits of immortal characters
+character_event = {
+	id = WCSUP.45
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	min_age = 16
+	
+	trigger = {
+		is_save_game = no
+		
+		immortal = yes
+		age = 16
+		immortal_age < 16
+	}
+	
+	immediate = {
+		log = "(DEBUG) [Root.GetID] [Root.GetBestName] is adult with child portrait"
+		
+		character_event = { id = WCRAC.200 }
+	}
+}
+
+# on_startup
+# Debuger: shows children with adult portraits
+character_event = {
+	id = WCSUP.50
+	
+	hide_window = yes
+	is_triggered_only = yes
+	
+	max_age = 16
+	
+	trigger = {
+		is_save_game = no
+		
+		immortal = yes
+		NOT = { age = 16 }
+		immortal_age > 16
+	}
+	
+	immediate = {
+		log = "(DEBUG) [Root.GetID] [Root.GetBestName] is child with adult portrait"
 	}
 }

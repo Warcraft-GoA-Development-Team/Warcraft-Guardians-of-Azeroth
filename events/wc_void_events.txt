@@ -29,10 +29,6 @@ character_event = {
 		
 		check_variable = { which = void_corruption value = 33 }
 		trigger_if = {
-			limit = { check_variable = { which = void_corruption value = 100 } }
-			NOT = { trait = being_void }
-		}
-		trigger_else_if = {
 			limit = { check_variable = { which = void_corruption value = 66 } }
 			NOR = {
 				has_character_modifier = void_corruption_2
@@ -305,18 +301,6 @@ character_event = {
 
 		ai_chance = {
 			factor = 40
-			modifier = {
-				factor = 1.5
-				has_benevolent_trait_trigger = yes
-			}
-			modifier = {
-				factor = 1.1
-				has_pleasant_trait_trigger = yes
-			}
-			modifier = {
-				factor = 1.1
-				has_pious_trait_trigger = yes
-			}
 		}
 	}
 
@@ -338,26 +322,7 @@ character_event = {
 		else = { set_secret_religion = voidfarer }
 
 		ai_chance = {
-			factor = 80
-			modifier = {
-				factor = 1.5
-				has_benevolent_trait_trigger = yes
-			}
-			modifier = {
-				factor = 1.1
-				has_pleasant_trait_trigger = yes
-			}
-			modifier = {
-				factor = 1.1
-				has_pious_trait_trigger = yes
-			}
-			modifier = {
-				factor = 0.5
-				OR = {
-					true_religion_group = light_group
-					true_religion_group = arakkoa_religion_group
-				}
-			}
+			factor = 10
 		}
 	}
 
@@ -379,23 +344,9 @@ character_event = {
 		else = { set_secret_religion = old_gods_worship }
 
 		ai_chance = {
-			factor = 20
-			modifier = {
-				factor = 5
-				trait = lunatic
-			}
-			modifier = {
-				factor = 4
-				has_impious_trait_trigger = yes
-			}
-			modifier = {
-				factor = 3
-				has_evil_trait_trigger = yes
-			}
-			modifier = {
-				factor = 3
-				has_unpleasant_trait_trigger = yes
-			}
+			factor = 50
+			
+			evil_ai_chance_score = yes
 		}
 	}
 	
@@ -417,6 +368,7 @@ character_event = {
 	# is_triggered_only = yes
 	hide_window = yes
 
+	only_playable = yes
 	min_age = 16
 	only_capable = yes
 	prisoner = no
@@ -425,6 +377,8 @@ character_event = {
 	trigger = {
 		is_alive = yes
 		is_dying = no
+		
+		NOT = { has_character_flag = void_mutation_ongoing_flag } # Prevents multiple firing
 
 		NOT = { trait = being_void }
 
@@ -462,6 +416,8 @@ character_event = {
 	}
 
 	immediate = {
+		set_character_flag = void_mutation_ongoing_flag # Prevents multiple firing
+		
 		if = {
 			limit = { NOT = { check_variable = { which = void_mutations value = 3 } } }
 			change_variable = { which = void_mutations value = 1 }
@@ -545,8 +501,9 @@ character_event = {
 							is_dragon_trigger = yes
 							is_wyrm_trigger = yes
 							trait = creature_arakkoa_corrupted
-							trait = creature_arakkoa
+							# trait = creature_arakkoa
 							trait = creature_gorloc
+							trait = creature_sethrak
 						}
 					}
 				}
@@ -565,7 +522,6 @@ character_event = {
 			character_event = { id = WCVOD.305 }
 		}
 		else = {
-			set_character_flag = transformation_into_nraqi_flag
 			long_character_event = { id = WCVOD.310 }
 		}
 	}
@@ -646,17 +602,29 @@ character_event = {
 		if = {
 			limit = { has_character_flag = scales_mutation_flag }
 			clr_character_flag = scales_mutation_flag
+			if = {
+				limit = { trait = maimed }
+				remove_trait = maimed
+			}
+			if = {
+				limit = { trait = mangled }
+				remove_trait = mangled
+			}
 			add_trait = scales_mutation
 		}
 		if = {
 			limit = { has_character_flag = eyes_mutation_flag }
 			clr_character_flag = eyes_mutation_flag
 			if = {
-				limit = { has_character_flag = removed_one_eyed }
+				limit = { trait = one_eyed }
 				remove_trait = one_eyed
 			}
 			add_trait = eyes_mutation
 		}
+	}
+	
+	after = {
+		clr_character_flag = void_mutation_ongoing_flag
 	}
 }
 
@@ -672,14 +640,21 @@ long_character_event = {
 	option = {
 		name = EVTOPTA_WCVOD_310
 
-		clr_character_flag = transformation_into_nraqi_flag
 		remove_racial_traits_effect = yes
 		add_trait = creature_nraqi
 		add_trait_void_creature_effect = yes
+
+		# Fixes immortal age
+		add_age_back_effect = yes
+
 		if = { limit = { has_secret_religion = yes } clear_secret_religion = yes }
 		if = { limit = { NOT = { religion = old_gods_worship } } religion = old_gods_worship }
 		if = { limit = { NOT = { culture = nraqi } } culture = nraqi }
 		hidden_effect = { set_graphical_culture = nraqi }
+	}
+	
+	after = {
+		clr_character_flag = void_mutation_ongoing_flag
 	}
 }
 
@@ -698,10 +673,18 @@ long_character_event = {
 		add_trait_void_creature_effect = yes
 		remove_racial_traits_effect = yes
 		add_trait = creature_cthraxxi
+
+		# Fixes immortal age
+		add_age_back_effect = yes
+
 		if = { limit = { NOT = { religion = old_gods_worship } } religion = old_gods_worship }
 		if = { limit = { has_secret_religion = yes } clear_secret_religion = yes }
 		if = { limit = { NOT = { culture = nraqi } } culture = nraqi }
 		hidden_effect = { set_graphical_culture = cthraxxi }
+	}
+	
+	after = {
+		clr_character_flag = transformation_into_cthraxxi_ongoing_flag
 	}
 }
 
@@ -789,7 +772,18 @@ narrative_event = {
 
 	immediate = {
 		log = "WCVOD.605 fired for [Root.GetBestName]"
+		
+		73 = { province_event = { id = WCTHW.50 } } # When shit happens, Medivh tries to fix it
 
+		hidden_effect = {
+			primary_title = {
+				e_black_empire = {
+					copy_title_laws = PREV
+					copy_title_history = PREV
+				}
+			}
+		}
+		
 		activate_title = { title = e_black_empire status = yes }
 		e_black_empire = { gain_title = ROOT }
 		if = {
@@ -810,18 +804,13 @@ narrative_event = {
 		if = {
 			limit = {
                 is_female = yes
-				has_dlc = "Holy Fury"
 			}
 			create_bloodline = {
 				type = twilight_viceroy
                 inheritance = matrilineal
 			}
 		}
-        else_if = {
-            limit = {
-                is_female = no
-				has_dlc = "Holy Fury"
-            }
+        else = {
             create_bloodline = {
                 type = twilight_viceroy
             }
@@ -838,7 +827,7 @@ narrative_event = {
 		name = EVTOPTB_WCVOD_605
 
 		random = {
-			factor = 33
+			chance = 33
 			add_trait = lunatic
 			modifier = {
 				factor = 0
@@ -848,7 +837,47 @@ narrative_event = {
 	}
 }
 
-# Terror of the Tides
+### Terror of the Tides
+# Another way to spawn naga
+character_event = {
+	id = WCVOD.690
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	ai = no
+	
+	trigger = {
+		OR = {
+			multiplayer = no
+			is_multiplayer_host_character = yes
+		}
+		
+		NOT = { has_global_flag = naga_resurfaced_flag }
+		
+		year = 603
+	}
+	
+	immediate = {
+		narrative_event = { id = WCVOD.700 }
+	}
+}
+# Delayer event
+province_event = {
+	id = WCVOD.699
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	trigger = {
+		NOT = { has_global_flag = naga_resurfaced_flag }
+	}
+	
+	immediate = {
+		holder_scope = { narrative_event = { id = WCVOD.700 } }
+	}
+}
+# Delayed event
 narrative_event = {
 	id = WCVOD.700
 	title = EVTTITLE_WCVOD_700
@@ -865,10 +894,6 @@ narrative_event = {
 	hide_from = yes
 	hide_new = yes
 
-	trigger = {
-		NOT = { has_global_flag = naga_resurfaced_flag }
-	}
-
 	immediate = {
 		set_global_flag = naga_resurfaced_flag
 	}
@@ -880,236 +905,6 @@ narrative_event = {
 	option = {
 		trigger = { true_religion = old_gods_worship }
 		name = EVTOPTB_WCVOD_700
-	}
-}
-
-# Spawns a naga group
-province_event = {
-	id = WCVOD.705
-
-	is_triggered_only = yes
-	hide_window = yes
-
-	has_global_flag = naga_resurfaced_flag
-
-	trigger = {
-		NOT = { culture = naga }
-		NOT = { religion = old_gods_worship }
-
-		port = yes
-	}
-
-	mean_time_to_happen = {
-		months = 1200
-	}
-
-	immediate = {
-		random_list = {
-			50 = {
-				create_character = {
-					female = no
-					dynasty = none
-					culture = naga religion = old_gods_worship
-					trait = creature_naga
-					trait = proud trait = cruel
-					random_traits = yes
-					age = 300
-					trait = being_void
-				}
-				new_character = {
-					remove_education_effect = yes
-					random_list = {
-						10 = {
-							add_trait = misguided_warrior
-							add_trait = class_warrior_3
-						}
-						30 = {
-							add_trait = tough_soldier
-							add_trait = class_warrior_4
-						}
-						45 = {
-							add_trait = skilled_tactician
-							add_trait = class_warrior_5
-						}
-						15 = {
-							add_trait = brilliant_strategist
-							add_trait = class_warrior_6
-						}
-					}
-					save_event_target_as = target_naga
-				}
-			}
-			50 = {
-				create_character = {
-					female = yes
-					dynasty = none
-					culture = naga religion = old_gods_worship
-					trait = creature_naga
-					trait = proud trait = cruel
-					random_traits = yes
-					age = 300
-					trait = being_void
-				}
-				new_character = {
-					remove_education_effect = yes
-					random_list = {
-						10 = {
-							add_trait = detached_priest
-							add_trait = class_mage_3
-						}
-						30 = {
-							add_trait = martial_cleric
-							add_trait = class_mage_4
-						}
-						45 = {
-							add_trait = scholarly_theologian
-							add_trait = class_mage_5
-						}
-						15 = {
-							add_trait = mastermind_theologian
-							add_trait = class_mage_6
-						}
-					}
-					save_event_target_as = target_naga
-				}
-			}
-		}
-		save_event_target_as = target_province
-		event_target:target_naga = {
-			# Removes wrong traits
-			remove_trait = chaste
-			remove_trait = kind
-			remove_trait = charitable
-			remove_trait = humble
-			remove_trait = honest
-			remove_trait = zealous
-			remove_trait = trusting
-
-			character_event = { id = WCVOD.707 }
-		}
-	}
-}
-character_event = {
-	id = WCVOD.707
-
-	is_triggered_only = yes
-	hide_window = yes
-
-	immediate = {
-		log = "[Root.GetBestName] started naga invasion of [target_province.GetName]"
-		
-		# Creates title and gives money
-		create_title = {
-			tier = DUKE
-			landless = yes
-			temporary = yes
-			adventurer = yes
-			culture = ROOT
-			name = "CLAIMANT_ADVENTURE"
-			holder = ROOT
-		}
-		wealth = 500
-
-		spawn_unit = {
-			province = event_target:target_province
-			home = event_target:target_province
-			owner = ROOT
-			earmark = naga_forces
-			troops = {
-				light_infantry = { 300 300 }
-				heavy_infantry = { 400 400 }
-				archers = { 200 200 }
-				artillery = { 100 100 }
-			}
-			attrition = 0.25
-			scaled_by_biggest_garrison = 2
-			reinforces = no
-			maintenance = 0.5
-		}
-
-		# Create some decent commander characters
-		create_random_soldier = {
-			female = no
-			dynasty = none
-			culture = naga religion = old_gods_worship
-			trait = creature_naga
-			trait = proud trait = cruel
-			random_traits = yes
-			age = 300
-			trait = being_void
-		}
-		create_random_soldier = {
-			female = no
-			dynasty = none
-			culture = naga religion = old_gods_worship
-			trait = creature_naga
-			trait = proud trait = cruel
-			random_traits = yes
-			age = 300
-			trait = being_void
-		}
-		create_random_soldier = {
-			female = no
-			dynasty = none
-			culture = naga religion = old_gods_worship
-			trait = creature_naga
-			trait = proud trait = cruel
-			random_traits = yes
-			age = 300
-			trait = being_void
-		}
-		create_random_soldier = {
-			female = no
-			dynasty = none
-			culture = naga religion = old_gods_worship
-			trait = creature_naga
-			trait = proud trait = cruel
-			random_traits = yes
-			age = 300
-			trait = being_void
-		}
-
-		# Create a fleet, just to be sure
-		spawn_fleet = {
-			province = closest # closest sea zone
-			owner = ROOT
-			disband_on_peace = yes
-			troops = {
-				galleys = { 150 150 }
-			}
-			earmark = naga_forces
-		}
-		event_target:target_province = {
-			county = {
-				holder_scope = {
-					reverse_unsafe_war = {
-						target = event_target:target_naga
-						casus_belli = pagan_county_conquest
-						thirdparty_title = PREV
-					}
-					character_event = { id = WCVOD.708 }
-					any_liege = {
-						limit = { NOT = { character = PREV } }
-						character_event = { id = WCVOD.708 }
-					}
-				}
-			}
-		}
-	}
-}
-# Notification
-character_event = {
-	id = WCVOD.708
-	desc = EVTDESC_WCVOD_708
-	picture = GFX_evt_sea_serpent
-	border = GFX_event_normal_frame_war
-
-	is_triggered_only = yes
-
-	hide_new = yes
-
-	option = {
-		name = ALAS
 	}
 }
 
@@ -1130,10 +925,7 @@ province_event = {
 			limit = {
 				e_ahnqiraj = {
 					has_holder = yes
-					holder_scope = {
-						trait = creature_qiraji
-						religion = old_gods_worship
-					}
+					holder_scope = { reawakening_of_cthun_qiraji_event_trigger = yes }
 				}
 			}
 			e_ahnqiraj = {
@@ -1166,7 +958,7 @@ province_event = {
 				
 				if = {
 					limit = { is_government_potential = black_pact_government }
-					set_government_type = black_pact_government
+					set_black_pact_government_effect = yes
 				}
 				
 				e_ahnqiraj = {
@@ -1204,6 +996,8 @@ narrative_event = {
 
 	immediate = {
 		set_global_flag = reawakening_of_cthun_flag
+		
+		2956 = { save_event_target_as = target_province }
 	}
 
 	# The Qiraji will devour them all!
@@ -1213,56 +1007,41 @@ narrative_event = {
 
 		if = {
 			limit = { character = ROOT }
-			capital_scope = {
-				show_scope_change = no
-				ROOT = {
-					show_scope_change = no
-					spawn_unit = {
-						owner = ROOT
-						province = PREV
-						home = PREV
-						troops = {
-							insectoidswarm = { 4375 4375 }
+			
+			# Gives gold
+			wealth = 1000
+			
+			# Spawns troops
+			spawn_qiraji_troops_effect = yes
+			spawn_qiraji_troops_effect = yes
+			spawn_qiraji_troops_effect = yes
+			spawn_qiraji_troops_effect = yes
+			if = {		# Gives troops and gold to another Twin Emperor
+				limit = {
+					k_ahnqiraj = {
+						holder_scope = {
+							reawakening_of_cthun_qiraji_event_trigger = yes
 						}
-						attrition = 0
-						merge = yes
-						maintenance = no
 					}
-					spawn_unit = {
-						owner = ROOT
-						province = PREV
-						home = PREV
-						troops = {
-							insectoidswarm = { 4375 4375 }
+				}
+				hidden_effect = {
+					k_ahnqiraj = {
+						holder_scope = {
+							# Gives gold
+							wealth = 500
+						
+							# Spawns troops
+							spawn_qiraji_troops_effect = yes
+							spawn_qiraji_troops_effect = yes
 						}
-						attrition = 0
-						merge = yes
-						maintenance = no
-					}
-					spawn_unit = {
-						owner = ROOT
-						province = PREV
-						home = PREV
-						troops = {
-							insectoidguard = { 625 625 }
-						}
-						attrition = 0
-						merge = yes
-						maintenance = no
-					}
-					spawn_unit = {
-						owner = ROOT
-						province = PREV
-						home = PREV
-						troops = {
-							insectoidguard = { 625 625 }
-						}
-						attrition = 0
-						merge = yes
-						maintenance = no
 					}
 				}
 			}
+			else = {
+				spawn_qiraji_troops_effect = yes
+				spawn_qiraji_troops_effect = yes
+			}
+			
 			offmap_cthun = {
 				set_status = old_god_partly_free
 			}
@@ -1288,12 +1067,6 @@ province_event = {
 	is_triggered_only = yes
 	hide_window = yes
 
-	has_dlc = "Mystics"
-
-	trigger = {
-		has_dlc = "Mystics"
-	}
-
 	immediate = {
 		random_playable_ruler = {
 			limit = {
@@ -1306,11 +1079,10 @@ province_event = {
 				NOT = { has_character_flag = xalatath_happened_flag }
 
 				OR = {
-					is_feudal = yes
-					is_republic = yes
-					is_theocracy = yes
+					is_tribal = no
 					government = tribal_monarchy_government
 				}
+				is_nomadic = no
 
 				is_susceptible_to_void_corruption_trigger = yes
 
@@ -1353,30 +1125,7 @@ narrative_event = {
 		ai_chance = {
 			factor = 50
 
-			modifier = {
-				factor = 1.6
-				trait = cynical
-			}
-			modifier = {
-				factor = 1.2
-				trait = ambitious
-			}
-			modifier = {
-				factor = 1.2
-				trait = greedy
-			}
-			modifier = {
-				factor = 1.2
-				has_evil_trait_trigger = yes
-			}
-			modifier = {
-				factor = 1.2
-				has_impious_trait_trigger = yes
-			}
-			modifier = {
-				factor = 1.2
-				has_unpleasant_trait_trigger = yes
-			}
+			evil_ai_chance_score = yes
 		}
 	}
 	# Reject the gift
@@ -1393,31 +1142,6 @@ narrative_event = {
 
 		ai_chance = {
 			factor = 50
-
-			modifier = {
-				factor = 1.6
-				trait = zealous
-			}
-			modifier = {
-				factor = 1.2
-				trait= content
-			}
-			modifier = {
-				factor = 1.2
-				trait = temperate
-			}
-			modifier = {
-				factor = 1.2
-				has_benevolent_trait_trigger = yes
-			}
-			modifier = {
-				factor = 1.2
-				has_pleasant_trait_trigger = yes
-			}
-			modifier = {
-				factor = 1.2
-				has_pious_trait_trigger = yes
-			}
 		}
 	}
 	option = {
@@ -1541,19 +1265,9 @@ narrative_event = {
 		}
 
 		ai_chance = {
-			factor = 20
-			modifier = {
-				factor = 1.5
-				has_evil_trait_trigger = yes
-			}
-			modifier = {
-				factor = 1.5
-				has_impious_trait_trigger = yes
-			}
-			modifier = {
-				factor = 1.5
-				has_unpleasant_trait_trigger = yes
-			}
+			factor = 10
+			
+			evil_ai_chance_score = yes
 		}
 	}
 	# Tell me about the Old Gods
@@ -1570,15 +1284,9 @@ narrative_event = {
 		set_secret_religion = old_gods_worship
 
 		ai_chance = {
-			factor = 20
-			modifier = {
-				factor = 1.84
-				has_impious_trait_trigger = yes
-			}
-			modifier = {
-				factor = 1.84
-				has_unpleasant_trait_trigger = yes
-			}
+			factor = 40
+			
+			evil_ai_chance_score = yes
 		}
 	}
 	# Never mind...
@@ -1586,19 +1294,7 @@ narrative_event = {
 		name = EVTOPTC_WCVOD_2020
 
 		ai_chance = {
-			factor = 60
-			modifier = {
-				factor = 1.5
-				has_benevolent_trait_trigger = yes
-			}
-			modifier = {
-				factor = 1.5
-				has_pleasant_trait_trigger = yes
-			}
-			modifier = {
-				factor = 1.5
-				has_pious_trait_trigger = yes
-			}
+			factor = 50
 		}
 	}
 }
@@ -1864,7 +1560,7 @@ narrative_event = {
 }
 
 #############################
-#		Random events		#
+#		Random events					#
 #############################
 
 # Void events
@@ -1886,10 +1582,6 @@ character_event = {
 		is_dying = no
 
 		is_susceptible_to_void_corruption_trigger = yes
-		OR = {
-			NOT = { trait = being_void }
-			NOT = { has_character_modifier = inflow_of_the_void }
-		}
 	}
 
 	weight_multiplier = {
@@ -1961,8 +1653,6 @@ character_event = {
 			}
 			10 = {
 				narrative_event = { id = WCVOD.10005 }	# The Ancient Creature
-			}
-			1 = {	# Small chance of nothing
 			}
 		}
 	}
@@ -2548,38 +2238,34 @@ character_event = {
 		clr_character_flag = ongoing_nightmares_chain_flag
 
 		random_list = {
-			75 = {
-				narrative_event = { id = WCVOD.9991 }		# Good end
-
-				modifier = {
-					factor = 0
-					OR = {
+			85 = {
+				trigger = {
+					NOT = {
 						religion = old_gods_worship
 						true_religion = old_gods_worship
 					}
 				}
+				
+				narrative_event = { id = WCVOD.9991 }		# Good end
+
 				modifier = {
-					factor = 1.2
+					factor = 1.5
 					has_benevolent_trait_trigger = yes
 				}
 				modifier = {
-					factor = 1.2
+					factor = 1.5
 					has_pleasant_trait_trigger = yes
 				}
 				modifier = {
-					factor = 1.2
+					factor = 1.5
 					has_pious_trait_trigger = yes
 				}
 				modifier = {
-					factor = 1.2
+					factor = 1.5
 					trait = brave
 				}
-				modifier = {
-					factor = 0
-					true_religion = old_gods_worship
-				}
 			}
-			25 = {
+			15 = {
 				narrative_event = { id = WCVOD.9995 }		# Bad end
 
 				modifier = {
@@ -2587,27 +2273,27 @@ character_event = {
 					trait = lunatic
 				}
 				modifier = {
-					factor = 1.4
+					factor = 1.5
 					has_evil_trait_trigger = yes
 				}
 				modifier = {
-					factor = 1.4
+					factor = 1.5
 					has_unpleasant_trait_trigger = yes
 				}
 				modifier = {
-					factor = 1.4
+					factor = 1.5
 					has_impious_trait_trigger = yes
 				}
 				modifier = {
-					factor = 1.4
+					factor = 1.5
 					trait = depressed
 				}
 				modifier = {
-					factor = 1.4
+					factor = 1.5
 					trait = stressed
 				}
 				modifier = {
-					factor = 1.4
+					factor = 1.5
 					trait = craven
 				}
 			}
@@ -2666,20 +2352,7 @@ narrative_event = {
 		}
 
 		ai_chance = {
-			factor = 10
-
-			modifier = {
-				factor = 4
-				has_benevolent_trait_trigger = yes
-			}
-			modifier = {
-				factor = 3.5
-				has_pious_trait_trigger = yes
-			}
-			modifier = {
-				factor = 3
-				has_pleasant_trait_trigger = yes
-			}
+			factor = 50
 		}
 	}
 
@@ -2698,7 +2371,9 @@ narrative_event = {
 		add_15_void_corruption_effect = yes
 
 		ai_chance = {
-			factor = 90
+			factor = 50
+			
+			evil_ai_chance_score = yes
 		}
 	}
 }
@@ -2727,24 +2402,9 @@ character_event = {
 		add_character_modifier = { name = inflow_of_the_void duration = 1825 }
 
 		ai_chance = {
-			factor = 26
-			modifier = {
-				factor = 3
-				has_impious_trait_trigger = yes
-			}
-			modifier = {
-				factor = 2.5
-				has_evil_trait_trigger = yes
-			}
-			modifier = {
-				factor = 2.5
-				has_unpleasant_trait_trigger = yes
-			}
-			modifier = {
-				factor = 0.01
-				trait = zealous
-				NOT = { true_religion_group = void_group }
-			}
+			factor = 50
+			
+			evil_ai_chance_score = yes
 		}
 	}
 
@@ -2759,23 +2419,7 @@ character_event = {
 		}
 
 		ai_chance = {
-			factor = 74
-			modifier = {
-				factor = 2
-				has_benevolent_trait_trigger = yes
-			}
-			modifier = {
-				factor = 1.5
-				has_pleasant_trait_trigger = yes
-			}
-			modifier = {
-				factor = 1.5
-				has_pious_trait_trigger = yes
-			}
-			modifier = {
-				factor = 0.01
-				true_religion_group = void_group
-			}
+			factor = 50
 		}
 	}
 }
@@ -2857,7 +2501,10 @@ narrative_event = {
 
 	immediate = {
 		if = {
-			limit = { true_religion = old_gods_worship }
+			limit = {
+				religion = old_gods_worship
+				true_religion = old_gods_worship
+			}
 			set_character_flag = found_cthraxxi_good_end_flag
 		}
 		else = {
@@ -2873,26 +2520,23 @@ narrative_event = {
 				martial=5 diplomacy=5 stewardship=5 intrigue=5 learning=5
 			}
 			random_traits = yes
-			trait = creature_cthraxxi
-			trait = class_warrior_7
-			trait = brilliant_strategist
-			trait = cruel
-			trait = patient
-			trait = being_void
+			flag = race_delay_flag
 		}
 		new_character = {
 			save_event_target_as = target_cthraxxi
 
 			set_graphical_culture = cthraxxi
-
-			# Removes wrong traits
-			remove_trait = chaste
-			remove_trait = kind
-			remove_trait = charitable
-			remove_trait = humble
-			remove_trait = honest
-			remove_trait = zealous
-			remove_trait = trusting
+			
+			character_event = { id = WCRAC.10 }
+			
+			# Education
+			remove_education_effect = yes
+			add_trait = brilliant_strategist
+			add_trait = class_warrior_7
+			
+			# Traits
+			remove_trait_silently_wroth_effect = yes
+			add_trait_silently_patient_effect = yes
 
 			give_nickname = nick_the_devourer
 		}

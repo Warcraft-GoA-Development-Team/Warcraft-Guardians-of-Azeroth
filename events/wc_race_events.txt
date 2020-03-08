@@ -19,20 +19,20 @@ character_event = {
 			is_high_elf_trigger = yes
 			trait = creature_naga
 			trait = creature_vrykul
-			trait = creature_nerubian
-			trait = creature_ice_giant
+			trait = creature_giant
 			trait = creature_night_elf
 			trait = creature_highborne
 			# Classes
-			# is_5_6_magic_class_trigger = yes
-			is_7_8_magic_class_trigger = yes
-			is_9_10_magic_class_trigger = yes
+			# has_5_6_magic_class_or_higher_trigger = yes
+			# has_7_8_magic_class_or_higher_trigger = yes
+			has_9_10_magic_class_trigger = yes
 		}
 	}
 
 	mean_time_to_happen = {
 		years = 100
 		# Race modifiers
+		# Note: don't forget to change average_lifespan, text_effect_average_lifespan_immortality everywhere when you touch these modifiers
 		modifier = {
 			factor = 1.5
 			trait = creature_dwarf
@@ -54,12 +54,8 @@ character_event = {
 			trait = creature_vrykul
 		}
 		modifier = {
-			factor = 4
-			trait = creature_nerubian
-		}
-		modifier = {
 			factor = 7
-			trait = creature_ice_giant
+			trait = creature_giant
 		}
 		modifier = {
 			factor = 14
@@ -70,17 +66,17 @@ character_event = {
 			trait = creature_highborne
 		}
 		# Class modifiers
-		# modifier = {
-			# factor = 1.71
-			# is_5_6_magic_class_trigger = yes
-		# }
 		modifier = {
 			factor = 1.71
-			is_7_8_magic_class_trigger = yes
+			has_5_6_magic_class_or_higher_trigger = yes
 		}
 		modifier = {
 			factor = 1.71
-			is_9_10_magic_class_trigger = yes
+			has_7_8_magic_class_or_higher_trigger = yes
+		}
+		modifier = {
+			factor = 1.71
+			has_9_10_magic_class_trigger = yes
 		}
 		# Health modifiers
 		modifier = {
@@ -167,7 +163,7 @@ character_event = {
 	}
 	
 	immediate = {
-		log = "WCRAC.5 fired for [Root.GetBestName]"
+		# log = "WCRAC.5 fired for [Root.GetBestName]"
 		
 		character_event = { id = WCRAC.10 }
 	}
@@ -190,8 +186,94 @@ character_event = {
 
 	immediate = {
 		# log = "WCRAC.10 fired for [Root.GetBestName]"
+		true_father_even_if_dead = { save_event_target_as = target_father }
+		mother_even_if_dead = { save_event_target_as = target_mother }
 		
 		set_character_flag = no_show_what_become_flag		# Cancel show_close_people_what_this_become_effect if character spawned as undead, demon, void being
+		set_character_flag = no_religion_change_flag		# Cancel event religion change
+
+		# Children born in prison take warden's religion and culture
+		# It's hardcoded vanilla mechanic, but it can't be like that in Warcraft setting, so here we go
+		# Picks mother's religion and culture if child is born in prison
+		if = {
+			limit = {
+				NOT = { age = 1 }
+				prisoner = yes
+				event_target:target_mother = { always = yes }
+			}
+			religion = event_target:target_mother
+			culture = event_target:target_mother
+		}
+
+		# Picks graphical culture
+		if = {
+			limit = {
+				NOT = { age = 1 }
+				event_target:target_father = { always = yes }
+				event_target:target_mother = { always = yes }
+			}
+			# If father is infertile or dead, always picks mother's graphical culture
+			if = {
+				limit = {
+					event_target:target_father = {
+						OR = {
+							is_alive = no
+							can_has_children_trigger = no
+						}
+					}
+				}
+				log = "[Root.GetBestName] picks mother's race because of father is infertile or dead"
+
+				event_target:target_mother = { ROOT = { set_prev_gfx_effect = yes } }
+			}
+			# Halfbreed child was born, picks graphical culture
+			else_if = {
+				limit = {
+					NOT = {
+						has_game_rule = {
+							name = halfbreed_race
+							value = random
+						}
+					}
+
+					event_target:target_father = { event_target:target_mother = { has_prev_race_trigger = no } }
+				}
+				if = {
+					limit = {
+						has_game_rule = {
+							name = halfbreed_race
+							value = father
+						}
+					}
+					log = "[Root.GetBestName] picks father's race because of Father rule"
+					
+					event_target:target_father = { ROOT = { set_prev_gfx_effect = yes } }
+				}
+				else_if = {
+					limit = {
+						has_game_rule = {
+							name = halfbreed_race
+							value = mother
+						}
+					}
+					log = "[Root.GetBestName] picks mother's race because of Mother rule"
+					
+					event_target:target_mother = { ROOT = { set_prev_gfx_effect = yes } }
+				}
+				# If child has mother's dynasty, picks mother's graphical culture
+				else_if = {
+					limit = { dynasty = event_target:target_father }
+					log = "[Root.GetBestName] picks father's race because of Dynasty rule"
+					
+					event_target:target_father = { ROOT = { set_prev_gfx_effect = yes } }
+				}
+				else = {
+					log = "[Root.GetBestName] picks mother's race because of Dynasty rule"
+					
+					event_target:target_mother = { ROOT = { set_prev_gfx_effect = yes } }
+				}
+			}
+		}
 		
 		# Add new races always at the end
 		if = {
@@ -211,7 +293,7 @@ character_event = {
 			}
 			else = {
 				random = {
-					chance = 10
+					chance = 5
 					add_trait = twoheaded
 					set_graphical_culture = twoheadedogre
 				}
@@ -292,11 +374,6 @@ character_event = {
 			# add_trait = creature_ghoul
 			# add_trait_undead_effect = yes
 		# }
-		# else_if = {
-			# limit = { potential_race_skeleton_trigger = yes }
-			# add_trait = creature_skeleton
-			# add_trait_undead_effect = yes
-		# }
 		else_if = {
 			limit = { potential_race_wraith_trigger = yes }
 			add_trait = creature_wraith
@@ -326,6 +403,10 @@ character_event = {
 			limit = { potential_race_annihilan_trigger = yes }
 			add_trait = creature_annihilan
 			add_trait_demon_effect = yes
+			if = {
+				limit = { culture = shivarra }
+				culture = annihilan 
+			}
 		}
 		else_if = {
 			limit = { potential_race_nathrezim_trigger = yes }
@@ -372,6 +453,10 @@ character_event = {
 			limit = { potential_race_shivarra_trigger = yes }
 			add_trait = creature_shivarra
 			add_trait_demon_effect = yes
+			if = {
+				limit = { culture = annihilan }
+				culture = shivarra 
+			}
 		}
 		else_if = {
 			limit = { potential_race_moarg_trigger = yes }
@@ -471,8 +556,8 @@ character_event = {
 			add_trait = creature_earthen
 		}
 		else_if = {
-			limit = { potential_race_ice_giant_trigger = yes }
-			add_trait = creature_ice_giant
+			limit = { potential_race_giant_trigger = yes }
+			add_trait = creature_giant
 		}
 		else_if = {
 			limit = { potential_race_nraqi_trigger = yes }
@@ -551,9 +636,23 @@ character_event = {
 		else = {
 			gfx_culture_scope = { save_event_target_as = target_gfx_culture }
 			log = "(IMPORTANT) [This.GetBestName] couldn't get race trait. GFX culture is [target_gfx_culture.GetName]."
-			death = { death_reason = death_missing }
+			clear_event_target = target_gfx_culture
+			if = {
+				limit = { has_character_flag = last_race_try_flag }
+				death = { death_reason = death_missing }
+				break = yes
+			}
+			set_character_flag = last_race_try_flag
+			
+			dynasty_head = { ROOT = { set_prev_gfx_effect = yes } }
+			repeat_event = { id = WCRAC.10 }
+			break = yes
 		}
 		
+		# Adds blood trait
+		add_blood_trait_effect = yes
+		
+		# Changes gender
 		if = {
 			limit = {
 				is_female = yes
@@ -569,33 +668,34 @@ character_event = {
 			set_gender = female
 		}
 		
+		# Adds undead trait
 		if = {
 			limit = {
-				is_alive = yes
-				is_dying = no
-			}
-			# Adds undead trait
-			if = {
-				limit = {
-					NOT = { trait = being_undead }
-					
-					OR = {
-						has_undead_gfx_trigger = yes
-						AND = {
-							can_be_undead_trigger = yes
-							location = { has_province_modifier = undead_province }
-							liege = { trait = being_undead }
-						}
+				NOT = { trait = being_undead }
+				
+				OR = {
+					has_undead_gfx_trigger = yes
+					AND = {
+						can_be_undead_trigger = yes
+						location = { has_province_modifier = undead_province }
+						liege = { trait = being_undead }
 					}
 				}
-				save_event_target_as = target_necromancer
-				character_event = { id = WCPOD.5013 }
 			}
-			# Adds default traits when new character spawns
-			add_default_traits = yes
+			save_event_target_as = target_necromancer
+			character_event = { id = WCPOD.5013 }
 		}
 		
+		# Adds default traits when new character spawns
+		add_default_traits = yes
+		
+		# Fixes immortal age
+		add_age_back_effect = yes
+		
 		clr_character_flag = no_show_what_become_flag			# Works only during this event
+		clr_character_flag = no_religion_change_flag			# Works only during this event
+
+		clr_character_flag = race_delay_flag					# Race trait is added, so no longer needed
 	}
 }
 
@@ -606,11 +706,10 @@ character_event = {
 	is_triggered_only = yes
 	hide_window = yes
 	
-	is_adult = yes
+	min_age = 16
 	
 	trigger = {
-		immortal = yes
-		immortal_age < 16
+		age = 16
 	}
 	
 	immediate = {
@@ -622,6 +721,7 @@ character_event = {
 		add_class_trait_effect = yes
 	}
 }
+
 #Adds Ancients seed
 character_event = {
 	id = WCRAC.300
@@ -630,22 +730,18 @@ character_event = {
 	is_triggered_only = yes
 	
 	only_playable = yes
+	min_age = 16
+	
+	trigger = {
+		is_plant_race_trigger = yes
+	}
+	
 	weight_multiplier = {
 		days = 1
 		modifier = {
 			factor = 3
 			NOT = { has_artifact = ancient_kernel }
 		}
-	}
-	
-	is_adult = yes
-	
-	trigger = {
-		plant_race = yes
-	}
-	
-	immediate = {	
-		
 	}
 	
 	option = {
@@ -657,13 +753,14 @@ character_event = {
 character_event = {
 	id = WCRAC.310
 	desc = EVTDESC_WCRAC.310
+	
 	is_triggered_only = yes
 	
 	only_playable = yes
-	is_adult = yes
+	min_age = 16
 	
 	trigger = {
-		plant_race = yes
+		is_plant_race_trigger = yes
 		has_artifact = ancient_kernel
 	}
 	
@@ -675,22 +772,14 @@ character_event = {
 			culture = ROOT
 			female = 50
 			age = 0
+			flag = race_delay_flag
 		}
 		new_character = {
 			if = {
-				limit = {
-					ROOT = {
-						is_female = yes
-					}
-				}
+				limit = { ROOT = { is_female = yes } }
 				set_mother = ROOT
 			}
-			if = {
-				limit = {
-					ROOT = {
-						is_female = no
-					}
-				}
+			else = {
 				set_father = ROOT
 			}
 			if = {
@@ -701,7 +790,7 @@ character_event = {
 				}
 				set_graphical_culture = ancient_war
 			}
-			if = {
+			else_if = {
 				limit = {
 					ROOT = {
 						graphical_culture = ancientloregfx
@@ -709,14 +798,11 @@ character_event = {
 				}
 				set_graphical_culture = ancient_lore
 			}
-			if = {
-				limit = {
-					ROOT = {
-						graphical_culture = ancientwindgfx
-					}
-				}
+			else = {
 				set_graphical_culture = ancient_wind
 			}
+			
+			character_event = { id = WCRAC.10 } 	# Adds race trait
 		}
 	}
 	
@@ -733,10 +819,77 @@ character_event = {
 
 	trigger = {
 		has_artifact = ancient_kernel
-		plant_race = yes
+		is_plant_race_trigger = yes
 	}
 
 	immediate = {
 		destroy_artifact = ancient_kernel
+	}
+}
+
+# on_marriage
+# Marriages make infertile :3
+character_event = {
+	id = WCRAC.395
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	trigger = {
+		FROM = { need_infertile_trait_trigger = yes }
+	}
+	
+	immediate = {
+		FROM = { character_event = { id = WCRAC.400 } }
+	}
+}
+# on_birth
+# Child makes parents infertile :3
+character_event = {
+	id = WCRAC.399
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
+		true_father = {
+			if = {
+				limit = {
+					need_infertile_trait_trigger = yes
+				}
+				character_event = { id = WCRAC.400 }
+			}
+		}
+		mother = {
+			if = {
+				limit = {
+					need_infertile_trait_trigger = yes
+				}
+				character_event = { id = WCRAC.400 }
+			}
+		}
+	}
+}
+# Becomes infertile
+character_event = {
+	id = WCRAC.400
+	desc = EVTDESC_WCRAC_400
+	picture = GFX_evt_marriage
+	border = GFX_event_normal_frame_religion
+	
+	is_triggered_only = yes
+	
+	hide_from = yes
+	
+	immediate = {
+		add_trait = infertile
+	}
+	
+	option = {
+		name = ALAS
+		
+		tooltip = {
+			add_trait = infertile
+		}
 	}
 }

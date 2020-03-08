@@ -2,47 +2,49 @@
 
 ### NECROMANCY ###
 set_undead_gfx_effect = {
-	if = {
-		limit = { has_undead_gfx_trigger = no }	# If you add new undead gfx, don't forget to add your gfx in this trigger
+	hidden_effect = {
 		if = {
-			limit = { has_human_gfx_trigger = yes }
-			set_graphical_culture = human_undead
-		}
-		else_if = {
-			limit = {
-				OR = {
-					graphical_culture = murlocgfx
-					graphical_culture = murlocundeadgfx
-				}
+			limit = { has_undead_gfx_trigger = no }	# If you add new undead gfx, don't forget to add your gfx in this trigger
+			if = {
+				limit = { has_human_gfx_trigger = yes }
+				set_graphical_culture = human_undead
 			}
-			set_graphical_culture = murloc_undead
-		}
-		else_if = {
-			limit = {
-				OR = {
-					graphical_culture = quilboargfx
-					graphical_culture = quilboarundeadgfx
+			else_if = {
+				limit = {
+					OR = {
+						graphical_culture = murlocgfx
+						graphical_culture = murlocundeadgfx
+					}
 				}
+				set_graphical_culture = murloc_undead
 			}
-			set_graphical_culture = quilboar_undead
-		}
-		else_if = {
-			limit = { graphical_culture = vrykulgfx }
-			set_graphical_culture = vrykul_undead
-		}
-		else_if = {
-			limit = {
-				OR = {
-					graphical_culture = gnollgfx
-					graphical_culture = gnollundeadgfx
+			else_if = {
+				limit = {
+					OR = {
+						graphical_culture = quilboargfx
+						graphical_culture = quilboarundeadgfx
+					}
 				}
+				set_graphical_culture = quilboar_undead
 			}
-			set_graphical_culture = gnoll_undead
+			else_if = {
+				limit = { graphical_culture = vrykulgfx }
+				set_graphical_culture = vrykul_undead
+			}
+			else_if = {
+				limit = {
+					OR = {
+						graphical_culture = gnollgfx
+						graphical_culture = gnollundeadgfx
+					}
+				}
+				set_graphical_culture = gnoll_undead
+			}
+			# You're too ugly, sorry
+			# else = {
+				# set_graphical_culture = ghoul
+			# }
 		}
-		# You're too ugly, sorry
-		# else = {
-			# set_graphical_culture = ghoul
-		# }
 	}
 }
 add_trait_undead_effect = {
@@ -68,15 +70,19 @@ add_trait_undead_effect = {
 		set_undead_gfx_effect = yes
 
 		hidden_effect = {
-			if = {
-				limit = { has_character_flag = being_raised_flag }
-				clr_character_flag = being_raised_flag
-			}
+			# Clears flags that undead gets during rising
+			clr_undead_raising_flags = yes
 			
-			character_event = { id = WCUND.1301 days = 3 }		# Changes religion
+			if = {
+				limit = { NOT = { has_character_flag = no_religion_change_flag } }
+				character_event = { id = WCUND.1301 days = 3 }		# Changes religion
+			}
 
 			# Pregnant shall not pass
 			cancel_pregnancy_effect = yes
+			
+			# Fixes immortal age
+			add_age_back_effect = yes
 
 			# Notifies your family/spouse/friends/lovers
 			set_character_flag = show_notification_undead_flag	# Type of notification
@@ -93,8 +99,8 @@ add_2_fel_corruption_effect = {
 			NOT = { trait = being_demon }
 			is_susceptible_to_fel_corruption_trigger = yes
 		}
-		change_variable = { which = fel_corruption value = 2 }
 		show_fel_corruption_effect = yes
+		change_variable = { which = fel_corruption value = 2 }
 		if = {
 			limit = { check_variable = { which = fel_corruption value = 101 } }
 			set_variable = { which = fel_corruption value = 100 }
@@ -125,8 +131,8 @@ add_5_fel_corruption_effect = {
 			NOT = { trait = being_demon }
 			is_susceptible_to_fel_corruption_trigger = yes
 		}
-		change_variable = { which = fel_corruption value = 5 }
 		show_fel_corruption_effect = yes
+		change_variable = { which = fel_corruption value = 5 }
 		if = {
 			limit = { check_variable = { which = fel_corruption value = 101 } }
 			set_variable = { which = fel_corruption value = 100 }
@@ -157,8 +163,8 @@ add_10_fel_corruption_effect = {
 			NOT = { trait = being_demon }
 			is_susceptible_to_fel_corruption_trigger = yes
 		}
-		change_variable = { which = fel_corruption value = 10 }
 		show_fel_corruption_effect = yes
+		change_variable = { which = fel_corruption value = 10 }
 		if = {
 			limit = { check_variable = { which = fel_corruption value = 101 } }
 			set_variable = { which = fel_corruption value = 100 }
@@ -189,8 +195,8 @@ add_15_fel_corruption_effect = {
 			NOT = { trait = being_demon }
 			is_susceptible_to_fel_corruption_trigger = yes
 		}
-		change_variable = { which = fel_corruption value = 15 }
 		show_fel_corruption_effect = yes
+		change_variable = { which = fel_corruption value = 15 }
 		if = {
 			limit = { check_variable = { which = fel_corruption value = 101 } }
 			set_variable = { which = fel_corruption value = 100 }
@@ -221,8 +227,8 @@ add_35_fel_corruption_effect = {
 			NOT = { trait = being_demon }
 			is_susceptible_to_fel_corruption_trigger = yes
 		}
-		change_variable = { which = fel_corruption value = 35 }
 		show_fel_corruption_effect = yes
+		change_variable = { which = fel_corruption value = 35 }
 		if = {
 			limit = { check_variable = { which = fel_corruption value = 101 } }
 			set_variable = { which = fel_corruption value = 100 }
@@ -252,8 +258,8 @@ remove_5_fel_corruption_effect = {
 			NOT = { trait = being_demon }
 			is_susceptible_to_fel_corruption_trigger = yes
 		}
-		change_variable = { which = fel_corruption value = -5 }
 		show_fel_corruption_effect = yes
+		change_variable = { which = fel_corruption value = -5 }
 		if = {
 			limit = { NOT = { check_variable = { which = fel_corruption value = 0 } } }
 			set_variable = { which = fel_corruption value = 0 }
@@ -267,8 +273,8 @@ remove_15_fel_corruption_effect = {
 			NOT = { trait = being_demon }
 			is_susceptible_to_fel_corruption_trigger = yes
 		}
-		change_variable = { which = fel_corruption value = -15 }
 		show_fel_corruption_effect = yes
+		change_variable = { which = fel_corruption value = -15 }
 		if = {
 			limit = { NOT = { check_variable = { which = fel_corruption value = 0 } } }
 			set_variable = { which = fel_corruption value = 0 }
@@ -315,23 +321,33 @@ add_fel_corruption_modifier_effect = {
 	}
 }
 set_demon_gfx_effect = {
-	if = {
-		limit = { has_demon_gfx_trigger = no }
+	hidden_effect = {
 		if = {
-			limit = { check_variable = { which = fel_corruption value = 66 } }
+			limit = { has_demon_gfx_trigger = no }
 			if = {
-				limit = { has_orc_gfx_trigger = yes }
-				if = { limit = { trait = creature_orc } remove_trait = creature_orc }
-				if = { limit = { NOT = { trait = creature_fel_orc } } add_trait = creature_fel_orc }
-				set_graphical_culture = orcfel
+				limit = { check_variable = { which = fel_corruption value = 66 } }
+				if = {
+					limit = { has_orc_gfx_trigger = yes }
+					if = { limit = { trait = creature_orc } remove_trait = creature_orc }
+					if = { limit = { NOT = { trait = creature_fel_orc } } add_trait = creature_fel_orc }
+					set_graphical_culture = orcfel
+				}
 			}
-		}
-		if = {
-			limit = {
-				check_variable = { which = fel_corruption value = 100 }
-				has_demon_gfx_trigger = no
+			if = {
+				limit = {
+					check_variable = { which = fel_corruption value = 100 }
+					has_demon_gfx_trigger = no
+				}
+				if = {
+					limit = { has_eredar_gfx_trigger = yes }
+					if = { limit = { trait = creature_draenei } remove_trait = creature_draenei }
+					if = { limit = { NOT = { trait = creature_eredar } } add_trait = creature_eredar }
+					set_graphical_culture = eredar
+				}
+				else = {
+					set_graphical_culture = demon_form
+				}
 			}
-			set_graphical_culture = demon_form
 		}
 	}
 }
@@ -354,6 +370,9 @@ add_trait_demon_effect = {
 	hidden_effect = {
 		# Pregnant shall not pass
 		cancel_pregnancy_effect = yes
+		
+		# Fixes immortal age
+		add_age_back_effect = yes
 
 		# Notifies your family/spouse/friends/lovers
 		set_character_flag = show_notification_demon_flag	# Type of notification
@@ -425,8 +444,8 @@ add_2_void_corruption_effect = {
 			NOT = { trait = being_void }
 			is_susceptible_to_void_corruption_trigger = yes
 		}
-		change_variable = { which = void_corruption value = 2 }
 		show_void_corruption_effect = yes
+		change_variable = { which = void_corruption value = 2 }
 		if = {
 			limit = { check_variable = { which = void_corruption value = 101 } }
 			set_variable = { which = void_corruption value = 100 }
@@ -457,8 +476,8 @@ add_5_void_corruption_effect = {
 			NOT = { trait = being_void }
 			is_susceptible_to_void_corruption_trigger = yes
 		}
-		change_variable = { which = void_corruption value = 5 }
 		show_void_corruption_effect = yes
+		change_variable = { which = void_corruption value = 5 }
 		if = {
 			limit = { check_variable = { which = void_corruption value = 101 } }
 			set_variable = { which = void_corruption value = 100 }
@@ -489,8 +508,8 @@ add_10_void_corruption_effect = {
 			NOT = { trait = being_void }
 			is_susceptible_to_void_corruption_trigger = yes
 		}
-		change_variable = { which = void_corruption value = 10 }
 		show_void_corruption_effect = yes
+		change_variable = { which = void_corruption value = 10 }
 		if = {
 			limit = { check_variable = { which = void_corruption value = 101 } }
 			set_variable = { which = void_corruption value = 100 }
@@ -521,8 +540,8 @@ add_15_void_corruption_effect = {
 			NOT = { trait = being_void }
 			is_susceptible_to_void_corruption_trigger = yes
 		}
-		change_variable = { which = void_corruption value = 15 }
 		show_void_corruption_effect = yes
+		change_variable = { which = void_corruption value = 15 }
 		if = {
 			limit = { check_variable = { which = void_corruption value = 101 } }
 			set_variable = { which = void_corruption value = 100 }
@@ -553,8 +572,8 @@ add_35_void_corruption_effect = {
 			NOT = { trait = being_void }
 			is_susceptible_to_void_corruption_trigger = yes
 		}
-		change_variable = { which = void_corruption value = 35 }
 		show_void_corruption_effect = yes
+		change_variable = { which = void_corruption value = 35 }
 		if = {
 			limit = { check_variable = { which = void_corruption value = 101 } }
 			set_variable = { which = void_corruption value = 100 }
@@ -584,8 +603,8 @@ remove_5_void_corruption_effect = {
 			NOT = { trait = being_void }
 			is_susceptible_to_void_corruption_trigger = yes
 		}
-		change_variable = { which = void_corruption value = -5 }
 		show_void_corruption_effect = yes
+		change_variable = { which = void_corruption value = -5 }
 		if = {
 			limit = { NOT = { check_variable = { which = void_corruption value = 0 } } }
 			set_variable = { which = void_corruption value = 0 }
@@ -599,8 +618,8 @@ remove_15_void_corruption_effect = {
 			NOT = { trait = being_void }
 			is_susceptible_to_void_corruption_trigger = yes
 		}
-		change_variable = { which = void_corruption value = -15 }
 		show_void_corruption_effect = yes
+		change_variable = { which = void_corruption value = -15 }
 		if = {
 			limit = { NOT = { check_variable = { which = void_corruption value = 0 } } }
 			set_variable = { which = void_corruption value = 0 }
@@ -655,6 +674,9 @@ add_trait_void_creature_effect = {
 	hidden_effect = {
 		# Pregnant shall not pass
 		cancel_pregnancy_effect = yes
+		
+		# Fixes immortal age
+		add_age_back_effect = yes
 
 		# # Notifies your family/spouse/friends/lovers
 		# set_character_flag = show_notification_void_flag	# Type of notification
@@ -677,19 +699,31 @@ show_void_corruption_effect = {
 
 # Removes drunkard, diseases, negative genetic and weight
 clean_dark_beings_effect = {
+	# Remove mortal traits
+	clr_mortal_traits_effect = yes
+	
 	# Remove drunkard
 	if = { limit = { trait = drunkard } remove_trait = drunkard }
 
 	# Remove diseases
+	# Remove infection
+	if = { limit = { trait = infection } remove_trait = infection }
+	if = { limit = { trait = lovers_pox } remove_trait = lovers_pox }
 	remove_disease_trait_effect = yes
 	remove_symptoms_effect = yes
 	hidden_effect = {
+		# Remove pending infection from wound prior to becoming demon
+		if = {
+			limit = { has_character_flag = pending_infection }
+			clr_character_flag = pending_infection
+		}
 		remove_disease_flags_effect = yes
 		remove_treatment_modifiers_effect = yes
 	}
 
 	# Removed negative genetic
 	remove_all_negative_congenital_traits_effect = yes
+	remone_all_non_inheritable_negative_congenital_traits_effect = yes
 
 	# Remove weight
 	if = {
@@ -703,4 +737,8 @@ clean_dark_beings_effect = {
 	remove_weight_modifier_effect = yes
 	clear_fat_flags_effect = yes
 	clear_malnourished_flags_effect = yes
+	
+	# Remove some modifiers
+	if = { limit = { has_character_modifier = light_mark_good } remove_character_modifier = light_mark_good }
+	if = { limit = { has_character_modifier = touch_of_elune } remove_character_modifier = touch_of_elune }
 }

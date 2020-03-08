@@ -4,31 +4,63 @@ has_faction_title_trigger = {
 		has_landed_title = e_alliance
 	}
 }
-can_lead_faction_trigger = {
-	can_be_in_faction_trigger = yes
-	
-	is_nomadic = no
-	is_republic = no
-	is_theocracy = no
+faction_title_trigger = {
+	OR = {
+		title = e_horde
+		title = e_alliance
+	}
 }
-can_be_in_faction_trigger = {
+has_active_faction_title_trigger = {
+	OR = {
+		AND = {
+			has_landed_title = e_horde
+			trait = leader_of_horde_trait
+		}
+		AND = {
+			has_landed_title = e_alliance
+			trait = leader_of_alliance_trait
+		}
+	}
+}
+# Common condtions to stay
+common_faction_trigger = {
 	is_untouchable_trigger = no
-	can_rule_peacefully_trigger = yes
+	evil_government_trigger = no
 
 	is_playable = yes
-	controls_religion = no
-	holy_order = no
-	mercenary = no
 	
+	OR = {
+		is_landed = yes
+		AND = {
+			is_ruler = yes
+			primary_title = { is_landless_type_title = no }
+		}
+	}
 	independent = yes
+	mercenary = no
+	holy_order = no
 	OR = {
 		is_tributary = no
 		is_tributary = { type = political_faction suzerain = suzerain }
 	}
-	is_nomadic = no
 	NOT = { government = dragon_government }
+	is_nomadic = no
 	higher_real_tier_than = COUNT
 }
+# If it's not true, character can't lead faction in and must be kicked
+can_lead_faction_trigger = {
+	is_republic = no
+	is_theocracy = no
+	
+	common_faction_trigger = yes
+}
+# If it's not true, character can't stay in and must be kicked
+can_be_in_faction_trigger = {
+	evil_public_religion_trigger = no
+	
+	common_faction_trigger = yes
+}
+# If it's not true, character can't stay in the Horde and must be kicked
 can_be_in_horde_faction_trigger = {
 	trigger_if = {
 		limit = { trait = leader_of_horde_trait }
@@ -53,6 +85,7 @@ can_be_in_horde_faction_trigger = {
 		e_horde = { holder_scope = { trait = leader_of_horde_trait } }
 	}
 }
+# If it's not true, character can't stay in the Alliance and must be kicked
 can_be_in_alliance_faction_trigger = {
 	trigger_if = {
 		limit = { trait = leader_of_alliance_trait }
@@ -76,6 +109,10 @@ can_be_in_alliance_faction_trigger = {
 		NOT = { e_alliance = { has_holder = yes } }
 		e_alliance = { holder_scope = { trait = leader_of_alliance_trait } }
 	}
+	OR = {
+		NOT = { event_target:target_temporary_alliance_title = { has_holder = yes } }
+		event_target:target_temporary_alliance_title = { holder_scope = { trait = leader_of_alliance_trait } }
+	}
 }
 is_member_of_horde_faction_trigger = {
 	OR = {
@@ -95,36 +132,43 @@ is_member_of_alliance_faction_trigger = {
 		}
 	}
 }
-has_good_opinion_with_prev_faction_leader_trigger = {
-	NOR = {
-		evil_public_religion_trigger = yes
-		religion_group = elemental_lords_group
-		religion = scarlet_light
-		religion = lightbound
-		religion = cult_of_hakkar
-		
-		religion = water_deities
-		religion = cult_of_the_candle
-		religion = primitive_shamanism
+# Enought opinion to join faction
+has_opinion_to_join_prev_faction_leader_trigger = {
+	# Players need more opinion
+	trigger_if = {
+		limit = { ai = no }
+		trigger_if = {	# Less opinion required if there's ongoing invasion
+			limit = { ongoing_invasion_trigger = yes }
+			reverse_opinion = { who = PREV value = 25 }
+		}
+		trigger_else = {
+			reverse_opinion = { who = PREV value = 60 }
+		}
 	}
-	OR = {
-		opinion = { who = PREV value = 15 }
-		AND = {
-			NOR = {
+	trigger_else = {
+		has_good_opinion_with_prev_faction_leader_trigger = yes
+	}
+}
+# Enought opinion to stay in faction
+has_good_opinion_with_prev_faction_leader_trigger = {
+	trigger_if = {
+		limit = { ongoing_invasion_trigger = yes }
+		opinion = { who = PREV value = -50 }
+	}
+	trigger_else_if = {
+		limit = {
+			OR = {
 				trait = stubborn
 				trait = envious
 				trait = ambitious
 				trait = proud
 				trait = greedy
 			}
-			opinion = { who = PREV value = -10 }
 		}
-		hidden_tooltip = {
-			AND = {
-				ongoing_invasion_trigger = yes
-				opinion = { who = PREV value = -50 }
-			}
-		}
+		opinion = { who = PREV value = 40 }
+	}
+	trigger_else = {
+		opinion = { who = PREV value = -10 }
 	}
 }
 is_in_political_faction_trigger = {
@@ -137,8 +181,9 @@ has_horde_culture_trigger = {
 	OR = {
 		culture_group = goblin_group
 		culture = blood_elf
-		culture_group = orc_group
+		culture_group = hozen_group
 		culture_group = ogre_group
+		culture_group = orc_group
 		culture_group = tauren_group
 		culture_group = troll_group
 		culture_group = undead_group
@@ -146,6 +191,7 @@ has_horde_culture_trigger = {
 }
 has_horde_religion_trigger = {
 	OR = {
+		religion = cult_of_sunwell
 		religion_group = loa_group
 		religion_group = primitive_group
 		religion = cult_of_wealth
@@ -159,22 +205,104 @@ has_horde_religion_trigger = {
 has_alliance_culture_trigger = {
 	OR = {
 		culture_group = draenei_group
+		culture = dryad
 		culture_group = dwarf_group
+		culture_group = furbolg_group
 		culture_group = gnome_group
 		culture = high_elf
-		culture = dryad
 		culture_group = human_group
 		culture_group = night_elf_group
 	}
 }
 has_alliance_religion_trigger = {
 	OR = {
-		religion_group = druidism_group
-		religion_group = light_group
-		AND = {
-			religion_group = secular_group
-			NOT = { religion = cult_of_wealth }
-		}
+		religion_group = arcane_group
+		religion = old_ways
+		religion = druidism_beliefs
+		religion = ursine
+		religion = kaldorei_religion
+		religion = holy_light
+		religion = naaru
+		religion = rationalism
+		religion = mystery_of_the_makers
 		religion = tidemother
+	}
+}
+# If it's not true, character can't join faction
+can_join_faction_trigger = {
+	trigger_if = {
+		limit = { ai = yes }
+		custom_tooltip = {
+			text = is_aggressive_trigger_negative_tooltip
+			is_aggressive_trigger = no
+		}
+		NOT = {
+			has_landed_title = d_syndicate
+			has_landed_title = d_defias_brotherhood
+		}
+	}
+}
+can_leave_faction_trigger = {
+	liege = { has_faction_title_trigger = yes }
+	OR = {
+		is_decision_potential = leave_horde_political_faction
+		is_decision_potential = leave_alliance_political_faction
+	}
+}
+# AI prefers factions with small number of tributes
+faction_tributes_over_limit_trigger = {
+	trigger_if = {
+		limit = {
+			has_game_rule = {
+				name = political_factions
+				value = medium
+			}
+		}
+		any_tributary = {
+			count = 10
+			is_tributary = { type = political_faction suzerain = suzerain }
+		}
+	}
+	trigger_else_if = {
+		limit = {
+			has_game_rule = {
+				name = political_factions
+				value = large
+			}
+		}
+		any_tributary = {
+			count = 15
+			is_tributary = { type = political_faction suzerain = suzerain }
+		}
+	}
+	trigger_else = {
+		any_tributary = {
+			count = 5
+			is_tributary = { type = political_faction suzerain = suzerain }
+		}
+	}
+}
+# AI prefers factions with small realm size
+faction_realm_size_over_limit_trigger = {
+	trigger_if = {
+		limit = {
+			has_game_rule = {
+				name = political_factions
+				value = medium
+			}
+		}
+		realm_size = 200
+	}
+	trigger_else_if = {
+		limit = {
+			has_game_rule = {
+				name = political_factions
+				value = large
+			}
+		}
+		realm_size = 300
+	}
+	trigger_else = {
+		realm_size = 100
 	}
 }

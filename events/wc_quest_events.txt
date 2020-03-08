@@ -1,0 +1,1424 @@
+namespace = WCQUE
+
+### Mission Tombola ###
+# Tombola itself
+character_event = {
+	id = WCQUE.100
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	min_age = 16
+	only_capable = yes
+	prisoner = no
+	is_in_society = yes
+
+	trigger = {
+		OR = {
+			society_member_of = cult_of_the_damned
+			society_member_of = shadow_council
+			society_member_of = twilights_hammer_cult
+			society_member_of = cenarion_circle
+			society_member_of = sisterhood_of_elune
+		}
+		has_any_quest = no
+		NOT = { has_character_modifier = quest_cooldown_timer }
+		NOT = { is_society_grandmaster = yes }
+		NOT = { is_inaccessible_trigger = yes }
+	}
+
+	immediate = {
+		random_society_member = {
+			limit = {
+				is_society_grandmaster = yes
+				same_society_as = ROOT
+			}
+			save_event_target_as = grandmaster
+		}
+
+		random_list = {
+			# Pick Theology focus (vanilla)
+			20 = {
+				trigger = {
+					has_dlc ="Way of Life"
+					
+					is_playable = yes
+					
+					OR = {
+						society_member_of = cenarion_circle
+						society_member_of = sisterhood_of_elune
+					}
+				}
+				set_character_flag = monastic_orders_mission_theology
+				event_target:grandmaster = { character_event = { id = MNM.4010 days = 7 random = 7 } }
+			}
+			
+			# Infect the grain (mod)
+			20 = {
+				modifier = {
+					factor = 0
+					is_playable = no
+				}
+				modifier = {
+					factor = 0
+					NOT = { society_member_of = cult_of_the_damned }
+				}
+				modifier = {
+					factor = 0
+					realm = { title = e_scourge }
+				}
+				modifier = {
+					factor = 0
+					NOT = {
+						any_realm_province = {
+							NOT = { religion = death_god }
+							NOT = { has_province_modifier = undead_province }
+							any_province_holding = { holder_scope = { NOT = { character = ROOT } } }
+						}
+					}
+				}
+				set_character_flag = quest_infect_grain_flag
+				event_target:grandmaster = { character_event = { id = WCQUE.105 } }
+			}
+
+			# Disembowel character (mod)
+			20 = {
+				modifier = {
+					factor = 0
+					is_playable = no
+				}
+				modifier = {
+					factor = 0
+					NOT = { society_member_of = cult_of_the_damned }
+				}
+				set_character_flag = quest_disembowel_flag
+				event_target:grandmaster = { character_event = { id = WCQUE.105 } }
+			}
+
+			# Turn into undead (mod)
+			20 = {
+				trigger = {
+					ai = no
+					is_playable = yes
+					
+					society_rank > 1
+					society_member_of = cult_of_the_damned
+				}
+				set_character_flag = quest_turn_into_undead_flag
+				event_target:grandmaster = { character_event = { id = WCQUE.105 } }
+			}
+
+			# Drain a soul (mod)
+			20 = {
+				modifier = {
+					factor = 0
+					is_playable = no
+				}
+				modifier = {
+					factor = 0
+					NOT = { society_member_of = shadow_council }
+				}
+				set_character_flag = quest_drain_soul_flag
+				event_target:grandmaster = { character_event = { id = WCQUE.105 } }
+			}
+
+			# Mind Control (mod)
+			20 = {
+				trigger = {
+					ai = no
+					is_playable = yes
+					
+					society_rank > 2
+					OR = {
+						society_member_of = shadow_council
+						society_member_of = twilights_hammer_cult
+					}
+				}
+				set_character_flag = quest_control_mind_flag
+				event_target:grandmaster = { character_event = { id = WCQUE.105 } }
+			}
+
+			# Desecrate temple (vanilla)
+			20 = {
+				trigger = {
+					has_dlc = "Mystics"
+
+					is_playable = yes
+					
+					OR = {
+						society_member_of = shadow_council
+						society_member_of = twilights_hammer_cult
+					}
+					any_realm_province = {
+						any_province_holding = {
+							holding_type = temple
+							holder_scope = {
+								# Warcraft
+								evil_public_religion_trigger = no
+								evil_true_religion_trigger = no
+							}
+							holder_scope = {
+								NOT = {
+									character = ROOT
+								}
+							}
+							holder_scope = {
+								NOT = { same_society_as = ROOT }
+							}
+						}
+					}
+				}
+				event_target:grandmaster = {
+					character_event = { id = MNM.7023 }
+				}
+			}
+			
+			# Sacrifice someone (vanilla)
+			20 = {
+				trigger = {
+					has_dlc = "Mystics"
+
+					is_playable = yes
+
+					society_member_of = twilights_hammer_cult
+				}
+				event_target:grandmaster = {
+					character_event = { id = MNM.7024 }
+				}
+			}
+			
+			# Enter Emerald Dream (mod)
+			20 = {
+				trigger = {
+					is_druid_class_trigger = yes
+					NOT = { trait = in_emerald_dream }
+					
+					society_member_of = cenarion_circle
+				}
+				set_character_flag = quest_enter_emerald_dream_flag
+				event_target:grandmaster = { character_event = { id = WCQUE.105 } }
+			}
+			
+			# Build Barrow Den (mod)
+			20 = {
+				trigger = {
+					is_landed = yes
+					
+					society_member_of = cenarion_circle
+					NOT = { has_character_flag = barrow_den_completed }
+				}
+				set_character_flag = quest_build_barrow_den_flag
+				event_target:grandmaster = { character_event = { id = WCQUE.105 } }
+			}
+			
+			# Build Hospital (mod)
+			20 = {
+				trigger = {
+					has_dlc = "Reapers"
+
+					is_playable = yes
+					
+					OR = {
+						society_member_of = cenarion_circle
+						society_member_of = sisterhood_of_elune
+					}
+					num_of_count_titles = 1
+					any_demesne_province = { has_hospital = no }
+				}
+				set_character_flag = quest_build_hospital_flag
+				event_target:grandmaster = { character_event = { id = WCQUE.105 } }
+			}
+
+			75 = { # AI bypasses missions at times
+				modifier = {
+					factor = 0
+					ai = no
+				}
+				random_list = {
+					70 = {
+						modifier = {
+							factor = 0.9
+							society_influence >= 30
+						}
+						modifier = {
+							factor = 0.9
+							society_influence >= 40
+						}
+						modifier = {
+							factor = 0.8
+							society_influence >= 50
+						}
+						modifier = {
+							factor = 0.7
+							society_influence >= 70
+						}
+						modifier = {
+							factor = 0.6
+							society_influence >= 80
+						}
+						modifier = {
+							factor = 0.5
+							society_influence >= 90
+						}
+						add_mission_succeed_influence_effect = yes
+					}
+					30 = {
+						add_mission_fail_influence_effect = yes
+					}
+				}
+			}
+
+			200 = {
+				modifier = {
+					factor = 0
+					ai = no
+				}
+				#Do nothing for AI
+			}
+		}
+	}
+}
+# Tombola ping event
+character_event = {
+	id = WCQUE.105
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
+		FROM = {
+			trigger_switch = {
+				on_trigger = has_character_flag
+				quest_infect_grain_flag = { clr_character_flag = quest_infect_grain_flag society_quest_event = { id = WCQUE.305 days = 7 random = 7 } }
+				quest_disembowel_flag = { clr_character_flag = quest_disembowel_flag society_quest_event = { id = WCQUE.405 days = 7 random = 7 } }
+				quest_turn_into_undead_flag = { clr_character_flag = quest_turn_into_undead_flag society_quest_event = { id = WCQUE.505 days = 7 random = 7 } }
+				quest_drain_soul_flag = { clr_character_flag = quest_drain_soul_flag society_quest_event = { id = WCQUE.605 days = 7 random = 7 } }
+				quest_control_mind_flag = { clr_character_flag = quest_control_mind_flag society_quest_event = { id = WCQUE.705 days = 7 random = 7 } }
+				quest_enter_emerald_dream_flag = { clr_character_flag = quest_enter_emerald_dream_flag society_quest_event = { id = WCQUE.800 days = 7 random = 7 } }
+				quest_build_barrow_den_flag = { clr_character_flag = quest_build_barrow_den_flag society_quest_event = { id = WCQUE.900 days = 7 random = 7 } }
+				quest_build_hospital_flag = { clr_character_flag = quest_build_hospital_flag society_quest_event = { id = WCQUE.1000 days = 7 random = 7 } }
+			}
+		}
+	}
+}
+
+### Infect grain ###
+#Assign event
+society_quest_event = {
+	id = WCQUE.305
+	desc = EVTDESC_WCDAC_7024
+
+	is_triggered_only = yes
+
+	immediate = {
+		random_realm_province = {
+			limit = {
+				NOT = { religion = death_god }
+				NOT = { has_province_modifier = undead_province }
+				any_province_holding = { holder_scope = { NOT = { character = ROOT } } }
+			}
+			random_province_holding = {
+				limit = { holder_scope = { NOT = { character = ROOT } } }
+				save_event_target_as = infection_target
+			}
+		}
+
+		random_realm_province = {
+			limit = {
+				NOT = { holder_scope =  { character = ROOT } }
+				NOT = { religion = death_god }
+				NOT = { has_province_modifier = undead_province }
+			}
+			random_province_holding = {
+				save_event_target_as = infection_target
+			}
+		}
+	}
+
+	quest_target = event_target:infection_target
+
+	option = {
+		name = ACCEPT
+		event_target:infection_target = {
+			set_quest_target = {
+				id = quest_infect_grain
+				holder = ROOT
+			}
+		}
+	}
+	option  = {
+		name = DECLINE
+		custom_tooltip = { text = decline_quest_tooltip }
+
+		add_character_modifier = {
+			name = quest_cooldown_timer
+			hidden = yes
+			days = 1000
+		}
+
+		ai_chance = { factor = 0 }
+	}
+}
+# Introductory event
+long_character_event = {
+	id = WCQUE.310
+	desc = EVTDESC_WCDAC_7025
+	picture = GFX_evt_secret_ceremony
+
+	is_triggered_only = yes
+
+	immediate = {
+		random_quest_target = {
+			limit = { is_quest_target_of = ROOT }
+			save_event_target_as =  infection_target
+		}
+		event_target:infection_target = {
+			location = { save_event_target_as = province_of_infection_target }
+			holder_scope = { save_event_target_as = holder_of_infection_target }
+		}
+	}
+
+	option = {
+		name  = EVTOPTA_WCDAC_7025
+		character_event = { id = WCQUE.315 }
+	}
+}
+# Faces the guards
+character_event = {
+	id = WCQUE.315
+	desc = EVTDESC_WCDAC_7026
+	picture = GFX_evt_secret_ceremony
+
+	is_triggered_only = yes
+
+	# Bribe the guards
+	option = {
+		name  = EVTOPTA_WCDAC_7026
+		scaled_wealth = { value = -0.05 min = -25 }
+		hidden_effect = {
+			set_character_flag = tried_to_bribe_flag
+			random_list = {
+				75 = {
+					set_character_flag = bribed_the_guards_flag
+					character_event = { id = WCQUE.330 }
+				}
+				25 = {
+					set_character_flag = attacked_the_guards_flag
+					character_event = { id = WCQUE.320 }
+					modifier = {
+						factor = 1.75
+						NOT = { diplomacy = 12 }
+					}
+					modifier = {
+						factor = 1.75
+						NOT = { diplomacy = 7 }
+					}
+					modifier = {
+						factor = 1.75
+						NOT = { diplomacy = 3 }
+					}
+				}
+			}
+		}
+		ai_chance = {
+			factor = 0
+		}
+	}
+	# Hide from the guards
+	option = {
+		name  = EVTOPTB_WCDAC_7026
+		hidden_effect = {
+			set_character_flag = tried_to_hide_flag
+			random_list = {
+				75 = {
+					set_character_flag = avoided_the_guards_flag
+					character_event = { id = WCQUE.330 }
+				}
+				25 = {
+					set_character_flag = attacked_the_guards_flag
+					character_event = { id = WCQUE.320 }
+					modifier = {
+						factor = 1.75
+						NOT = { intrigue = 12 }
+					}
+					modifier = {
+						factor = 1.75
+						NOT = { intrigue = 7 }
+					}
+					modifier = {
+						factor = 1.75
+						NOT = { intrigue = 3 }
+					}
+				}
+			}
+		}
+		ai_chance = {
+			factor = 1
+		}
+	}
+	# Attack the guards
+	option = {
+		name  = EVTOPTC_WCDAC_7026
+		hidden_effect = {
+			set_character_flag = tried_to_attack_flag
+			set_character_flag = attacked_the_guards_flag
+			character_event = { id = WCQUE.320 }
+		}
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+# Struggles with the guards
+character_event = {
+	id = WCQUE.320
+	desc = {
+		trigger = { has_character_flag = tried_to_bribe_flag }
+		text = EVTDESC_WCDAC_7027_case_01
+	}
+	desc = {
+		trigger = { has_character_flag = tried_to_hide_flag }
+		text = EVTDESC_WCDAC_7027_case_02
+	}
+	desc = {
+		trigger = { has_character_flag = tried_to_attack_flag }
+		text = EVTDESC_WCDAC_7027_case_03
+	}
+	picture = GFX_evt_secret_ceremony
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			event_target:holder_of_infection_target = {
+				create_character = {
+					dynasty = none
+					religion = THIS
+					culture = THIS
+					female = no
+					age = 40
+					attributes = {
+						martial=5 diplomacy=3 stewardship=3 intrigue=3 learning=3
+					}
+					random_traits = yes
+					trait = class_warrior_2
+					trait=misguided_warrior
+				}
+				new_character = {
+					save_event_target_as = target_guard
+					set_character_flag = quest_character_flag
+					clear_event_target = target_enemy
+					save_event_target_as = target_enemy
+				}
+			}
+		}
+		save_event_target_as = target_adventurer
+	}
+
+	# Attack him
+	option = {
+		name  = EVTOPTA_WCDAC_7027
+
+		# You win immediately
+		# I wanted to put duel with guard here, but don't have time - your Zuzu
+		character_event = { id = WCQUE.330 }
+	}
+	# Run away
+	option = {
+		trigger = { }
+		name = EVTOPTB_WCDAC_7027
+
+		clr_quest = {
+			id = quest_infect_grain
+			failure = yes
+		}
+		hidden_effect = {
+			clr_character_flag = infection_in_progress
+			clr_character_flag = tried_to_bribe_flag
+			clr_character_flag = bribed_the_guards_flag
+			clr_character_flag = tried_to_hide_flag
+			clr_character_flag = avoided_the_guards_flag
+			clr_character_flag = tried_to_attack_flag
+			clr_character_flag = attacked_the_guards_flag
+		}
+	}
+
+	after = {
+		event_target:target_guard = { death = { death_reason = death_missing } }
+	}
+}
+# You imprisoned by the guards. Fail.
+character_event = {
+	id = WCQUE.325
+	desc = EVTDESC_WCDAC_7028
+	picture = GFX_evt_into_the_dungeon
+
+	is_triggered_only = yes
+
+	immediate = {
+		event_target:target_guard = {
+			if = { limit = { is_alive = yes } death = { death_reason = death_missing } }
+		}
+	}
+
+	option = {
+		name = ALAS
+
+		clr_quest = {
+			id = quest_devil_worshipers_desecrate_temple
+			failure = yes
+		}
+		hidden_effect = {
+			clr_character_flag = infection_in_progress
+			clr_character_flag = tried_to_bribe_flag
+			clr_character_flag = bribed_the_guards_flag
+			clr_character_flag = tried_to_hide_flag
+			clr_character_flag = avoided_the_guards_flag
+			clr_character_flag = tried_to_attack_flag
+			clr_character_flag = attacked_the_guards_flag
+			increase_visibility_effect = yes
+		}
+	}
+}
+# The grain is infected. What to do with the witnesses?
+character_event = {
+	id = WCQUE.330
+	desc = {
+		trigger = { has_character_flag = bribed_the_guards_flag }
+		text = EVTDESC_WCDAC_7030_case_01
+	}
+	desc = {
+		trigger = { has_character_flag = avoided_the_guards_flag }
+		text = EVTDESC_WCDAC_7030_case_02
+	}
+	desc = {
+		trigger = { has_character_flag = attacked_the_guards_flag }
+		text = EVTDESC_WCDAC_7030_case_03
+	}
+	picture = GFX_evt_secret_ceremony
+
+	is_triggered_only = yes
+
+	immediate = {
+		event_target:target_guard = {
+			if = { limit = { is_alive = yes } death = { death_reason = death_missing } }
+		}
+	}
+
+	# Eliminate if it's necessary.
+	option = {
+		name  = EVTOPTA_WCDAC_7030
+
+		hidden_effect = {
+			character_event = { id = WCQUE.335 }
+
+			random_list = {
+				10 = { increase_visibility_effect = yes }
+				90 = {}
+			}
+		}
+
+		ai_chance = {
+			factor = 75
+		}
+	}
+	# Kill them all!
+	option = {
+		name  = EVTOPTB_WCDAC_7030
+
+		add_trait_cruel_effect = yes
+		remove_trait_kind_effect = yes
+		add_society_currency_minor_effect = yes
+
+		hidden_effect = {
+			character_event = { id = WCQUE.335 }
+		}
+
+		ai_chance = {
+			factor = 25
+		}
+	}
+}
+# Finishing of the quest
+character_event = {
+	id = WCQUE.335
+	desc = EVTDESC_WCDAC_7032
+	picture = GFX_evt_secret_ceremony
+
+	is_triggered_only = yes
+
+	option = {
+		name = EXCELLENT
+
+		clr_quest = quest_infect_grain
+		add_society_currency_medium_effect = yes
+
+		event_target:infection_target = {
+			add_holding_modifier = {
+				name = infected_holding
+				years = 5
+				hidden = yes
+			}
+		}
+
+		hidden_effect = {
+			clr_character_flag = infection_in_progress
+			clr_character_flag = tried_to_bribe_flag
+			clr_character_flag = bribed_the_guards_flag
+			clr_character_flag = tried_to_hide_flag
+			clr_character_flag = avoided_the_guards_flag
+			clr_character_flag = tried_to_attack_flag
+			clr_character_flag = attacked_the_guards_flag
+			random = {
+				chance = 50
+				minor_soul_corruption_effect = yes
+			}
+		}
+	}
+}
+
+### Disembowel character ###
+#Assign event
+society_quest_event = {
+	id = WCQUE.405
+	desc = EVTDESC_WCDAC_7041
+	border = GFX_event_letter_frame_intrigue
+
+	is_triggered_only = yes
+
+	immediate = {
+		random_list = {
+			10 = { set_character_flag = disembowel_small_humanoid_flag }
+			10 = { set_character_flag = disembowel_medium_humanoid_flag }
+			5 = { set_character_flag = disembowel_large_humanoid_flag }
+		}
+	}
+
+	option = {
+		name = ACCEPT
+
+		if = {
+			limit = { has_character_flag = disembowel_small_humanoid_flag }
+			set_quest = quest_disembowel_small_humanoid
+		}
+		else_if = {
+			limit = { has_character_flag = disembowel_medium_humanoid_flag }
+			set_quest = quest_disembowel_medium_humanoid
+		}
+		else = {
+			set_quest = quest_disembowel_large_humanoid
+		}
+	}
+
+	option = {
+		name = DECLINE
+		custom_tooltip = { text = decline_quest_tooltip }
+
+		add_character_modifier = {
+			name = quest_cooldown_timer
+			hidden = yes
+			days = 1000
+		}
+
+		ai_chance = { factor = 0 }
+	}
+
+	after = {
+		hidden_effect = {
+			clr_character_flag = disembowel_small_humanoid_flag
+			clr_character_flag = disembowel_medium_humanoid_flag
+			clr_character_flag = disembowel_large_humanoid_flag
+		}
+	}
+}
+
+### Turn into undead ###
+#Assign event
+society_quest_event = {
+	id = WCQUE.505
+	desc = EVTDESC_WCDAC_7051
+
+	is_triggered_only = yes
+
+	immediate = {
+		random_list = {
+			15 = { set_character_flag = turn_into_undead_smart_flag }
+			10 = { set_character_flag = turn_into_undead_strong_flag }
+			10 = { set_character_flag = turn_into_undead_fair_flag }
+		}
+	}
+
+	option = {
+		name = ACCEPT
+		
+		if = {
+			limit = { has_character_flag = turn_into_undead_smart_flag }
+			set_quest = quest_turn_into_undead_smart
+		}
+		else_if = {
+			limit = { has_character_flag = turn_into_undead_strong_flag }
+			set_quest = quest_turn_into_undead_strong
+		}
+		else = {
+			set_quest = quest_turn_into_undead_fair
+		}
+	}
+	option  = {
+		name = DECLINE
+		custom_tooltip = { text = decline_quest_tooltip }
+
+		add_character_modifier = {
+			name = quest_cooldown_timer
+			hidden = yes
+			days = 1000
+		}
+
+		ai_chance = { factor = 0 }
+	}
+	
+	after = {
+		clr_character_flag = turn_into_undead_smart_flag
+		clr_character_flag = turn_into_undead_strong_flag
+		clr_character_flag = turn_into_undead_fair_flag
+	}
+}
+
+### Drain a soul ###
+#Assign event
+society_quest_event = {
+	id = WCQUE.605
+	desc = EVTDESC_WCDAC_8001
+	border = GFX_event_letter_frame_intrigue
+
+	is_triggered_only = yes
+
+	immediate = {
+		random_list = {
+			5 = { set_character_flag = drain_soul_ruler_flag }
+			10 = { set_character_flag = drain_soul_holy_person_flag }
+			10 = { set_character_flag = drain_soul_virgin_flag }
+		}
+	}
+
+	option = {
+		name = ACCEPT
+
+		if = {
+			limit = { has_character_flag = drain_soul_ruler_flag }
+			set_quest = quest_drain_soul_ruler
+		}
+		if = {
+			limit = { has_character_flag = drain_soul_holy_person_flag }
+			set_quest = quest_drain_soul_holy_person
+		}
+		if = {
+			limit = { has_character_flag = drain_soul_virgin_flag }
+			set_quest = quest_drain_soul_virgin
+		}
+	}
+
+	option = {
+		name = DECLINE
+		custom_tooltip = { text = decline_quest_tooltip }
+
+		add_character_modifier = {
+			name = quest_cooldown_timer
+			hidden = yes
+			days = 1000
+		}
+
+		ai_chance = { factor = 0 }
+	}
+
+	after = {
+		hidden_effect = {
+			clr_character_flag = drain_soul_ruler_flag
+			clr_character_flag = drain_soul_holy_person_flag
+			clr_character_flag = drain_soul_virgin_flag
+		}
+	}
+}
+
+### Mind Control ###
+#Assign event
+society_quest_event = {
+	id = WCQUE.705
+	desc = EVTDESC_WCDAC_8011
+
+	is_triggered_only = yes
+
+	immediate = {
+		random_list = {
+			15 = { set_character_flag = control_mind_smart_flag }
+			10 = { set_character_flag = control_mind_strong_flag }
+			10 = { set_character_flag = control_mind_fair_flag }
+		}
+	}
+
+	option = {
+		name = ACCEPT
+		
+		if = {
+			limit = { has_character_flag = control_mind_smart_flag }
+			set_quest = quest_control_mind_smart
+		}
+		else_if = {
+			limit = { has_character_flag = control_mind_strong_flag }
+			set_quest = quest_control_mind_strong
+		}
+		else = {
+			set_quest = quest_control_mind_fair
+		}
+	}
+	option  = {
+		name = DECLINE
+		custom_tooltip = { text = decline_quest_tooltip }
+
+		add_character_modifier = {
+			name = quest_cooldown_timer
+			hidden = yes
+			days = 1000
+		}
+
+		ai_chance = { factor = 0 }
+	}
+
+	after = {
+		clr_character_flag = control_mind_smart_flag
+		clr_character_flag = control_mind_strong_flag
+		clr_character_flag = control_mind_fair_flag
+	}
+}
+
+### Enter Emerald Dream ###
+#Assign event
+society_quest_event = {
+	id = WCQUE.800
+	border = GFX_event_letter_frame_religion
+
+	desc = {
+		text = EVTDESC_WCCC.211
+	}
+	is_triggered_only = yes
+
+	option = {
+		name = ACCEPT
+		set_quest = quest_enter_emerald_dream
+	}
+
+	option = {
+		name = DECLINE
+		custom_tooltip = { text = decline_quest_tooltip }
+
+		add_character_modifier = {
+			name = quest_cooldown_timer
+			hidden = yes
+			days = 1000
+		}
+
+		ai_chance = { factor = 0 }
+	}
+}
+
+### Build Barrow Den ###
+# Assign event
+society_quest_event = {
+	id = WCQUE.900
+	border = GFX_event_letter_frame_religion
+
+	desc = {
+		text = EVTDESC_WCCC.213
+	}
+	is_triggered_only = yes
+
+	option = {
+		name = ACCEPT
+		set_quest = quest_build_barrow_den
+		character_event = { id = WCQUE.905 days = 30 }
+	}
+
+	option = {
+		name = DECLINE
+		custom_tooltip = { text = decline_quest_tooltip }
+
+		add_character_modifier = {
+			name = quest_cooldown_timer
+			hidden = yes
+			days = 1000
+		}
+
+		ai_chance = { factor = 0 }
+	}
+}
+# Introductory event
+character_event = {
+	id = WCQUE.905
+	desc = EVTDESC_WCCC.230
+	picture = GFX_evt_ritual_scroll
+	border = GFX_event_normal_frame_religion
+	
+	is_triggered_only = yes
+
+	
+	option = {
+		name = EVTOPTA_WCCC.230
+		character_event = { id = WCQUE.910 days = 30}
+	}
+}
+# Size picking
+character_event = {
+	id = WCQUE.910
+	desc = EVTDESC_WCCC.231
+	picture = GFX_evt_ritual_scroll
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+
+	option = {
+		name = EVTOPTA_WCCC.231
+		custom_tooltip = { text = barrow_den_cost_200 }
+		
+		set_character_flag = barrow_den_small
+		
+		character_event = { id = WCQUE.915 days = 60 }
+	}
+	option = {
+		trigger = {
+			OR = {
+				ai = no
+				wealth = 100
+			}
+		}
+		name = EVTOPTB_WCCC.231
+		custom_tooltip = { text = barrow_den_cost_300 }
+		
+		set_character_flag = barrow_den_medium
+		
+		character_event = { id = WCQUE.915 days = 60 }
+	}
+	option = {
+		trigger = {
+			OR = {
+				ai = no
+				wealth = 300
+			}
+		}
+		name = EVTOPTC_WCCC.231
+		custom_tooltip = { text = barrow_den_cost_500 }
+		
+		set_character_flag = barrow_den_large
+		
+		character_event = { id = WCQUE.915 days = 60 }
+	}
+	# option = {
+		# name = EVTOPTD_WCCC.231
+		# trigger = { is_society_grandmaster = yes }
+		# set_character_flag = barrow_den_enormous
+		# character_event = { id = WCQUE.915 days = 60 }
+	# }
+}
+# You have found a perfect place... now pay gold or piety
+character_event = {
+	id = WCQUE.915
+	desc = EVTDESC_WCCC.232
+	picture = GFX_evt_ritual_scroll
+	border = GFX_event_normal_frame_religion
+	
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCCC.232
+		trigger = {
+			has_character_flag = barrow_den_small
+		}
+		character_event = { id = WCQUE.920 days = 120 }
+	}
+	option = {
+		name = EVTOPTB_WCCC.232
+		trigger = {
+			is_society_grandmaster = no
+			OR = {
+				has_character_flag = barrow_den_medium
+				has_character_flag = barrow_den_large
+			}
+		}
+		if = {
+			limit = {
+				has_character_flag = barrow_den_medium
+			}
+			wealth = -100
+			character_event = { id = WCQUE.920 days = 120 }
+		}
+		if = {
+			limit = {
+				has_character_flag = barrow_den_large
+			}
+			wealth = -300
+			character_event = { id = WCQUE.920 days = 120 }
+		}
+	}
+	option = {
+		name = EVTOPTC_WCCC.232
+		trigger = {
+			has_character_flag = barrow_den_medium
+			piety = 100
+			is_society_grandmaster = no
+		}
+		piety = -100
+		character_event = { id = WCQUE.920 days = 120 }
+	}
+	option = {
+		name = EVTOPTC_WCCC.232
+		trigger = {
+			has_character_flag = barrow_den_large
+			piety = 300
+			is_society_grandmaster = no
+		}
+		piety = -300
+		character_event = { id = WCQUE.920 days = 120 }
+	}
+	# option = {
+		# name = EVTOPTD_WCCC.232
+		# trigger = { is_society_grandmaster = yes }
+		# cenarion_circle = { any_society_member = { letter_event = { id = WCQUE.955 } } }
+	# }
+}
+# Early event tombola: satyr trickster, slow growth, corrupted land
+character_event = {
+	id = WCQUE.920
+	hide_window = yes
+	
+	is_triggered_only = yes
+	immediate = {
+		random_list = {
+			33 = {
+				character_event = { id = WCQUE.925 } # Satyr trickster
+			}
+			33 = {
+				character_event = { id = WCQUE.930 } # Slow growth
+			}
+			33 = {
+				character_event = { id = WCQUE.935 } # Corrupted land
+			}
+		}
+	}
+}
+# Satyr trickster
+character_event = {
+	id = WCQUE.925
+	desc = EVTDESC_WCCC.234
+	picture = GFX_evt_ritual_scroll
+	border = GFX_event_normal_frame_religion
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = EVTOPTA_WCCC.234
+		character_event = { id = WCQUE.940 days = 360 }
+	}
+	option = {
+		name = EVTOPTB_WCCC.234
+		trigger = { wealth = 100 }
+		wealth = -100
+		character_event = { id = WCQUE.940 days = 240 }
+	}
+	option = {
+		name = EVTOPTC_WCCC.234
+		tooltip_info = intrigue
+		trigger = {
+			intrigue = 12
+		}
+		character_event = { id = WCQUE.940 days = 120 }
+	}
+}
+# Slow growth
+character_event = {
+	id = WCQUE.930
+	desc = EVTDESC_WCCC.235
+	picture = GFX_evt_ritual_scroll
+	border = GFX_event_normal_frame_religion
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = EVTOPTA_WCCC.234
+		character_event = { id = WCQUE.940 days = 360 }
+	}
+	option = {
+		name = EVTOPTB_WCCC.235
+		trigger = { wealth = 100 }
+		wealth = -100
+		character_event = { id = WCQUE.940 days = 240 }
+	}
+	option = {
+		name = EVTOPTC_WCCC.235
+		tooltip_info = diplomacy
+		trigger = {
+			diplomacy = 12
+		}
+		character_event = { id = WCQUE.940 days = 120 }
+	}
+}
+# Corrupted land
+character_event = {
+	id = WCQUE.935
+	desc = EVTDESC_WCCC.236
+	picture = GFX_evt_ritual_scroll
+	border = GFX_event_normal_frame_religion
+	
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCCC.234
+		character_event = { id = WCQUE.940 days = 360 }
+	}
+	option = {
+		name = EVTOPTB_WCCC.236
+		trigger = { wealth = 100 }
+		wealth = -100
+		character_event = { id = WCQUE.940 days = 240 }
+	}
+	option = {
+		name = EVTOPTC_WCCC.236
+		tooltip_info = learning
+		trigger = {
+			learning = 12
+		}
+		character_event = { id = WCQUE.940 days = 120 }
+	}
+}
+# Start digging
+character_event = {
+	id = WCQUE.940
+	desc = EVTDESC_WCCC.237
+	picture = GFX_evt_ritual_scroll
+	border = GFX_event_normal_frame_religion
+	
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCCC.237
+		character_event = { id = WCQUE.945 days = 120 }
+	}
+}
+# Late event tombola: kobolds, creating tunnels takes a long time, earth Elemental complains
+character_event = {
+	id = WCQUE.945
+	hide_window = yes
+	
+	is_triggered_only = yes
+	immediate = {
+		random_list = {
+			33 = {
+				character_event = { id = WCQUE.950 } # Kobolds
+			}
+			33 = {
+				character_event = { id = WCQUE.955 } # Creating tunnels takes a long time
+			}
+			33 = {
+				character_event = { id = WCQUE.960 } # Earth Elemental complains
+			}
+		}
+	}
+}
+# Kobolds
+character_event = {
+	id = WCQUE.950
+	desc = EVTDESC_WCCC.239
+	picture = GFX_evt_ritual_scroll
+	border = GFX_event_normal_frame_religion
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = EVTOPTA_WCCC.239
+		character_event = { id = WCQUE.965 days = 360 }
+	}
+	option = {
+		name = EVTOPTB_WCCC.239
+		trigger = { wealth = 100 }
+		wealth = -100
+		character_event = { id = WCQUE.965 days = 240 }
+	}
+	option = {
+		name = EVTOPTC_WCCC.239
+		tooltip_info = martial
+		trigger = {
+			martial = 12
+		}
+		character_event = { id = WCQUE.965 days = 120 }
+	}
+}
+# Creating tunnels takes a long time
+character_event = {
+	id = WCQUE.955
+	desc = EVTDESC_WCCC.240
+	picture = GFX_evt_ritual_scroll
+	border = GFX_event_normal_frame_religion
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = EVTOPTA_WCCC.240
+		character_event = { id = WCQUE.965 days = 360 }
+	}
+	option = {
+		name = EVTOPTB_WCCC.234
+		trigger = { wealth = 100 }
+		wealth = -100
+		character_event = { id = WCQUE.965 days = 240 }
+	}
+	option = {
+		name = EVTOPTC_WCCC.240
+		tooltip_info = stewardship
+		trigger = {
+			stewardship = 12
+		}
+		character_event = { id = WCQUE.965 days = 120 }
+	}
+}
+# Earth Elemental complains
+character_event = {
+	id = WCQUE.960
+	desc = EVTDESC_WCCC.241
+	picture = GFX_evt_ritual_scroll
+	border = GFX_event_normal_frame_religion
+	
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCCC.241
+		character_event = { id = WCQUE.965 days = 360 }
+	}
+	option = {
+		name = EVTOPTB_WCCC.241
+		trigger = { wealth = 100 }
+		wealth = -100
+		character_event = { id = WCQUE.965 days = 240 }
+	}
+	option = {
+		name = EVTOPTC_WCCC.241
+		tooltip_info = learning
+		trigger = {
+			learning = 12
+		}
+		character_event = { id = WCQUE.965 days = 120 }
+	}
+}
+# Decoration time!
+character_event = {
+	id = WCQUE.965
+	desc = EVTDESC_WCCC.242
+	picture = GFX_evt_ritual_scroll
+	border = GFX_event_normal_frame_religion
+	
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCCC.242
+		character_event = { id = WCQUE.970 days = 120 }
+	}
+}
+# Barrow Den is done!
+character_event = {
+	id = WCQUE.970
+	desc = EVTDESC_WCCC.243
+	picture = GFX_evt_ritual_scroll
+	border = GFX_event_normal_frame_religion
+	
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCCC.243
+		clr_quest = quest_build_barrow_den
+		set_character_flag = barrow_den_completed
+		add_society_currency_medium_effect = yes
+		
+		trigger_switch = {	# trigger_switch is less CPU heavy
+			on_trigger = has_character_flag
+			barrow_den_small = {
+				clr_character_flag = barrow_den_small		# Always clear flags if they're not needed
+				add_character_modifier = { name = barrow_den_small duration = -1 }
+				piety = 100
+			}
+			barrow_den_medium = {
+				clr_character_flag = barrow_den_medium
+				add_character_modifier = { name = barrow_den_medium duration = -1 }
+				piety = 200
+			}
+			barrow_den_large = {
+				clr_character_flag = barrow_den_large
+				add_character_modifier = { name = barrow_den_large duration = -1 }
+				piety = 300
+			}
+		}
+	}
+}
+
+### Build Hospital ###
+society_quest_event = {
+	id = WCQUE.1000
+	border = GFX_event_letter_frame_religion
+
+	desc = {
+		text = EVTDESC_WCCC.214
+	}
+	is_triggered_only = yes
+
+	option = {
+		name = ACCEPT
+		set_quest = quest_build_hospital
+	}
+
+	option = {
+		name = DECLINE
+		custom_tooltip = { text = decline_quest_tooltip }
+
+		add_character_modifier = {
+			name = quest_cooldown_timer
+			hidden = yes
+			days = 1000
+		}
+
+		ai_chance = { factor = 0 }
+	}
+}
+# on_hospital_construction_completed
+# Hospital is done
+letter_event = {
+	id = WCQUE.1005
+	desc = EVTDESC_WCCC.222
+	border = GFX_event_letter_frame_religion
+	portrait = event_target:target_grandmaster
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		NOT = { has_character_flag = hospital_construction_ongoing_flag }
+		
+		has_quest = quest_build_hospital
+	}
+	
+	immediate = {
+		set_character_flag = hospital_construction_ongoing_flag
+		
+		random_society_member = {
+			limit = {
+				same_society_as = ROOT
+				is_society_grandmaster = yes
+			}
+			save_event_target_as = target_grandmaster
+		}
+	}
+	
+	option = {
+		name = EVTOPTA_WCCC.222
+		clr_quest = quest_build_hospital
+		add_society_currency_minor_effect = yes
+	}
+	
+	after = {
+		clr_character_flag = hospital_construction_ongoing_flag
+	}
+}
