@@ -1362,6 +1362,260 @@ character_event = {
 }
 
 #######################################
+# The Creation of a wicker golem
+#######################################
+character_event = {
+	id = WCUND.320
+	desc = EVTDESC_WCUND_320
+	picture = GFX_evt_drustvar
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCUND_320
+	}
+
+	after = {
+		character_event = { id = WCUND.325 }
+	}
+}
+
+# Remove the higher cognitive functions?
+character_event = {
+	id = WCUND.325
+	desc = EVTDESC_WCUND_325
+	picture = GFX_evt_drustvar
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	show_from_from = yes
+
+	option = {
+		name = EVTOPTA_WCUND_325
+
+		custom_tooltip = { text = EVTOPTA_WCUND_325_tooltip }
+		event_target:target_prisoner = {
+			random_list = {
+				10 = {
+					modifier = {
+						factor = 1.5
+						trait = genius
+					}
+					modifier = {
+						factor = 1.3
+						trait = quick
+					}
+					modifier = {
+						factor = 1.3
+						trait = shrewd
+					}
+				}
+				40 = {
+					tooltip = { add_trait = slow }
+					hidden_effect = { ROOT = { set_character_flag = slow_mn_flag } }
+
+					modifier = {
+						factor = 1.5
+						trait = imbecile
+					}
+					modifier = {
+						factor = 1.3
+						trait = slow
+					}
+					modifier = {
+						factor = 1.3
+						trait = dull
+					}
+				}
+				50 = {
+					tooltip = { add_trait = imbecile }
+					hidden_effect = { ROOT = { set_character_flag = imbecile_mn_flag } }
+
+					modifier = {
+						factor = 1.5
+						trait = imbecile
+					}
+					modifier = {
+						factor = 1.3
+						trait = slow
+					}
+					modifier = {
+						factor = 1.3
+						trait = dull
+					}
+				}
+			}
+		}
+	}
+	option = {
+		name = EVTOPTB_WCUND_325
+
+		event_target:target_prisoner = {
+			random_list = {
+				65 = {
+					modifier = {
+						factor = 1.5
+						trait = genius
+					}
+					modifier = {
+						factor = 1.3
+						trait = quick
+					}
+					modifier = {
+						factor = 1.3
+						trait = shrewd
+					}
+				}
+				20 = {
+					tooltip = { add_trait = slow }
+					hidden_effect = { ROOT = { set_character_flag = slow_mn_flag } }
+
+					modifier = {
+						factor = 1.5
+						trait = imbecile
+					}
+					modifier = {
+						factor = 1.3
+						trait = slow
+					}
+					modifier = {
+						factor = 1.3
+						trait = dull
+					}
+				}
+				15 = {
+					tooltip = { add_trait = imbecile }
+					hidden_effect = { ROOT = { set_character_flag = imbecile_mn_flag } }
+
+					modifier = {
+						factor = 1.5
+						trait = imbecile
+					}
+					modifier = {
+						factor = 1.3
+						trait = slow
+					}
+					modifier = {
+						factor = 1.3
+						trait = dull
+					}
+				}
+			}
+		}
+	}
+
+	after = {
+		# Wicker golem
+		create_character = {
+			dynasty = none
+			religion = ROOT
+			culture = ROOT
+			female = no
+			age = 20
+		}
+		hidden_effect = {
+			new_character = {
+				# Add race trait
+				set_character_flag = transition_into_wicker_golem_flag
+				character_event = { id = WCPOD.5013 }
+				if = {
+					limit = {
+						NOT = { trait = slow }
+						ROOT = { has_character_flag = slow_mn_flag }
+					}
+					add_trait = slow
+				}
+				if = {
+					limit = {
+						NOT = { trait = imbecile }
+						ROOT = { has_character_flag = imbecile_mn_flag }
+					}
+					add_trait = imbecile
+				}
+				remove_education_effect = yes
+				random_list = {
+					10 = {
+						add_trait = misguided_warrior
+						add_trait = class_warrior_2
+					}
+					45 = {
+						add_trait = tough_soldier
+						add_trait = class_warrior_3
+
+						modifier = {
+							factor = 0.5
+							trait = slow
+						}
+						modifier = {
+							factor = 0.5
+							trait = imbecile
+						}
+					}
+					30 = {
+						add_trait = skilled_tactician
+						add_trait = class_warrior_4
+
+						modifier = {
+							factor = 0.1
+							trait = slow
+						}
+						modifier = {
+							factor = 0.1
+							trait = imbecile
+						}
+					}
+					15 = {
+						add_trait = brilliant_strategist
+						add_trait = class_warrior_5
+
+						modifier = {
+							factor = 0.1
+							trait = slow
+						}
+						modifier = {
+							factor = 0.1
+							trait = imbecile
+						}
+					}
+				}
+				event_target:target_prisoner = { death = { death_reason = death_missing } }
+				character_event = { id = WCUND.329 }
+			}
+		}
+	}
+}
+# Ping event
+character_event = {
+	id = WCUND.329
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		event_target:target_necromancer = { character_event = { id = WCUND.330 } }
+	}
+}
+# Notification about the end
+character_event = {
+	id = WCUND.330
+	desc = EVTDESC_WCUND_330
+	picture = GFX_evt_drustvar
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	option = {
+		name = EXCELLENT
+	}
+	after = {
+		# Clears flags that necromancer gets during rising
+		clr_necromancer_raising_flags = yes
+	}
+}
+
+#######################################
 # The Creation of a monstrous undead
 #######################################
 character_event = {
@@ -1654,6 +1908,55 @@ character_event = {
 		add_age_back_effect = yes
 
 		hidden_effect = { set_graphical_culture = abomination }
+	}
+
+	after = {
+		# Clears flags that necromancer gets during rising
+		clr_necromancer_raising_flags = yes
+		# Clears flags that undead gets during rising
+		clr_undead_raising_flags = yes
+	}
+}
+
+#########################################
+# The Transformation into a Wicker Golem
+#########################################
+# The first phase of the ritual
+character_event = {
+	id = WCUND.380
+	desc = EVTDESC_WCUND_380
+	picture = GFX_evt_drustvar
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCUND_380
+	}
+
+	after = {
+		character_event = { id = WCUND.385 }
+	}
+}
+# The end
+character_event = {
+	id = WCUND.385
+	desc = EVTDESC_WCUND_385
+	picture = GFX_evt_drustvar
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCUND_385
+
+		remove_racial_traits_effect = yes
+		add_trait = creature_wicker_golem
+
+		# Fixes immortal age
+		add_age_back_effect = yes
+
+		hidden_effect = { set_graphical_culture = wicker_golem }
 	}
 
 	after = {
