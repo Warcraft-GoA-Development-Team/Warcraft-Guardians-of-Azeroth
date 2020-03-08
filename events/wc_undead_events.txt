@@ -1362,19 +1362,49 @@ character_event = {
 }
 
 #######################################
-# The Creation of a monstrous undead
+# The Creation of a monstrous undead / wicker golem
 #######################################
 character_event = {
 	id = WCUND.350
-	desc = EVTDESC_WCUND_350
+	
+	desc = {
+		trigger = {
+			NOT = {
+				religion = throsic
+			}
+		}
+		text = EVTDESC_WCUND_350_abomination
+		picture = GFX_evt_apothecary
+	}
+	
+	desc = {
+		trigger = {
+			religion = throsic
+		}
+		text = EVTDESC_WCUND_350_wickergolem
+		picture = GFX_evt_drustvar
+	}
+	
 	picture = GFX_evt_apothecary
 	border = GFX_event_normal_frame_religion
 
 	is_triggered_only = yes
-
+	
 	option = {
-		name = EVTOPTA_WCUND_350
+		trigger = {
+			NOT = {
+				religion = throsic
+			}
+		}
+		name = EVTOPTA_WCUND_350_abomination
 	}
+	
+	option = {
+		trigger = {
+			religion = throsic
+		}
+		name = EVTOPTA_WCUND_350_wickergolem
+	}	
 
 	after = {
 		character_event = { id = WCUND.355 }
@@ -1384,7 +1414,25 @@ character_event = {
 # Remove the higher cognitive functions?
 character_event = {
 	id = WCUND.355
-	desc = EVTDESC_WCUND_355
+	
+	desc = {
+		trigger = {
+			NOT = {
+				religion = throsic
+			}
+		}
+		text = EVTDESC_WCUND_355_abomination
+		picture = GFX_evt_apothecary
+	}
+	
+	desc = {
+		trigger = {
+			religion = throsic
+		}
+		text = EVTDESC_WCUND_355_wickergolem
+		picture = GFX_evt_drustvar
+	}
+	
 	picture = GFX_evt_apothecary
 	border = GFX_event_normal_frame_religion
 
@@ -1393,7 +1441,12 @@ character_event = {
 	show_from_from = yes
 
 	option = {
-		name = EVTOPTA_WCUND_355
+		trigger = {
+			NOT = {
+				religion = throsic
+			}
+		}
+		name = EVTOPTA_WCUND_355_abomination
 
 		custom_tooltip = { text = EVTOPTA_WCUND_355_tooltip }
 		event_target:target_prisoner = {
@@ -1449,9 +1502,138 @@ character_event = {
 			}
 		}
 	}
+	
 	option = {
-		name = EVTOPTB_WCUND_355
+		trigger = {
+			religion = throsic
+		}
+		name = EVTOPTA_WCUND_355_wickergolem
 
+		### TODO - rebalance for wickergolems ###
+		custom_tooltip = { text = EVTOPTA_WCUND_355_tooltip }
+		event_target:target_prisoner = {
+			random_list = {
+				10 = {
+					modifier = {
+						factor = 1.5
+						trait = genius
+					}
+					modifier = {
+						factor = 1.3
+						trait = quick
+					}
+					modifier = {
+						factor = 1.3
+						trait = shrewd
+					}
+				}
+				40 = {
+					tooltip = { add_trait = slow }
+					hidden_effect = { ROOT = { set_character_flag = slow_mn_flag } }
+
+					modifier = {
+						factor = 1.5
+						trait = imbecile
+					}
+					modifier = {
+						factor = 1.3
+						trait = slow
+					}
+					modifier = {
+						factor = 1.3
+						trait = dull
+					}
+				}
+				50 = {
+					tooltip = { add_trait = imbecile }
+					hidden_effect = { ROOT = { set_character_flag = imbecile_mn_flag } }
+
+					modifier = {
+						factor = 1.5
+						trait = imbecile
+					}
+					modifier = {
+						factor = 1.3
+						trait = slow
+					}
+					modifier = {
+						factor = 1.3
+						trait = dull
+					}
+				}
+			}
+		}
+	}
+	
+	option = {
+		trigger = {
+			NOT = {
+				religion = throsic
+			}
+		}
+		name = EVTOPTB_WCUND_355_abomination
+
+		event_target:target_prisoner = {
+			random_list = {
+				65 = {
+					modifier = {
+						factor = 1.5
+						trait = genius
+					}
+					modifier = {
+						factor = 1.3
+						trait = quick
+					}
+					modifier = {
+						factor = 1.3
+						trait = shrewd
+					}
+				}
+				20 = {
+					tooltip = { add_trait = slow }
+					hidden_effect = { ROOT = { set_character_flag = slow_mn_flag } }
+
+					modifier = {
+						factor = 1.5
+						trait = imbecile
+					}
+					modifier = {
+						factor = 1.3
+						trait = slow
+					}
+					modifier = {
+						factor = 1.3
+						trait = dull
+					}
+				}
+				15 = {
+					tooltip = { add_trait = imbecile }
+					hidden_effect = { ROOT = { set_character_flag = imbecile_mn_flag } }
+
+					modifier = {
+						factor = 1.5
+						trait = imbecile
+					}
+					modifier = {
+						factor = 1.3
+						trait = slow
+					}
+					modifier = {
+						factor = 1.3
+						trait = dull
+					}
+				}
+			}
+		}
+	}
+	
+	option = {
+		trigger = {
+				religion = throsic
+		}
+		name = EVTOPTB_WCUND_355_wickergolem
+		
+		### TODO - rebalance for golems ###
 		event_target:target_prisoner = {
 			random_list = {
 				65 = {
@@ -1517,9 +1699,26 @@ character_event = {
 		}
 		hidden_effect = {
 			new_character = {
-				# Add race trait
-				set_character_flag = transition_into_abomination_flag
+				# Add race trait depending on religion
+				if = {
+					limit = {
+						NOT = {
+							religion = throsic
+						}
+					}
+					set_character_flag = transition_into_abomination_flag
+				}				
+				if = {
+					limit = {
+						religion = throsic
+					}
+					set_character_flag = transition_into_wicker_golem_flag
+				}
+				
+				# Fire the event
 				character_event = { id = WCPOD.5013 }
+				
+				# Set traits
 				if = {
 					limit = {
 						NOT = { trait = slow }
@@ -1600,7 +1799,25 @@ character_event = {
 # Notification about the end
 character_event = {
 	id = WCUND.360
-	desc = EVTDESC_WCUND_360
+	
+	desc = {
+		trigger = {
+			NOT = {
+				religion = throsic
+			}
+		}
+		text = EVTDESC_WCUND_360_abomination
+		picture = GFX_evt_apothecary
+	}
+	
+	desc = {
+		trigger = {
+			religion = throsic
+		}
+		text = EVTDESC_WCUND_360_wickergolem
+		picture = GFX_evt_drustvar
+	}
+	
 	picture = GFX_evt_apothecary
 	border = GFX_event_normal_frame_religion
 
@@ -1616,19 +1833,48 @@ character_event = {
 }
 
 #########################################
-# The Transformation into an Abomination
+# The Transformation into an Abomination / Wicker Golem
 #########################################
 # The first phase of the operation
 character_event = {
-	id = WCUND.370
-	desc = EVTDESC_WCUND_370
+	id = WCUND.370	
+	desc = {
+		trigger = {
+			NOT = {
+				religion = throsic
+			}
+		}
+		text = EVTDESC_WCUND_370_abomination
+		picture = GFX_evt_apothecary
+	}
+	
+	desc = {
+		trigger = {
+			religion = throsic
+		}
+		text = EVTDESC_WCUND_370_wickergolem
+		picture = GFX_evt_drustvar
+	}
+	
 	picture = GFX_evt_apothecary
 	border = GFX_event_normal_frame_religion
 
 	is_triggered_only = yes
 
 	option = {
-		name = EVTOPTA_WCUND_370
+		trigger = {
+			NOT = {
+				religion = throsic
+			}
+		}
+		name = EVTOPTA_WCUND_370_abomination
+	}
+	
+	option = {
+		trigger = {
+			religion = throsic
+		}
+		name = EVTOPTA_WCUND_370_wickergolem
 	}
 
 	after = {
@@ -1638,7 +1884,24 @@ character_event = {
 # The end
 character_event = {
 	id = WCUND.375
-	desc = EVTDESC_WCUND_375
+	desc = {
+		trigger = {
+			NOT = {
+				religion = throsic
+			}
+		}
+		text = EVTDESC_WCUND_375_abomination
+		picture = GFX_evt_apothecary
+	}
+	
+	desc = {
+		trigger = {
+			religion = throsic
+		}
+		text = EVTDESC_WCUND_375_wickergolem
+		picture = GFX_evt_drustvar
+	}
+	
 	picture = GFX_evt_apothecary
 	border = GFX_event_normal_frame_religion
 
@@ -1648,12 +1911,33 @@ character_event = {
 		name = EVTOPTA_WCUND_375
 
 		remove_racial_traits_effect = yes
+		
+		# Assign creature trait depending on religion		
+		if = {
+			NOT = {
+				religion = throsic
+			}
+		}
 		add_trait = creature_abomination
+		
+		if = {
+			religion = throsic
+		}
+		add_trait = creature_wicker_golem
 
 		# Fixes immortal age
 		add_age_back_effect = yes
 
+		# Set graphical culture depending on creature type
+		if = {
+			trait = creature_abomination
+		}
 		hidden_effect = { set_graphical_culture = abomination }
+		
+		if = {
+			trait = creature_wicker_golem
+		}
+		hidden_effect = { set_graphical_culture = wicker_golem }
 	}
 
 	after = {
