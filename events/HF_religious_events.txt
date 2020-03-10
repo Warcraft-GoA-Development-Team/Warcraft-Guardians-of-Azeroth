@@ -20,72 +20,118 @@ character_event = {
 # Ritual Sacrifice Prisoner (Jailer's perspective)
 character_event = {
 	id = HF.23002
-	desc = { 
-		trigger = { 
-			ROOT = { 
-				NOR = {  
+
+	# Warcraft
+	desc = {
+		trigger = {
+			trigger_if = {
+				limit = { religion = old_gods_worship }
+
+				is_shadow_priest_class_trigger = no
+				NOT = {
+					any_realm_wonder_upgrade = {
+						has_wonder_upgrade = upgrade_twilight_altar
+						is_active = yes
+					}
+				}
+			}
+			trigger_else ={
+				NOR = {
 					trait = bloodthirsty_gods_1
 					trait = bloodthirsty_gods_2
 					trait = bloodthirsty_gods_3
 				}
-			}
-			NOT = { 
-				any_realm_wonder_upgrade = {
-					has_wonder_upgrade = upgrade_sacrificial_altar
-					is_active = yes
+				NOT = {
+					any_realm_wonder_upgrade = {
+						has_wonder_upgrade = upgrade_sacrificial_altar
+						is_active = yes
+					}
 				}
-			}
-		} 
-		text = EVTDESCHF23002
-	}
-	desc = { 
-		trigger = { 
-			ROOT = { 
-				OR = {  
-					trait = bloodthirsty_gods_1
-					trait = bloodthirsty_gods_2
-					trait = bloodthirsty_gods_3
-				}
-			} 
-			NOT = { 
-				any_realm_wonder_upgrade = {
-					has_wonder_upgrade = upgrade_sacrificial_altar
-					is_active = yes
-				}
-			}
-		} 
-		text = EVTDESCHF23002_B 	#Do it yourself.
-	}
-	desc = { 
-		trigger = { 
-			ROOT = { 
-				NOR = {  
-					trait = bloodthirsty_gods_1
-					trait = bloodthirsty_gods_2
-					trait = bloodthirsty_gods_3
-				}
-			}
-			any_realm_wonder_upgrade = {
-				has_wonder_upgrade = upgrade_sacrificial_altar
-				is_active = yes
-			}
-		} 
-		text = EVTDESCHF23002_C
-	}
-	desc = { 
-		trigger = { 
-			ROOT = { 
-				OR = {  
-					trait = bloodthirsty_gods_1
-					trait = bloodthirsty_gods_2
-					trait = bloodthirsty_gods_3
-				}
-			} 
-			any_realm_wonder_upgrade = {
-				has_wonder_upgrade = upgrade_sacrificial_altar
-				is_active = yes
 			}
 		}
+
+		text = EVTDESCHF23002
+	}
+	desc = {
+		trigger = {
+			trigger_if = {
+				limit = { religion = old_gods_worship }
+
+				is_shadow_priest_class_trigger = yes
+				NOT = {
+					any_realm_wonder_upgrade = {
+						has_wonder_upgrade = upgrade_twilight_altar
+						is_active = yes
+					}
+				}
+			}
+			trigger_else ={
+				OR = {
+					trait = bloodthirsty_gods_1
+					trait = bloodthirsty_gods_2
+					trait = bloodthirsty_gods_3
+				}
+				NOT = {
+					any_realm_wonder_upgrade = {
+						has_wonder_upgrade = upgrade_sacrificial_altar
+						is_active = yes
+					}
+				}
+			}
+		}
+
+		text = EVTDESCHF23002_B 	#Do it yourself.
+	}
+	desc = {
+		trigger = {
+			trigger_if = {
+				limit = { religion = old_gods_worship }
+
+				is_shadow_priest_class_trigger = no
+				any_realm_wonder_upgrade = {
+					has_wonder_upgrade = upgrade_twilight_altar
+					is_active = yes
+				}
+			}
+			trigger_else ={
+				NOR = {
+					trait = bloodthirsty_gods_1
+					trait = bloodthirsty_gods_2
+					trait = bloodthirsty_gods_3
+				}
+				any_realm_wonder_upgrade = {
+					has_wonder_upgrade = upgrade_sacrificial_altar
+					is_active = yes
+				}
+			}
+		}
+
+		text = EVTDESCHF23002_C
+	}
+	desc = {
+		trigger = {
+			trigger_if = {
+				limit = { religion = old_gods_worship }
+
+				is_shadow_priest_class_trigger = yes
+				any_realm_wonder_upgrade = {
+					has_wonder_upgrade = upgrade_twilight_altar
+					is_active = yes
+				}
+			}
+			trigger_else ={
+				OR = {
+					trait = bloodthirsty_gods_1
+					trait = bloodthirsty_gods_2
+					trait = bloodthirsty_gods_3
+				}
+				any_realm_wonder_upgrade = {
+					has_wonder_upgrade = upgrade_sacrificial_altar
+					is_active = yes
+				}
+			}
+		}
+
 		text = EVTDESCHF23002_D 	#Do it yourself.
 	}
 	
@@ -99,7 +145,15 @@ character_event = {
 	immediate = {
 		random_realm_wonder_upgrade = {
 			limit = {
-				has_wonder_upgrade = upgrade_sacrificial_altar
+
+				# Warcraft
+				trigger_if = {
+					limit = { PREV = { religion = old_gods_worship } }
+
+					has_wonder_upgrade = upgrade_twilight_altar
+				}
+				trigger_else = { has_wonder_upgrade = upgrade_sacrificial_altar }
+
 				is_active = yes
 			}
 			save_event_target_as = the_sacrificial_altar
@@ -113,12 +167,10 @@ character_event = {
 		name = EVTOPTA_SSI_072
 
 		if = {
-			limit = {
-				any_realm_wonder_upgrade = {
-					has_wonder_upgrade = upgrade_sacrificial_altar
-					is_active = yes
-				}
-			}
+
+			# Warcraft
+			limit = { event_target:the_sacrificial_altar = { is_active = yes } }
+
 			prestige = 10
 		}
 	}
@@ -128,12 +180,9 @@ character_event = {
 		trigger = {
 
 			# Warcraft
-			FROM = { can_be_eaten_trigger = yes }
+			event_target:target_sacrificed_prisoner = { can_be_eaten_trigger = yes }
+			event_target:the_sacrificial_altar = { is_active = yes }
 
-			any_realm_wonder_upgrade = {
-				has_wonder_upgrade = upgrade_sacrificial_altar
-				is_active = yes
-			}
 		}
 		tooltip_info_custom = EVTOPTBHF23002_TT
 		
@@ -6846,7 +6895,7 @@ character_event = {
 				years = 150
 			}
 			hidden_tooltip = { 
-				change_variable = { which = burned_hearts_points value = 2 } 
+				change_variable = { which = burned_hearts_points value = 4 } 
 				bloodthirsty_tiered_traits_effect = yes
 			}
 		}
@@ -6861,7 +6910,7 @@ character_event = {
 				years = 100
 			}
 			hidden_tooltip = { 
-				change_variable = { which = burned_hearts_points value = 1 } 
+				change_variable = { which = burned_hearts_points value = 2 } 
 				bloodthirsty_tiered_traits_effect = yes
 			}
 		}
@@ -10387,41 +10436,72 @@ character_event = {
 	is_triggered_only = yes
 
 	immediate = { 
-		killer = { 
-			#Bonus points first.
-			if = { #The gods appreciate your sacrifice.
-				limit = {
-					is_adult = no
-					ROOT = { is_child_of = PREV } 
+		killer = {
+
+			# Warcraft
+			# Racial points
+			if = { # Has more blood than small humanoids.
+				limit = { ROOT = { is_medium_humanoid_trigger = yes } }
+				change_variable = { which = burned_hearts_points value = 1 } # 2 total for medium humanoid
+			}
+			else_if = { # Has more blood than medium humanoids.
+				limit = { ROOT = { is_large_humanoid_trigger = yes } }
+				change_variable = { which = burned_hearts_points value = 2 } # 3 total for large humanoid
+			}
+			else_if = { # Dragons are magical!
+				limit = { ROOT = { is_dragon_race_trigger = yes } }
+				if = {
+					limit = { ROOT = { is_whelp_trigger = yes } }
+					change_variable = { which = burned_hearts_points value = 2 } # 3+1 bonus total for whelp
 				}
+				else_if = {
+					limit = { ROOT = { is_drake_trigger = yes } }
+					change_variable = { which = burned_hearts_points value = 5 } # 6 total for drake
+				}
+				else_if = {
+					limit = { ROOT = { is_dragon_trigger = yes } }
+					change_variable = { which = burned_hearts_points value = 7 } # 8 total for dragon
+				}
+				else = { change_variable = { which = burned_hearts_points value = 9 } } # 10 total for wyrm
+				if = {
+					limit = { ROOT = { is_aspect_trigget = yes } }
+					change_variable = { which = burned_hearts_points value = 20 } # +20 if it is aspect
+				}
+			}
+			# Bonus points
+			if = { # Innocent souls!
+				limit = { ROOT = { is_adult = no } }
 				change_variable = { which = burned_hearts_points value = 1 }
 			}
-			if = { #And a divine child is even better.
-				limit = {
-					is_adult = no
-					ROOT = { religion = PREV } 
-					OR = { 
-						has_religion_feature = religion_holy_family 
-						has_religion_feature = religion_feature_zun
-					} 
-				}
+			if = { #The gods appreciate your sacrifice.
+				limit = { ROOT = { is_child_of = PREV } }
 				change_variable = { which = burned_hearts_points value = 1 }
+
+				if = { #And a divine child is even better.
+					limit = {
+						OR = {
+							has_religion_feature = religion_holy_family
+							has_religion_feature = religion_feature_zun
+						} 
+					}
+					change_variable = { which = burned_hearts_points value = 1 }
+				}
 			}
 			if = { #A foreign religious head is also quite good.
 				limit = {
 					NOT = { religion = ROOT } 
-					controls_religion = yes
+					ROOT = { controls_religion = yes }
 				}
 				change_variable = { which = burned_hearts_points value = 2 }
 			}
 			if = { #A foreign emperor is also well accepted.
 				limit = {
-					NOT = { religion = ROOT } 
-					higher_tier_than = KING
+					NOT = { religion = ROOT }
+					ROOT = { higher_tier_than = KING }
 				}
 				change_variable = { which = burned_hearts_points value = 2 }
 			}
-			#Finally, a third point is added regardless in the following scripted effect, which will also trigger the events below, when the proper score is reached.
+			#Finally, one point is added regardless in the following scripted effect, which will also trigger the events below, when the proper score is reached.
 			bloodthirsty_tiered_traits_effect = yes 
 		}
 	}
