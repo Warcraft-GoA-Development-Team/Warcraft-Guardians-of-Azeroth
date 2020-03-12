@@ -919,6 +919,9 @@ character_event = {
 			trait = creature_abomination
 			trait = skeleton
 			trait = creature_lich
+			trait = creature_wickerman
+			trait = creature_wicker_behemoth
+			trait = creature_wicker_golem
 		}
 		is_ruler = no
 		dynasty = none
@@ -1145,6 +1148,11 @@ character_event = {
 					has_7_8_magic_class_or_higher_trigger = yes
 					trait = lich_king
 					AND = {
+						NOT = {
+							religion = throsic
+						}
+					}
+					AND = {
 						society_member_of = cult_of_the_damned
 						is_society_grandmaster = yes
 					}
@@ -1317,6 +1325,54 @@ character_event = {
 			tooltip = {
 				remove_racial_traits_effect = yes
 				add_trait = creature_wickerman
+				add_trait_undead_effect = yes
+				if = {
+					limit = { event_target:target_undead = { NOT = { character = ROOT } } }
+					opinion = {
+						modifier = opinion_loyal_servant
+						who = ROOT
+					}
+				}
+			}
+		}
+		hidden_effect = { event_target:target_undead = { character_event = { id = WCPOD.5013 } } }
+
+		ai_chance = {
+			factor = 25
+		}
+	}
+	
+	# Wicker behemoth
+	option = {
+		trigger = {
+			event_target:target_undead = { NOT = {  trait = creature_wicker_behemoth } }
+			
+			NOT = { event_target:target_undead = { is_paladin_class_trigger = yes } }
+			event_target:target_necromancer = {
+				OR = {
+					has_7_8_magic_class_or_higher_trigger = yes
+					AND = {
+						religion = throsic
+					}
+				}
+			}
+		}
+		name = EVTOPTG_WCUND_300
+
+		event_target:target_undead = {
+			show_scope_change = no
+			
+			ROOT = {
+				show_scope_change = no
+				
+				complete_quest_turn_into_undead_prev_effect = yes
+			}
+		}
+		event_target:target_undead = {
+			set_character_flag = transition_into_wicker_behemoth_flag
+			tooltip = {
+				remove_racial_traits_effect = yes
+				add_trait = creature_wicker_behemoth
 				add_trait_undead_effect = yes
 				if = {
 					limit = { event_target:target_undead = { NOT = { character = ROOT } } }
