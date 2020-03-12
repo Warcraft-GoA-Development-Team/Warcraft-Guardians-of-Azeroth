@@ -1,0 +1,132 @@
+# Kill a demon - resulting in a duel
+plot_hunt_demon = {
+	type = realm_characters_plus # All characters in the same realm, plus rivals and relatives of self, parents, children and spouse, and quest target
+	society_plot = {
+		# Warcraft
+		always = no
+	}
+	
+	# Plotter scope
+	potential = {
+		prisoner = no
+		age = 16
+		NOT = { is_completely_incapable_trigger= yes }
+		is_demon_hunter_class_trigger = yes
+	}
+	
+	# Target allow trigger for when players target a specific character in the GUI
+	
+	player_allow = {
+		NOT = { is_child_of = FROM } # Not my own children
+		is_within_diplo_range = FROM
+		assassination_interaction_trigger = yes
+	}
+	
+	target_potential = {
+		# Warcraft
+		is_untouchable_trigger = no
+		trait = being_demon
+	}
+	
+	# Target character scope
+	allow = {
+		NOT = { is_child_of = FROM } # Not my own children
+		OR = {
+			NOT = { character = FROM }  # Not against myself! (unself I am bonkers)
+			trait = lunatic
+		}
+		
+		is_within_diplo_range = FROM
+		
+		# Don't kill my lovers, or their children
+		NOT = {
+			FROM = {
+				any_lover = {
+					OR = {
+						character = ROOT
+						is_father = ROOT
+						is_mother = ROOT
+					}
+				}
+			}
+		}
+		
+		NOT = { is_friend = FROM }
+	}
+	
+	# ROOT = target FROM = joiner FROMFROM = plotter
+	allow_join = {
+		ROOT = {
+			NOT = { is_child_of = FROM } # Not my own children
+		}
+		FROM = { 
+			is_demon_hunter_class_trigger = yes
+		}
+		FROMFROM = { num_of_plot_backers <= 4}
+	}
+	
+	chance = {
+		factor = 2
+
+		modifier = {
+			factor = 0.2
+			FROM = { pacifist = yes }
+		}
+		modifier = {
+			factor = 2.0
+			FROM = { trait = deceitful }
+		}
+		modifier = {
+			factor = 3.0
+			FROM = { trait = ambitious }
+		}
+		modifier = {
+			factor = 3.0
+			FROM = { trait = diligent }
+		}
+		modifier = {
+			factor = 1.5
+			NOT = { their_opinion = { who = FROM value = -25 } }
+		}
+		modifier = {
+			factor = 2.0
+			NOT = { their_opinion = { who = FROM value = -50 } }
+		}
+		modifier = {
+			factor = 2.0
+			NOT = { their_opinion = { who = FROM value = -75 } }
+		}
+		modifier = {
+			factor = 2.0
+			any_owned_bloodline = { #Backstabbing family.
+				has_bloodline_flag = bloodline_murderous 
+			}
+		}
+	}
+	
+	success = {
+		is_alive = no
+		hidden_tooltip = {
+			FROM = { has_character_flag = murder_in_motion }
+		}
+	}
+	abort = {
+		OR = {
+			# Warcraft
+			FROM = { is_completely_incapable_trigger= yes }
+			
+			is_alive = no
+		}
+	}
+	abort_effect = {
+		FROM = { clr_character_flag = murder_in_motion }
+	}
+	effect = {
+		FROM = {
+			# Clear flags
+			hidden_tooltip = {
+				clr_character_flag = murder_in_motion
+			}
+		}
+	}
+}
