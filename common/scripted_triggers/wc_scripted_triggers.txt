@@ -651,10 +651,19 @@ can_do_party = {
 	has_invader_title_trigger = no
 }
 can_be_sacrificed_trigger = {
-	is_adult = yes
+	is_alive = yes
+	is_dying = no
 
-	is_dark_being_trigger = no
-	is_humanoid_trigger = yes
+	is_untouchable_trigger = no
+	NOT = {
+		trait = being_demon
+		trait = creature_lich
+	}
+	is_nraqi_trigger = no
+	OR = {
+		is_dragon_race_trigger = yes
+		is_humanoid_trigger = yes
+	}
 	has_invader_title_trigger = no
 }
 # CAN'T HAVE COURT PHYSICIAN IF IT'S NOT TRUE
@@ -817,6 +826,14 @@ evil_public_religion_trigger = {
 		religion = old_gods_worship
 	}
 }
+evil_secret_religion_trigger = {
+	OR = {
+		secret_religion = death_god
+		# secret_religion = orcish_fel
+		secret_religion = burning_legion_religion
+		secret_religion = old_gods_worship
+	}
+}
 dark_public_religion_trigger = {
 	OR = {
 		religion_group = fel_group
@@ -937,54 +954,60 @@ is_small_humanoid_trigger = {
 }
 # Only humanoids made of meat and bones
 is_medium_humanoid_trigger = {
-	OR = {
-		trait = creature_human
-		is_orc_trigger = yes
-		trait = creature_troll
-		trait = creature_gnoll
-		is_high_elf_trigger = yes
-		trait = creature_naga
-		trait = creature_hozen
-		is_eredar_trigger = yes
-		trait = creature_arakkoa_corrupted
-		trait = creature_ghoul
-		trait = creature_satyr
-		trait = creature_sayaadi
-		trait = creature_moarg
-		trait = creature_tuskarr
-		trait = creature_furbolg
-		trait = creature_nerubian
-		trait = creature_harpy
-		trait = creature_night_elf
-		trait = creature_centaur
-		trait = creature_quilboar
-		trait = creature_tolvir
-		trait = creature_dryad
-		trait = creature_frostnymph
-		trait = creature_highborne
-		trait = creature_sethrak
+	custom_tooltip = {
+		text = is_medium_humanoid_tooltip
+		OR = {
+			trait = creature_human
+			is_orc_trigger = yes
+			trait = creature_troll
+			trait = creature_gnoll
+			is_high_elf_trigger = yes
+			trait = creature_naga
+			trait = creature_hozen
+			is_eredar_trigger = yes
+			trait = creature_arakkoa_corrupted
+			trait = creature_ghoul
+			trait = creature_satyr
+			trait = creature_sayaadi
+			trait = creature_moarg
+			trait = creature_tuskarr
+			trait = creature_furbolg
+			trait = creature_nerubian
+			trait = creature_harpy
+			trait = creature_night_elf
+			trait = creature_centaur
+			trait = creature_quilboar
+			trait = creature_tolvir
+			trait = creature_dryad
+			trait = creature_frostnymph
+			trait = creature_highborne
+			trait = creature_sethrak
+		}
 	}
 }
 # Only humanoids made of meat and bones
 is_large_humanoid_trigger = {
-	OR = {
-		trait = creature_ogre
-		trait = creature_plague_eruptor
-		trait = creature_abomination
-		trait = creature_lich
-		trait = creature_annihilan
-		trait = creature_nathrezim
-		trait = creature_eredruin
-		trait = creature_shivarra
-		trait = creature_vrykul
-		trait = creature_magnataur
-		trait = creature_taunka
-		trait = creature_kvaldir
-		trait = creature_giant
-		trait = creature_nraqi
-		trait = creature_cthraxxi
-		trait = creature_tauren
-		trait = creature_qiraji
+	custom_tooltip = {
+		text = is_large_humanoid_tooltip
+		OR = {
+			trait = creature_ogre
+			trait = creature_plague_eruptor
+			trait = creature_abomination
+			trait = creature_lich
+			trait = creature_annihilan
+			trait = creature_nathrezim
+			trait = creature_eredruin
+			trait = creature_shivarra
+			trait = creature_vrykul
+			trait = creature_magnataur
+			trait = creature_taunka
+			trait = creature_kvaldir
+			trait = creature_giant
+			trait = creature_nraqi
+			trait = creature_cthraxxi
+			trait = creature_tauren
+			trait = creature_qiraji
+		}
 	}
 }
 
@@ -1785,13 +1808,16 @@ is_eredar_trigger = {
 	}
 }
 is_dragon_race_trigger = {
-	OR = {
-		is_red_dragon_trigger = yes
-		is_blue_dragon_trigger = yes
-		is_green_dragon_trigger = yes
-		is_black_dragon_trigger = yes
-		is_bronze_dragon_trigger = yes
-		is_infinite_dragon_trigger = yes
+	custom_tooltip = {
+		text = is_dragon_race_trigger_tooltip
+		OR = {
+			is_red_dragon_trigger = yes
+			is_blue_dragon_trigger = yes
+			is_green_dragon_trigger = yes
+			is_black_dragon_trigger = yes
+			is_bronze_dragon_trigger = yes
+			is_infinite_dragon_trigger = yes
+		}
 	}
 }
 is_red_dragon_trigger = {
@@ -1880,6 +1906,16 @@ is_wyrm_trigger = {
 		trait = creature_black_wyrm
 		trait = creature_bronze_wyrm
 		trait = creature_infinite_wyrm
+	}
+}
+
+is_aspect_trigget = {
+	OR = {
+		trait = aspect_of_nature
+		trait = aspect_of_life
+		trait = aspect_of_magic
+		trait = aspect_of_time
+		trait = aspect_of_death
 	}
 }
 
@@ -2806,13 +2842,7 @@ is_plant_race_trigger = {
 
 # Can be appointed marshal, regent, steward etc (basically, all importrant titles)
 can_be_appointed_trigger = {
-	trigger_if = {
-		limit = { liege = { evil_public_religion_trigger = yes } }
-		religion = liege
-	}
-	trigger_else = {
-		evil_public_religion_trigger = no
-	}
+	liege = { can_positive_interact_with_prev_publicly_trigger = yes }
 }
 
 # Analogs of the Hermetics in the Warcraft universe
@@ -4156,22 +4186,10 @@ fury_of_wolf_human_event_trigger = {
 }
 
 can_improve_relations_with_root_trigger = {
-	trigger_if = {
-		limit = { ROOT = { evil_public_religion_trigger = yes } }
-		religion = ROOT
-	}
-	trigger_else = {
-		evil_public_religion_trigger = no
-	}
+	ROOT = { can_positive_interact_with_prev_publicly_trigger = yes }
 }
 can_improve_relations_with_from_trigger = {
-	trigger_if = {
-		limit = { FROM = { evil_public_religion_trigger = yes } }
-		religion = FROM
-	}
-	trigger_else = {
-		evil_public_religion_trigger = no
-	}
+	FROM = { can_positive_interact_with_prev_publicly_trigger = yes }
 }
 
 ashbringer_owner_event_trigger = {
@@ -4497,6 +4515,80 @@ lich_king_vision_trigger = {
 				}
 			}
 		}
+	}
+}
+
+can_positive_interact_with_prev_hiddenly_trigger = {
+	OR = {
+		can_positive_interact_with_prev_publicly_trigger = yes
+		# PREV can interact with those who follows orcish_fel and burning_legion_religion truly
+		# If PREV is orcish_fel, PREV can interact with those who doesn't follow evil religions truly
+		trigger_if = {
+			limit = {
+				PREV = {
+					OR = {
+						true_religion = orcish_fel
+						true_religion = burning_legion_religion
+					}
+				}
+			}
+			OR = {
+				true_religion = orcish_fel
+				true_religion = burning_legion_religion
+				trigger_if = {
+					limit = {
+						PREV = { true_religion = orcish_fel }
+					}
+					evil_true_religion_trigger = no
+				}
+			}
+		}
+		# PREV can interact with those who shares PREV's religion truly
+		trigger_else_if = {
+			limit = {
+				PREV = { evil_true_religion_trigger = yes }
+			}
+			true_religion = PREV
+		}
+		# Otherwise, PREV can interact with those who doesn't follow evil religions truly
+		trigger_else = {
+			evil_true_religion_trigger = no
+		}
+	}
+}
+can_positive_interact_with_prev_publicly_trigger = {
+	# PREV can interact with those who follows orcish_fel and burning_legion_religion publicly
+	# If PREV is orcish_fel, PREV can interact with those who doesn't follow evil religions publicly
+	trigger_if = {
+		limit = {
+			PREV = {
+				OR = {
+					religion = orcish_fel
+					religion = burning_legion_religion
+				}
+			}
+		}
+		OR = {
+			religion = orcish_fel
+			religion = burning_legion_religion
+			trigger_if = {
+				limit = {
+					PREV = { religion = orcish_fel }
+				}
+				evil_public_religion_trigger = no
+			}
+		}
+	}
+	# PREV can interact with those who shares PREV's religion publicly
+	trigger_else_if = {
+		limit = {
+			PREV = { evil_public_religion_trigger = yes }
+		}
+		religion = PREV
+	}
+	# Otherwise, PREV can interact with those who doesn't follow evil religions publicly
+	trigger_else = {
+		evil_public_religion_trigger = no
 	}
 }
 
