@@ -1283,15 +1283,19 @@ spawn_plague_troops_effect = {
 }
 
 spawn_colonial_troops_effect = {
+	spawn_small_colonial_troops_effect = yes
+	spawn_small_colonial_troops_effect = yes
+}
+spawn_small_colonial_troops_effect = {
 	spawn_unit = {
 		owner = THIS
 		province = capital_scope
 		home = capital_scope
 		troops = {
-			light_infantry = { 300 300 }
-			heavy_infantry = { 1500 1500 }
-			light_cavalry = { 600 600 }
-			archers = { 900 900 }
+			light_infantry = { 150 150 }
+			heavy_infantry = { 750 750 }
+			light_cavalry = { 300 300 }
+			archers = { 450 450 }
 		}
 		attrition = 1.0
 		maintenance = no
@@ -1301,7 +1305,7 @@ spawn_colonial_troops_effect = {
 		owner = THIS
 		cannot_inherit = no
 		troops = {
-			galleys = { 65 65 }
+			galleys = { 30 30 }
 		}
 	}
 }
@@ -1393,11 +1397,14 @@ become_blood_elf_effect = {
 		limit = { trait = creature_high_elf }
 		remove_trait = creature_high_elf
 		add_trait = creature_blood_elf
-		if = {
-			limit = { NOT = { culture = blood_elf } }
-			culture = blood_elf
-		}
 	}
+	if = {
+		limit = { NOT = { culture = blood_elf } }
+		culture = blood_elf
+	}
+}
+convert_this_and_vassals_to_blood_elves_effect = {
+	become_blood_elf_effect = yes
 	hidden_effect = {
 		if = {
 			limit = { is_ruler = yes }
@@ -1413,7 +1420,7 @@ become_blood_elf_effect = {
 						tier = BARON
 					}
 				}
-				become_blood_elf_effect = yes
+				convert_this_and_vassals_to_blood_elves_effect = yes
 			}
 		}
 	}
@@ -1447,13 +1454,16 @@ add_lightwell_effect = {
 	}
 }
 add_deathwell_effect = {
+	add_deathwell_no_restore_effect = yes
+	394 = { wonder = { set_wonder_damaged = no } }
+}
+add_deathwell_no_restore_effect = {
 	clr_global_flag = sunwell_is_being_restored_flag
 	394 = {
 		wonder = {
 			remove_sunwells_effect = yes
 			set_wonder_flag = wonder_deathwell_flag
 			set_name = wonder_sunwell_deathwell
-			set_wonder_damaged = no
 		}
 	}
 }
@@ -3631,6 +3641,16 @@ decrease_mind_control_stage_effect = {
 }
 
 support_scarlet_light_effect = {
+	# Vassals of d_order_of_the_silver_hand become vassals of d_scarlet_crusade
+	if = {
+		limit = {
+			is_landed = yes
+			
+			de_facto_liege = d_order_of_the_silver_hand
+		}
+		set_defacto_liege = d_scarlet_crusade
+	}
+	
 	religion = scarlet_light
 	if = {
 		limit = { has_secret_religion = yes }
@@ -3644,6 +3664,7 @@ support_scarlet_light_effect = {
 	if = {
 		limit = {
 			is_landed = yes
+			
 			higher_real_tier_than = BARON
 		}
 		capital_scope = { 
@@ -3658,17 +3679,6 @@ support_scarlet_light_effect = {
 		}
 		
 		hidden_effect = {
-			any_close_relative = {
-				limit = {
-					is_ruler = no
-					host = { character = ROOT }
-					
-					religion = holy_light
-					NOT = { religion = scarlet_light }
-				}
-				religion = scarlet_light
-				clear_secret_religion = yes
-			}
 			any_courtier_or_vassal = {
 				limit = {
 					OR = {
@@ -3681,8 +3691,8 @@ support_scarlet_light_effect = {
 					OR = {
 						trait = zealous
 						has_evil_trait_trigger = yes
-						has_unpleasant_trait_trigger = yes
-						has_impious_trait_trigger = yes
+						
+						is_close_relative = PREV	# Close relatives pick Scarlet religion
 					}
 				}
 				religion = scarlet_light
@@ -3691,56 +3701,120 @@ support_scarlet_light_effect = {
 		}
 	}
 }
+support_argent_dawn_effect = {
+	piety = 100
+	
+	# Vassals of d_order_of_the_silver_hand become vassals of d_argent_dawn
+	if = {
+		limit = {
+			is_landed = yes
+			
+			de_facto_liege = d_order_of_the_silver_hand
+			capital_scope = { region = world_eastern_kingdoms_lordaeron }
+		}
+		set_defacto_liege = d_argent_dawn
+	}
+}
 
+# Creates d_argent_dawn
 create_d_argent_dawn_effect = {
 	# Picks Highlord
-	create_character = {
-		female = no
-		dynasty = none
-		culture=lordaeronian religion=holy_light
-		trait=brilliant_strategist
-		trait=creature_human
-		trait=class_paladin_7
-		trait=kind trait=just
-		age = 50
+	# Raymond
+	if = {
+		limit = { c_60625 = { is_potential_argent_leader_trigger = yes } }
+		c_60625 = { save_event_target_as = target_argent_highlord }
 	}
-	new_character = {
-		activate_title = { title = d_argent_dawn status = yes }
-		d_argent_dawn = { grant_title = PREV }
+	# Maxwell Tyrosus
+	else_if = {
+		limit = { c_60650 = { is_potential_argent_leader_trigger = yes } }
+		c_60650 = { save_event_target_as = target_argent_highlord }
+	}
+	# Member of the Silver Hand
+	else_if = {
+		limit = {
+			d_order_of_the_silver_hand = {
+				has_holder = yes
+				holder_scope = {
+					any_courtier = {
+						is_potential_argent_leader_trigger = yes
+					}
+				}
+			}
+		}
+		d_order_of_the_silver_hand = {
+			holder_scope = {
+				random_courtier = {
+					limit = { is_potential_argent_leader_trigger = yes }
+					save_event_target_as = target_grand_crusader
+				}
+			}
+		}
+	}
+	else = {
+		create_character = {
+			female = no
+			dynasty = none
+			culture=lordaeronian religion=holy_light
+			trait=brilliant_strategist
+			trait=creature_human
+			trait=class_paladin_7
+			trait=kind trait=just
+			age = 50
+		}
+		new_character = { save_event_target_as = target_argent_highlord }
+	}
+	event_target:target_argent_highlord = {
+		wealth = 500
 		religion_authority = {
 			modifier = religious_order_formed
 			years = 10
 		}
-		religion_authority = {
-			modifier = religious_split_bad
-			years = 10
-		}
+		
+		activate_title = { title = d_argent_dawn status = yes }
+		d_argent_dawn = { grant_title = PREV }
 		set_defacto_liege = THIS
 	}
 }
+# Creates d_scarlet_crusade
 create_d_scarlet_crusade_effect = {
 	# Picks Grand Crusader
+	# Saidan Dathrohan
 	if = {
-		limit = {
-			c_60021 = {		# Saidan
-				ai = yes
-
-				is_alive = yes
-
-				OR = {
-					religion = holy_light
-					religion = scarlet_light
-				}
-				OR = {
-					true_religion = holy_light
-					true_religion = scarlet_light
-				}
-				culture = lordaeronian
-				trait = zealous
-			}
-		}
+		limit = { c_60021 = { is_potential_scarlet_leader_trigger = yes } }
 		c_60021 = { save_event_target_as = target_grand_crusader }
 	}
+	# James Abbendis
+	else_if = {
+		limit = { c_60560 = { is_potential_scarlet_leader_trigger = yes } }
+		c_60560 = { save_event_target_as = target_grand_crusader }
+	}
+	# Brigitte Abbendis
+	else_if = {
+		limit = { c_60561 = { is_potential_scarlet_leader_trigger = yes } }
+		c_60561 = { save_event_target_as = target_grand_crusader }
+	}
+	# Member of the Silver Hand
+	else_if = {
+		limit = {
+			d_order_of_the_silver_hand = {
+				has_holder = yes
+				holder_scope = {
+					any_courtier = {
+						is_potential_scarlet_leader_trigger = yes
+					}
+				}
+			}
+		}
+		d_order_of_the_silver_hand = {
+			holder_scope = {
+				random_courtier = {
+					limit = { is_potential_scarlet_leader_trigger = yes }
+					save_event_target_as = target_grand_crusader
+				}
+			}
+		}
+	}
+	# Spawned paladin
 	else = {
 		create_character = {
 			female = no
@@ -3768,15 +3842,12 @@ create_d_scarlet_crusade_effect = {
 			modifier = religious_order_formed
 			years = 10
 		}
-		religion_authority = {
-			modifier = religious_split_good
-			years = 10
-		}
 		
 		activate_title = { title = d_scarlet_crusade status = yes }
 		d_scarlet_crusade = { grant_title = PREV }
 		set_defacto_liege = THIS
 		
+		# Gives start lands
 		c_whispering_gardens = {
 			# event_target:target_settler and its people settle here
 			settle_as_target_settler_effect = yes
@@ -3794,33 +3865,37 @@ create_d_scarlet_crusade_effect = {
 		}
 		
 		clear_settler_flag_effect = yes
-		
-		narrative_event = { id = WCLAT.9001 }
 	}
 }
+# Creates d_church_scarlet_light
 create_d_church_scarlet_light_effect = {
 	# Picks Grand Inquisitor
 	if = {
-		limit = {
-			c_60550 = {		# Isillien
-				ai = yes
-
-				is_alive = yes
-
-				OR = {
-					religion = holy_light
-					religion = scarlet_light
-				}
-				OR = {
-					true_religion = holy_light
-					true_religion = scarlet_light
-				}
-				culture = lordaeronian
-				trait = zealous
-			}
-		}
+		limit = { c_60550 = { is_potential_scarlet_leader_trigger = yes } }
 		c_60550 = { save_event_target_as = target_grand_inquisitor }
 	}
+	# Member of the Silver Hand
+	else_if = {
+		limit = {
+			d_order_of_the_silver_hand = {
+				has_holder = yes
+				holder_scope = {
+					any_courtier = {
+						is_potential_scarlet_leader_trigger = yes
+					}
+				}
+			}
+		}
+		d_order_of_the_silver_hand = {
+			holder_scope = {
+				random_courtier = {
+					limit = { is_potential_scarlet_leader_trigger = yes }
+					save_event_target_as = target_grand_inquisitor
+				}
+			}
+		}
+	}
+	# Spawned priest
 	else = {
 		create_character = {
 			dynasty = none
@@ -3969,5 +4044,32 @@ change_undead_demesne_provinces_religion_to_root_effect = {
 			has_province_modifier = undead_province
 		}
 		religion = ROOT
+	}
+}
+
+# Holy Light religion gets bad authority
+religious_split_holy_light_bad_effect = {
+	d_church_of_the_holy_light = {
+		show_scope_change = no
+		holder_scope = {
+			show_scope_change = no
+			religion_authority = {
+				modifier = religious_split_bad
+				years = 10
+			}
+		}
+	}
+}
+# Holy Light religion gets good authority
+religious_split_scarlet_light_good_effect = {
+	d_church_scarlet_light = {
+		show_scope_change = no
+		holder_scope = {
+			show_scope_change = no
+			religion_authority = {
+				modifier = religious_split_good
+				years = 10
+			}
+		}
 	}
 }
