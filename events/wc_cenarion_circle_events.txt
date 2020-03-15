@@ -1,111 +1,6 @@
 namespace = WCCC
 ###Cenarion Circle events###
 
-#From on_character_ask_to_join_society
-character_event = {
-    id = WCCC.1
-	hide_window = yes
-    is_triggered_only = yes
-    trigger = {
-    	FROM = { leader = { society_member_of = cenarion_circle } }
-    }
-    immediate = {
-    	FROM = { leader = { character_event = { id = WCCC.2} } }
-    }
-}
-
-#Ping event
-character_event = {
-    id = WCCC.2
-	hide_window = yes
-    is_triggered_only = yes
-    immediate = {
-    	FROM = { letter_event = { id = WCCC.3 } }
-    }
-}
-
-#Welcome letter
-letter_event = {
-    id = WCCC.3
-    desc = EVTDESC_WCCC.3
-    border = GFX_event_letter_frame_religion
-
-    is_triggered_only = yes
-
-    option = {
-        name = EVTOPTA_WCCC.3
-
-		join_society = cenarion_circle
-    }
-}
-
-
-# Hidden start: Send the rank-up request to the current Grandmaster (delayed event on self, from decision to rank up)
-character_event = {
-	id = WCCC.10
-
-	hide_window = yes
-
-	trigger = { #has pressed the button
-		has_character_flag = has_sent_request_to_rank_up
-	}
-	
-	is_triggered_only = yes
-
-	immediate = {
-		if = { #if he's still a member
-			limit = { is_in_society = yes }
-			random_society_member = { #will send the request to a random top rank member of the same society
-				limit = {
-					is_society_grandmaster = yes
-					same_society_as = ROOT
-				}
-				character_event = { id = WCCC.11 } # send request to Grand Master.
-			}
-		}
-		if = { #if he's not a member
-			limit = { is_in_society = no }
-			clr_character_flag = has_sent_request_to_rank_up
-		}
-	}
-}
-
-# Grandmaster gets the rank-up request
-character_event = {
-	id = WCCC.11
-	
-	hide_window = yes
-
-	is_triggered_only = yes
-
-	immediate = {
-		event_target:rank_up_target = { letter_event = { id = WCCC.12 } } #send it back
-	}
-}
-
-#Grand master approves my request
-letter_event = {
-	id = WCCC.12
-	desc = EVTDESC_WCCC.12
-	border = GFX_event_letter_frame_war
-
-	trigger = {
-		society_rank < 4 #cannot rank up past 4
-		has_character_flag = has_sent_request_to_rank_up
-	}
-	
-	is_triggered_only = yes
-
-	#Rank up approved
-	option = {
-		name = EVTOPTA_WCCC.12
-		if = { limit = { society_rank < 4 } #if not max rank, rank up
-			society_rank_up = 1
-		}
-		clr_character_flag = has_sent_request_to_rank_up
-	}
-}
-
 # Grants a title, that associated with a society, to a grandmaster of a society
 character_event = {
 	id = WCCC.19
@@ -222,11 +117,6 @@ character_event = {
 	is_triggered_only = yes
 	
 	trigger = {
-		OR = {
-			has_dlc = "Horse Lords"
-			has_dlc = "Jade Dragon"
-		}
-		
 		e_kaldorei = {
 			has_holder = yes
 			holder_scope = {
@@ -289,43 +179,3 @@ character_event = {
 		# set_character_flag = ask_for_ancient_mark_cooldown_flag
 	# }
 # }
-
-
-
-character_event = {
-	id = WCCC.100
-	desc = EVTDESC_WCCC.100
-	picture = GFX_evt_ritual_scroll
-	border = GFX_event_normal_frame_religion
-	
-	ai = yes
-	min_age = 16
-	only_capable = yes
-	prisoner = no
-	religion_group = druidism_group
-
-	trigger = {
-		is_druid_class_trigger = yes
-		is_weak_druid_class_trigger = no
-		NOT = { has_character_flag = refused_cenarion_circle}
-	}
-	
-	option = {
-		name = EVTOPTA_WCCC.100
-		join_society = cenarion_circle
-		ai_chance = {
-			factor = 0.8
-		}
-	}
-	option = {
-		name = EVTOPTB_WCCC.100
-		set_character_flag = refused_cenarion_circle
-		ai_chance = {
-			factor = 0.2
-		}
-	}
-	
-	mean_time_to_happen = {
-		months = 120
-	}
-}

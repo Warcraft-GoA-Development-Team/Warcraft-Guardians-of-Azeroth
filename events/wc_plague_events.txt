@@ -347,10 +347,8 @@ character_event = {
 		# Necromancer
 		if = {
 			limit = {
-				event_target:target_necromancer = {
-					NOT = { character = ROOT }
-					NOT = { e_scourge = { holder_scope = { character = PREVPREV } } }
-				}
+				event_target:target_necromancer = { NOT = { character = ROOT } }
+				NOT = { e_scourge = { holder_scope = { character = event_target:target_necromancer } } }
 			}
 			if = {
 				limit = { NOT = { has_opinion_modifier = { who = event_target:target_necromancer modifier = opinion_loyal_servant } } }
@@ -365,21 +363,16 @@ character_event = {
 				set_secret_religion = event_target:target_necromancer
 			}
 		}
-		# Lich King if you're necromancer worships e_scourge religion
+		# Lich King if your necromancer worships e_scourge religion
 		if = {
 			limit = {
-				trait = being_undead
-				NOT = { has_character_flag = freed_from_lich_king_flag }
-				NOT = { has_landed_title = e_scourge }
+				can_be_mind_controlled_by_scourge_trigger = yes
 				e_scourge = {
 					has_holder = yes
 					holder_scope = {
-						NOT = { religion = PREVPREV }
-						event_target:target_necromancer = {
-							OR = {
-								character = PREV
-								true_religion = { target = PREV target_type = public }
-							}
+						OR = {
+							character = event_target:target_necromancer
+							religion = { target = event_target:target_necromancer target_type = true }
 						}
 					}
 				}
@@ -497,12 +490,14 @@ character_event = {
 				}
 			}
 		}
-		
-		clr_character_flag = event_war_exception_flag
 
 		ai_chance = {
 			factor = 10
 		}
+	}
+	
+	after = {
+		clr_character_flag = event_war_exception_flag
 	}
 }
 # Notification
