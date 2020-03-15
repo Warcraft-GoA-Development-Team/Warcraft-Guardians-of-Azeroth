@@ -280,10 +280,9 @@ narrative_event = {
 }
 
 ### The Scarlet Crusade and the Argent Dawn ###
-# on_yearly_pulse
-# Fires the Scarlet Crusade and the Argent Dawn
+# Picks characters and province
 character_event = {
-	id = WCLAT.8995
+	id = WCLAT.9000
 
 	is_triggered_only = yes
 	hide_window = yes
@@ -295,72 +294,57 @@ character_event = {
 			multiplayer = no
 			is_multiplayer_host_character = yes
 		}
-
-		# To make sure the Plague is over
+		
+		NOT = { d_scarlet_crusade = { has_holder = yes } }
 		OR = {
 			NOT = { has_global_flag = plague_of_lordaeron_happened_flag }
 			had_global_flag = { flag = plague_of_lordaeron_happened_flag years = 3 }
 		}
 
-		# Frozen Throne variants are handled in wc_frozen_throne_story_events...
-		# ...though if these events failed (no events in 10 years), uses this way
-		trigger_if = {
-			limit = {
-				start_date = 605.6.6
-				has_game_rule = {
-					name = frozen_throne_story
-					value = on
+		# Lordaeron
+		269 = {
+			holder_scope = {
+				OR = {
+					NOT = { religion_group = light_group }
+					NOT = { culture_group = human_group }
+				}
+				top_liege = {
+					OR = {
+						NOT = { religion_group = light_group }
+						NOT = { culture_group = human_group }
+					}
 				}
 			}
-			total_years_played = 10
 		}
-
-		argent_dawn_and_scarlet_crusade_can_be_formed_trigger = yes
+		# Stratholme
+		324 = {
+			holder_scope = {
+				OR = {
+					NOT = { religion_group = light_group }
+					NOT = { culture_group = human_group }
+				}
+				top_liege = {
+					OR = {
+						NOT = { religion_group = light_group }
+						NOT = { culture_group = human_group }
+					}
+				}
+			}
+		}
 	}
 
 	immediate = {
-		# Creates d_scarlet_crusade, d_argent_dawn
-		73 = { province_event = { id = WCLAT.9000 } }
-	}
-}
-# Creates d_scarlet_crusade, d_argent_dawn
-province_event = {
-	id = WCLAT.9000
-	
-	is_triggered_only = yes
-	hide_window = yes
-	
-	immediate = {
+		log = "WCLAT.9000 fired for [Root.GetBestName]"
+		
 		### Creates d_argent_dawn
 		create_d_argent_dawn_effect = yes
 		
 		### Creates d_scarlet_crusade and d_church_scarlet_light
 		create_d_scarlet_crusade_effect = yes
 		create_d_church_scarlet_light_effect = yes
-		
-		### Changes religion_authority
-		religious_split_holy_light_bad_effect = yes
-		religious_split_scarlet_light_good_effect = yes
-		
-		# Notification
-		any_playable_ruler = {	# Doesn't fire for ROOT
-			limit = {
-				OR = {
-					religion = holy_light
-					religion = scarlet_light
-					true_religion = holy_light
-					true_religion = scarlet_light
-					trigger_if = {
-						limit = { ai = no }
-						any_realm_province = { region = world_eastern_kingdoms }
-					}
-				}
-			}
-			narrative_event = { id = WCLAT.9001 }
-		}
 	}
 }
-# Notification of Argent Dawn and Scarlet Crusade
+# Starts event
 narrative_event = {
 	id = WCLAT.9001
 	title = EVTTITLE_WLAT_9001
@@ -371,22 +355,21 @@ narrative_event = {
 
 	is_triggered_only = yes
 
-	# Fools!
-	option = {
-		trigger = {
-			evil_true_religion_trigger = yes
+	major = yes
+	major_trigger = {
+		OR = {
+			ai = no
+			religion_group = light_group
 		}
-		name = FOOLS
 	}
+	show_root = yes
 
 	# Support the Argent Dawn
 	option = {
-		trigger = {
-			true_religion = holy_light
-		}
+		trigger = { true_religion = holy_light }
 		name = EVTOPTA_WCLAT_9001
-		
-		support_argent_dawn_effect = yes
+
+		piety = 100
 
 		ai_chance = {
 			factor = 50
@@ -398,13 +381,20 @@ narrative_event = {
 	# Support the Scarlet Crusade
 	option = {
 		trigger = {
-			NOT = {
-				evil_true_religion_trigger = yes
-			}
 			OR = {
+				AND = {
+					trait = creature_human
+					true_religion = holy_light
+				}
 				true_religion = scarlet_light
-				
-				is_potential_scarlet_follower_trigger = yes
+			}
+
+			OR = {
+				AND = {
+					controls_religion = no
+					holy_order = no
+				}
+				true_religion = scarlet_light
 			}
 		}
 		name = EVTOPTB_WCLAT_9001
@@ -417,22 +407,39 @@ narrative_event = {
 			supports_scarlet_light_score = yes
 		}
 	}
+
+	# Fools!
 	option = {
 		trigger = {
-			NOT = {
-				evil_true_religion_trigger = yes
+			NOR = {
 				true_religion = holy_light
 				true_religion = scarlet_light
-				is_potential_scarlet_follower_trigger = yes
 			}
 		}
-		name = WHO_CARES
+		name = FOOLS
 	}
-	
 	after = {
 		tooltip = {
-			religious_split_holy_light_bad_effect = yes
-			religious_split_scarlet_light_good_effect = yes
+			d_argent_dawn = {
+				show_scope_change = no
+				holder_scope = {
+					show_scope_change = no
+					religion_authority = {
+						modifier = religious_split_bad
+						years = 10
+					}
+				}
+			}
+			d_scarlet_crusade = {
+				show_scope_change = no
+				holder_scope = {
+					show_scope_change = no
+					religion_authority = {
+						modifier = religious_split_good
+						years = 10
+					}
+				}
+			}
 		}
 	}
 }
