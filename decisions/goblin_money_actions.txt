@@ -1,0 +1,180 @@
+###################################
+#
+# Warcraft Goblin
+# - Councillor decisions
+#
+###################################
+
+# Written by Miguel "Cipher" Rodrigues
+
+targetted_decisions = {
+	ask_for_loan = {
+		is_high_prio = no
+
+		filter = independent_rulers
+		ai_target_filter = independent_rulers
+		ai_check_interval = 60
+
+		ai = yes
+		only_playable = no
+
+		from_potential = {
+			NOT = {
+				government = nomadic_government
+			}
+			NOT = {
+				government = tribal_goverment
+			}
+		}
+
+		potential = {
+			OR = {
+				AND = {
+					trait = creature_goblin
+					higher_tier_than = baron
+				}
+				AND = {
+					government = merchant_republic_government
+					higher_tier_than = baron
+				}
+			}
+		}
+		allow = {
+			is_within_diplo_range = FROM
+			NOT = { war = yes }
+			OR = {
+				AND = {
+					real_tier = duke
+					wealth = 100
+				}
+				AND = {
+					real_tier = king
+					FROM = { higher_tier_than = count }
+					wealth = 300
+				}
+				AND = {
+					real_tier = emperor
+					FROM = { higher_tier_than = duke }
+					wealth = 500
+				}
+			}
+			NOT = {
+				FROM = {
+					OR = {
+						has_character_modifier = small_debt
+						has_character_modifier = average_debt
+						has_character_modifier = massive_debt
+					}
+				}
+			}
+		}
+		effect = {
+			if = {
+			  limit = {
+					real_tier = king
+			  }
+				wealth = -300
+				FROM = { wealth = 300 }
+				FROM = { add_character_modifier = { name = average_debt duration = 3000 stacking = yes inherit = yes } }
+				add_character_modifier = { name = average_debt_r duration = 200 stacking = yes }
+			}
+			
+			if = {
+			  limit = {
+					real_tier = duke
+			  }
+			  	wealth = -100
+				FROM = { wealth = 100 }
+				FROM = { add_character_modifier = { name = small_debt duration = 3000 stacking = yes inherit = yes } }
+				add_character_modifier = { name = small_debt_r duration = 200 stacking = yes }
+			}
+			
+			if = {
+			  limit = {
+					real_tier = emperor
+			  }
+				wealth = -500
+				FROM = { wealth = 500 } 
+				FROM = { add_character_modifier = { name = massive_debt duration = 3000 stacking = yes inherit = yes } }
+				add_character_modifier = { name = massive_debt_r duration = 200 stacking = yes }
+			}	
+		}
+		revoke_allowed = {
+			always = no
+		}
+		ai_will_do = {
+			factor = 1
+			modifier = {
+				factor = 0
+				wealth = -50
+				war = no
+			}
+			modifier = {
+				factor = 0
+				wealth = 200
+				war = yes
+			}
+		}
+		ai_acceptance = {
+			factor = 30
+			yes_threshold = 40
+			show_maybe_for_humans = yes
+			additive_modifier = {
+				value = -100
+				war = yes
+			}
+			additive_modifier = {
+				value = -20
+				tier = emperor
+				NOT = { wealth = 1000 }
+			}
+			additive_modifier = {
+				value = -10
+				trait = goblin_creature
+				NOT = { trait = goblin_creature }
+			}
+			additive_modifier = {
+				value = -5
+				localisation_key = baptism_sponsor_opinion
+				NOT = { opinion = { who = from value = 0 } }
+				opinion = { who = from value = -20 }
+				NOT = { ROOT = { is_offmap_governor = offmap_china } }
+			}
+			additive_modifier = {
+				value = -10
+				localisation_key = baptism_sponsor_opinion
+				NOT = { opinion = { who = from value = -20 } }
+				opinion = { who = from value = -40 } 
+				NOT = { ROOT = { is_offmap_governor = offmap_china } }
+			}
+			additive_modifier = {
+				value = -15
+				localisation_key = baptism_sponsor_opinion
+				NOT = { opinion = { who = from value = -40 } }
+				opinion = { who = from value = -60 } 
+				NOT = { ROOT = { is_offmap_governor = offmap_china } }
+			}
+			additive_modifier = {
+				value = -20
+				localisation_key = baptism_sponsor_opinion
+				NOT = { opinion = { who = from value = -60 } }
+				opinion = { who = from value = -80 } 
+				NOT = { ROOT = { is_offmap_governor = offmap_china } }
+			}
+			additive_modifier = {
+				value = -25
+				localisation_key = baptism_sponsor_opinion
+				NOT = { opinion = { who = from value = -80 } }
+				opinion = { who = from value = -100 } 
+				NOT = { ROOT = { is_offmap_governor = offmap_china } }
+			}
+			additive_modifier = {
+				value = -30
+				localisation_key = baptism_sponsor_opinion
+				NOT = { opinion = { who = from value = -100 } }
+				NOT = { ROOT = { is_offmap_governor = offmap_china } }
+			}
+		}
+	}
+	
+}
