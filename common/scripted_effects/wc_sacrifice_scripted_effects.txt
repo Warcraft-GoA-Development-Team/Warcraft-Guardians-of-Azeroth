@@ -1,0 +1,262 @@
+PREV_public_sacrifice_THIS_effect = {
+	PREV = { save_event_target_as = target_sacrificer }
+	save_event_target_as = target_sacrificed_prisoner
+	
+	any_liege = {
+		limit = {
+			ai = no
+			NOT = { character = PREVPREV }
+		}
+		character_event = { id = SSI.60 }
+	}
+	PREV = {
+		if = {
+			limit = { NOT = { has_character_flag = wc_do_not_show_post_sacrifice_ping_event_flag } }
+			character_event = { id = HF.23002 }
+		}
+		if = {
+			limit = {
+				religion = cult_of_hakkar
+				NOT = { has_character_flag = wc_do_not_show_post_sacrifice_cannibal_event_flag }
+			}
+			random = {
+				chance = 10
+				character_event = { id = WCLOA.110 days = 1 random = 7 }
+				set_character_flag = wc_do_not_show_post_sacrifice_cannibal_event_flag
+			}
+		}
+	}
+
+	if = {
+		limit = { is_ruler = yes }
+		if = {
+			limit = { tier = BARON }
+			PREV = { piety = 15 }
+		}
+		else_if = {
+			limit = { tier = COUNT }
+			PREV = { piety = 30 }
+		}
+		else_if = {
+			limit = { tier = DUKE }
+			PREV = { piety = 75 }
+		}
+		else_if = {
+			limit = { tier = KING }
+			PREV = { piety = 150 }
+		}
+		else = {
+			limit = { tier = EMPEROR }
+			PREV = { piety = 250 }
+		}
+	}
+	else = { PREV = { piety = 5 } }
+	#Bloodthirsty Bloodline bonus.
+	if = {
+		limit = { PREV = { any_owned_bloodline = { has_bloodline_flag = bloodline_prestige_sacrifice } } }
+
+		if = {
+			limit = { is_ruler = yes }
+			if = {
+				limit = { tier = BARON }
+				PREV = { prestige = 30 }
+			}
+			else_if = {
+				limit = { tier = COUNT }
+				PREV = { prestige = 60 }
+			}
+			else_if = {
+				limit = { tier = DUKE }
+				PREV = { prestige = 150 }
+			}
+			else_if = {
+				limit = { tier = KING }
+				PREV = { prestige = 300 }
+			}
+			else = {
+				limit = { tier = EMPEROR }
+				PREV = { prestige = 500 }
+			}
+		}
+		else = { PREV = { prestige = 10 } }
+	}
+
+	death = {
+		death_reason = death_execution_aztec_sacrifice
+		killer = PREV
+	}
+}
+
+# DO NOT FORGET TO CHANGE "third_party_score" INSIDE OF "offmap_sacrifice" DECISION IF YOU CHANGE THIS!
+# OTHERWISE AMOUNT THAT YOUR CHARACTER WILL RECEIVE IF ON OG SCREEN THIRD PARTY SELECTOR WILL BE WRONG!
+caltulate_PREV_offmap_old_gods_currency_insanity_effect = {
+	if = {
+		limit = {
+			PREV = {
+				OR = {
+					cthun_offmap_decisions_enabled_trigger = yes
+					nzoth_offmap_decisions_enabled_trigger = yes
+					yogg_saron_offmap_decisions_enabled_trigger = yes
+					yshaarj_offmap_decisions_enabled_trigger = yes
+				}
+			}
+		}
+		PREV = {
+			show_scope_change = no
+
+			custom_tooltip = { text = gain_old_god_offmap_currency_tooltip }
+		}
+		hidden_effect = {
+			# Base
+			set_variable = { which = local_received_offmap_old_gods_currency_insanity_variable value = 100 }
+			# Priests
+			if = {
+				limit = { controls_religion = yes }
+				PREV = { change_variable = { which = local_received_offmap_old_gods_currency_insanity_variable value = 500 } }
+			}
+			if = {
+				limit = {
+					OR = {
+						is_priest = yes
+						is_ascetic_trigger = yes
+					}
+				}
+				PREV = { change_variable = { which = local_received_offmap_old_gods_currency_insanity_variable value = 100 } }
+			}
+			# Rulers and tiers
+			if = {
+				limit = { is_ruler = yes }
+				PREV = { change_variable = { which = local_received_offmap_old_gods_currency_insanity_variable value = 50 } }
+
+				if = {
+					limit = { tier = COUNT }
+					PREV = { change_variable = { which = local_received_offmap_old_gods_currency_insanity_variable value = 50 } }
+				}
+				else_if = {
+					limit = { tier = DUKE }
+					PREV = { change_variable = { which = local_received_offmap_old_gods_currency_insanity_variable value = 150 } }
+				}
+				else_if = {
+					limit = { tier = KING }
+					PREV = { change_variable = { which = local_received_offmap_old_gods_currency_insanity_variable value = 300 } }
+				}
+				else = {
+					limit = { tier = EMPEROR }
+					PREV = { change_variable = { which = local_received_offmap_old_gods_currency_insanity_variable value = 500 } }
+				}
+			}
+			# Child
+			if = {
+				limit = { is_adult = no }
+				PREV = { change_variable = { which = local_received_offmap_old_gods_currency_insanity_variable value = 100 } }
+			}
+			# Has the blood of Twilight Viceroy
+			if = {
+				limit = { PREV = { any_owned_bloodline = { has_bloodline_flag = bloodline_insanity_gain } } }
+				PREV = { multiply_variable = { which = local_received_offmap_old_gods_currency_insanity_variable value = 1.5 } }
+			}
+			# C'thun likes/dislikes
+			if = {
+				limit = { PREV = { cthun_offmap_decisions_enabled_trigger = yes } }
+
+				if = {
+					limit = { disliked_by_offmap = { type = offmap_cthun } }
+					PREV = { multiply_variable = { which = local_received_offmap_old_gods_currency_insanity_variable value = 1.25 } }
+				}
+				if = {
+					limit = { PREV = { liked_by_offmap = { type = offmap_cthun } } }
+					PREV = { multiply_variable = { which = local_received_offmap_old_gods_currency_insanity_variable value = 1.25 } }
+				}
+				if = {
+					limit = { PREV = { disliked_by_offmap = { type = offmap_cthun } } }
+					PREV = { multiply_variable = { which = local_received_offmap_old_gods_currency_insanity_variable value = 0.8 } }
+				}
+			}
+			# N'zoth likes/dislikes
+			if = {
+				limit = { PREV = { nzoth_offmap_decisions_enabled_trigger = yes } }
+
+				if = {
+					limit = { disliked_by_offmap = { type = offmap_nzoth } }
+					PREV = { multiply_variable = { which = local_received_offmap_old_gods_currency_insanity_variable value = 1.25 } }
+				}
+				if = {
+					limit = { PREV = { liked_by_offmap = { type = offmap_nzoth } } }
+					PREV = { multiply_variable = { which = local_received_offmap_old_gods_currency_insanity_variable value = 1.25 } }
+				}
+				if = {
+					limit = { PREV = { disliked_by_offmap = { type = offmap_nzoth } } }
+					PREV = { multiply_variable = { which = local_received_offmap_old_gods_currency_insanity_variable value = 0.8 } }
+				}
+			}
+			# Yogg-Saron likes/dislikes
+			if = {
+				limit = { PREV = { yogg_saron_offmap_decisions_enabled_trigger = yes } }
+
+				if = {
+					limit = { disliked_by_offmap = { type = offmap_yoggsaron } }
+					PREV = { multiply_variable = { which = local_received_offmap_old_gods_currency_insanity_variable value = 1.25 } }
+				}
+				if = {
+					limit = { PREV = { liked_by_offmap = { type = offmap_yoggsaron } } }
+					PREV = { multiply_variable = { which = local_received_offmap_old_gods_currency_insanity_variable value = 1.25 } }
+				}
+				if = {
+					limit = { PREV = { disliked_by_offmap = { type = offmap_yoggsaron } } }
+					PREV = { multiply_variable = { which = local_received_offmap_old_gods_currency_insanity_variable value = 0.8 } }
+				}
+			}
+		}
+	}
+}
+
+add_offmap_old_gods_currency_insanity_after_calculation_effect = {
+	if = {
+		limit = { old_gods_offmap_decisions_enabled_trigger = yes }
+
+		if = {
+			limit = { cthun_offmap_decisions_enabled_trigger = yes }
+
+			add_offmap_currency = {
+				offmap = offmap_cthun
+				value = local_received_offmap_old_gods_currency_insanity_variable
+			}
+		}
+		else_if = {
+			limit = { nzoth_offmap_decisions_enabled_trigger = yes }
+
+			add_offmap_currency = {
+				offmap = offmap_nzoth
+				value = local_received_offmap_old_gods_currency_insanity_variable
+			}
+		}
+		else_if = {
+			limit = { yogg_saron_offmap_decisions_enabled_trigger = yes }
+
+			add_offmap_currency = {
+				offmap = offmap_yoggsaron
+				value = local_received_offmap_old_gods_currency_insanity_variable
+			}
+		}
+	}
+}
+
+PREV_sacrifice_THIS_to_old_god_effect = {
+	caltulate_PREV_offmap_old_gods_currency_insanity_effect = yes
+	hidden_effect = { PREV = { add_offmap_old_gods_currency_insanity_after_calculation_effect = yes } }
+	if = {
+		limit = { PREV = { NOT = { society_member_of = twilights_hammer_cult } } }
+		PREV_public_sacrifice_THIS_effect = yes
+	}
+	else = {
+		death = { death_reason = death_missing }
+		character_event = { id = MNM.7506 }
+		PREV = {
+			show_scope_change = no
+			increase_visibility_minor_effect = yes
+			minor_soul_corruption_effect = yes
+			hidden_effect = { murder_bloodline_check_effect = yes }
+		}
+		PREV_society_sacrifice_THIS_effect = yes
+	}
+}
