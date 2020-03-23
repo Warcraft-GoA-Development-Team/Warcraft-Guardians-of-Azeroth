@@ -713,4 +713,99 @@ offmap_decisions = {
 			}
 		}
 	}
+	request_elementium_offmap = {
+		only_playable = yes
+		button_name = offmap_boons
+
+		ai_check_interval = 36
+
+		potential = {
+			OR = {
+				AND = {
+					is_offmap_tag = offmap_cthun
+					NOT = { offmap_cthun = { has_status = old_god_dead } }
+				}
+				AND = {
+					is_offmap_tag = offmap_nzoth
+					NOT = { offmap_nzoth = { has_status = old_god_dead } }
+				}
+				AND = {
+					is_offmap_tag = offmap_yoggsaron
+					NOT = { offmap_yoggsaron = { has_status = old_god_dead } }
+				}
+			}
+		}
+		from_potential = {
+			mercenary = no
+			holy_order = no
+			is_landed = yes
+		}
+		allow = {
+			trigger_if = {
+				limit = { is_offmap_tag = offmap_cthun }
+				FROM = {
+					has_offmap_currency = { offmap = offmap_cthun value = 1000 }
+					cthun_offmap_decisions_enabled_trigger = yes
+				}
+			}
+			trigger_else_if = {
+				limit = { is_offmap_tag = offmap_nzoth }
+				FROM = {
+					has_offmap_currency = { offmap = offmap_nzoth value = 1000 }
+					nzoth_offmap_decisions_enabled_trigger = yes
+				}
+			}
+			trigger_else = {
+				FROM = {
+					has_offmap_currency = { offmap = offmap_yoggsaron value = 1000 }
+					yogg_saron_offmap_decisions_enabled_trigger = yes
+				}
+			}
+			FROM = {
+				NOT = { has_character_modifier = twilight_architecture }
+				religion = old_gods_worship
+			}
+		}
+		effect = {
+			if = {
+				limit = {
+					is_offmap_tag = offmap_cthun
+				}
+				FROM = {
+					add_offmap_currency = {
+						offmap = offmap_cthun
+						value = -1000
+					}
+					add_character_modifier = { name = twilight_architecture years = 5 }
+				}
+			}
+			else_if = {
+				limit = {
+					is_offmap_tag = offmap_nzoth
+				}
+				FROM = {
+					add_offmap_currency = {
+						offmap = offmap_nzoth
+						value = -1000
+					}
+					add_character_modifier = { name = twilight_architecture years = 5 }
+				}
+			}
+			else = {
+				FROM = {
+					add_offmap_currency = {
+						offmap = offmap_yoggsaron
+						value = -1000
+					}
+					add_character_modifier = { name = twilight_architecture years = 5 }
+				}
+			}
+		}
+		ai_will_do = {
+			factor = 1
+			modifier = {
+				factor = 0.3 # slow down
+			}
+		}
+	}
 }
