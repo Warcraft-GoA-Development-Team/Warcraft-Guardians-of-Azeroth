@@ -61,9 +61,13 @@ narrative_event = {
 	option = { #To the strongest!
 		trigger = { character = ROOT }
 		k_lordaeron = {
+			show_scope_change = no
+
 			if = {
 				limit = { has_holder = yes }
 				holder_scope = {
+					show_scope_change = no
+
 					reverse_unsafe_war = {
 						target = ROOT
 						casus_belli = invasion
@@ -72,8 +76,10 @@ narrative_event = {
 				}
 			}
 		}
+		
 		prestige = 500
 		piety = -250
+		
 		name = EVTOPTA_WCTFT_100
 		ai_chance = {
 			factor = 1
@@ -83,9 +89,13 @@ narrative_event = {
 	option = { #To the rightful heir!
 		trigger = { character = ROOT }
 		k_lordaeron = {
+			show_scope_change = no
+
 			if = {
 				limit = { has_holder = yes }
 				holder_scope = {
+					show_scope_change = no
+
 					reverse_unsafe_war = {
 						target = c_60004
 						casus_belli = other_claim
@@ -95,7 +105,9 @@ narrative_event = {
 				}
 			}
 		}
+		
 		prestige = 250
+		
 		name = EVTOPTB_WCTFT_100
 		ai_chance = {
 			factor = 0
@@ -163,34 +175,25 @@ narrative_event = {
 ### Resistance Calia Path ###
 #############################
 ### Resistance Calia Path: Garithos victorious, Calia installed
-narrative_event = {
-	id = WCTFT.110
-	title = EVTTITLE_WCTFT_110
-	desc = EVTDESC_WCTFT_110
-	picture = GFX_evt_stormwind_champion
-	border = GFX_event_narrative_frame_war
-
-	is_triggered_only = yes
+#Pinger event
+province_event = {
+	id = WCTFT.109
 	
-	major = yes
-	major_trigger = {
-		ai = no
-	}
-	show_root = yes
+	is_triggered_only = yes
+	hide_window = yes
 	
 	trigger = {
+		has_global_flag = plaguelands_civil_war_ongoing
 		NOT = { 
 			has_game_rule = {
 				name = frozen_throne_story
 				value = off
 			}
-			has_global_flag = plaguelands_civil_war_concluded
 		}
 	}
-
+	
 	immediate = {
 		clr_global_flag = plaguelands_civil_war_ongoing
-		set_global_flag = plaguelands_civil_war_concluded
 		
 		#Add Calia to faction
 		event_target:target_calia = { join_alliance_faction_effect = yes }
@@ -216,10 +219,30 @@ narrative_event = {
 			}
 		}
 		
+		# Shows notification
+		event_target:target_calia = { narrative_event = { id = WCTFT.110 } }
+		any_player = {
+			limit = {
+				NOT = { character = event_target:target_calia }
+			}
+			narrative_event = { id = WCTFT.110 }
+		}
+		
 		# Resistance Calia Path: The Silver Hand's Loyalties
 		73 = { province_event = { id = WCTFT.114 days = 7 } }
 	}
-	
+}
+#Pinged event
+narrative_event = {
+	id = WCTFT.110
+	title = EVTTITLE_WCTFT_110
+	desc = EVTDESC_WCTFT_110
+	picture = GFX_evt_stormwind_champion
+	border = GFX_event_narrative_frame_war
+	portrait = event_target:target_calia
+
+	is_triggered_only = yes
+
 	option = { #Sometimes I wish to be in her place
 		trigger = {
 			ai = no
@@ -231,9 +254,22 @@ narrative_event = {
 		
 		set_player_character = event_target:target_calia
 	}
+	
+	option = {
+		trigger = {
+			character = event_target:target_calia
+		}
+		name = EVTOPTA_WCTFT_110
+		
+		spawn_colonial_troops_effect = yes
+		spawn_colonial_troops_effect = yes
+	}
 
 	option = { #A new hope for Lordaeron
 		trigger = {
+			NOT = {
+				character = event_target:target_calia
+			}
 			true_religion = { target = event_target:target_calia target_type = public }
 		}
 		name = EVTOPTA_WCTFT_110
@@ -242,6 +278,7 @@ narrative_event = {
 	option = { #She won't rule for long
 		trigger = {
 			NOT = {
+				character = event_target:target_calia
 				true_religion = { target = event_target:target_calia target_type = public }
 			}
 			OR = {
@@ -255,6 +292,7 @@ narrative_event = {
 	option = { #At least she can be reasoned with
 		trigger = {
 			NOT = {
+				character = event_target:target_calia
 				true_religion = { target = event_target:target_calia target_type = public }
 				evil_true_religion_trigger = yes
 				culture = forsaken
@@ -267,6 +305,7 @@ narrative_event = {
 	option = { #Pah!
 		trigger = {
 			NOT = {
+				character = event_target:target_calia
 				true_religion = { target = event_target:target_calia target_type = public }
 				evil_true_religion_trigger = yes
 				culture = forsaken
@@ -431,18 +470,17 @@ narrative_event = {
 	show_root = yes
 	
 	trigger = {
+		has_global_flag = plaguelands_civil_war_ongoing
 		NOT = { 
 			has_game_rule = {
 				name = frozen_throne_story
 				value = off
 			}
-			has_global_flag = plaguelands_civil_war_concluded
 		}
 	}
 
 	immediate = {
 		clr_global_flag = plaguelands_civil_war_ongoing
-		set_global_flag = plaguelands_civil_war_concluded
 		
 		#Give nick and bloodline
 		event_target:target_garithos = {
@@ -455,6 +493,8 @@ narrative_event = {
 					type = scarlet_king
 				}
 			}
+			
+			remove_special_character_title = GRAND_MARSHAL_TITLE
 		}
 		
 		#Kick out Garithos from faction
@@ -463,9 +503,22 @@ narrative_event = {
 		# Resistance Garithos Path: The Abbendis Schism
 		73 = { province_event = { id = WCTFT.124 days = 7 } }
 	}
+	
+	option = { #This will ruffle some feathers
+		trigger = {
+			character = ROOT
+		}
+		name = EVTOPTA_WCTFT_120
+		
+		spawn_colonial_troops_effect = yes
+		spawn_colonial_troops_effect = yes
+	}
 
 	option = { #This will ruffle some feathers
 		trigger = {
+			NOT = {
+				character = ROOT
+			}
 			true_religion = { target = event_target:target_garithos target_type = public }
 		}
 		name = EVTOPTA_WCTFT_120
@@ -474,6 +527,7 @@ narrative_event = {
 	option = { #Let them kill each other
 		trigger = {
 			NOT = {
+				character = ROOT
 				true_religion = { target = event_target:target_garithos target_type = public }
 			}
 			OR = {
@@ -487,6 +541,7 @@ narrative_event = {
 	option = { #The last vestiges of honor are lost
 		trigger = {
 			NOT = {
+				character = ROOT
 				true_religion = { target = event_target:target_garithos target_type = public }
 				evil_true_religion_trigger = yes
 				culture = forsaken
@@ -499,6 +554,7 @@ narrative_event = {
 	option = { #Disconcerting
 		trigger = {
 			NOT = { 
+				character = ROOT
 				true_religion = { target = event_target:target_garithos target_type = public }
 				evil_true_religion_trigger = yes
 				culture = forsaken
@@ -688,28 +744,30 @@ narrative_event = {
 	show_root = yes
 	
 	trigger = {
+		has_global_flag = plaguelands_civil_war_ongoing
 		NOT = { 
 			has_game_rule = {
 				name = frozen_throne_story
 				value = off
 			}
-			has_global_flag = plaguelands_civil_war_concluded
 		}
 	}
 
 	immediate = {
 		clr_global_flag = plaguelands_civil_war_ongoing
-		set_global_flag = plaguelands_civil_war_concluded
 		
 		#Ping Saidan or create the Grand Crusader of Scarlet Crusade
 		73 = { province_event = { id = WCTFT.134 days = 15 random = 15 } }
 	}
 	
-	option = { #We will slaughter anyone who stands in our way
+	option = { #For the Forsaken!
 		trigger = {
 			character = ROOT
 		}
 		name = EVTOPTB_WCTFT_130
+		
+		spawn_colonial_troops_effect = yes
+		spawn_colonial_troops_effect = yes
 	}
 	
 	option = { #Treacherous scum
@@ -1017,7 +1075,7 @@ narrative_event = {
 		if = {
 			limit = { has_character_flag = is_kaelthas_flag }
 			any_playable_ruler = {
-				limit = { has_character_flag = is_lorthemar_flag }
+				limit = { has_character_flag = is_regent_lord_flag }
 				save_event_target_as = target_regent_lord
 			}
 		}
@@ -1094,7 +1152,7 @@ narrative_event = {
 			e_scourge = {
 				holder_scope = {
 					ROOT = {
-						this_abdicate_transfer_wealth_to_prev_effect = yes
+						prev_usurp_all_demesne_provinces_effect = yes
 						death = { death_reason = death_missing }
 					}
 				}
@@ -1252,6 +1310,23 @@ province_event = {
 				}
 				capital = c_silvermoon
 				
+				# If the Scourge exists, the Lich King takes your titles in Northrend
+				# P.S. Can't say I like it... feels unnatural - your Zuzu
+				if = {
+					limit = { e_scourge = { has_holder = yes } }
+					e_scourge = { holder_scope = { save_event_target_as = target_lich_king } }
+					
+					any_demesne_title = {
+						limit = {
+							title_can_be_lost_trigger = yes
+							lower_tier_than = DUKE
+							
+							region = world_northrend
+						}
+						grant_title_no_opinion = { target = event_target:target_lich_king type = invasion }
+					}
+				}
+				
 				# Spawns some army so Kael may kick the Scourge out of Quel'thalas
 				spawn_colonial_troops_effect = yes
 				#spawn_colonial_troops_effect = yes
@@ -1260,7 +1335,11 @@ province_event = {
 					narrative_event = { id = WCTFT.500 }
 				}
 				
-				event_target:target_regent_lord = { remove_special_character_title = REGENT_LORD_TITLE }
+				event_target:target_regent_lord = {
+					clr_character_flag = is_regent_lord_flag
+					
+					remove_special_character_title = REGENT_LORD_TITLE
+				}
 			}
 			else = {
 				# Fail fallback
@@ -1371,5 +1450,28 @@ character_event = {
 	
 	option = {
 		name = ALAS
+	}
+}
+
+
+### Regent Lord of Quel'thalas makes Quel'thalas elective, becomes the king
+character_event = {
+	id = WCTFT.600
+	title = EVTTITLE_WCTFT_500
+	desc = EVTDESC_WCTFT_600
+	picture = GFX_evt_sunwell
+	border = GFX_event_normal_frame_diplomacy
+	
+	is_triggered_only = yes
+	
+	#Regent Lord's reaction
+	option = {
+		trigger = { character = FROM }
+		name = EXCELLENT
+	}
+	# Others' reaction
+	option = {
+		trigger = { NOT = { character = FROM } }
+		name = INTERESTING
 	}
 }
