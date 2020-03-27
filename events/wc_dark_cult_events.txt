@@ -959,7 +959,6 @@ province_event = {
 narrative_event = {
 	id = WCDAC.5035
 	title = EVTTITLE_WCDAC_5030
-	desc = EVTDESC_WCDAC_5035_kalimdor
 	desc = {
 		trigger = {
 			has_global_flag = twilights_hammer_kalimdor
@@ -1072,23 +1071,29 @@ province_event = {
 				remove_trait = humble
 				remove_trait = honest
 				remove_trait = trusting
-				if = {
-					limit = { has_global_flag = twilights_hammer_kalimdor }
-					narrative_event = { id = WCDAC.5040 }
-				}
-				else = {
-					narrative_event = { id = WCDAC.5041 }
-				}
+				narrative_event = { id = WCDAC.5040 }
 			}
 		}
 	}
 }
-# The Ruins of Ahn'Qiraj
+# The Ruins of Ahn'Qiraj and Darkness in Uldaur
 narrative_event = {
 	id = WCDAC.5040
 	title = EVTTITLE_WCDAC_5030
-	desc = EVTDESC_WCDAC_5040
-	picture = GFX_evt_ahnqiraj
+	desc = {
+		trigger = {
+			has_global_flag = twilights_hammer_kalimdor
+		}
+		text = EVTDESC_WCDAC_5040
+		picture = GFX_evt_ahnqiraj
+	}
+	desc = {
+		trigger = {
+			NOT = { has_global_flag = twilights_hammer_kalimdor }
+		}
+		text = EVTDESC_WCDAC_5041
+		picture = GFX_evt_yogg_saron
+	}
 	border = GFX_event_narrative_frame_intrigue
 
 	is_triggered_only = yes
@@ -1110,47 +1115,70 @@ narrative_event = {
 
 		remove_trait = travelling
 
+		if = {
+			limit = { has_global_flag = twilights_hammer_kalimdor }
+			c_hivezora = {
+				# event_target:target_settler and its people settle here
+				settle_as_target_settler_effect = yes
+			}
 
-		c_hivezora = {
-			# event_target:target_settler and its people settle here
-			settle_as_target_settler_effect = yes
-		}
+			# If you're not independent ruler, gives old titles to liege
+			give_old_titles_to_heir_effect = yes
 
-		# If you're not independent ruler, gives old titles to liege
-		give_old_titles_to_heir_effect = yes
+			c_hiveashi = {
+				# event_target:target_settler and its people settle here
+				settle_as_target_settler_effect = yes
+			}
+			c_crystalvale = {
+				settle_as_target_settler_effect = yes
+			}
+			c_ishrak = {
+				settle_as_target_settler_effect = yes
+			}
+			c_ashakx = {
+				settle_as_target_settler_effect = yes
+			}
+			c_hiveregal = {
+				settle_as_target_settler_effect = yes
+			}
+			c_scarab_wall = {
+				settle_as_target_settler_effect = yes
+			}
+			c_hivezora = {
+				# Declares war against player
+				target_settler_declare_war_effect = yes
+			}
 
-		c_hiveashi = {
-			# event_target:target_settler and its people settle here
-			settle_as_target_settler_effect = yes
+			c_hivezora = { location = { culture = qiraji } }
+			c_hiveashi = { location = { culture = qiraji } }
+			c_crystalvale = { location = { culture = qiraji } }
+			c_ishrak = { location = { culture = qiraji } }
+			c_ashakx = { location = { culture = qiraji } }
+			c_hiveregal = { location = { culture = qiraji } }
+			c_scarab_wall = { location = { culture = qiraji } }
 		}
-		c_crystalvale = {
-			settle_as_target_settler_effect = yes
-		}
-		c_ishrak = {
-			settle_as_target_settler_effect = yes
-		}
-		c_ashakx = {
-			settle_as_target_settler_effect = yes
-		}
-		c_hiveregal = {
-			settle_as_target_settler_effect = yes
-		}
-		c_scarab_wall = {
-			settle_as_target_settler_effect = yes
-		}
-		c_hivezora = {
-			# Declares war against player
-			target_settler_declare_war_effect = yes
-		}
+		else = {
+			c_bouldercrag = {
+				# event_target:target_settler and its people settle here
+				settle_as_target_settler_effect = yes
+			}
 
+			# If you're not independent ruler, gives old titles to liege
+			give_old_titles_to_heir_effect = yes
+
+			c_snowdrift = {
+				# event_target:target_settler and its people settle here
+				settle_as_target_settler_effect = yes
+			}
+			c_nidavelir = {
+				settle_as_target_settler_effect = yes
+			}
+			c_bouldercrag = {
+				# Declares war against player
+				target_settler_declare_war_effect = yes
+			}
+		}
 		clear_settler_flag_effect = yes
-		c_hivezora = { location = { culture = qiraji } }
-		c_hiveashi = { location = { culture = qiraji } }
-		c_crystalvale = { location = { culture = qiraji } }
-		c_ishrak = { location = { culture = qiraji } }
-		c_ashakx = { location = { culture = qiraji } }
-		c_hiveregal = { location = { culture = qiraji } }
-		c_scarab_wall = { location = { culture = qiraji } }
 	}
 
 	# I'll spread its will across Kalimdor!
@@ -1177,8 +1205,6 @@ narrative_event = {
 		add_35_void_corruption_effect = yes
 
 		hidden_effect = {
-			# activate_title = { title = d_twilights_hammer status = no }
-			# d_twilights_hammer = { destroy_landed_title = THIS }
 			any_playable_ruler = {
 				limit = {
 					ai = yes
@@ -1187,91 +1213,10 @@ narrative_event = {
 				character_event = { id = MNM.10030 }
 			}
 			narrative_event = { id = WCDAC.5050 }
-		}
-		clr_global_flag = twilights_hammer_kalimdor
-	}
-}
-# Darkness in Ulduar
-narrative_event = {
-	id = WCDAC.5041
-	title = EVTTITLE_WCDAC_5030
-	desc = EVTDESC_WCDAC_5041
-	picture = GFX_evt_ahnqiraj
-	border = GFX_event_narrative_frame_intrigue
-
-	is_triggered_only = yes
-
-	immediate = {
-		# Used in scripted effects
-		save_event_target_as = target_settler
-
-		religion = old_gods_worship
-		add_trait = zealous
-		clear_event_target = yes
-		any_courtier = {
-			limit = { culture = twilights_hammer }
-			religion = old_gods_worship
-		}
-
-		remove_trait = travelling
-
-
-		c_bouldercrag = {
-			# event_target:target_settler and its people settle here
-			settle_as_target_settler_effect = yes
-		}
-
-		# If you're not independent ruler, gives old titles to liege
-		give_old_titles_to_heir_effect = yes
-
-		c_snowdrift = {
-			# event_target:target_settler and its people settle here
-			settle_as_target_settler_effect = yes
-		}
-		c_nidavelir = {
-			settle_as_target_settler_effect = yes
-		}
-		c_bouldercrag = {
-			# Declares war against player
-			target_settler_declare_war_effect = yes
-		}
-
-		clear_settler_flag_effect = yes
-	}
-
-	# I'll spread its will across Northrend!
-	option = {
-		name = EVTOPTA_WCDAC_5040
-
-		leave_society = yes
-		set_global_flag = twilights_hammer_cult_active_flag
-		join_society_twilights_hammer_cult_effect = yes
-		hidden_effect = {
-			set_society_grandmaster = yes # Set character as Grand Master
-			add_society_currency_massive_effect = yes # Give the Grand Master a start-up capital to induct members
 		}
 		if = {
-			limit = {
-				potential_shadow_priest_wo_training_trigger = yes
-				character = 52000
-			}
-			hidden_effect = {
-				add_character_modifier = { name = training_self_shadow_priest duration = -1 }
-				recount_experience_effect = yes
-				narrative_event = { id = WCCLS.1300 }
-			}
-		}
-		add_35_void_corruption_effect = yes
-
-		hidden_effect = {
-			any_playable_ruler = {
-				limit = {
-					ai = yes
-					tier = COUNT
-				}
-				character_event = { id = MNM.10030 }
-			}
-			narrative_event = { id = WCDAC.5050 }
+			limit = { has_global_flag = twilights_hammer_kalimdor }
+			clr_global_flag = twilights_hammer_kalimdor
 		}
 	}
 }
