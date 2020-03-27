@@ -5,7 +5,15 @@ namespace = SSI
 character_event = {
 	id = WCSCRFC.1
 
-	desc = EVTDESC_WCSCRFC.100
+	desc = {
+		trigger = { worship_one_of_old_gods_trigger = yes }
+		text = EVTDESC_WCSCRFC_1_V1
+	}
+	desc = {
+		trigger = { worship_one_of_old_gods_trigger = no }
+		text = EVTDESC_WCSCRFC_1_V2
+	}
+
 	picture = {
 		trigger = { religion = cult_of_hakkar }
 		picture = GFX_evt_hakkar
@@ -27,7 +35,19 @@ character_event = {
 		picture = GFX_evt_yshaarj
 	}
 	picture = {
-		trigger = { NOT = { religion = cult_of_hakkar religion = old_gods_worship } }
+		trigger = {
+			religion = old_gods_worship
+			NOT = {
+				has_character_modifier = follower_of_cthun
+				has_character_modifier = follower_of_nzoth
+				has_character_modifier = follower_of_yogg_saron
+				has_character_modifier = follower_of_yshaarj
+			}
+		}
+		picture = GFX_evt_voidwalker
+	}
+	picture = {
+		trigger = { NOT = { religion = cult_of_hakkar religion = old_gods_worship  } }
 		picture = GFX_evt_pagan_blood_sacrifice
 	}
 
@@ -35,6 +55,7 @@ character_event = {
 	is_triggered_only = yes
 
 	trigger = {
+		is_ruler = yes
 		religion_have_sacrifices_trigger = yes
 		FROM = {
 			OR = {
@@ -42,6 +63,14 @@ character_event = {
 				holding_type = temple
 				holding_type = castle
 				holding_type = tribal
+			}
+			location = {
+				NOT = {
+					has_province_modifier = bloodthirsty_flower_war_province
+					has_province_modifier = depopulated_1
+					has_province_modifier = depopulated_2
+					has_province_modifier = depopulated_3
+				}
 			}
 		}
 	}
@@ -74,14 +103,71 @@ character_event = {
 	}
 
 	immediate = {
-		set_character_flag = wc_calculate_province_population_sacrifice_event_flag
+		set_character_flag = wc_do_not_show_post_sacrifice_ping_event_flag
+
+		if = {
+			limit = { worship_one_of_old_gods_trigger = yes }
+
+			random_list = {
+				10 = {
+					modifier = {
+						factor = 3
+						FROM = { location = { num_of_settlements = 6 } }
+					}
+
+					if = {
+						limit = { any_owned_bloodline = { has_bloodline_flag = bloodline_insanity_gain } }
+						set_variable = { which = local_received_offmap_old_gods_currency_insanity_from_province_population_sacrifice_variable value = 225 }
+					}
+					else = { set_variable = { which = local_received_offmap_old_gods_currency_insanity_from_province_population_sacrifice_variable value = 150 } }
+				}
+				20 = {
+					modifier = {
+						factor = 3
+						FROM = { location = { num_of_settlements = 4 } }
+						FROM = { location = { NOT = { num_of_settlements = 6 } } }
+					}
+
+					if = {
+						limit = { any_owned_bloodline = { has_bloodline_flag = bloodline_insanity_gain } }
+						set_variable = { which = local_received_offmap_old_gods_currency_insanity_from_province_population_sacrifice_variable value = 150 }
+					}
+					else = { set_variable = { which = local_received_offmap_old_gods_currency_insanity_from_province_population_sacrifice_variable value = 100 } }
+				}
+				30 = {
+					modifier = {
+						factor = 3
+						FROM = { location = { num_of_settlements = 2 } }
+						FROM = { location = { NOT = { num_of_settlements = 4 } } }
+					}
+
+					if = {
+						limit = { any_owned_bloodline = { has_bloodline_flag = bloodline_insanity_gain } }
+						set_variable = { which = local_received_offmap_old_gods_currency_insanity_from_province_population_sacrifice_variable value = 75 }
+					}
+					else = { set_variable = { which = local_received_offmap_old_gods_currency_insanity_from_province_population_sacrifice_variable value = 50 } }
+				}
+				40 = {
+					modifier = {
+						factor = 3
+						FROM = { location = { NOT = { num_of_settlements = 2 } } }
+					}
+
+					if = {
+						limit = { any_owned_bloodline = { has_bloodline_flag = bloodline_insanity_gain } }
+						set_variable = { which = local_received_offmap_old_gods_currency_insanity_from_province_population_sacrifice_variable value = 30 }
+					}
+					else = { set_variable = { which = local_received_offmap_old_gods_currency_insanity_from_province_population_sacrifice_variable value = 20 } }
+				}
+			}
+		}
 		FROM = {
+
 			location = { sacrifice_province_population_effect = yes }
 			if = {
 				limit = { settlement_can_be_destroyed_trigger = yes }
 				destroy_random_building = THIS
 				location = {
-					show_scope_change = no
 					if = {
 						limit = { has_wonder = yes }
 						random = {
@@ -92,11 +178,72 @@ character_event = {
 					}
 				}
 			}
+			if = {
+				limit = { is_capital = yes }
+				owner = {
+					random_courtier = { #Sacrifice part of the court.
+						limit = {
+							is_ruler = no
+							can_be_sacrificed_trigger = yes
+						}
+						random = {
+							chance = 25
+							modifier = {
+								factor = 3
+								is_unimportant_trigger = yes
+							}
+							modifier = {
+								factor = 3
+								has_minor_title = title_commander
+							}
+							modifier = { #Less likely to be in battle.
+								factor = 0.5
+								is_adult = no
+							}
+							modifier = { #Less likely to be in battle.
+								factor = 0.5
+								is_adult = no
+								is_child_of = PREV
+							}
+							ROOT = { PREV = { save_event_target_as = target_sacrificed_character } }
+						}
+					}
+				}
+			}
+			ROOT = {
+				THIS_sacrifice_PREV_subjects_opinion_effect = yes
+				PREV = { owner = { any_liege = { opinion = { modifier = opinion_abducted_peasants who = ROOT years = 30 } } } }
+				
+				if = {
+					limit = { worship_one_of_old_gods_trigger = yes }
+
+					event_target:target_sacrificed_character = {
+						caltulate_PREV_offmap_old_gods_currency_insanity_effect = yes
+						set_variable = {
+							which = local_received_offmap_old_gods_currency_insanity_from_sacrifices_total_variable
+							which = local_received_offmap_old_gods_currency_insanity_from_province_population_sacrifice_variable
+						}
+						change_variable = {
+							which = local_received_offmap_old_gods_currency_insanity_from_sacrifices_total_variable
+							which = local_received_offmap_old_gods_currency_insanity_from_character_sacrifice_variable
+						}
+						PREV_public_sacrifice_THIS_effect = yes
+					}
+
+					trigger_switch = {
+						on_trigger = has_character_modifier
+						follower_of_cthun = {		add_offmap_currency = { offmap = offmap_cthun		value = local_received_offmap_old_gods_currency_insanity_from_sacrifices_total_variable } }
+						follower_of_nzoth = {		add_offmap_currency = { offmap = offmap_nzoth		value = local_received_offmap_old_gods_currency_insanity_from_sacrifices_total_variable } }
+						follower_of_yogg_saron = {	add_offmap_currency = { offmap = offmap_yoggsaron	value = local_received_offmap_old_gods_currency_insanity_from_sacrifices_total_variable } }
+						follower_of_yshaarj = {		add_offmap_currency = { offmap = offmap_yshaarj		value = local_received_offmap_old_gods_currency_insanity_from_sacrifices_total_variable } }
+					}
+				}
+				clr_character_flag = wc_do_not_show_post_sacrifice_ping_event_flag
+			}
 		}
-		THIS_get_religious_bonuses_based_on_FROM_LOCATION_num_of_settlements_effect = yes
 	}
 
-	option = { name = EVTOPTA_WCSCRFC.100 }
+	option = { name = EVTOPT_WCSCRFC_1 }
 
 }
 
