@@ -102,8 +102,6 @@ character_event = { # Army commander sacrifice province population
 	}
 
 	immediate = {
-		set_character_flag = wc_do_not_show_post_sacrifice_ping_event_flag
-
 		FROM = { location = { save_event_target_as = target_sacrifice_location } }
 		save_event_target_as = target_sacrificer_commander
 
@@ -187,7 +185,7 @@ character_event = { # Army commander sacrifice province population
 				}
 			}
 
-			if = { #Sacrifice part of the court.
+			if = { # Pick character to sacrifice
 				limit = { is_capital = yes }
 				owner = {
 					random_courtier = {
@@ -221,6 +219,8 @@ character_event = { # Army commander sacrifice province population
 			}
 
 			ROOT = {
+
+				# Ping event and negative opinion effect
 				THIS_sacrifice_PREV_subjects_opinion_effect = yes
 				PREV = {
 					owner = {
@@ -232,20 +232,25 @@ character_event = { # Army commander sacrifice province population
 					}
 				}
 				
-				if = {
+				if = { # Get offmap Old Gods Currency
 					limit = { publicly_worship_one_of_old_gods_trigger = yes }
 
-					event_target:target_sacrificed_character = {
-						caltulate_PREV_offmap_old_gods_currency_insanity_effect = yes
-						set_variable = {
-							which = local_received_offmap_old_gods_currency_insanity_from_sacrifices_total_variable
-							which = local_received_offmap_old_gods_currency_insanity_from_province_population_sacrifice_variable
+					set_variable = {
+						which = local_received_offmap_old_gods_currency_insanity_from_sacrifices_total_variable
+						which = local_received_offmap_old_gods_currency_insanity_from_province_population_sacrifice_variable
+					}
+					if = { # Sacrifice character
+						limit = { event_target:target_sacrificed_character = { always = yes } }
+						set_character_flag = wc_do_not_show_post_sacrifice_ping_event_flag
+						event_target:target_sacrificed_character = {
+							caltulate_PREV_offmap_old_gods_currency_insanity_effect = yes
+							change_variable = {
+								which = local_received_offmap_old_gods_currency_insanity_from_sacrifices_total_variable
+								which = local_received_offmap_old_gods_currency_insanity_from_character_sacrifice_variable
+							}
+							PREV_public_sacrifice_THIS_effect = yes
 						}
-						change_variable = {
-							which = local_received_offmap_old_gods_currency_insanity_from_sacrifices_total_variable
-							which = local_received_offmap_old_gods_currency_insanity_from_character_sacrifice_variable
-						}
-						PREV_public_sacrifice_THIS_effect = yes
+						clr_character_flag = wc_do_not_show_post_sacrifice_ping_event_flag
 					}
 
 					trigger_switch = {
@@ -256,7 +261,6 @@ character_event = { # Army commander sacrifice province population
 						follower_of_yshaarj = {		add_offmap_currency = { offmap = offmap_yshaarj		value = local_received_offmap_old_gods_currency_insanity_from_sacrifices_total_variable } }
 					}
 				}
-				clr_character_flag = wc_do_not_show_post_sacrifice_ping_event_flag
 			}
 		}
 	}
