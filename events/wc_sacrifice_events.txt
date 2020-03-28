@@ -4,11 +4,11 @@ character_event = {
 	id = WCSCRFC.1
 
 	desc = {
-		trigger = { worship_one_of_old_gods_trigger = yes }
+		trigger = { publicly_worship_one_of_old_gods_trigger = yes }
 		text = EVTDESC_WCSCRFC_1_V1
 	}
 	desc = {
-		trigger = { worship_one_of_old_gods_trigger = no }
+		trigger = { publicly_worship_one_of_old_gods_trigger = no }
 		text = EVTDESC_WCSCRFC_1_V2
 	}
 
@@ -62,6 +62,7 @@ character_event = {
 				holding_type = castle
 				holding_type = tribal
 			}
+			holder_scope = { NOT = { character = ROOT same_realm = ROOT } }
 			location = {
 				NOT = {
 					has_province_modifier = bloodthirsty_flower_war_province
@@ -103,8 +104,8 @@ character_event = {
 	immediate = {
 		set_character_flag = wc_do_not_show_post_sacrifice_ping_event_flag
 
-		if = {
-			limit = { worship_one_of_old_gods_trigger = yes }
+		if = { # Get Offmap Old Gods Currency if worship Old Gods
+			limit = { publicly_worship_one_of_old_gods_trigger = yes }
 
 			random_list = {
 				10 = {
@@ -159,14 +160,14 @@ character_event = {
 				}
 			}
 		}
-		else_if = {
+		else_if = { # Or get piety
 			limit = { religion_have_ritual_sacrifice_trigger = yes }
 
 			piety = 25
 			bloodthirsty_tiered_traits_effect = yes
 		}
 
-		FROM = {
+		FROM = { # Sacrifice province population
 			location = { sacrifice_province_population_effect = yes }
 			if = {
 				limit = { settlement_can_be_destroyed_trigger = yes }
@@ -182,10 +183,11 @@ character_event = {
 					}
 				}
 			}
-			if = {
+
+			if = { #Sacrifice part of the court.
 				limit = { is_capital = yes }
 				owner = {
-					random_courtier = { #Sacrifice part of the court.
+					random_courtier = {
 						limit = {
 							is_ruler = no
 							can_be_sacrificed_trigger = yes
@@ -214,12 +216,13 @@ character_event = {
 					}
 				}
 			}
+
 			ROOT = {
 				THIS_sacrifice_PREV_subjects_opinion_effect = yes
 				PREV = { owner = { any_liege = { opinion = { modifier = opinion_abducted_peasants who = ROOT years = 30 } } } }
 				
 				if = {
-					limit = { worship_one_of_old_gods_trigger = yes }
+					limit = { publicly_worship_one_of_old_gods_trigger = yes }
 
 					event_target:target_sacrificed_character = {
 						caltulate_PREV_offmap_old_gods_currency_insanity_effect = yes
@@ -250,3 +253,8 @@ character_event = {
 	option = { name = EVTOPT_WCSCRFC_1 }
 
 }
+
+# character_event = {
+	# id = WCSCRFC.2
+
+# }
