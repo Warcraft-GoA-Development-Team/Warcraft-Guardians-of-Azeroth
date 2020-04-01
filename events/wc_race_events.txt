@@ -19,8 +19,7 @@ character_event = {
 			is_high_elf_trigger = yes
 			trait = creature_naga
 			trait = creature_vrykul
-			trait = creature_nerubian
-			trait = creature_ice_giant
+			trait = creature_giant
 			trait = creature_night_elf
 			trait = creature_highborne
 			# Classes
@@ -33,6 +32,7 @@ character_event = {
 	mean_time_to_happen = {
 		years = 100
 		# Race modifiers
+		# Note: don't forget to change average_lifespan, text_effect_average_lifespan_immortality everywhere when you touch these modifiers
 		modifier = {
 			factor = 1.5
 			trait = creature_dwarf
@@ -54,12 +54,8 @@ character_event = {
 			trait = creature_vrykul
 		}
 		modifier = {
-			factor = 4
-			trait = creature_nerubian
-		}
-		modifier = {
 			factor = 7
-			trait = creature_ice_giant
+			trait = creature_giant
 		}
 		modifier = {
 			factor = 14
@@ -167,7 +163,7 @@ character_event = {
 	}
 	
 	immediate = {
-		log = "WCRAC.5 fired for [Root.GetBestName]"
+		# log = "WCRAC.5 fired for [Root.GetBestName]"
 		
 		character_event = { id = WCRAC.10 }
 	}
@@ -195,6 +191,19 @@ character_event = {
 		
 		set_character_flag = no_show_what_become_flag		# Cancel show_close_people_what_this_become_effect if character spawned as undead, demon, void being
 		set_character_flag = no_religion_change_flag		# Cancel event religion change
+
+		# Children born in prison take warden's religion and culture
+		# It's hardcoded vanilla mechanic, but it can't be like that in Warcraft setting, so here we go
+		# Picks mother's religion and culture if child is born in prison
+		if = {
+			limit = {
+				NOT = { age = 1 }
+				prisoner = yes
+				event_target:target_mother = { always = yes }
+			}
+			religion = event_target:target_mother
+			culture = event_target:target_mother
+		}
 
 		# Picks graphical culture
 		if = {
@@ -363,11 +372,6 @@ character_event = {
 		# else_if = {
 			# limit = { potential_race_ghoul_trigger = yes }
 			# add_trait = creature_ghoul
-			# add_trait_undead_effect = yes
-		# }
-		# else_if = {
-			# limit = { potential_race_skeleton_trigger = yes }
-			# add_trait = creature_skeleton
 			# add_trait_undead_effect = yes
 		# }
 		else_if = {
@@ -552,8 +556,8 @@ character_event = {
 			add_trait = creature_earthen
 		}
 		else_if = {
-			limit = { potential_race_ice_giant_trigger = yes }
-			add_trait = creature_ice_giant
+			limit = { potential_race_giant_trigger = yes }
+			add_trait = creature_giant
 		}
 		else_if = {
 			limit = { potential_race_nraqi_trigger = yes }
@@ -729,8 +733,6 @@ character_event = {
 	min_age = 16
 	
 	trigger = {
-		has_dlc = "Mystics"
-		
 		is_plant_race_trigger = yes
 	}
 	
@@ -758,8 +760,6 @@ character_event = {
 	min_age = 16
 	
 	trigger = {
-		has_dlc = "Mystics"
-		
 		is_plant_race_trigger = yes
 		has_artifact = ancient_kernel
 	}

@@ -288,18 +288,41 @@ society_decisions = {
 		only_playable = yes
 
 		potential = {
-			is_adult = yes
-			is_incapable = no
-			prisoner = no
+			is_landed = yes
+			
 			society_member_of = cenarion_circle
 			society_rank > 3
-			capital_scope = {
-				NOT = { hospital_has_building = wc_cenarion_enclave }
+			trigger_if = {
+				limit = { has_dlc = "Reapers" }
+				capital_scope = { NOT = { hospital_has_building = hp_cenarion_enclave } }
+			}
+			trigger_else = {
+				capital_scope = {
+					NOT = {
+						any_province_holding = {
+							has_building = tp_cenarion_enclave
+						}
+					}
+					trigger_if = {
+						limit = { has_empty_holding = yes }
+						always = yes
+					}
+					trigger_else = {
+						any_province_holding = {
+							holding_type = temple
+							holder_scope = {
+								OR = {
+									character = ROOT
+									is_liege_or_above = ROOT
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 
 		allow = {
-			is_inaccessible_trigger = no
 			society_currency >= 1500
 		}
 
@@ -307,16 +330,35 @@ society_decisions = {
 			change_society_currency = -1500
 			capital_scope = {
 				if = {
-					limit = {
-					has_hospital = no
+					limit = { has_dlc = "Reapers" }
+					if = {
+						limit = { has_hospital = no }
+						build_holding = {
+							type = hospital
+							holder = ROOT
+						}
 					}
-				  	build_holding = {
-						type = hospital
-						holder = ROOT
+					add_to_extra_holding = { type = hospital building = hp_cenarion_enclave }
+				}
+				else = {
+					if = {
+						limit = { has_empty_holding = yes }
+						build_holding = { type = temple holder = ROOT }
+					}
+					random_province_holding = {
+						limit = {
+							holding_type = temple
+							holder_scope = {
+								OR = {
+									character = ROOT
+									is_liege_or_above = ROOT
+								}
+							}
+						}
+						add_building = tp_cenarion_enclave
 					}
 				}
-				add_to_extra_holding = { type = hospital building = wc_cenarion_enclave }
-				}
+			}
 		}
 
 		revoke_allowed = {
@@ -352,24 +394,7 @@ society_decisions = {
 		}
 
 		effect = {			
-			capital_scope = {
-					PREV = {
-						spawn_unit = {
-							owner = ROOT
-							province = PREV
-							home = PREV
-							troops = {
-								light_cavalry = { 1000 1000 }
-								knights = { 500 500 }
-								golems = { 100 100 }
-							}
-							attrition = 0.25
-							disband_on_peace = yes
-							maintenance_multiplier = 0
-							earmark = host_of_the_wilds
-						}
-					}
-				}
+			spawn_wild_troops_effect = yes
 		}
 
 		revoke_allowed = {

@@ -103,9 +103,6 @@ character_event = {
 					
 					society_rank > 1
 					society_member_of = cult_of_the_damned
-					any_courtier = {
-						is_potential_turn_into_undead_target_trigger = yes
-					}
 				}
 				set_character_flag = quest_turn_into_undead_flag
 				event_target:grandmaster = { character_event = { id = WCQUE.105 } }
@@ -136,9 +133,6 @@ character_event = {
 						society_member_of = shadow_council
 						society_member_of = twilights_hammer_cult
 					}
-					any_courtier = {
-						is_potential_mind_control_target_trigger = yes
-					}
 				}
 				set_character_flag = quest_control_mind_flag
 				event_target:grandmaster = { character_event = { id = WCQUE.105 } }
@@ -147,6 +141,8 @@ character_event = {
 			# Desecrate temple (vanilla)
 			20 = {
 				trigger = {
+					has_dlc = "Mystics"
+
 					is_playable = yes
 					
 					OR = {
@@ -159,7 +155,7 @@ character_event = {
 							holder_scope = {
 								# Warcraft
 								evil_public_religion_trigger = no
-								NOT = { religion = ROOT }
+								evil_true_religion_trigger = no
 							}
 							holder_scope = {
 								NOT = {
@@ -180,8 +176,10 @@ character_event = {
 			# Sacrifice someone (vanilla)
 			20 = {
 				trigger = {
+					has_dlc = "Mystics"
+
 					is_playable = yes
-					
+
 					society_member_of = twilights_hammer_cult
 				}
 				event_target:grandmaster = {
@@ -216,6 +214,8 @@ character_event = {
 			# Build Hospital (mod)
 			20 = {
 				trigger = {
+					has_dlc = "Reapers"
+
 					is_playable = yes
 					
 					OR = {
@@ -701,12 +701,11 @@ society_quest_event = {
 			limit = { has_character_flag = disembowel_small_humanoid_flag }
 			set_quest = quest_disembowel_small_humanoid
 		}
-		if = {
+		else_if = {
 			limit = { has_character_flag = disembowel_medium_humanoid_flag }
 			set_quest = quest_disembowel_medium_humanoid
 		}
-		if = {
-			limit = { has_character_flag = disembowel_large_humanoid_flag }
+		else = {
 			set_quest = quest_disembowel_large_humanoid
 		}
 	}
@@ -742,33 +741,26 @@ society_quest_event = {
 	is_triggered_only = yes
 
 	immediate = {
-		random_courtier = {
-			limit = {
-				ai = yes
-				is_adult = yes
-				is_incapable = no
-				prisoner = no
-
-				NOT = { character = ROOT }
-				NOT = { has_character_flag = being_raised_flag }
-
-				is_dark_being_trigger = no
-				is_humanoid_trigger = yes
-				is_in_society = no
-			}
-			save_event_target_as = target_future_undead
+		random_list = {
+			15 = { set_character_flag = turn_into_undead_smart_flag }
+			10 = { set_character_flag = turn_into_undead_strong_flag }
+			10 = { set_character_flag = turn_into_undead_fair_flag }
 		}
 	}
 
-	quest_target = event_target:target_future_undead
-
 	option = {
 		name = ACCEPT
-		event_target:target_future_undead = {
-			set_quest_target = {
-				id = quest_turn_into_undead
-				holder = ROOT
-			}
+		
+		if = {
+			limit = { has_character_flag = turn_into_undead_smart_flag }
+			set_quest = quest_turn_into_undead_smart
+		}
+		else_if = {
+			limit = { has_character_flag = turn_into_undead_strong_flag }
+			set_quest = quest_turn_into_undead_strong
+		}
+		else = {
+			set_quest = quest_turn_into_undead_fair
 		}
 	}
 	option  = {
@@ -782,6 +774,12 @@ society_quest_event = {
 		}
 
 		ai_chance = { factor = 0 }
+	}
+	
+	after = {
+		clr_character_flag = turn_into_undead_smart_flag
+		clr_character_flag = turn_into_undead_strong_flag
+		clr_character_flag = turn_into_undead_fair_flag
 	}
 }
 
@@ -845,35 +843,31 @@ society_quest_event = {
 #Assign event
 society_quest_event = {
 	id = WCQUE.705
-	desc = {
-		trigger = { society_member_of = shadow_council }
-		text = EVTDESC_WCDAC_8011_council
-	}
-	desc = {
-		trigger = { society_member_of = twilights_hammer_cult }
-		text = EVTDESC_WCDAC_8011_cult
-	}
+	desc = EVTDESC_WCDAC_8011
 
 	is_triggered_only = yes
 
 	immediate = {
-		random_courtier = {
-			limit = {
-				is_potential_mind_control_target_trigger = yes
-			}
-			save_event_target_as = target_mind
+		random_list = {
+			15 = { set_character_flag = control_mind_smart_flag }
+			10 = { set_character_flag = control_mind_strong_flag }
+			10 = { set_character_flag = control_mind_fair_flag }
 		}
 	}
 
-	quest_target = event_target:target_mind
-
 	option = {
 		name = ACCEPT
-		event_target:target_mind = {
-			set_quest_target = {
-				id = quest_control_mind
-				holder = ROOT
-			}
+		
+		if = {
+			limit = { has_character_flag = control_mind_smart_flag }
+			set_quest = quest_control_mind_smart
+		}
+		else_if = {
+			limit = { has_character_flag = control_mind_strong_flag }
+			set_quest = quest_control_mind_strong
+		}
+		else = {
+			set_quest = quest_control_mind_fair
 		}
 	}
 	option  = {
@@ -887,6 +881,12 @@ society_quest_event = {
 		}
 
 		ai_chance = { factor = 0 }
+	}
+
+	after = {
+		clr_character_flag = control_mind_smart_flag
+		clr_character_flag = control_mind_strong_flag
+		clr_character_flag = control_mind_fair_flag
 	}
 }
 
