@@ -654,17 +654,7 @@ title_decisions = {
 		}
 
 		allow = {
-			custom_tooltip = {
-				text = has_not_used_decision_3_years_tooltip
-				hidden_tooltip = {
-					location = {
-						OR = {
-							NOT = { has_province_flag = recent_genocide_attempt_flag }
-							had_province_flag = { flag = recent_genocide_attempt_flag years = 3 }
-						}
-					}
-				}
-			}
+			NOT = { has_province_modifier = genocide_province_cooldown }
 
 			FROM = { completely_controls = ROOT }
 			location = {
@@ -686,6 +676,26 @@ title_decisions = {
 		}
 
 		effect = {
+			hidden_effect = {
+				FROM = {
+					if = {
+						limit = { independent = no }
+						top_liege = {
+							add_character_modifier = {
+								name = genocide_realm_cooldown
+								months = 6 # 4 genocides per year
+								#hidden = yes
+							}
+						}
+					}
+					add_character_modifier = {
+						name = genocide_realm_cooldown
+						months = 6 # 4 genocides per year
+						#hidden = yes
+					}
+				}
+			}
+			
 			# Handled by pillage_settlement decision
 			hidden_tooltip = {
 				location = { save_event_target_as = nickname_target }
@@ -726,7 +736,7 @@ title_decisions = {
 			}
 
 			location = {
-				set_province_flag = recent_genocide_attempt_flag
+				add_province_modifier = { name = genocide_realm_cooldown years = 4 }
 				
 				if = {
 					limit = { from_potential_cull_this_province_trigger = yes }
@@ -757,7 +767,27 @@ title_decisions = {
 		}
 
 		ai_will_do = {
-			factor = 0.1
+			factor = 1
+			modifier = {
+				factor = 0
+				FROM = {
+					OR = {
+						war = yes
+						has_character_modifier = genocide_realm_cooldown
+					}
+				}
+			}
+			modifier = {
+				factor = 0
+				FROM = {
+					top_liege = {
+						OR = {
+							war = yes
+							has_character_modifier = genocide_realm_cooldown
+						}
+					}
+				}
+			}
 		}
 	}
 
