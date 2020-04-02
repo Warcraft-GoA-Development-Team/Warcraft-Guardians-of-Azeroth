@@ -5770,6 +5770,9 @@ character_event = { #Head of Religion
 
 	is_triggered_only = yes
 
+	# Warcraft - offmap OG currency
+	after = { tooltip = { add_offmap_old_gods_currency_insanity_after_calculation_effect = yes } }
+
 	option = {
 		name = MNM.7500.a
 	}
@@ -5782,6 +5785,9 @@ character_event = { #Holy man
 	border = GFX_event_normal_frame_intrigue
 
 	is_triggered_only = yes
+
+	# Warcraft - offmap OG currency
+	after = { tooltip = { add_offmap_old_gods_currency_insanity_after_calculation_effect = yes } }
 
 	option = {
 		name = MNM.7500.a
@@ -5796,6 +5802,9 @@ character_event = { #Dwarf
 
 	is_triggered_only = yes
 
+	# Warcraft - offmap OG currency
+	after = { tooltip = { add_offmap_old_gods_currency_insanity_after_calculation_effect = yes } }
+
 	option = {
 		name = MNM.7502.a
 	}
@@ -5808,6 +5817,9 @@ character_event = { #child
 	border = GFX_event_normal_frame_intrigue
 
 	is_triggered_only = yes
+
+	# Warcraft - offmap OG currency
+	after = { tooltip = { add_offmap_old_gods_currency_insanity_after_calculation_effect = yes } }
 
 	option = {
 		name = MNM.7503.a
@@ -5822,6 +5834,9 @@ character_event = { #Virgin
 
 	is_triggered_only = yes
 
+	# Warcraft - offmap OG currency
+	after = { tooltip = { add_offmap_old_gods_currency_insanity_after_calculation_effect = yes } }
+
 	option = {
 		name = MNM.7504.a
 	}
@@ -5834,6 +5849,9 @@ character_event = { #regular dude
 	border = GFX_event_normal_frame_intrigue
 
 	is_triggered_only = yes
+
+	# Warcraft - offmap OG currency
+	after = { tooltip = { add_offmap_old_gods_currency_insanity_after_calculation_effect = yes } }
 
 	option = {
 		name = MNM.7505.a
@@ -6231,7 +6249,7 @@ society_quest_event = {
 					holder_scope = {
 						# Warcraft
 						evil_public_religion_trigger = no
-						# religion = ROOT
+						evil_true_religion_trigger = no
 					}
 					holder_scope = { NOT = { character = ROOT } }
 					holder_scope = { NOT = { same_society_as = ROOT } }
@@ -6243,7 +6261,7 @@ society_quest_event = {
 					holder_scope = {
 						# Warcraft
 						evil_public_religion_trigger = no
-						# religion = ROOT
+						evil_true_religion_trigger = no
 					}
 					holder_scope = { NOT = { character = ROOT } }
 					holder_scope = { NOT = { same_society_as = ROOT } }
@@ -6260,7 +6278,7 @@ society_quest_event = {
 					holder_scope = {
 						# Warcraft
 						evil_public_religion_trigger = no
-						# religion = ROOT
+						evil_true_religion_trigger = no
 					}
 					holder_scope = { NOT = { same_society_as = ROOT } }
 				}
@@ -6271,7 +6289,7 @@ society_quest_event = {
 					holder_scope = {
 						# Warcraft
 						evil_public_religion_trigger = no
-						# religion = ROOT
+						evil_true_religion_trigger = no
 					}
 					holder_scope = { NOT = { same_society_as = ROOT } }
 				}
@@ -6333,6 +6351,19 @@ character_event = {
 	#take opportunity to desecrate, start desecration chain
 	option = {
 		name = EVTOPTA_MNM_7111
+		
+		# Warcraft
+		ROOT = {
+			show_scope_change = no
+			
+			FROM = {
+				show_scope_change = no
+				
+				# If it's possible, complete quest right now
+				prev_complete_desecrate_this_temple_quest_instantly_effect = yes
+			}
+		}
+		
 		set_character_flag = desecration_violent
 		character_event = {
 			id = MNM.7113 days = 4
@@ -6393,6 +6424,18 @@ character_event = {
 		}
 		
 		has_quest = quest_devil_worshipers_desecrate_temple
+		
+		# Warcraft
+		# Temple holder isn't evil and not you
+		event_target:dw_desecration_target = {
+			prev_desecrate_temple_holder_trigger = yes
+		}
+	}
+	
+	# Warcraft
+	fail_trigger_effect = {
+		# Tries to finish event chain
+		character_event = { id = MNM.7117 }
 	}
 
 	immediate = {
@@ -6561,6 +6604,18 @@ character_event = {
 		}
 		
 		has_quest = quest_devil_worshipers_desecrate_temple
+		
+		# Warcraft
+		# Temple holder isn't evil and not you
+		event_target:dw_desecration_target = {
+			prev_desecrate_temple_holder_trigger = yes
+		}
+	}
+	
+	# Warcraft
+	fail_trigger_effect = {
+		# Tries to finish event chain
+		character_event = { id = MNM.7117 }
 	}
 
 	desc = {
@@ -6642,6 +6697,18 @@ character_event = {
 			society_member_of = twilights_hammer_cult
 		}
 		has_quest = quest_devil_worshipers_desecrate_temple
+		
+		# Warcraft
+		# Temple holder isn't evil and not you
+		event_target:dw_desecration_target = {
+			prev_desecrate_temple_holder_trigger = yes
+		}
+	}
+	
+	# Warcraft
+	fail_trigger_effect = {
+		# Tries to finish event chain
+		character_event = { id = MNM.7117 }
 	}
 
 	desc = {
@@ -6821,10 +6888,14 @@ character_event = {
 				name = desecrated_temple
 				years = 5
 			}
-			holder_scope = {
-				religion_authority = {
-					modifier = temple_desecrated
-					years = 30
+			# Warcraft
+			if = {
+				limit = { prev_desecrate_temple_holder_trigger = yes }
+				holder_scope = {
+					religion_authority = {
+						modifier = temple_desecrated
+						years = 30
+					}
 				}
 			}
 		}
@@ -6856,10 +6927,14 @@ character_event = {
 				years = 5
 				hidden = yes
 			}
-			holder_scope = {
-				religion_authority = {
-					modifier = temple_desecrated
-					years = 30
+			# Warcraft
+			if = {
+				limit = { prev_desecrate_temple_holder_trigger = yes }
+				holder_scope = {
+					religion_authority = {
+						modifier = temple_desecrated
+						years = 30
+					}
 				}
 			}
 		}
@@ -11625,19 +11700,9 @@ character_event = {
 				OR = {
 					prisoner = yes # I have become imprisoned
 					is_incapable = yes # I have become incapable
-					AND = {
-						is_devil_worshiper_trigger = no
-						
-						# Warcraft
-						# NOT = { society_member_of = the_assassins }
-						
-						# Warcraft
-						NOR = {
-							society_member_of = cult_of_the_damned
-							society_member_of = shadow_council
-							society_member_of = twilights_hammer_cult
-						}
-					}
+
+					# Warcraft
+					can_abduct_trigger = no
 				}
 			}
 			character_event = { id = MNM.20100 } # Clear out any flags, etc

@@ -12,9 +12,7 @@ total_invasion = {
 
 	allowed_to_target_tributaries = no
 
-	battle_warscore_mult = 0.25
-	att_ticking_war_score_multiplier = 0.5
-	def_ticking_war_score_multiplier = 0.5
+	battle_warscore_mult = 0.5
 	max_defender_occupation_score = 60
 	max_attacker_occupation_score = 60
 	capturing_attacker_is_complete_victory = no
@@ -340,9 +338,7 @@ stop_invader = {
 
 	allowed_to_target_tributaries = no
 
-	battle_warscore_mult = 0.25
-	att_ticking_war_score_multiplier = 0.5
-	def_ticking_war_score_multiplier = 0.5
+	battle_warscore_mult = 0.5
 	max_defender_occupation_score = 60
 	max_attacker_occupation_score = 60
 	capturing_attacker_is_complete_victory = no
@@ -498,7 +494,6 @@ scourge_subjugation = {
 
 	allowed_to_target_tributaries = no
 
-	battle_warscore_mult = 0.5
 	max_defender_occupation_score = 85
 	max_attacker_occupation_score = 85
 	capturing_attacker_is_complete_victory = no
@@ -1426,13 +1421,11 @@ change_religion_cb = {
 	war_name = WAR_NAME_CHANGE_RELIGION
 	sprite = 9
 	truce_days = 3650
-	is_permanent = yes
+	is_permanent = no		# Declared only via events
 	can_ask_to_join_war = no
 	allowed_to_target_tributaries = no
 
 	defender_unoccupied_warscore = yes
-	
-	sort_priority = 2000
 
 	can_use = {
 		always = no	# Can only be initiated through special means
@@ -1532,6 +1525,184 @@ change_religion_cb = {
 		factor = 100
 	}
 
+	ai_will_do = {
+		factor = 1
+	}
+}
+
+county_adventure = {	# Based on duchy_adventure 
+	name = CB_NAME_DUCHY_ADVENTURE
+	war_name = WAR_DUCHY_ADVENTURE
+	sprite = 9
+	truce_days = 3650
+	is_permanent = no		# Declared only via events
+	hostile_against_others = yes
+	# check_all_titles = yes		# Checked invasion, looks like it's not needed
+
+	can_use = {
+		# Warcraft
+		ROOT = {
+			can_declare_wars_trigger = yes
+			FROM = {
+				can_declare_wars_trigger = yes
+				can_fight_prev_trigger = yes
+			}
+		}
+		
+		ROOT = { has_character_flag = county_adventurer }
+	}
+	
+	can_use_title = {
+		tier = count
+	}
+
+	is_valid = {
+		always = yes
+	}
+
+	on_add = {
+		hidden_tooltip = { fire_haruspicy_event_effect = yes }
+		
+		# Warcraft
+	}
+	
+	on_success = {
+		ROOT = { 
+			prestige = 125
+			hidden_tooltip = {
+				clr_character_flag = county_adventurer
+			}
+		}
+		FROM = {
+			prestige = -125
+		}
+	}
+
+	on_success_title = {
+		# Take county
+		holder_scope = {
+			show_scope_change = no
+			
+			ROOT = {
+				show_scope_change = no
+				
+				grant_title_no_opinion = { target = PREVPREV type = holy_war }
+			}
+			hidden_effect = { add_pressed_claim = PREV }
+		}
+		# Take all baronies too
+		# gain_settlements_under_title can't be used here because government of adventure changes
+		any_de_jure_vassal_title = {
+			limit = {
+				has_holder = yes
+				holder_scope = {
+					OR = {
+						character = FROM
+						is_liege_or_above = FROM
+						AND = {
+							is_liege_or_above = ROOT
+							NOT = { culture = ROOT }
+							NOT = { religion = ROOT }
+						}
+					}
+				}
+			}
+			show_scope_change = no
+			
+			holder_scope = {
+				show_scope_change = no
+				
+				ROOT = {
+					show_scope_change = no
+					
+					grant_title_no_opinion = { target = PREVPREV type = holy_war }
+				}
+				hidden_effect = { add_pressed_claim = PREV }
+			}
+		}
+	}
+	
+	# Warcraft
+	on_success_posttitle = {
+		hidden_tooltip = {
+			ROOT = {
+				set_defacto_liege = THIS
+			}
+		}
+	}
+
+	on_fail = {
+		FROM = {
+			prestige = 50
+			hidden_tooltip = {
+				opinion = {
+					modifier = opinion_rebel_traitor 
+					who = ROOT
+					months = 1200
+				}
+			}
+		}
+		ROOT = {
+			clear_wealth = yes
+			imprison = FROM 
+			hidden_tooltip = {
+				disband_event_forces = yes
+				clr_character_flag = county_adventurer
+			}
+		}
+	
+		ROOT = { prestige = -50 }
+	}
+
+	on_reverse_demand = {
+		ROOT = {
+			transfer_scaled_wealth = {
+				to = FROM
+				value = 2.0
+			}
+		}
+		
+		FROM = {
+			prestige = 100
+		}
+		
+		ROOT = {
+			clear_wealth = yes
+			imprison = FROM
+			prestige = -100
+			hidden_tooltip = {
+				disband_event_forces = yes
+				clr_character_flag = county_adventurer
+			}
+		}
+	}
+	
+	on_attacker_leader_death = {
+		ROOT = {
+			hidden_tooltip = {
+				disband_event_forces = yes
+				clr_character_flag = county_adventurer
+			}
+		}
+		end_war = invalid
+	}
+
+	attacker_ai_victory_worth = {
+		factor = -1 # always accept
+	}
+	
+	attacker_ai_defeat_worth = {
+		factor = 100
+	}
+
+	defender_ai_victory_worth = {
+		factor = -1 # always accept
+	}
+	
+	defender_ai_defeat_worth = {
+		factor = 100
+	}
+	
 	ai_will_do = {
 		factor = 1
 	}
