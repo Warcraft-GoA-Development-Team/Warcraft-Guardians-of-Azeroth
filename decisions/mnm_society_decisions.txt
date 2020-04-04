@@ -2082,71 +2082,8 @@ targeted_decisions = {
 		}
 	}
 
-	#Action: Sacrifice prisoner
-	prisoner_dark_sacrifice = {
-		only_playable = yes
-		
-		filter = court
-		ai_target_filter = court
-		ai_check_interval = 12
-		
-		from_potential = {
-			# Warcraft
-			is_untouchable_trigger = no
-			
-			has_dlc = "Mystics"
-			is_playable = yes
-			is_adult = yes
-			prisoner = no
-			NOT = { is_incapable = yes }
+	# Warcraft - united_old_gods_sacrifice_prisoner_decision
 
-			# Warcraft
-			society_member_of = twilights_hammer_cult
-			# is_devil_worshiper_trigger = yes
-		}
-
-		potential = {
-			# Warcraft
-			is_untouchable_trigger = no
-			
-			host = { character = FROM }
-			NOT = { has_character_flag = demon_child_non_pagan }
-			prisoner = yes
-		}
-		
-		allow = {
-			NOT = { diplomatic_immunity = yes }
-		}
-		
-		ai_will_do = {
-			factor = 1
-			modifier = {
-				factor = 0.01
-				NOR = {
-					trait = dwarf
-					is_priest = yes 
-					is_ascetic_trigger = yes
-					is_virgin_trigger = yes
-					is_landed = yes
-				}
-			}
-		}
-		
-		effect = {
-			death = {
-				death_reason = death_missing
-			}
-			hidden_effect = { character_event = { id = MNM.7506 } }
-			FROM = {
-				show_scope_change = no
-				increase_visibility_minor_effect = yes
-				minor_soul_corruption_effect = yes
-				hidden_effect = { murder_bloodline_check_effect = yes }
-			}
-			from_society_sacrifice_root_effect = yes
-		}
-	}
-	
 	#Action: Demonic impregnation
 	DW_demonic_impregnation = {
 		only_playable = yes
@@ -2753,17 +2690,9 @@ targeted_decisions = {
 		ai = no
 		
 		from_potential = {
-			OR = {
-				is_devil_worshiper_trigger = yes
-				
-				# Warcraft
-				# society_member_of = the_assassins
+			# Warcraft
+			can_abduct_trigger = yes
 
-				# Warcraft
-				society_member_of = cult_of_the_damned
-				society_member_of = shadow_council
-				society_member_of = twilights_hammer_cult
-			}
 			NOT = { is_incapable = yes }
 			prisoner = no
 			NOT = { has_any_opinion_modifier = opinion_abducting }
@@ -2780,10 +2709,13 @@ targeted_decisions = {
 			ai = yes
 			NOT = { character = FROM }
 			is_patrician = no
+			
+			# Warcraft
 			OR = {
 				lower_tier_than = DUKE
-				is_landed = no
+				is_ruler = no
 			}
+			
 			OR = {
 				father_even_if_dead = {
 					lower_tier_than = DUKE
@@ -2819,64 +2751,112 @@ targeted_decisions = {
 		}
 		
 		allow = {
+			# Warcraft
+			# If you're not in society, you can abduct courtiers only
+			OR = {
+				is_ruler = no
+				FROM = { society_can_abduct_trigger = yes }
+			}
+			
 			in_revolt = no
 			NOT = { war_with = FROM }
 			NOT = { same_society_as = FROM }
 			prisoner = no
-			OR = {
-				AND = {
-					is_landed = no
+			
+			# Warcraft
+			trigger_if = {
+				limit = {
+					is_ruler = no
+				}
+				# If you have society currency, you spend society currency
+				trigger_if = {
+					limit = {
+						FROM = {
+							society_can_abduct_trigger = yes
+							has_society_currency_tiny_trigger = yes
+						}
+					}
+					FROM = { has_society_currency_tiny_trigger = yes }
+				}
+				# If you're vampire without society currency, you may spend wealth, prestige, piety
+				trigger_else_if = {
+					limit = {
+						FROM = {
+							trait = vampire
+						}
+					}
 					FROM = {
-						has_society_currency_tiny_trigger = yes
+						wealth = 25
+						prestige = 50
+						piety = 25
 					}
 				}
-				AND = {
-					is_landed = yes
-					NOT = {
-						higher_tier_than = BARON
-					}
-					FROM = {
-						has_society_currency_minor_trigger = yes
-					}
-				}
-				AND = {
-					higher_tier_than = BARON
-					FROM = {
-						has_society_currency_medium_trigger = yes
-					}
+				# If you're not vampire without society currency, you see you need society currency
+				trigger_else = {
+					FROM = { has_society_currency_tiny_trigger = yes }
 				}
 			}
+			trigger_else_if = {
+				limit = {
+					lower_tier_than = COUNT
+				}
+				FROM = { has_society_currency_minor_trigger = yes }
+			}
+			trigger_else = {
+				FROM = { has_society_currency_medium_trigger = yes }
+			}
+			
 			is_within_diplo_range = FROM
 		}
 		
 		effect = {
+			# Warcraft
 			if = {
 				limit = {
-					NOT = {
-						is_ruler = yes
+					is_ruler = no
+				}
+				# If you have society currency, you spend society currency
+				if = {
+					limit = {
+						FROM = {
+							society_can_abduct_trigger = yes
+							has_society_currency_tiny_trigger = yes
+						}
+					}
+					FROM = { detract_society_currency_tiny_effect = yes }
+				}
+				# If you're vampire without society currency, you may spend wealth, prestige, piety
+				else_if = {
+					limit = {
+						FROM = {
+							trait = vampire
+						}
+					}
+					FROM = {
+						wealth = -25
+						prestige = -50
+						piety = -25
 					}
 				}
-				FROM = {
-					detract_society_currency_tiny_effect = yes
+				# If you're not vampire without society currency, you see you need society currency
+				else = {
+					FROM = { detract_society_currency_tiny_effect = yes }
 				}
 			}
-			if = {
+			else_if = {
 				limit = {
-					is_ruler = yes
 					lower_tier_than = COUNT
 				}
 				FROM = {
 					detract_society_currency_minor_effect = yes
 				}
 			}
-			if = {
-				limit = {
-					higher_tier_than = BARON
-				}
+			else = {
 				FROM = {
 					detract_society_currency_medium_effect = yes
 				}
 			}
+			
 			hidden_tooltip = {
 				FROM = {
 					any_opinion_modifier_target = {
@@ -2915,17 +2895,9 @@ targeted_decisions = {
 		ai = no
 	
 		potential = {
-			OR = {
-				is_devil_worshiper_trigger = yes
-				
-				# Warcraft
-				# society_member_of = the_assassins
+			# Warcraft
+			can_abduct_trigger = yes
 
-				# Warcraft
-				society_member_of = cult_of_the_damned
-				society_member_of = shadow_council
-				society_member_of = twilights_hammer_cult
-			}
 			has_any_opinion_modifier = opinion_abducting
 		}
 		
@@ -2959,17 +2931,9 @@ targeted_decisions = {
 		ai = no
 	
 		from_potential = {
-			OR = {
-				is_devil_worshiper_trigger = yes
-				
-				# Warcraft
-				# society_member_of = the_assassins
+			# Warcraft
+			can_abduct_trigger = yes
 
-				# Warcraft
-				society_member_of = cult_of_the_damned
-				society_member_of = shadow_council
-				society_member_of = twilights_hammer_cult
-			}
 			has_any_opinion_modifier = opinion_abducting
 		}
 		
