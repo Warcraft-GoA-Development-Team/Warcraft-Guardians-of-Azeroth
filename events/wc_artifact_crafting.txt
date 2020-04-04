@@ -1,0 +1,380 @@
+namespace = WCARTCRFT
+
+character_event = { # Artifact owner - Send letter to craftsman
+	id = WCARTCRFT.1
+	desc = EVTDESC_WCARTCRFT_0
+	picture = GFX_placeholder
+	border = GFX_event_normal_frame_economy
+
+	is_triggered_only = yes
+
+	option = { # Generic "Send Letter Ping", if artifact don't have multiple next quality variants.
+		name = EVTOPT_WCARTCRFT_ART_GEN
+
+		trigger = { event_target:target_reforged_artifact = { THIS_artifact_has_multiple_reforge_variants_trigger = no } }
+
+		event_target:target_reforged_artifact_craftsman = { letter_event = { id = WCARTCRFT.3 } }
+
+	}
+	option = { # Diplomacy
+		name = EVTOPT_WCARTCRFT_ART_DIP
+
+		trigger = { event_target:target_reforged_artifact = { THIS_artifact_has_multiple_reforge_variants_trigger = yes } }
+
+		event_target:target_reforged_artifact = { set_artifact_flag = future_artifact_stat_diplomacy_flag }
+		event_target:target_reforged_artifact_craftsman = { letter_event = { id = WCARTCRFT.3 } }
+
+		ai_chance = {
+			factor = 1
+
+			modifier = {
+				factor = 10
+
+				OR = {
+					has_education_diplomacy_trigger = yes
+					has_lifestyle_diplomacy_trigger = yes
+				}
+			}
+		}
+	}
+	option = { # Martial
+		name = EVTOPT_WCARTCRFT_ART_MRT
+
+		trigger = { event_target:target_reforged_artifact = { THIS_artifact_has_multiple_reforge_variants_trigger = yes } }
+
+		event_target:target_reforged_artifact = { set_artifact_flag = future_artifact_stat_martial_flag }
+		event_target:target_reforged_artifact_craftsman = { letter_event = { id = WCARTCRFT.3 } }
+
+		ai_chance = {
+			factor = 1
+
+			modifier = {
+				factor = 10
+
+				OR = {
+					has_education_martial_trigger = yes
+					has_lifestyle_martial_trigger = yes
+				}
+			}
+		}
+	}
+	option = { # Stewardship
+		name = EVTOPT_WCARTCRFT_ART_STW
+
+		trigger = { event_target:target_reforged_artifact = { THIS_artifact_has_multiple_reforge_variants_trigger = yes } }
+
+		event_target:target_reforged_artifact = { set_artifact_flag = future_artifact_stat_stewardship_flag }
+		event_target:target_reforged_artifact_craftsman = { letter_event = { id = WCARTCRFT.3 } }
+
+		ai_chance = {
+			factor = 1
+
+			modifier = {
+				factor = 10
+
+				OR = {
+					has_education_stewardship_trigger = yes
+					has_lifestyle_stewardship_trigger = yes
+				}
+			}
+		}
+	}
+	option = { # Other variants for player, since player is limited with 4 options
+		name = EVTOPT_WCARTCRFT_ART_OTH
+
+		trigger = { ai = no event_target:target_reforged_artifact = { THIS_artifact_has_multiple_reforge_variants_trigger = yes } }
+
+		character_event = { id = WCARTCRFT.2 }
+	}
+
+	# Other variants for AI, since AI is NOT limited with 4 options
+	option = { # Intrigue
+		name = EVTOPT_WCARTCRFT_ART_INT
+
+		trigger = { ai = yes event_target:target_reforged_artifact = { THIS_artifact_has_multiple_reforge_variants_trigger = yes } }
+
+		event_target:target_reforged_artifact = { set_artifact_flag = future_artifact_stat_intrigue_flag }
+		event_target:target_reforged_artifact_craftsman = { letter_event = { id = WCARTCRFT.3 } }
+
+		ai_chance = {
+			factor = 1
+
+			modifier = {
+				factor = 10
+
+				OR = {
+					has_education_intrigue_trigger = yes
+					has_lifestyle_intrigue_trigger = yes
+				}
+			}
+		}
+	}
+	option = { # Learning
+		name = EVTOPT_WCARTCRFT_ART_LER
+
+		trigger = { ai = yes event_target:target_reforged_artifact = { THIS_artifact_has_multiple_reforge_variants_trigger = yes } }
+
+		event_target:target_reforged_artifact = { set_artifact_flag = future_artifact_stat_learning_flag }
+		event_target:target_reforged_artifact_craftsman = { letter_event = { id = WCARTCRFT.3 } }
+
+		ai_chance = {
+			factor = 1
+
+			modifier = {
+				factor = 10
+
+				OR = {
+					has_education_learning_trigger = yes
+					has_lifestyle_learning_trigger = yes
+				}
+			}
+		}
+	}
+}
+
+character_event = { # Artifact owner - If artifact have multiple next quality variants
+	id = WCARTCRFT.2
+	desc = EVTDESC_WCARTCRFT_0
+	picture = GFX_placeholder
+	border = GFX_event_normal_frame_economy
+
+	is_triggered_only = yes
+
+	option = { # Intrigue
+		name = EVTOPT_WCARTCRFT_ART_INT
+
+		trigger = { event_target:target_reforged_artifact = { THIS_artifact_has_multiple_reforge_variants_trigger = yes } }
+
+		event_target:target_reforged_artifact = { set_artifact_flag = future_artifact_stat_intrigue_flag }
+		event_target:target_reforged_artifact_craftsman = { letter_event = { id = WCARTCRFT.3 } }
+
+	}
+	option = { # Learning
+		name = EVTOPT_WCARTCRFT_ART_LER
+
+		trigger = { event_target:target_reforged_artifact = { THIS_artifact_has_multiple_reforge_variants_trigger = yes } }
+
+		event_target:target_reforged_artifact = { set_artifact_flag = future_artifact_stat_learning_flag }
+		event_target:target_reforged_artifact_craftsman = { letter_event = { id = WCARTCRFT.3 } }
+
+	}
+	option = { # Other variants
+		name = EVTOPT_WCARTCRFT_ART_OTH
+
+		character_event = { id = WCARTCRFT.1 }
+	}
+	option = { # Nope
+		name = EVTOPT_WCARTCRFT_ART_NO
+	}
+}
+
+letter_event = { # Craftsman - Artifact owner ask craftsman to reforge artifact
+	id = WCARTCRFT.3
+	desc = EVTDESC_WCARTCRFT_3
+
+	is_triggered_only = yes
+
+	immediate = {
+		# Calculate artifact crafting cost
+		change_variable = { which = local_base_artifact_cost_variable which = local_third_party_score }
+		calculate_artifact_crafting_cost_effect = yes
+	}
+
+	option = { # Ok
+		name = EVTOPT_1_WCARTCRFT_3
+
+		event_target:target_reforged_artifact_owner = { letter_event = { id = WCARTCRFT.5 } }
+		tooltip = {
+			event_target:target_reforged_artifact_owner = { wealth = local_total_artifact_cost_variable }
+			wealth = local_artifact_craftsman_cost_variable
+		}
+	}
+	option = { # Nope
+		trigger = { ai = no } # Already accepted
+		name = EVTOPT_2_WCARTCRFT_3
+
+		event_target:target_reforged_artifact_owner = { letter_event = { id = WCARTCRFT.4 } }
+
+	}
+}
+
+letter_event = { # Artifact owner - answer is no
+	id = WCARTCRFT.4
+	desc = EVTDESC_WCARTCRFT_4
+
+	is_triggered_only = yes
+
+	option = { # SAD
+		name = EVTOPT_1_WCARTCRFT_4
+	}
+}
+
+letter_event = { # Artifact owner - answer is yes. Pay craftsman for work?
+	id = WCARTCRFT.5
+	desc = EVTDESC_WCARTCRFT_5
+
+	is_triggered_only = yes
+
+	option = { # Ok
+		name = EVTOPT_1_WCARTCRFT_5
+
+		event_target:target_reforged_artifact_craftsman = { letter_event = { id = WCARTCRFT.7 } }
+		tooltip = {
+			wealth = local_total_artifact_cost_variable
+			event_target:target_reforged_artifact_craftsman = { wealth = local_artifact_craftsman_cost_variable }
+		}
+
+	}
+	option = { # Nope
+		name = EVTOPT_2_WCARTCRFT_5
+
+		event_target:target_reforged_artifact_craftsman = { letter_event = { id = WCARTCRFT.6 } }
+
+	}
+}
+
+letter_event = { # Craftsman - answer is no
+	id = WCARTCRFT.6
+	desc = EVTDESC_WCARTCRFT_6
+
+	is_triggered_only = yes
+
+	option = { # SAD
+		name = EVTOPT_1_WCARTCRFT_6
+	}
+}
+
+letter_event = { # Craftsman - "Travel" (Not) to artifact owner
+	id = WCARTCRFT.7
+	desc = EVTDESC_WCARTCRFT_7
+
+	is_triggered_only = yes
+
+	option = { # Ok
+		name = EVTOPT_1_WCARTCRFT_7
+
+		event_target:target_reforged_artifact_owner = { character_event = { id = WCARTCRFT.8 } }
+
+	}
+}
+
+character_event = { # Artifact owner - craftsman has arrived
+	id = WCARTCRFT.8
+	desc = EVTDESC_WCARTCRFT_8
+	picture = GFX_placeholder
+
+	is_triggered_only = yes
+
+	option = { # Ok
+		name = EVTOPT_1_WCARTCRFT_8
+
+		wealth = local_total_artifact_cost_variable
+		event_target:target_reforged_artifact_craftsman = {
+			character_event = { id = WCARTCRFT.9 }
+			tooltip = { wealth = local_artifact_craftsman_cost_variable }
+		}
+		tooltip = {
+			event_target:target_reforged_artifact = {
+				show_scope_change = no
+
+				transfer_artifact = {
+					from = event_target:target_reforged_artifact_owner
+					to = event_target:target_reforged_artifact_craftsman
+				}
+			}
+		}
+	}
+}
+
+character_event = { # Craftsman - Work-work
+	id = WCARTCRFT.9
+	desc = EVTDESC_WCARTCRFT_9
+	picture = GFX_placeholder
+
+	is_triggered_only = yes
+
+	option = { # Work-work
+		name = EVTOPT_1_WCARTCRFT_9
+
+		event_target:target_reforged_artifact = {
+			show_scope_change = no
+
+			transfer_artifact = {
+				from = event_target:target_reforged_artifact_owner
+				to = event_target:target_reforged_artifact_craftsman
+			}
+		}
+		character_event = { id = WCARTCRFT.10 }
+		tooltip = { event_target:target_reforged_artifact_owner = { wealth = local_total_artifact_cost_variable } }
+	}
+}
+
+character_event = { # Artifact owner - artifact Reforge effect here
+	id = WCARTCRFT.10
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		event_target:target_reforged_artifact = {
+			upgrade_THIS_artifact_and_save_it_as_event_target_TARGET_NEW_REFORGED_ARTIFACT = yes
+
+			event_target:target_new_reforged_artifact = {
+				copy_artifact_history = event_target:target_reforged_artifact
+				set_original_owner = event_target:target_reforged_artifact_owner
+
+				set_description = "reforged_artifact_description"
+				give_artifact_random_name_effect = yes
+				transfer_artifact = {
+					from = event_target:target_reforged_artifact_craftsman
+					to = event_target:target_reforged_artifact_owner
+				}
+			}
+
+			# Results
+			event_target:target_reforged_artifact_craftsman = { character_event = { id = WCARTCRFT.11 } }
+			event_target:target_reforged_artifact_owner = { character_event = { id = WCARTCRFT.12 } }
+
+			destroy_artifact = yes
+		}
+	}
+}
+
+# Results
+character_event = { # Craftsman - Success
+	id = WCARTCRFT.11
+	desc = EVTDESC_WCARTCRFT_11
+	picture = GFX_placeholder
+
+	is_triggered_only = yes
+
+	option = { # Ok
+		name = EVTOPT_1_WCARTCRFT_11
+
+		wealth = local_artifact_craftsman_cost_variable
+
+	}
+}
+
+character_event = { # Artifact owner - Success
+	id = WCARTCRFT.12
+	desc = EVTDESC_WCARTCRFT_12
+	picture = GFX_placeholder
+
+	is_triggered_only = yes
+
+	option = { # Ok
+		name = EVTOPT_1_WCARTCRFT_12
+
+		tooltip = {
+			event_target:target_new_reforged_artifact = {
+				show_scope_change = no
+
+				transfer_artifact = {
+					from = event_target:target_reforged_artifact_craftsman
+					to = event_target:target_reforged_artifact_owner
+				}
+			}
+		}
+	}
+}

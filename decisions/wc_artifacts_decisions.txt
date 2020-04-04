@@ -1,0 +1,170 @@
+targetted_decisions = {
+
+	ask_to_reforge_artifact = {
+		ai = no
+
+		third_party_filter = artifacts
+		third_party = FROM
+		show_third_party_potential = yes
+
+		diplomacy_icon = GFX_reforge_decision
+
+		from_potential = {
+			is_untouchable_trigger = no
+		}
+
+		potential = {
+			is_untouchable_trigger = no
+			is_within_diplo_range = FROM
+			FROM = { can_positive_interact_with_prev_publicly_trigger = yes } # with ROOT, craftsman
+			is_any_craftsman_trigger = yes
+		}
+
+		allow = {
+			is_ill = no
+			prisoner = no
+			is_incapable = no
+			is_inaccessible_trigger = no
+
+			FROM = {
+				prisoner = no
+				is_incapable = no
+				is_inaccessible_trigger = no
+			}
+		}
+
+		third_party_potential = {
+
+			custom_tooltip = {
+				text = THIS_is_artifact_that_can_be_upgraded_wc_tt
+
+				FROMFROM = { has_artifact_flag = can_be_upgraded } # Only specific artifacts can be upgraded
+
+				trigger_if = { # Blacksmith can reforge these artifacts
+					limit = { is_craftsman_blacksmith_trigger = yes }
+					FROMFROM = {
+						OR = {
+							has_artifact_flag = sword
+							has_artifact_flag = axe
+							has_artifact_flag = mace
+							has_artifact_flag = spear
+							has_artifact_flag = lance
+						}
+					}
+				}
+				trigger_else_if = { # Jeweler can reforge these artifacts
+					limit = { is_craftsman_jeweler_trigger = yes }
+					FROMFROM = { has_artifact_flag = jewelry }
+				}
+				trigger_else = { always = no } # There is no other artifacts right now
+				# trigger_else_if = { # Tailor can reforge these artifacts
+					# limit = { is_craftsman_tailor_trigger = yes }
+
+					# FROMFROM = { }
+				# }
+				# trigger_else_if = { # Engineer can reforge these artifacts
+					# limit = { is_craftsman_engineer_trigger = yes }
+
+					# FROMFROM = { }
+				# }
+
+			}
+
+		}
+
+		third_party_allow = { FROM = { wealth = local_third_party_score } }
+
+		third_party_score = { # How much your character need to pay for reforging artifact. This is only a base artifact cost, how much craftsman work cost is calculated in event
+			factor = 75
+
+			### Artifact Modifiers
+			## Artifact Quality
+			# X3 increase per level
+			modifier = {
+				factor = 3
+
+				FROMFROM = { quality = 1 }
+			}
+			modifier = {
+				factor = 3
+
+				FROMFROM = { quality = 2 }
+			}
+			modifier = {
+				factor = 3
+
+				FROMFROM = { quality = 3 }
+			}
+			modifier = {
+				factor = 3
+
+				FROMFROM = { quality = 4 }
+			}
+
+			### Action
+
+			modifier = {
+				factor = 0.3
+
+				# NOT = { FROMFROM = { has_artifact_flag = ______ } } # Reforge
+			}
+
+			# modifier = {
+				# factor = 0.3
+
+				# # FROMFROM = { has_artifact_flag = ______ } # Repair
+			# }
+
+			### Artifact Owner Modifiers - character knows where materials can be obtained cheaper
+			## Skills
+			# Stewardship
+			modifier = { factor = 0.98 FROM = { stewardship = 12 } }
+			modifier = { factor = 0.98 FROM = { stewardship = 16 } }
+			modifier = { factor = 0.98 FROM = { stewardship = 20 } }
+			modifier = { factor = 0.98 FROM = { stewardship = 24 } }
+			modifier = { factor = 0.98 FROM = { stewardship = 28 } }
+			modifier = { factor = 0.98 FROM = { stewardship = 32 } }
+			modifier = { factor = 0.98 FROM = { stewardship = 36 } }
+			modifier = { factor = 0.98 FROM = { stewardship = 40 } }
+			# Learning
+			modifier = { factor = 0.99 FROM = { learning = 12 } }
+			modifier = { factor = 0.99 FROM = { learning = 16 } }
+			modifier = { factor = 0.99 FROM = { learning = 20 } }
+			modifier = { factor = 0.99 FROM = { learning = 24 } }
+			modifier = { factor = 0.99 FROM = { learning = 28 } }
+			modifier = { factor = 0.99 FROM = { learning = 32 } }
+			modifier = { factor = 0.99 FROM = { learning = 36 } }
+			modifier = { factor = 0.99 FROM = { learning = 40 } }
+			## Personality
+			# Lifestyle - x3 of skill
+			modifier = { factor = 0.94 FROM = { trait = administrator } }
+			modifier = { factor = 0.97 FROM = { trait = scholar } }
+
+		}
+
+		effect = {
+			save_event_target_as = target_reforged_artifact_craftsman
+			FROMFROM = { save_event_target_as = target_reforged_artifact }
+			FROM = {
+				save_event_target_as = target_reforged_artifact_owner
+				random_realm_wonder_upgrade = {
+					limit = { has_wonder_upgrade_that_can_be_used_for_crafting_artifacts_trigger = yes }
+
+					save_event_target_as = target_reforged_artifact_armory
+					wonder = { save_event_target_as = target_reforged_artifact_wonder }
+				}
+				character_event = { id = WCARTCRFT.1 }
+			}
+		}
+
+		# ai_will_do = {
+
+		# }
+
+		ai_acceptance = {
+			factor = 10
+		}
+
+	}
+
+}
