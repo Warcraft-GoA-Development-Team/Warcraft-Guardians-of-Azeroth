@@ -1,0 +1,88 @@
+calculate_artifact_crafting_cost_effect = { # LOCAL_BASE_ARTIFACT_COST_VARIABLE, TARGET_REFORGED_ARTIFACT_CRAFTSMAN, TARGET_REFORGED_ARTIFACT_OWNER and TARGET_REFORGED_ARTIFACT_ARMORY must be saved before this effect
+
+	subtract_variable = { which = local_total_artifact_cost_variable which = local_base_artifact_cost_variable } # How much artifact owner will pay - for artifact
+
+	event_target:target_reforged_artifact_craftsman = { # How much artifact craftsman will get for its work
+		if = {
+			limit = { craftsman_is_obedient_to_artifact_owner_trigger = no } # Don't require anything if obedient
+
+			set_variable = { which = local_artifact_craftsman_cost_variable which = local_base_artifact_cost_variable }
+			multiply_variable = { which = local_artifact_craftsman_cost_variable value = 0.2 } # At least 20% of base artifact cost otherwise
+
+			if = {
+				limit = { is_level_1_craftsman_trigger = yes }
+				multiply_variable = { which = local_artifact_craftsman_cost_variable value = 0.8 }
+			}
+			else_if = {
+				limit = { is_level_2_craftsman_trigger = yes }
+				multiply_variable = { which = local_artifact_craftsman_cost_variable value = 0.9 }
+			}
+			else_if = {
+				limit = { is_level_4_craftsman_trigger = yes }
+				multiply_variable = { which = local_artifact_craftsman_cost_variable value = 1.1 }
+			}
+			else_if = {
+				limit = { is_level_5_craftsman_trigger = yes }
+				multiply_variable = { which = local_artifact_craftsman_cost_variable value = 1.2 }
+			}
+
+			if = {
+				limit = { trait = proud }
+				multiply_variable = { which = local_artifact_craftsman_cost_variable value = 1.2 }
+			}
+			else_if = {
+				limit = { NOT = { trait = humble trait = depressed } }
+				multiply_variable = { which = local_artifact_craftsman_cost_variable value = 1.1 }
+			}
+			else_if = {
+				limit = { trait = depressed }
+				multiply_variable = { which = local_artifact_craftsman_cost_variable value = 0.9 }
+			}
+
+			if = {
+				limit = { trait = greedy }
+				multiply_variable = { which = local_artifact_craftsman_cost_variable value = 1.5 }
+			}
+			else_if = {
+				limit = { trait = charitable }
+				multiply_variable = { which = local_artifact_craftsman_cost_variable value = 0.8 }
+			}
+
+			if = {
+				limit = { trait = slothful }
+				multiply_variable = { which = local_artifact_craftsman_cost_variable value = 1.1 }
+			}
+			else_if = {
+				limit = { trait = diligent }
+				multiply_variable = { which = local_artifact_craftsman_cost_variable value = 0.9 }
+			}
+
+			if = {
+				limit = { trait = envious }
+				multiply_variable = { which = local_artifact_craftsman_cost_variable value = 1.2 }
+			}
+
+			if = {
+				limit = { trait = content }
+				multiply_variable = { which = local_artifact_craftsman_cost_variable value = 0.9 }
+			}
+
+			event_target:target_reforged_artifact_owner = {
+				if = {
+					limit = { any_owned_bloodline = { has_bloodline_flag = bloodline_artisan_craftsmen } }
+					multiply_variable = { which = local_artifact_craftsman_cost_variable value = 0.75 }
+				}
+			}
+
+			if = {
+				limit = { event_target:target_reforged_artifact_armory = { always = yes } }
+				multiply_variable = { which = local_artifact_craftsman_cost_variable value = 0.75 }
+			}
+
+			subtract_variable = { which = local_total_artifact_cost_variable which = local_artifact_craftsman_cost_variable } # How much artifact owner will pay - for craftsman work (and artifact)
+
+		}
+	}
+
+}
+
