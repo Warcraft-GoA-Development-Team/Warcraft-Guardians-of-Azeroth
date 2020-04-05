@@ -1,6 +1,4 @@
 namespace = WCSCRFC
-namespace = HF
-namespace = SSI
 
 character_event = { # Army commander sacrifice province population
 	id = WCSCRFC.1
@@ -323,18 +321,15 @@ character_event = { # Ping - Population of province was sacrificed
 
 }
 
-character_event = {
-	id = SSI.60
+character_event = { # Ping - Your vassal was sacrificed
+	id = WCSCRFC.3
 
-	# Warcraft
-	desc = { # It is how it should be.
-		trigger = { religion_have_ritual_sacrifice_trigger = yes }
-		text = EVTDESC_SSI_060_B
-	}
-	desc = { # How terrible!
-		trigger = { religion_have_ritual_sacrifice_trigger = no }
-		text = EVTDESCHF23001
-	}
+	desc = EVTDESC_WCSCRFC_3
+	border = GFX_event_normal_frame_war
+
+	notification = yes
+	is_triggered_only = yes
+
 	picture = {
 		trigger = { event_target:target_sacrificer = { religion = cult_of_hakkar } }
 		picture = GFX_evt_hakkar
@@ -356,81 +351,31 @@ character_event = {
 		picture = GFX_evt_yshaarj
 	}
 	picture = {
+		trigger = {
+			event_target:target_sacrificer = {
+				religion = old_gods_worship
+				NOT = {
+					has_character_modifier = follower_of_cthun
+					has_character_modifier = follower_of_nzoth
+					has_character_modifier = follower_of_yogg_saron
+					has_character_modifier = follower_of_yshaarj
+				}
+			}
+		}
+		picture = GFX_evt_voidwalker
+	}
+	picture = {
 		trigger = { event_target:target_sacrificer = { NOT = { religion = cult_of_hakkar religion = old_gods_worship } } }
 		picture = GFX_evt_pagan_blood_sacrifice
 	}
 
-	border = GFX_event_normal_frame_war
-	
-	is_triggered_only = yes
-
-	# Warcraft
-	option = {
-		name = { # It is how it should be.
-			trigger = { religion_have_ritual_sacrifice_trigger = yes }
-			text = EVTOPTB_SSI_060
-		}
-		name = { # How terrible!
-			trigger = { religion_have_ritual_sacrifice_trigger = no }
-			text = EVTOPTAHF23001
-		}
-	}
+	option = { name = EVTOPTAHF23001 } # How terrible!
 
 }
 
-# Liege Informed of Sacrifice
-character_event = {
-	id = SSI.62
+character_event = { # Ritual Sacrifice Prisoner (Jailer's perspective)
+	id = WCSCRFC.4
 
-	# Warcraft
-	desc = { # It is how it should be.
-		trigger = { religion_have_ritual_sacrifice_trigger = yes }
-		text = EVTDESC_SSI_060_B
-	}
-	desc = { # How terrible!
-		trigger = { religion_have_ritual_sacrifice_trigger = no }
-		text = EVTDESCHF23001
-	}
-	picture = GFX_evt_pagan_blood_sacrifice
-
-	border = GFX_event_normal_frame_war
-	
-	is_triggered_only = yes
-
-	# Warcraft
-	option = {
-		name = { # It is how it should be.
-			trigger = { religion_have_ritual_sacrifice_trigger = yes }
-			text = EVTOPTB_SSI_060
-		}
-		name = { # How terrible!
-			trigger = { religion_have_ritual_sacrifice_trigger = no }
-			text = EVTOPTAHF23001
-		}
-	}
-
-}
-
-# Ritual Sacrifice Prisoner
-character_event = {
-	id = HF.23001
-	desc = EVTDESCHF23001
-	
-	picture = GFX_evt_pagan_blood_sacrifice
-	border = GFX_event_normal_frame_war
-	
-	is_triggered_only = yes
-	
-	option = {
-		name = EVTOPTAHF23001
-	}
-}
-
-# Ritual Sacrifice Prisoner (Jailer's perspective)
-character_event = {
-	id = HF.23002
-
-	# Warcraft
 	desc = {
 		trigger = {
 			trigger_if = {
@@ -463,6 +408,7 @@ character_event = {
 	}
 	desc = {
 		trigger = {
+			is_incapable = no
 			trigger_if = {
 				limit = { religion = old_gods_worship }
 
@@ -519,6 +465,7 @@ character_event = {
 	}
 	desc = {
 		trigger = {
+			is_incapable = no
 			trigger_if = {
 				limit = { religion = old_gods_worship }
 
@@ -543,8 +490,7 @@ character_event = {
 
 		text = EVTDESCHF23002_D 	#Do it yourself.
 	}
-	
-	# Warcraft
+
 	picture = {
 		trigger = { religion = cult_of_hakkar }
 		picture = GFX_evt_hakkar
@@ -566,6 +512,18 @@ character_event = {
 		picture = GFX_evt_yshaarj
 	}
 	picture = {
+		trigger = {
+			religion = old_gods_worship
+			NOT = {
+				has_character_modifier = follower_of_cthun
+				has_character_modifier = follower_of_nzoth
+				has_character_modifier = follower_of_yogg_saron
+				has_character_modifier = follower_of_yshaarj
+			}
+		}
+		picture = GFX_evt_voidwalker
+	}
+	picture = {
 		trigger = { NOT = { religion = cult_of_hakkar religion = old_gods_worship } }
 		picture = GFX_evt_pagan_blood_sacrifice
 	}
@@ -577,8 +535,6 @@ character_event = {
 	immediate = {
 		random_realm_wonder_upgrade = {
 			limit = {
-
-				# Warcraft
 				trigger_if = {
 					limit = { PREV = { religion = old_gods_worship } }
 
@@ -594,13 +550,9 @@ character_event = {
 	}
 	
 	option = {
-
-		# Warcraft
 		name = EVTOPTA_SSI_072
 
 		if = {
-
-			# Warcraft
 			limit = { event_target:the_sacrificial_altar = { is_active = yes } }
 
 			prestige = 10
@@ -610,15 +562,11 @@ character_event = {
 	option = {
 		name = EVTOPTBHF23002
 		trigger = {
-
-			# Warcraft
 			event_target:target_sacrificed_prisoner = { can_be_eaten_trigger = yes }
 			event_target:the_sacrificial_altar = { is_active = yes }
-
 		}
 		tooltip_info_custom = EVTOPTBHF23002_TT
-		
-		# Warcraft
+
 		if = {
 			limit = { NOT = { trait = cannibal_trait } }
 			add_trait = cannibal_trait
@@ -632,9 +580,6 @@ character_event = {
 
 
 	after = {
-
-		# Warcraft - offmap OG currency
-		tooltip = { add_offmap_old_gods_currency_insanity_after_calculation_effect = yes }
-
+		tooltip = { add_offmap_old_gods_currency_insanity_after_calculation_effect = yes } # Offmap OG currency
 	}
 }
