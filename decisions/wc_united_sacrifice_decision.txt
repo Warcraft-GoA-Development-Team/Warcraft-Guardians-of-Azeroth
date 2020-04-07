@@ -11,13 +11,18 @@ targetted_decisions = {
 
 		potential = {
 			THIS_is_prisoner_that_can_be_sacrificed_trigger = yes
-
 			host = { character = FROM }
 		}
 
 		allow = {
 			NOT = { diplomatic_immunity = yes }
-			FROM = { can_sacrifice_characters_allow_trigger = yes }
+			FROM = {
+				OR = {
+					religion = old_gods_worship
+					society_member_of = twilights_hammer_cult
+				}
+				can_sacrifice_characters_allow_trigger = yes
+			}
 		}
 
 		effect = {
@@ -56,6 +61,40 @@ targetted_decisions = {
 					is_landed = yes
 				}
 			}
+		}
+	}
+}
+
+decisions = {
+	wc_united_sacrifice_all_prisoners_decision = {
+		ai = no
+
+		potential = {
+			is_playable = yes
+			religion_have_sacrifices_trigger = yes
+			any_courtier = {
+				THIS_is_prisoner_that_can_be_sacrificed_trigger = yes
+				host = { character = ROOT }
+			}
+		}
+
+		allow = { can_sacrifice_characters_allow_trigger = yes }
+
+		effect = {
+			set_character_flag = wc_do_not_show_post_sacrifice_ping_event_flag
+			any_courtier = {
+				show_scope_change = no
+
+				limit = {
+					THIS_is_prisoner_that_can_be_sacrificed_trigger = yes
+					host = { character = ROOT }
+				}
+
+				caltulate_PREV_offmap_old_gods_currency_insanity_effect = yes
+				hidden_effect = { PREV = { add_offmap_old_gods_currency_insanity_after_calculation_effect = yes } }
+				PREV_public_sacrifice_THIS_effect = yes
+			}
+			clr_character_flag = wc_do_not_show_post_sacrifice_ping_event_flag
 		}
 	}
 }
