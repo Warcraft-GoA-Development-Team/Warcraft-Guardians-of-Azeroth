@@ -36,7 +36,7 @@ is_training_mentor_trigger = {
 		has_character_modifier = training_mentor_necromancer
 		has_character_modifier = training_mentor_shadow_priest
 		
-		has_character_flag = sent_letter_to_mentor
+		has_character_flag = ask_to_be_mentor_ongoing_flag
 	}
 }
 dealt_physical_damage_trigger = {
@@ -2036,6 +2036,23 @@ potential_mentor_shadow_priest_trigger = {
 	is_training_self_trigger = no
 	is_training_mentor_trigger = no
 }
+potential_mentor_class_trigger = {
+	OR = {
+		potential_mentor_mage_trigger = yes
+		potential_mentor_hunter_trigger = yes
+		potential_mentor_warrior_trigger = yes
+		potential_mentor_paladin_trigger = yes
+		potential_mentor_priest_trigger = yes
+		potential_mentor_rogue_trigger = yes
+		potential_mentor_warlock_trigger = yes
+		potential_mentor_shaman_trigger = yes
+		potential_mentor_druid_trigger = yes
+		potential_mentor_loa_priest_trigger = yes
+		potential_mentor_death_knight_trigger = yes
+		potential_mentor_necromancer_trigger = yes
+		potential_mentor_shadow_priest_trigger = yes
+	}
+}
 
 # No need in attributes to be a mage
 has_magical_potential_trigger = {
@@ -2079,41 +2096,92 @@ mana_is_full_trigger = {
 }
 # Only some see Mana modifier if character hide its class
 is_visible_mana_trigger = {
+	FROM = { ROOT = { this_see_prev_class_trait_trigger = yes } }
+}
+
+# If it's true, THIS see PREV's class trait
+this_see_prev_class_trait_trigger = {
 	trigger_if = {
-		limit = { FROM = { is_mage_class_trigger = yes } }
-		FROM = { ROOT = { prev_arcane_magic_is_visible_to_this_trigger = yes } }
+		limit = { PREV = { is_mage_class_trigger = yes } }
+		prev_arcane_magic_is_visible_to_this_trigger = yes
 	}
 	trigger_else_if = {
 		limit = {
-			OR = {
-				is_paladin_class_trigger = yes
-				is_priest_class_trigger = yes
+			PREV = {
+				OR = {
+					is_paladin_class_trigger = yes
+					is_priest_class_trigger = yes
+				}
 			}
 		}
-		FROM = { ROOT = { prev_light_magic_is_visible_to_this_trigger = yes } }
+		prev_light_magic_is_visible_to_this_trigger = yes
 	}
 	trigger_else_if = {
-		limit = { FROM = { is_warlock_class_trigger = yes } }
-		FROM = { ROOT = { prev_fel_magic_is_visible_to_this_trigger = yes } }
+		limit = { PREV = { is_warlock_class_trigger = yes } }
+		prev_fel_magic_is_visible_to_this_trigger = yes
 	}
 	trigger_else_if = {
-		limit = { FROM = { is_loa_priest_class_trigger = yes } }
-		FROM = { ROOT = { prev_loa_magic_is_visible_to_this_trigger = yes } }
+		limit = { PREV = { is_loa_priest_class_trigger = yes } }
+		prev_loa_magic_is_visible_to_this_trigger = yes
 	}
 	trigger_else_if = {
 		limit = {
-			FROM = {
+			PREV = {
 				OR = {
 					is_death_knight_class_trigger = yes
 					is_necromancer_class_trigger = yes
 				}
 			}
 		}
-		FROM = { ROOT = { prev_necromantic_magic_is_visible_to_this_trigger = yes } }
+		prev_necromantic_magic_is_visible_to_this_trigger = yes
 	}
 	trigger_else_if = {
-		limit = { FROM = { is_shadow_priest_class_trigger = yes } }
-		FROM = { ROOT = { prev_void_magic_is_visible_to_this_trigger = yes } }
+		limit = { PREV = { is_shadow_priest_class_trigger = yes } }
+		prev_void_magic_is_visible_to_this_trigger = yes
+	}
+	trigger_else = {
+		always = yes
+	}
+}
+# If it's true, THIS will be able to see PREV's class if PREV is going to have PREVPREV's class
+this_would_see_prev_class_trait_if_prev_was_prevprev_class_trigger = {
+	trigger_if = {
+		limit = { PREVPREV = { is_mage_class_trigger = yes } }
+		prev_arcane_magic_is_visible_to_this_trigger = yes
+	}
+	trigger_else_if = {
+		limit = {
+			PREVPREV = {
+				OR = {
+					is_paladin_class_trigger = yes
+					is_priest_class_trigger = yes
+				}
+			}
+		}
+		prev_light_magic_is_visible_to_this_trigger = yes
+	}
+	trigger_else_if = {
+		limit = { PREVPREV = { is_warlock_class_trigger = yes } }
+		prev_fel_magic_is_visible_to_this_trigger = yes
+	}
+	trigger_else_if = {
+		limit = { PREVPREV = { is_loa_priest_class_trigger = yes } }
+		prev_loa_magic_is_visible_to_this_trigger = yes
+	}
+	trigger_else_if = {
+		limit = {
+			PREVPREV = {
+				OR = {
+					is_death_knight_class_trigger = yes
+					is_necromancer_class_trigger = yes
+				}
+			}
+		}
+		prev_necromantic_magic_is_visible_to_this_trigger = yes
+	}
+	trigger_else_if = {
+		limit = { PREVPREV = { is_shadow_priest_class_trigger = yes } }
+		prev_void_magic_is_visible_to_this_trigger = yes
 	}
 	trigger_else = {
 		always = yes
@@ -2126,5 +2194,15 @@ is_dark_class_trigger = {
 		is_death_knight_class_trigger = yes
 		is_necromancer_class_trigger = yes
 		is_shadow_priest_class_trigger = yes
+	}
+}
+
+# Used in events of correspondence between mentor and student
+class_mentor_correspondence_trigger = {
+	event_target:mentor = { is_alive = yes }
+	event_target:student = {
+		is_alive = yes
+		
+		has_character_flag = ask_to_be_mentor_ongoing_flag
 	}
 }

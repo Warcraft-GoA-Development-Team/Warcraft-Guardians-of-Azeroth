@@ -1155,36 +1155,387 @@ decisions = {
 #			Training (mentor)					#
 #################################################
 targetted_decisions = {
-	ask_to_be_your_mentor = {
+	ask_to_be_mentor = {
+		third_party = FROM
+		
 		ai_target_filter = realm
+		third_party_filter = home_court_including_me
+		ai_third_party_filter = home_court_including_me
+		
 		ai_check_interval = 24
 		diplomacy_icon = GFX_trainer_decision
 
 		ai = no
 		only_playable = yes
-
-		from_potential = {
-			is_adult = yes
-
-			ask_to_be_your_mentor_decision_from_potential = yes
-		}
+		
 		potential = {
-			ask_to_be_your_mentor_decision_potential = yes
+			is_within_diplo_range = FROM
+			
+			ROOT = { FROM = { can_positive_interact_with_prev_hiddenly_trigger = yes } }
+			potential_mentor_class_trigger = yes
+			ROOT = { FROM = { this_see_prev_class_trait_trigger = yes } }
+		}
+		
+		third_party_potential = {
+			FROMFROM = {
+				# Can't force other players to pick class
+				OR = {
+					character = ROOT_FROM # Since FROM ain't working
+					ai = yes
+				}
+				
+				ROOT = {
+					prev_student_this_class_mentor_potential = yes
+				}
+			}
+			
+			ROOT = {
+				FROMFROM = {
+					prev_mentor_this_class_student_potential = yes
+					ROOT_FROM = {
+						# If it's true, ROOT will be able to see FROMFROM's class after the end of the training
+						this_would_see_prev_class_trait_if_prev_was_prevprev_class_trigger = yes
+					}
+				}
+			}
 		}
 		allow = {
-			show_only_failed_conditions = yes
+			# FROM = { NOT = { has_character_modifier = ask_to_be_mentor_cooldown } }
+		}
+		third_party_allow = {
+			# show_only_failed_conditions = yes
 			
-			ask_to_be_your_mentor_decision_allowed = yes
+			FROMFROM = {
+				show_scope_change = no
+				
+				ROOT = {
+					show_scope_change = no
+					
+					prev_student_this_class_mentor_allow = yes
+				}
+			}
 		}
 		effect = {
 			ROOT = {
 				save_event_target_as = mentor
 			}
-			FROM = {
+			FROMFROM = {
+				show_scope_change = no
+				
 				save_event_target_as = student
-				opinion = { modifier = opinion_teaching_me who = ROOT }
-				set_character_flag = sent_letter_to_mentor
+
+				pre_class_mentoring_effect = yes
+			}
+			FROM = {
+				save_event_target_as = target_initiator
+
+				# add_character_modifier = { name = ask_to_be_mentor_cooldown years = 1 }
+
 				character_event = { id = WCCLS.1500 }
+			}
+		}
+		ai_acceptance = {
+			factor = -20	# The base score
+			
+			# Opinion
+			# Positive
+			# ROOT likes FROM
+			additive_modifier = {
+				value = 10
+				localisation_key = ROOT_likes_FROM_tooltip
+				opinion = { who = FROM value >= 10 }
+				opinion = { who = FROM value < 20 }
+			}
+			additive_modifier = {
+				value = 20
+				localisation_key = ROOT_likes_FROM_tooltip
+				opinion = { who = FROM value >= 20 }
+				opinion = { who = FROM value < 30 }
+			}
+			additive_modifier = {
+				value = 30
+				localisation_key = ROOT_likes_FROM_tooltip
+				opinion = { who = FROM value >= 30 }
+				opinion = { who = FROM value < 40 }
+			}
+			additive_modifier = {
+				value = 40
+				localisation_key = ROOT_likes_FROM_tooltip
+				opinion = { who = FROM value >= 40 }
+				opinion = { who = FROM value < 50 }
+			}
+			additive_modifier = {
+				value = 50
+				localisation_key = ROOT_likes_FROM_tooltip
+				opinion = { who = FROM value >= 50 }
+				opinion = { who = FROM value < 70 }
+			}
+			additive_modifier = {
+				value = 60
+				localisation_key = ROOT_likes_FROM_tooltip
+				opinion = { who = FROM value >= 60 }
+				opinion = { who = FROM value < 70 }
+			}
+			additive_modifier = {
+				value = 70
+				localisation_key = ROOT_likes_FROM_tooltip
+				opinion = { who = FROM value >= 70 }
+				opinion = { who = FROM value < 80 }
+			}
+			additive_modifier = {
+				value = 80
+				localisation_key = ROOT_likes_FROM_tooltip
+				opinion = { who = FROM value >= 80 }
+				opinion = { who = FROM value < 90 }
+			}
+			additive_modifier = {
+				value = 90
+				localisation_key = ROOT_likes_FROM_tooltip
+				opinion = { who = FROM value >= 90 }
+				opinion = { who = FROM value < 100 }
+			}
+			additive_modifier = {
+				value = 100
+				localisation_key = ROOT_likes_FROM_tooltip
+				opinion = { who = FROM value == 100 }
+			}
+
+			# ROOT likes FROMFROM
+			additive_modifier = {
+				value = 10
+				localisation_key = ROOT_likes_FROMFROM_tooltip
+				FROMFROM = { NOT = { character = ROOT_FROM } }
+				opinion = { who = FROMFROM value >= 10 }
+				opinion = { who = FROMFROM value < 20 }
+			}
+			additive_modifier = {
+				value = 20
+				localisation_key = ROOT_likes_FROMFROM_tooltip
+				FROMFROM = { NOT = { character = ROOT_FROM } }
+				opinion = { who = FROMFROM value >= 20 }
+				opinion = { who = FROMFROM value < 30 }
+			}
+			additive_modifier = {
+				value = 30
+				localisation_key = ROOT_likes_FROMFROM_tooltip
+				FROMFROM = { NOT = { character = ROOT_FROM } }
+				opinion = { who = FROMFROM value >= 30 }
+				opinion = { who = FROMFROM value < 40 }
+			}
+			additive_modifier = {
+				value = 40
+				localisation_key = ROOT_likes_FROMFROM_tooltip
+				FROMFROM = { NOT = { character = ROOT_FROM } }
+				opinion = { who = FROMFROM value >= 40 }
+				opinion = { who = FROMFROM value < 50 }
+			}
+			additive_modifier = {
+				value = 50
+				localisation_key = ROOT_likes_FROMFROM_tooltip
+				FROMFROM = { NOT = { character = ROOT_FROM } }
+				opinion = { who = FROMFROM value >= 50 }
+				opinion = { who = FROMFROM value < 70 }
+			}
+			additive_modifier = {
+				value = 60
+				localisation_key = ROOT_likes_FROMFROM_tooltip
+				FROMFROM = { NOT = { character = ROOT_FROM } }
+				opinion = { who = FROMFROM value >= 60 }
+				opinion = { who = FROMFROM value < 70 }
+			}
+			additive_modifier = {
+				value = 70
+				localisation_key = ROOT_likes_FROMFROM_tooltip
+				FROMFROM = { NOT = { character = ROOT_FROM } }
+				opinion = { who = FROMFROM value >= 70 }
+				opinion = { who = FROMFROM value < 80 }
+			}
+			additive_modifier = {
+				value = 80
+				localisation_key = ROOT_likes_FROMFROM_tooltip
+				FROMFROM = { NOT = { character = ROOT_FROM } }
+				opinion = { who = FROMFROM value >= 80 }
+				opinion = { who = FROMFROM value < 90 }
+			}
+			additive_modifier = {
+				value = 90
+				localisation_key = ROOT_likes_FROMFROM_tooltip
+				FROMFROM = { NOT = { character = ROOT_FROM } }
+				opinion = { who = FROMFROM value >= 90 }
+				opinion = { who = FROMFROM value < 100 }
+			}
+			additive_modifier = {
+				value = 100
+				localisation_key = ROOT_likes_FROMFROM_tooltip
+				FROMFROM = { NOT = { character = ROOT_FROM } }
+				opinion = { who = FROMFROM value == 100 }
+			}
+
+			# Negative
+			# ROOT dislikes FROM
+			additive_modifier = {
+				value = -10
+				localisation_key = ROOT_dislikes_FROM_tooltip
+				opinion = { who = FROM value <= -10 }
+				opinion = { who = FROM value > -20 }
+			}
+			additive_modifier = {
+				value = -20
+				localisation_key = ROOT_dislikes_FROM_tooltip
+				opinion = { who = FROM value <= -20 }
+				opinion = { who = FROM value > -30 }
+			}
+			additive_modifier = {
+				value = -30
+				localisation_key = ROOT_dislikes_FROM_tooltip
+				opinion = { who = FROM value <= -30 }
+				opinion = { who = FROM value > -40 }
+			}
+			additive_modifier = {
+				value = -40
+				localisation_key = ROOT_dislikes_FROM_tooltip
+				opinion = { who = FROM value <= -40 }
+				opinion = { who = FROM value > -50 }
+			}
+			additive_modifier = {
+				value = -50
+				localisation_key = ROOT_dislikes_FROM_tooltip
+				opinion = { who = FROM value <= -50 }
+				opinion = { who = FROM value > -70 }
+			}
+			additive_modifier = {
+				value = -60
+				localisation_key = ROOT_dislikes_FROM_tooltip
+				opinion = { who = FROM value <= -60 }
+				opinion = { who = FROM value > -70 }
+			}
+			additive_modifier = {
+				value = -70
+				localisation_key = ROOT_dislikes_FROM_tooltip
+				opinion = { who = FROM value <= -70 }
+				opinion = { who = FROM value > -80 }
+			}
+			additive_modifier = {
+				value = -80
+				localisation_key = ROOT_dislikes_FROM_tooltip
+				opinion = { who = FROM value <= -80 }
+				opinion = { who = FROM value > -90 }
+			}
+			additive_modifier = {
+				value = -90
+				localisation_key = ROOT_dislikes_FROM_tooltip
+				opinion = { who = FROM value <= -90 }
+				opinion = { who = FROM value > -100 }
+			}
+			additive_modifier = {
+				value = -100
+				localisation_key = ROOT_dislikes_FROM_tooltip
+				opinion = { who = FROM value == -100 }
+			}
+			# ROOT dislikes FROMFROM
+
+			additive_modifier = {
+				value = -10
+				localisation_key = ROOT_dislikes_FROMFROM_tooltip
+				FROMFROM = { NOT = { character = ROOT_FROM } }
+				opinion = { who = FROMFROM value <= -10 }
+				opinion = { who = FROMFROM value > -20 }
+			}
+			additive_modifier = {
+				value = -20
+				localisation_key = ROOT_dislikes_FROMFROM_tooltip
+				FROMFROM = { NOT = { character = ROOT_FROM } }
+				opinion = { who = FROMFROM value <= -20 }
+				opinion = { who = FROMFROM value > -30 }
+			}
+			additive_modifier = {
+				value = -30
+				localisation_key = ROOT_dislikes_FROMFROM_tooltip
+				FROMFROM = { NOT = { character = ROOT_FROM } }
+				opinion = { who = FROMFROM value <= -30 }
+				opinion = { who = FROMFROM value > -40 }
+			}
+			additive_modifier = {
+				value = -40
+				localisation_key = ROOT_dislikes_FROMFROM_tooltip
+				FROMFROM = { NOT = { character = ROOT_FROM } }
+				opinion = { who = FROMFROM value <= -40 }
+				opinion = { who = FROMFROM value > -50 }
+			}
+			additive_modifier = {
+				value = -50
+				localisation_key = ROOT_dislikes_FROMFROM_tooltip
+				FROMFROM = { NOT = { character = ROOT_FROM } }
+				opinion = { who = FROMFROM value <= -50 }
+				opinion = { who = FROMFROM value > -70 }
+			}
+			additive_modifier = {
+				value = -60
+				localisation_key = ROOT_dislikes_FROMFROM_tooltip
+				FROMFROM = { NOT = { character = ROOT_FROM } }
+				opinion = { who = FROMFROM value <= -60 }
+				opinion = { who = FROMFROM value > -70 }
+			}
+			additive_modifier = {
+				value = -70
+				localisation_key = ROOT_dislikes_FROMFROM_tooltip
+				FROMFROM = { NOT = { character = ROOT_FROM } }
+				opinion = { who = FROMFROM value <= -70 }
+				opinion = { who = FROMFROM value > -80 }
+			}
+			additive_modifier = {
+				value = -80
+				localisation_key = ROOT_dislikes_FROMFROM_tooltip
+				FROMFROM = { NOT = { character = ROOT_FROM } }
+				opinion = { who = FROMFROM value <= -80 }
+				opinion = { who = FROMFROM value > -90 }
+			}
+			additive_modifier = {
+				value = -90
+				localisation_key = ROOT_dislikes_FROMFROM_tooltip
+				FROMFROM = { NOT = { character = ROOT_FROM } }
+				opinion = { who = FROMFROM value <= -90 }
+				opinion = { who = FROMFROM value > -100 }
+			}
+			additive_modifier = {
+				value = -100
+				localisation_key = ROOT_dislikes_FROMFROM_tooltip
+				FROMFROM = { NOT = { character = ROOT_FROM } }
+				opinion = { who = FROMFROM value == -100 }
+			}
+			
+			# Traits
+			# Positive
+			additive_modifier = { # I don't mind help people
+				value = 15
+				localisation_key = ROOT_is_charitable
+				trait = charitable
+			}
+			additive_modifier = { # I just like talking to people
+				value = 10
+				localisation_key = ROOT_is_gregarious
+				trait = gregarious
+			}
+			additive_modifier = { # They look like good guys
+				value = 5
+				localisation_key = ROOT_is_trusting
+				trait = trusting
+			}
+			# Negative
+			additive_modifier = { # I would like to get more for it
+				value = -5
+				localisation_key = ROOT_is_greedy
+				trait = greedy
+			}
+			additive_modifier = { # I don't like to contact with people
+				value = -10
+				localisation_key = ROOT_is_shy
+				trait = shy
+			}
+			additive_modifier = { # They may kill me!
+				value = -15
+				localisation_key = ROOT_is_paranoid
+				trait = paranoid
 			}
 		}
 		revoke_allowed = {
