@@ -2287,6 +2287,9 @@ settle_as_target_settler_effect = {
 		location = {
 			show_scope_change = no
 			
+			# "Copy" techs of target_settler
+			copy_target_settler_techs_effect = yes
+			
 			# event_target:target_settler build new holding or usurp existing one
 			build_or_give_holding_to_target_settler_effect = yes
 		}
@@ -2296,7 +2299,7 @@ settle_as_target_settler_effect = {
 		
 		# Sets culture and religion, upgrade holdings
 		cleanup_province_as_target_settler_effect = yes
-			
+		
 		# Used in scripted effects
 		set_title_flag = new_title_flag	# Note: this flag isn't removed
 	}
@@ -2458,6 +2461,53 @@ target_settler_declare_war_effect = {
 					}
 				}
 			}
+		}
+	}
+}
+# "Copy" techs of target_settler
+copy_target_settler_techs_effect = {
+	if = {
+		limit = {
+			NOT = { event_target:target_techs = { always = yes } }
+		}
+		if = {
+			limit = { event_target:target_settler = { is_landed = yes } }
+			event_target:target_settler = { capital_scope = { save_event_target_as = target_techs } }
+		}
+		else = {
+			event_target:target_settler = { location = { save_event_target_as = target_techs } }
+		}
+	}
+	if = {
+		limit = { 
+			event_target:target_techs = { always = yes }
+		}
+		while = {
+			count = 8
+			limit = { NOT = { has_higher_tech_than = event_target:target_techs } }
+			# Military advances
+			change_tech = { technology = TECH_INFANTRY value = 1 }
+			change_tech = { technology = TECH_CAVALRY value = 1 }
+			change_tech = { technology = TECH_SKIRMISH value = 1 }
+			change_tech = { technology = TECH_MELEE value = 1 }
+			change_tech = { technology = TECH_SIEGE_EQUIPMENT value = 1 }
+			change_tech = { technology = TECH_RECRUITMENT value = 1 }
+			
+			# Economy advances
+			change_tech = { technology = TECH_CASTLE_CONSTRUCTION value = 1 }
+			change_tech = { technology = TECH_CITY_CONSTRUCTION value = 1 }
+			change_tech = { technology = TECH_FORTIFICATIONS_CONSTRUCTION value = 1 }
+			change_tech = { technology = TECH_TRADE_PRACTICES value = 1 }
+			change_tech = { technology = TECH_CONSTRUCTION value = 1 }
+			change_tech = { technology = TECH_NAVAL value = 1 }
+			
+			# Culture advances
+			change_tech = { technology = TECH_NOBLE_CUSTOMS value = 1 }
+			change_tech = { technology = TECH_POPULAR_CUSTOMS value = 1 }
+			change_tech = { technology = TECH_RELIGIOUS_CUSTOMS value = 1 }
+			change_tech = { technology = TECH_MAJESTY value = 1 }
+			change_tech = { technology = TECH_CULTURE_FLEX value = 1 }
+			change_tech = { technology = TECH_LEGALISM value = 1 }
 		}
 	}
 }
@@ -3456,7 +3506,7 @@ increase_mind_control_stage_effect = {
 							can_be_mind_controlled_by_scourge_trigger = yes
 						}
 						random = {
-							chance = 50
+							chance = 66
 							character_event = { id = WCUND.1108 days = 1 }		# Check religion
 						}
 					}
@@ -3475,7 +3525,7 @@ increase_mind_control_stage_effect = {
 							can_be_mind_controlled_by_scourge_trigger = yes
 						}
 						random = {
-							chance = 25
+							chance = 33
 							character_event = { id = WCUND.1108 days = 1 }		# Check religion
 						}
 					}
@@ -3503,7 +3553,7 @@ decrease_mind_control_stage_effect = {
 					can_break_scourge_mind_control_trigger = yes
 				}
 				random = {
-					chance = 75
+					chance = 100
 					modifier = {
 						factor = 0.1
 						location = { region = world_northrend }
@@ -3529,7 +3579,7 @@ decrease_mind_control_stage_effect = {
 					can_break_scourge_mind_control_trigger = yes
 				}
 				random = {
-					chance = 50
+					chance = 66
 					modifier = {
 						factor = 0.1
 						location = { region = world_northrend }
@@ -3551,7 +3601,7 @@ decrease_mind_control_stage_effect = {
 					can_break_scourge_mind_control_trigger = yes
 				}
 				random = {
-					chance = 25
+					chance = 33
 					modifier = {
 						factor = 0.1
 						location = { region = world_northrend }
@@ -3576,14 +3626,15 @@ support_scarlet_light_effect = {
 
 	if = {
 		limit = {
-			is_ruler = yes
+			is_landed = yes
 			higher_real_tier_than = BARON
 		}
 		capital_scope = { 
 			if = {
 				limit = {
-					holder_scope = { character = PREVPREV }
 					NOT = { religion = scarlet_light }
+					culture_group = human_group
+					holder_scope = { character = PREVPREV }
 				}
 				religion = scarlet_light
 			}
