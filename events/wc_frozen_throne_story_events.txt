@@ -61,9 +61,13 @@ narrative_event = {
 	option = { #To the strongest!
 		trigger = { character = ROOT }
 		k_lordaeron = {
+			show_scope_change = no
+
 			if = {
 				limit = { has_holder = yes }
 				holder_scope = {
+					show_scope_change = no
+
 					reverse_unsafe_war = {
 						target = ROOT
 						casus_belli = invasion
@@ -85,9 +89,13 @@ narrative_event = {
 	option = { #To the rightful heir!
 		trigger = { character = ROOT }
 		k_lordaeron = {
+			show_scope_change = no
+
 			if = {
 				limit = { has_holder = yes }
 				holder_scope = {
+					show_scope_change = no
+
 					reverse_unsafe_war = {
 						target = c_60004
 						casus_belli = other_claim
@@ -175,18 +183,17 @@ province_event = {
 	hide_window = yes
 	
 	trigger = {
+		has_global_flag = plaguelands_civil_war_ongoing
 		NOT = { 
 			has_game_rule = {
 				name = frozen_throne_story
 				value = off
 			}
-			has_global_flag = plaguelands_civil_war_concluded
 		}
 	}
 	
 	immediate = {
 		clr_global_flag = plaguelands_civil_war_ongoing
-		set_global_flag = plaguelands_civil_war_concluded
 		
 		#Add Calia to faction
 		event_target:target_calia = { join_alliance_faction_effect = yes }
@@ -256,6 +263,10 @@ narrative_event = {
 		
 		spawn_colonial_troops_effect = yes
 		spawn_colonial_troops_effect = yes
+		spawn_colonial_troops_effect = yes
+		
+		# Gives claims on western Lordaeron duchies
+		claim_western_lordaeron_effect = yes
 	}
 
 	option = { #A new hope for Lordaeron
@@ -372,6 +383,7 @@ narrative_event = {
 		# Makes d_order_of_the_silver_hand vassal of Lordaeron
 		d_order_of_the_silver_hand = {
 			set_defacto_liege = k_lordaeron
+			holder_scope = { k_lordaeron = { holder_scope = { reverse_opinion = { modifier = opinion_very_grateful who = PREVPREV years = 10 } } } }
 		}
 		
 		#Calia is pleased
@@ -463,18 +475,17 @@ narrative_event = {
 	show_root = yes
 	
 	trigger = {
+		has_global_flag = plaguelands_civil_war_ongoing
 		NOT = { 
 			has_game_rule = {
 				name = frozen_throne_story
 				value = off
 			}
-			has_global_flag = plaguelands_civil_war_concluded
 		}
 	}
 
 	immediate = {
 		clr_global_flag = plaguelands_civil_war_ongoing
-		set_global_flag = plaguelands_civil_war_concluded
 		
 		#Give nick and bloodline
 		event_target:target_garithos = {
@@ -487,6 +498,8 @@ narrative_event = {
 					type = scarlet_king
 				}
 			}
+			
+			remove_special_character_title = GRAND_MARSHAL_TITLE
 		}
 		
 		#Kick out Garithos from faction
@@ -504,6 +517,10 @@ narrative_event = {
 		
 		spawn_colonial_troops_effect = yes
 		spawn_colonial_troops_effect = yes
+		spawn_colonial_troops_effect = yes
+		
+		# Gives claims on western Lordaeron duchies
+		claim_western_lordaeron_effect = yes
 	}
 
 	option = { #This will ruffle some feathers
@@ -603,6 +620,7 @@ province_event = {
 			holder_scope = {
 				# Makes d_scarlet_crusade vassal of k_lordaeron
 				set_defacto_liege = k_lordaeron
+				k_lordaeron = { holder_scope = { reverse_opinion = { modifier = opinion_very_grateful who = PREVPREV years = 10 } } }
 				# First leader called High General
 				set_special_character_title = "HIGH_GENERAL_TITLE"
 				
@@ -736,18 +754,17 @@ narrative_event = {
 	show_root = yes
 	
 	trigger = {
+		has_global_flag = plaguelands_civil_war_ongoing
 		NOT = { 
 			has_game_rule = {
 				name = frozen_throne_story
 				value = off
 			}
-			has_global_flag = plaguelands_civil_war_concluded
 		}
 	}
 
 	immediate = {
 		clr_global_flag = plaguelands_civil_war_ongoing
-		set_global_flag = plaguelands_civil_war_concluded
 		
 		#Ping Saidan or create the Grand Crusader of Scarlet Crusade
 		73 = { province_event = { id = WCTFT.134 days = 15 random = 15 } }
@@ -761,6 +778,11 @@ narrative_event = {
 		
 		spawn_colonial_troops_effect = yes
 		spawn_colonial_troops_effect = yes
+		spawn_colonial_troops_effect = yes
+		spawn_colonial_troops_effect = yes # Sylvanas needs more because she fights the Alliance
+		
+		# Gives claims on western Lordaeron duchies
+		claim_western_lordaeron_effect = yes
 	}
 	
 	option = { #Treacherous scum
@@ -1145,7 +1167,7 @@ narrative_event = {
 			e_scourge = {
 				holder_scope = {
 					ROOT = {
-						this_abdicate_transfer_wealth_to_prev_effect = yes
+						prev_usurp_all_demesne_provinces_effect = yes
 						death = { death_reason = death_missing }
 					}
 				}
@@ -1303,9 +1325,26 @@ province_event = {
 				}
 				capital = c_silvermoon
 				
+				# If the Scourge exists, the Lich King takes your titles in Northrend
+				# P.S. Can't say I like it... feels unnatural - your Zuzu
+				if = {
+					limit = { e_scourge = { has_holder = yes } }
+					e_scourge = { holder_scope = { save_event_target_as = target_lich_king } }
+					
+					any_demesne_title = {
+						limit = {
+							title_can_be_lost_trigger = yes
+							lower_tier_than = DUKE
+							
+							region = world_northrend
+						}
+						grant_title_no_opinion = { target = event_target:target_lich_king type = invasion }
+					}
+				}
+				
 				# Spawns some army so Kael may kick the Scourge out of Quel'thalas
 				spawn_colonial_troops_effect = yes
-				#spawn_colonial_troops_effect = yes
+				spawn_colonial_troops_effect = yes
 				
 				any_player = {
 					narrative_event = { id = WCTFT.500 }
