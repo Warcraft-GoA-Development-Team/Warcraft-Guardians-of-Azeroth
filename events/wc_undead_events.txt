@@ -7,8 +7,6 @@ province_event = {
 	hide_window = yes
 
 	immediate = {
-		695 = { save_event_target_as = target_province }
-		
 		create_character = {
 			name = Ner'zhul
 			dynasty = 2353
@@ -1082,7 +1080,7 @@ character_event = {
 	# Just an undead
 	option = {
 		trigger = {
-			event_target:target_undead = { NOT = { trait = undead } }
+			event_target:target_undead = { NOT = { trait = being_undead } }
 			
 			event_target:target_necromancer = {
 				OR = {
@@ -2159,8 +2157,11 @@ narrative_event = {
 	}
 
 	immediate = {
+		e_scourge = { holder_scope = { save_event_target_as = target_lich_king } }
+		
 		activate_title = { title = e_scourge status = no }
 		e_scourge = { destroy_landed_title = THIS }
+		event_target:target_lich_king = { death = { death_reason = death_missing } } # The Lich King goes down with the Scourge
 	}
 
 	# It's not over yet!
@@ -2204,8 +2205,8 @@ narrative_event = {
 # This stages important only for Lich King
 # Stages:
 # 1) mind_control_1 - 100-75	- If the LK reach this stage, he has a 100% chance to make any undead in the realm his servant.
-# 2) mind_control_2 - 74-50 	- If the LK reach this stage, he has a 50% chance to make any undead in the realm his servant.
-# 3) mind_control_3 - 49-25 	- If the LK reach this stage, he has a 25% chance to make any undead in the realm his servant.
+# 2) mind_control_2 - 74-50 	- If the LK reach this stage, he has a 66% chance to make any undead in the realm his servant.
+# 3) mind_control_3 - 49-25 	- If the LK reach this stage, he has a 33% chance to make any undead in the realm his servant.
 # 4) mind_control_4 - 24-0
 character_event = {
 	id = WCUND.1106
@@ -2267,8 +2268,8 @@ character_event = {
 # Decreases power of mind control
 # Stages:
 # 1) mind_control_1 - 100-75
-# 2) mind_control_2 - 74-50 	- If you descend to this stage, you lose 25% of your servants.
-# 3) mind_control_3 - 49-25 	- If you descend to this stage, you lose 50% of your servants.
+# 2) mind_control_2 - 74-50 	- If you descend to this stage, you lose 33% of your servants.
+# 3) mind_control_3 - 49-25 	- If you descend to this stage, you lose 66% of your servants.
 # 4) mind_control_4 - 24-0 		- If you descend to this stage, you lose 100% of your servants.
 character_event = {
 	id = WCUND.1107
@@ -2451,6 +2452,8 @@ character_event = {
 							independent = no
 							
 							higher_tier_than = BARON
+							
+							vassal_of = PREV
 						}
 						set_defacto_liege = THIS
 					}
@@ -2523,19 +2526,7 @@ character_event = {
 		}
 		
 		ai_chance = {
-			factor = 50
-			modifier = {
-				factor = 1.59
-				has_benevolent_trait_trigger = yes
-			}
-			modifier = {
-				factor = 1.59
-				has_pleasant_trait_trigger = yes
-			}
-			modifier = {
-				factor = 1.59
-				has_pious_trait_trigger = yes
-			}
+			factor = 80 # Not 50/50 because the most still prefers to leave the Lich King
 		}
 	}
 
@@ -2544,19 +2535,9 @@ character_event = {
 		name = EVTOPTB_WCCLS_1109
 		
 		ai_chance = {
-			factor = 50
-			modifier = {
-				factor = 1.59
-				has_evil_trait_trigger = yes
-			}
-			modifier = {
-				factor = 1.59
-				has_unpleasant_trait_trigger = yes
-			}
-			modifier = {
-				factor = 1.59
-				has_impious_trait_trigger = yes
-			}
+			factor = 20
+			
+			evil_ai_chance_score = yes
 		}
 	}
 }
@@ -2648,20 +2629,6 @@ character_event = {
 }
 #############################################
 
-# Kills Ner'zhul if he isn't a Lick King anymore
-character_event = {
-	id = WCUND.1200
-
-	is_triggered_only = yes
-	hide_window = yes
-	
-	has_character_flag = is_nerzhul
-
-	immediate = {
-		death = { death_reason = death_missing }
-	}
-}
-
 # If character isn't a dark worshipper, converts to the necromantic religions
 character_event = {
 	id = WCUND.1301
@@ -2725,6 +2692,7 @@ character_event = {
 			factor = 50
 			
 			evil_ai_chance_score = yes
+			evil_ai_chance_religion_score = yes
 		}
 	}
 	
@@ -2736,5 +2704,172 @@ character_event = {
 		ai_chance = {
 			factor = 0
 		}
+	}
+}
+
+#############################
+#		Random events					#
+#############################
+### Random Necromantic events
+character_event = {
+	id = WCUND.9900
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	min_age = 16
+	only_playable = yes
+	only_capable = yes
+	prisoner = no
+
+	trigger = {
+		is_alive = yes
+		is_dying = no
+
+		can_be_undead_trigger = yes
+	}
+
+	weight_multiplier = {
+		days = 1
+		modifier = {
+			factor = 2
+			OR = {
+				is_death_knight_class_trigger = yes
+				is_necromancer_class_trigger = yes
+				true_religion_group = necromancy_group
+			}
+		}
+		modifier = {
+			factor = 1.6
+			trait = cynical
+		}
+		modifier = {
+			factor = 1.6
+			trait = being_undead
+		}
+		modifier = {
+			factor = 1.2
+			trait = ambitious
+		}
+		modifier = {
+			factor = 1.2
+			is_mage_class_trigger = yes
+		}
+	}
+
+	immediate = {
+		random_list = {
+			10 = {
+				trigger = {
+					is_inaccessible_trigger = no
+					
+					NOT = { has_character_flag = lich_king_vision_happend_flag }	# Happens once in lifetime
+					
+					lich_king_vision_trigger = yes
+				}
+				set_character_flag = lich_king_vision_happend_flag
+				
+				character_event = { id = WCUND.9910 }	# Lich King vision
+			}
+		}
+	}
+}
+
+### Lich King vision ###
+### Travel to Frozen Throne?
+character_event = {
+	id = WCUND.9910
+	desc = EVTDESC_WCUND_9910
+	picture = GFX_evt_icecrown
+	border = GFX_event_normal_frame_intrigue
+	
+	is_triggered_only = yes
+	
+	immediate = {
+		add_trait = travelling
+	}
+	
+	# Travel to Frozen Throne
+	option = {
+		name = EVTOPTA_WCUND_9910
+		
+		character_event = { id = WCUND.9915 days = 15 random = 15 }
+		
+		ai_chance = {
+			factor = 50
+			
+			evil_ai_chance_score = yes
+			evil_ai_chance_religion_score = yes
+		}
+	}
+	# No thanks
+	option = {
+		name = EVTOPTB_WCUND_9910
+		
+		remove_trait = travelling
+		
+		ai_chance = {
+			factor = 50
+		}
+	}
+}
+### Blizzard
+character_event = {
+	id = WCUND.9915
+	desc = EVTDESC_WCUND_9915
+	picture = GFX_evt_scourge_army
+	border = GFX_event_normal_frame_intrigue
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		lich_king_vision_trigger = yes
+	}
+	
+	fail_trigger_effect = {
+		# Travel failed
+		character_event = { id = WCUND.9920 }
+	}
+	
+	immediate = {
+		e_scourge = {
+			holder_scope = {
+				save_event_target_as = target_lich_king
+			}
+		}
+	}
+	
+	# Bow to Death God
+	option = {
+		name = EVTOPTA_WCUND_9915
+		
+		set_secret_religion = event_target:target_lich_king
+		
+		remove_trait = travelling
+	}
+	# I prefer death
+	option = {
+		name = EVTOPTB_WCUND_9915
+		
+		death = { death_reason = death_vanished }
+		
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+### Travel failed
+character_event = {
+	id = WCUND.9920
+	desc = EVTDESC_WCUND_9920
+	picture = GFX_evt_icecrown
+	border = GFX_event_normal_frame_intrigue
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = ALAS
+		
+		remove_trait = travelling
 	}
 }
