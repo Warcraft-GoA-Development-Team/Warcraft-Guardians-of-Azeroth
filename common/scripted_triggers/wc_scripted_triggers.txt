@@ -1,10 +1,9 @@
 ### IMPORTANT, WIDELY USED TRIGGERS ###
 # YOU CAN NOT INTERACT WITH THEM
 is_untouchable_trigger = {
-	always = no
-	# hidden_tooltip = {
-		# trait = sleeping_trait
-	# }
+	# Can be broken easily in multiplayer
+	top_liege = { primary_title = { title = d_ulduar } }
+	NOT = { has_global_flag = ulduar_opened_flag }
 }
 
 # FORBIDS AI TO ATTACK THEM
@@ -4285,10 +4284,10 @@ need_infertile_trait_trigger = {
 immortal_need_infertile_trait_trigger = {
 	trigger_if = {
 		limit = { is_female = no }
-		num_of_children = 7
+		num_of_children = 4
 	}
 	trigger_else = {
-		num_of_children = 5
+		num_of_children = 3
 	}
 }
 
@@ -4467,7 +4466,8 @@ can_break_scourge_mind_control_trigger = {
 
 	trigger_if = {
 		limit = { religion = death_god }
-		NOT = { has_artifact = frostmourne }
+		NOT = { has_artifact = frostmourne } # Tied to the Lich King
+		NOT = { society_member_of = cult_of_the_damned } # Let's say, helps the Scourge willingly
 	}
 	NOT = { has_landed_title = e_scourge }
 	e_scourge = {
@@ -4692,5 +4692,94 @@ prefers_guns_trigger = {
 			culture_group = titanforged_group
 			NOT = { culture = tolvir }
 		}
+	}
+}
+
+from_potential_cull_this_province_trigger = {
+	has_province_modifier = undead_province
+	FROM = {
+		NOT = {
+			trait = being_undead
+			religion_group = necromancy_group
+			government = scourge_government
+		}
+	}
+}
+from_potential_raise_this_province_trigger = {
+	NOT = { has_province_modifier = undead_province }
+	FROM = {
+		OR = {
+			trait = being_undead
+			religion_group = necromancy_group
+			government = scourge_government
+		}
+	}
+}
+from_potential_genocide_this_province_trigger = {
+	# Not needed because it's active if both from_potential_cull_this_province_trigger and from_potential_raise_this_province_trigger return false
+}
+from_allow_cull_this_province_trigger = {
+	trigger_if = {
+		limit = { FROM = { independent = no } }
+		FROM = {
+			top_liege = {
+				NOT = {
+					trait = being_undead
+					religion_group = necromancy_group
+					government = scourge_government
+				}
+			}
+		}
+	}
+	
+	has_disease = no
+}
+from_allow_raise_this_province_trigger = {
+	trigger_if = {
+		limit = { FROM = { independent = no } }
+		FROM = {
+			top_liege = {
+				OR = {
+					trait = being_undead
+					religion_group = necromancy_group
+					government = scourge_government
+				}
+			}
+		}
+	}
+	
+	# has_disease = no
+}
+from_allow_genocide_this_province_trigger = {
+	FROM = {
+		NOT = { true_religion = PREV }
+		# Forsaken and Scourge are in the same group, but can purge each other
+		trigger_if = {
+			limit = { culture_group = undead_group }
+			NOT = { culture = PREV }
+		}
+		trigger_else = {
+			NOT = { culture_group = PREV }
+		}
+		trigger_if = {
+			limit = { independent = no }
+			top_liege = {
+				NOT = { religion = PREVPREV }
+				# Forsaken and Scourge are in the same group, but can purge each other
+				trigger_if = {
+					limit = { culture_group = undead_group }
+					NOT = { culture = PREVPREV }
+				}
+				trigger_else = {
+					NOT = { culture_group = PREVPREV }
+				}
+			}
+		}
+	}
+	# If you're aggressive, you can genocide others
+	# If province is aggressive, you can genocide it
+	OR = {
+		is_aggressive_trigger = yes
+		FROM = { is_aggressive_trigger = yes }
 	}
 }
