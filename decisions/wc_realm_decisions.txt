@@ -699,7 +699,7 @@ targeted_decisions = {
 	}
 }
 title_decisions = {
-	convert_to_your_culture_and_religion = {
+	genocide_decision = {
 		is_high_prio = yes
 
 		filter = owned
@@ -709,234 +709,57 @@ title_decisions = {
 		only_playable = yes
 
 		from_potential = {
-			is_adult = yes
-			OR = {
-				is_incapable = no
-				trait = lich_king
-			}
-			prisoner = no
 		}
 
 		potential = {
 			tier = COUNT
+			
 			owner = { character = FROM }
+		}
+
+		allow = {
+			NOT = { has_province_modifier = genocide_province_cooldown }
+
+			FROM = { completely_controls = ROOT }
 			location = {
-				NOT = { true_religion = FROM }
-				# Forsaken and Scourge are in the same group, but can purge each other
 				trigger_if = {
-					limit = { culture_group = undead_group }
-					NOT = { culture = FROM }
+					limit = { from_potential_cull_this_province_trigger = yes }
+					from_allow_cull_this_province_trigger = yes
+				}
+				trigger_else_if = {
+					limit = { from_potential_raise_this_province_trigger = yes }
+					from_allow_raise_this_province_trigger = yes
 				}
 				trigger_else = {
-					NOT = { culture_group = FROM }
+					from_allow_genocide_this_province_trigger = yes
 				}
-			}
-
-			OR = {
-				AND = {
-					location = { NOT = { has_province_modifier = undead_province } }
-					FROM = {
-						NOR = {
-							trait = being_undead
-							religion_group = necromancy_group
-							government = scourge_government
-						}
-					}
-				}
-				AND = {
-					location = { has_province_modifier = undead_province }
-					FROM = {
-						OR = {
-							trait = being_undead
-							religion_group = necromancy_group
-							government = scourge_government
-						}
-					}
-				}
-			}
-		}
-
-		allow = {
-			custom_tooltip = {
-				text = has_not_used_decision_3_years_tooltip
-				hidden_tooltip = {
-					location = {
-						OR = {
-							NOT = { has_province_flag = recent_genocide_attempt_flag }
-							had_province_flag = { flag = recent_genocide_attempt_flag days = 730 }
-						}
-					}
-				}
-			}
-			# NOT = { has_holding_modifier = recently_conquered }
-
-			FROM = {
-				show_scope_change = no
 				
-				completely_controls = ROOT
-				top_liege = {
-					show_scope_change = no
-					ROOT = {
-						show_scope_change = no
-						location = {
-							trigger_if = {
-								limit = { independent = no }
-								NOT = { religion = PREVPREV }
-								# Forsaken and Scourge are in the same group, but can purge each other
-								trigger_if = {
-									limit = { culture_group = undead_group }
-									NOT = { culture = PREVPREV }
-								}
-								trigger_else = {
-									NOT = { culture_group = PREVPREV }
-								}
-							}
-							NOT = { has_province_modifier = nomad_agitation }
-							is_occupied = no
-						}
-					}
-				}
-			}
-			OR = {
-				location = { is_aggressive_trigger = yes }
-				FROM = { is_aggressive_trigger = yes }
-			}
-		}
-
-		effect = {
-			# Handled by pillage_settlement decision
-			hidden_tooltip = {
-				location = { save_event_target_as = nickname_target }
-				FROM = { save_event_target_as = nickname_receiver }
-				if = {
-					limit = {
-						owner = {
-							has_nickname = no
-							is_adult = yes
-							is_incapable = no
-						}
-						location = { is_aggressive_trigger = no }
-					}
-					random_list = {
-						5 = {
-							owner = { give_nickname = nick_the_destroyer }
-						}
-						5 = {
-							owner = { give_nickname = nick_the_slayer_of_culture }
-							modifier = {
-								factor = 0
-								event_target:nickname_target = { culture = FROM }
-							}
-						}
-						5 = {
-							owner = { give_nickname = nick_the_terror_of_provincename }
-						}
-						5 = {
-							owner = { give_nickname = nick_the_culture_marauder }
-							modifier = {
-								factor = 0
-								event_target:nickname_target = { culture = FROM }
-							}
-						}
-						75 = {}
-					}
-				}
-			}
-
-			location = {
-				show_scope_change = no
-
-				set_province_flag = recent_genocide_attempt_flag
-				add_province_modifier = { name = ongoing_genocide years = 2 }
-				custom_tooltip = {
-					text = "PILLAGE_DESTROY_BUILDINGS"
-					hidden_tooltip = {
-						any_province_holding = {
-							limit = {
-								settlement_can_be_destroyed_trigger = yes
-							}
-							destroy_random_building = THIS
-							destroy_random_building = THIS
-						}
-					}
-				}
-			}
-			location = { province_event = { id = WCRLM.200 years = 1 } }
-		}
-
-		ai_will_do = {
-			factor = 0.1
-		}
-	}
-	culling_of_province = {
-		is_high_prio = yes
-
-		filter = owned
-		ai_target_filter = owned
-		ai_check_interval = 24
-
-		only_playable = yes
-
-		from_potential = {
-			is_adult = yes
-			OR = {
-				is_incapable = no
-				trait = lich_king
-			}
-			prisoner = no
-
-			NOR = {
-				trait = being_undead
-				religion_group = necromancy_group
-				government = scourge_government
-			}
-		}
-
-		potential = {
-			tier = COUNT
-			owner = { character = FROM }
-			location = {
-				has_province_modifier = undead_province
-			}
-		}
-
-		allow = {
-			custom_tooltip = {
-				text = has_not_used_decision_3_years_tooltip
-				hidden_tooltip = {
-					location = {
-						OR = {
-							NOT = { has_province_flag = recent_genocide_attempt_flag }
-							had_province_flag = { flag = recent_genocide_attempt_flag days = 730 }
-						}
-					}
-				}
-			}
-			# NOT = { has_holding_modifier = recently_conquered }
-
-			FROM = {
-				show_scope_change = no
-				
-				completely_controls = ROOT
-				trigger_if = {
-					limit = { independent = no }
-					top_liege = {
-						NOR = {
-							trait = being_undead
-							religion_group = necromancy_group
-							government = scourge_government
-						}
-					}
-				}
-			}
-			location = {
-				has_disease = no
 				NOT = { has_province_modifier = nomad_agitation }
 				is_occupied = no
 			}
 		}
 
 		effect = {
+			hidden_effect = {
+				FROM = {
+					if = {
+						limit = { independent = no }
+						top_liege = {
+							add_character_modifier = {
+								name = genocide_realm_cooldown
+								months = 3 # 4 genocides per year
+								hidden = yes
+							}
+						}
+					}
+					add_character_modifier = {
+						name = genocide_realm_cooldown
+						months = 3 # 4 genocides per year
+						hidden = yes
+					}
+				}
+			}
+			
 			# Handled by pillage_settlement decision
 			hidden_tooltip = {
 				location = { save_event_target_as = nickname_target }
@@ -977,10 +800,20 @@ title_decisions = {
 			}
 
 			location = {
-				show_scope_change = no
-
-				set_province_flag = recent_genocide_attempt_flag
-				add_province_modifier = { name = ongoing_culling years = 2 }
+				add_province_modifier = { name = genocide_realm_cooldown years = 4 }
+				
+				if = {
+					limit = { from_potential_cull_this_province_trigger = yes }
+					add_province_modifier = { name = ongoing_culling years = 2 }
+				}
+				else_if = {
+					limit = { from_potential_raise_this_province_trigger = yes }
+					add_province_modifier = { name = ongoing_raising years = 2 }
+				}
+				else = {
+					add_province_modifier = { name = ongoing_genocide years = 2 }
+				}
+				
 				custom_tooltip = {
 					text = "PILLAGE_DESTROY_BUILDINGS"
 					hidden_tooltip = {
@@ -999,137 +832,26 @@ title_decisions = {
 
 		ai_will_do = {
 			factor = 1
-		}
-	}
-	bring_death_to_province = {
-		is_high_prio = yes
-
-		filter = owned
-		ai_target_filter = owned
-		ai_check_interval = 24
-
-		only_playable = yes
-
-		from_potential = {
-			is_adult = yes
-			OR = {
-				is_incapable = no
-				trait = lich_king
-			}
-			prisoner = no
-
-			OR = {
-				trait = being_undead
-				religion_group = necromancy_group
-				government = scourge_government
-			}
-		}
-
-		potential = {
-			tier = COUNT
-			owner = { character = FROM }
-			location = { NOT = { has_province_modifier = undead_province } }
-		}
-
-		allow = {
-			custom_tooltip = {
-				text = has_not_used_decision_3_years_tooltip
-				hidden_tooltip = {
-					location = {
-						OR = {
-							NOT = { has_province_flag = recent_genocide_attempt_flag }
-							had_province_flag = { flag = recent_genocide_attempt_flag days = 730 }
-						}
+			modifier = {
+				factor = 0
+				FROM = {
+					OR = {
+						war = yes
+						has_character_modifier = genocide_realm_cooldown
 					}
 				}
 			}
-			# NOT = { has_holding_modifier = recently_conquered }
-
-			FROM = {
-				show_scope_change = no
-				
-				completely_controls = ROOT
-				trigger_if = {
-					limit = { independent = no }
+			modifier = {
+				factor = 0
+				FROM = {
 					top_liege = {
 						OR = {
-							trait = being_undead
-							religion_group = necromancy_group
-							government = scourge_government
+							war = yes
+							has_character_modifier = genocide_realm_cooldown
 						}
 					}
 				}
 			}
-			location = {
-				has_disease = no
-				NOT = { has_province_modifier = nomad_agitation }
-				is_occupied = no
-			}
-		}
-
-		effect = {
-			# Handled by pillage_settlement decision
-			hidden_tooltip = {
-				location = { save_event_target_as = nickname_target }
-				FROM = { save_event_target_as = nickname_receiver }
-				if = {
-					limit = {
-						owner = {
-							has_nickname = no
-							is_adult = yes
-							is_incapable = no
-						}
-						location = { is_aggressive_trigger = no }
-					}
-					random_list = {
-						5 = {
-							owner = { give_nickname = nick_the_destroyer }
-						}
-						5 = {
-							owner = { give_nickname = nick_the_slayer_of_culture }
-							modifier = {
-								factor = 0
-								event_target:nickname_target = { culture = FROM }
-							}
-						}
-						5 = {
-							owner = { give_nickname = nick_the_terror_of_provincename }
-						}
-						5 = {
-							owner = { give_nickname = nick_the_culture_marauder }
-							modifier = {
-								factor = 0
-								event_target:nickname_target = { culture = FROM }
-							}
-						}
-						75 = {}
-					}
-				}
-			}
-
-			location = {
-				show_scope_change = no
-
-				set_province_flag = recent_genocide_attempt_flag
-				add_province_modifier = { name = spreading_of_death years = 2 }
-				custom_tooltip = {
-					text = "PILLAGE_DESTROY_BUILDINGS"
-					hidden_tooltip = {
-						any_province_holding = {
-							limit = {
-								settlement_can_be_destroyed_trigger = yes
-							}
-							destroy_random_building = THIS
-							destroy_random_building = THIS
-						}
-					}
-				}
-			}
-			location = { province_event = { id = WCRLM.200 years = 1 } }
-		}
-
-		ai_will_do = {
-			factor = 0.1
 		}
 	}
 
