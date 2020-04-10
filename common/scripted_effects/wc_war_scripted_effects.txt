@@ -41,10 +41,6 @@ total_invasion_cb_rev_effect = {
 		}
 		participation_scaled_prestige = 1500
 	}
-	any_defender = {
-		limit = { NOT = { character = event_target:target_defender } }
-		hidden_tooltip = { participation_scaled_prestige = 1500 }
-	}
 
 	custom_tooltip = {
 		text = total_invasion_cb_rev_tooltip
@@ -78,21 +74,9 @@ total_invasion_cb_rev_effect = {
 			}
 
 			any_realm_lord = {
-				any_demesne_title = {
-					limit = {
-						title_can_be_lost_trigger = yes
-						lower_tier_than = DUKE
-					}
-					grant_title_no_opinion = { target = event_target:target_defender type = invasion }
-				}
+				target_defender_usurp_all_demesne_provinces_effect = yes
 			}
-			any_demesne_title = {
-				limit = {
-					title_can_be_lost_trigger = yes
-					lower_tier_than = DUKE
-				}
-				grant_title_no_opinion = { target = event_target:target_defender type = invasion }
-			}
+			target_defender_usurp_all_demesne_provinces_effect = yes
 		}
 	}
 
@@ -105,7 +89,67 @@ total_invasion_cb_rev_effect = {
 		}
 		death = { death_reason = death_battle }
 	}
-
+}
+total_invasion_cb_suc_effect = {
+	custom_tooltip = {
+		text = total_invasion_cb_suc_tooltip_01
+		hidden_tooltip = {
+			event_target:target_defender = {
+				any_vassal = {
+					limit = {
+						OR = {
+							religion = event_target:target_attacker
+							true_religion = { target = event_target:target_attacker target_type = public }
+							AND = {
+								OR = {
+									religion = orcish_fel
+									religion = burning_legion_religion
+									true_religion = orcish_fel
+									true_religion = burning_legion_religion
+								}
+								event_target:target_attacker = {
+									OR = {
+										religion = orcish_fel
+										religion = burning_legion_religion
+									}
+								}
+							}
+						}
+					}
+					convert_to_secret_religion = yes
+					set_defacto_liege = event_target:target_attacker
+				}
+				any_realm_lord = {
+					limit = { ai = no }
+					set_defacto_liege = THIS	# Gives players a chance
+				}
+				any_realm_province = {
+					limit = {
+						county = {
+							title_can_be_lost_trigger = yes
+							holder_scope = {
+								OR = {
+									character = PREVPREVPREV
+									is_liege_or_above = PREVPREVPREV
+								}
+							}
+						}
+					}
+					county = {
+						event_target:target_attacker = {
+							gain_settlements_under_title = {
+								title = PREV
+								enemy = event_target:target_defender
+								is_crusade = yes # Even if the title holder is not participating in the war, gain holdings occupied by all Crusade participants
+								type = invasion
+							}
+							grant_title_no_opinion = { target = PREV type = invasion }
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
 # Gives holdings under title even if it's occupated unlike gain_settlements_under_title
@@ -360,4 +404,63 @@ prev_subjugate_this_destroy_titles_effect = {
 		}
 	}
 	set_defacto_liege = PREV
+}
+
+# Used in the Frozen Throne bookmark
+this_kill_from_balnazzar_effect = {
+	if = {
+		limit = {
+			start_date = 605.6.6
+			OR = {
+				has_character_flag = is_sylvanas
+				has_character_flag = is_garithos
+			}
+			FROM = { has_character_flag = is_balnazzar }
+		}
+		FROM = {
+			show_scope_change = no
+			
+			death = { death_reason = death_twisting_nether }
+		}
+	}
+}
+
+religious_cb_succ_effect = {
+	custom_tooltip = {
+		text = religious_cb_succ_tip
+		hidden_tooltip = {
+			ROOT = {
+				vassalize_or_take_under_title = {
+					title = PREV
+					enemy = FROM
+					same_religion = yes # Only vassalize rulers of my religion
+					is_religious = yes
+					type = holy_war
+				}
+			}
+		}
+	}
+}
+religious_cb_succ_plus_prev_title_effect = {
+	religious_cb_succ_effect = yes
+	usurp_title = { target = ROOT type = holy_war }
+}
+
+target_defender_usurp_all_demesne_provinces_effect = {
+	any_demesne_title = {
+		limit = {
+			title_can_be_lost_trigger = yes
+			lower_tier_than = DUKE
+		}
+		grant_title_no_opinion = { target = event_target:target_defender type = invasion }
+	}
+}
+prev_usurp_all_demesne_provinces_effect = {
+	any_demesne_title = {
+		limit = {
+			title_can_be_lost_trigger = yes
+			lower_tier_than = DUKE
+		}
+		grant_title_no_opinion = { target = PREVPREV type = invasion }
+	}
 }
