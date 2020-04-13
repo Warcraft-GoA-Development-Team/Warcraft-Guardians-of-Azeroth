@@ -1,10 +1,9 @@
 ### IMPORTANT, WIDELY USED TRIGGERS ###
 # YOU CAN NOT INTERACT WITH THEM
 is_untouchable_trigger = {
-	always = no
-	# hidden_tooltip = {
-		# trait = sleeping_trait
-	# }
+	# Can be broken easily in multiplayer
+	top_liege = { primary_title = { title = d_ulduar } }
+	NOT = { has_global_flag = ulduar_opened_flag }
 }
 
 # FORBIDS AI TO ATTACK THEM
@@ -4231,10 +4230,10 @@ need_infertile_trait_trigger = {
 immortal_need_infertile_trait_trigger = {
 	trigger_if = {
 		limit = { is_female = no }
-		num_of_children = 7
+		num_of_children = 4
 	}
 	trigger_else = {
-		num_of_children = 5
+		num_of_children = 3
 	}
 }
 
@@ -4410,10 +4409,11 @@ can_be_mind_controlled_by_scourge_trigger = {
 }
 can_break_scourge_mind_control_trigger = {
 	trait = being_undead
-	
+
 	trigger_if = {
 		limit = { religion = death_god }
-		NOT = { has_artifact = frostmourne }
+		NOT = { has_artifact = frostmourne } # Tied to the Lich King
+		NOT = { society_member_of = cult_of_the_damned } # Let's say, helps the Scourge willingly
 	}
 	NOT = { has_landed_title = e_scourge }
 	e_scourge = {
@@ -4609,4 +4609,288 @@ can_travel_in_carriage_trigger = {
 	is_humanoid_trigger = yes
 	is_cenarius_offspring_trigger = no
 	can_fly_trigger = no
+}
+
+allow_sky_burial_trigger = {
+	religion_group = primitive_group
+	# Followers of water deities have no use for a sky burial 
+	NOT = {
+		religion = water_deities
+	}
+}
+
+# These hunters (I mean class) prefer to use guns
+prefers_guns_trigger = {
+	OR = {
+		culture_group = demonic_group
+		AND = {
+			culture_group = dwarf_group
+			NOT = { culture = wildhammer }
+		}
+		culture_group = gnome_group
+		culture_group = goblin_group
+		culture = gilnean
+		culture = baradin
+		culture = tirassian
+		culture = northern
+		culture = pirate_culture
+		AND = {
+			culture_group = titanforged_group
+			NOT = { culture = tolvir }
+		}
+	}
+}
+
+from_potential_cull_this_province_trigger = {
+	has_province_modifier = undead_province
+	FROM = {
+		NOT = {
+			trait = being_undead
+			religion_group = necromancy_group
+			government = scourge_government
+		}
+	}
+}
+from_potential_raise_this_province_trigger = {
+	NOT = { has_province_modifier = undead_province }
+	FROM = {
+		OR = {
+			trait = being_undead
+			religion_group = necromancy_group
+			government = scourge_government
+		}
+	}
+}
+from_potential_genocide_this_province_trigger = {
+	# Not needed because it's active if both from_potential_cull_this_province_trigger and from_potential_raise_this_province_trigger return false
+}
+from_allow_cull_this_province_trigger = {
+	trigger_if = {
+		limit = { FROM = { independent = no } }
+		FROM = {
+			top_liege = {
+				NOT = {
+					trait = being_undead
+					religion_group = necromancy_group
+					government = scourge_government
+				}
+			}
+		}
+	}
+	
+	has_disease = no
+}
+from_allow_raise_this_province_trigger = {
+	trigger_if = {
+		limit = { FROM = { independent = no } }
+		FROM = {
+			top_liege = {
+				OR = {
+					trait = being_undead
+					religion_group = necromancy_group
+					government = scourge_government
+				}
+			}
+		}
+	}
+	
+	# has_disease = no
+}
+from_allow_genocide_this_province_trigger = {
+	FROM = {
+		NOT = { true_religion = PREV }
+		# Forsaken and Scourge are in the same group, but can purge each other
+		trigger_if = {
+			limit = { culture_group = undead_group }
+			NOT = { culture = PREV }
+		}
+		trigger_else = {
+			NOT = { culture_group = PREV }
+		}
+		trigger_if = {
+			limit = { independent = no }
+			top_liege = {
+				NOT = { religion = PREVPREV }
+				# Forsaken and Scourge are in the same group, but can purge each other
+				trigger_if = {
+					limit = { culture_group = undead_group }
+					NOT = { culture = PREVPREV }
+				}
+				trigger_else = {
+					NOT = { culture_group = PREVPREV }
+				}
+			}
+		}
+	}
+	# If you're aggressive, you can genocide others
+	# If province is aggressive, you can genocide it
+	OR = {
+		is_aggressive_trigger = yes
+		FROM = { is_aggressive_trigger = yes }
+	}
+}
+
+# This character can lead the Scarlet Crusade
+is_potential_scarlet_leader_trigger = {
+	is_alive = yes
+	is_dying = no
+	is_untouchable_trigger = no
+	
+	ai = yes
+	is_adult = yes
+	is_incapable = no
+	prisoner = no
+	is_inaccessible_trigger = no
+	
+	OR = {
+		religion = holy_light
+		religion = scarlet_light
+	}
+	OR = {
+		true_religion = holy_light
+		true_religion = scarlet_light
+	}
+	culture = lordaeronian
+	trait = zealous
+	
+	is_lowborn = no
+}
+# This character can be converted to Scarlet Light religion in Scarlet event chains
+is_potential_scarlet_follower_trigger = {
+	trait = creature_human
+	true_religion = holy_light
+	
+	can_switch_religion_character_trigger = yes
+}
+
+is_potential_argent_leader_trigger = {
+	is_alive = yes
+	is_dying = no
+	is_untouchable_trigger = no
+	
+	ai = yes
+	is_adult = yes
+	is_incapable = no
+	prisoner = no
+	is_inaccessible_trigger = no
+	
+	religion = holy_light
+	true_religion = holy_light
+	culture = lordaeronian
+	NOT = { trait = zealous }
+}
+
+frozen_throne_silver_betrayer_trigger = {
+	is_alive = yes
+	is_dying = no
+	is_untouchable_trigger = no
+	
+	is_adult = yes
+	is_incapable = no
+	prisoner = no
+	
+	OR = {
+		true_religion = scarlet_light
+		
+		is_potential_scarlet_follower_trigger = yes
+	}
+	trait = deceitful
+}
+frozen_throne_silver_leader_trigger = {
+	is_alive = yes
+	is_dying = no
+	is_untouchable_trigger = no
+	
+	is_adult = yes
+	is_incapable = no
+	prisoner = no
+	is_inaccessible_trigger = no
+	
+	religion = holy_light
+	
+	has_landed_title = d_order_of_the_silver_hand
+}
+
+is_sharp_weapon_artifact_trigger = {
+	OR = {
+		has_artifact_flag = sword
+		has_artifact_flag = axe
+		has_artifact_flag = spear
+	}
+}
+
+argent_dawn_and_scarlet_crusade_can_be_formed_trigger = {
+	NOT = { d_argent_dawn = { has_holder = yes } }
+	NOT = { d_scarlet_crusade = { has_holder = yes } }
+
+	# Lordaeron
+	269 = {
+		holder_scope = {
+			OR = {
+				NOT = { religion_group = light_group }
+				NOT = { culture_group = human_group }
+			}
+			top_liege = {
+				OR = {
+					NOT = { religion_group = light_group }
+					NOT = { culture_group = human_group }
+				}
+			}
+		}
+	}
+	# Stratholme
+	324 = {
+		holder_scope = {
+			OR = {
+				NOT = { religion_group = light_group }
+				NOT = { culture_group = human_group }
+			}
+			top_liege = {
+				OR = {
+					NOT = { religion_group = light_group }
+					NOT = { culture_group = human_group }
+				}
+			}
+		}
+	}
+}
+
+# Used in End of Thalassian Regency events
+kaelthas_can_return_to_quelthalas_trigger = {
+	evil_public_religion_trigger = no
+	
+	OR = {
+		e_quelthalas = { kaelthas_can_return_to_this_trigger = yes }
+		k_quelthalas = { kaelthas_can_return_to_this_trigger = yes }
+		d_silvermoon = { kaelthas_can_return_to_this_trigger = yes }
+		c_silvermoon = { kaelthas_can_return_to_this_trigger = yes }
+		c_falconwing_square = { kaelthas_can_return_to_this_trigger = yes }
+	}
+}
+kaelthas_can_return_to_this_trigger = {
+	has_holder = yes
+	holder_scope = {
+		evil_public_religion_trigger = no
+		
+		has_character_flag = is_regent_lord_flag
+	}
+}
+de_jure_sunstrider_title_trigger = {
+	OR = {
+		title = e_quelthalas
+		title = k_quelthalas
+		title = d_silvermoon
+		title = c_silvermoon
+		title = c_falconwing_square
+	}
+}
+
+# Used in Frozen Throne CBs
+is_plaguelands_belligerent_trigger = {
+	OR = {
+		has_character_flag = is_calia
+		has_character_flag = is_balnazzar
+		has_character_flag = is_sylvanas
+		has_character_flag = is_garithos
+	}
 }
