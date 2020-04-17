@@ -1,13 +1,14 @@
 ---
 name: Re-Localization Request
 about: Report about localization problems
-title: "ISSUE TITLE"
-labels: ":beetle: bug - localization :scroll:" 
+title: "Issue Title"
+labels: ":beetle: bug - localisation :scroll:" 
 
 ---
-
+<!--
 **DO NOT REMOVE PRE-EXISTING LINES**
 ------------------------------------------------------------------------------------------------------------
+-->
 **Mod Version**
 
 **Are you using any submods/mods? If so, which?**

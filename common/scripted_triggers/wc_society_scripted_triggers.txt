@@ -139,14 +139,6 @@ has_cult_of_the_damned_prerequisites = {
 	trigger_if = {
 		limit = { NOT = { society_member_of = cult_of_the_damned } }
 		is_in_society = no
-		OR = {
-			AND = {
-				NOT = { government = tribal_government }
-				is_nomadic = no
-			}
-			true_religion_associated_with_cult_of_the_damned_trigger = yes
-			true_religion_group = necromancy_group
-		}
 	}
 	
 	NOR = {
@@ -161,14 +153,6 @@ has_shadow_council_prerequisites = {
 	trigger_if = {
 		limit = { NOT = { society_member_of = shadow_council } }
 		is_in_society = no
-		OR = {
-			AND = {
-				NOT = { government = tribal_government }
-				is_nomadic = no
-			}
-			true_religion_associated_with_shadow_council_trigger = yes
-			true_religion_group = fel_group
-		}
 	}
 	
 	NOR = {
@@ -182,14 +166,6 @@ has_twilights_hammer_cult_prerequisites = {
 	trigger_if = {
 		limit = { NOT = { society_member_of = twilights_hammer_cult } }
 		is_in_society = no
-		OR = {
-			AND = {
-				NOT = { government = tribal_government }
-				is_nomadic = no
-			}
-			true_religion_associated_with_twilights_hammer_cult_trigger = yes
-			true_religion_group = void_group
-		}
 	}
 	
 	NOR = {
@@ -271,4 +247,102 @@ sisterhood_of_elune_potential_trigger = {
 		is_priest_class_trigger = yes
 	}
 	religion = kaldorei_religion
+}
+
+### QUEST TRIGGERS ###
+# Turn into Undead
+quest_turn_into_undead_smart_target_trigger = {
+	OR = {
+		trait = quick
+		trait = genius
+	}
+}
+quest_turn_into_undead_strong_target_trigger = {
+	trait = strong
+}
+quest_turn_into_undead_fair_target_trigger = {
+	trait = fair
+}
+has_quest_turn_into_undead_trigger = {
+	OR = {
+		has_quest = quest_turn_into_undead_smart
+		has_quest = quest_turn_into_undead_strong
+		has_quest = quest_turn_into_undead_fair
+	}
+}
+quest_turn_into_undead_prev_target_trigger = {
+	trigger_if = {
+		limit = { PREV = { has_quest = quest_turn_into_undead_smart } }
+		quest_turn_into_undead_smart_target_trigger = yes
+	}
+	trigger_else_if = {
+		limit = { PREV = { has_quest = quest_turn_into_undead_strong } }
+		quest_turn_into_undead_strong_target_trigger = yes
+	}
+	trigger_else_if = {
+		limit = { PREV = { has_quest = quest_turn_into_undead_fair } }
+		quest_turn_into_undead_fair_target_trigger = yes
+	}
+}
+
+# Mind Control
+quest_control_mind_smart_target_trigger = {
+	OR = {
+		trait = quick
+		trait = genius
+	}
+}
+quest_control_mind_strong_target_trigger = {
+	trait = strong
+}
+quest_control_mind_fair_target_trigger = {
+	trait = fair
+}
+has_quest_control_mind_trigger = {
+	OR = {
+		has_quest = quest_control_mind_smart
+		has_quest = quest_control_mind_strong
+		has_quest = quest_control_mind_fair
+	}
+}
+quest_control_mind_prev_target_trigger = {
+	trigger_if = {
+		limit = { PREV = { has_quest = quest_control_mind_smart } }
+		quest_control_mind_smart_target_trigger = yes
+	}
+	trigger_else_if = {
+		limit = { PREV = { has_quest = quest_control_mind_strong } }
+		quest_control_mind_strong_target_trigger = yes
+	}
+	trigger_else_if = {
+		limit = { PREV = { has_quest = quest_control_mind_fair } }
+		quest_control_mind_fair_target_trigger = yes
+	}
+}
+
+### SOCIETY POWERS TRIGGERS ###
+# twilights_hammer_cult
+can_use_society_power_write_whispers_trigger = { # If your character don't meet these requirements, "fail_trigger_effect" in events will fire
+	is_untouchable_trigger = no
+	society_member_of = twilights_hammer_cult
+	religion = old_gods_worship
+	true_religion = old_gods_worship
+	prisoner = no
+	NOT = { is_incapable = yes }
+}
+can_abduct_trigger = {
+	OR = {
+		trait = vampire
+		
+		society_can_abduct_trigger = yes
+	}
+}
+society_can_abduct_trigger = {
+	OR = {
+		# is_devil_worshiper_trigger = yes
+		
+		society_member_of = cult_of_the_damned
+		society_member_of = shadow_council
+		society_member_of = twilights_hammer_cult
+	}
 }

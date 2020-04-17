@@ -766,6 +766,10 @@ narrative_event = {
 
 		add_class_trait_effect = yes
 	}
+	
+	after = {
+		notifies_class_training_initiator_effect = yes
+	}
 }
 
 #########################
@@ -926,6 +930,10 @@ narrative_event = {
 
 		add_class_trait_effect = yes
 	}
+	
+	after = {
+		notifies_class_training_initiator_effect = yes
+	}
 }
 
 #########################
@@ -989,6 +997,10 @@ narrative_event = {
 
 		add_class_trait_effect = yes
 	}
+	
+	after = {
+		notifies_class_training_initiator_effect = yes
+	}
 }
 
 #########################
@@ -1033,14 +1045,14 @@ character_event = {
 	desc = {
 		trigger = {
 			NOT = { character = event_target:target_priest }
-			is_dark_being_trigger = yes
+			is_dark_being_trigger = no
 		}
 		text = EVTDESC_WCCLS_305_other
 	}
 	desc = {
 		trigger = {
 			NOT = { character = event_target:target_priest }
-			is_dark_being_trigger = no
+			is_dark_being_trigger = yes
 		}
 		text = EVTDESC_WCCLS_305_bad
 	}
@@ -1110,6 +1122,10 @@ narrative_event = {
 		name = EXCELLENT
 
 		add_class_trait_effect = yes
+	}
+	
+	after = {
+		notifies_class_training_initiator_effect = yes
 	}
 }
 
@@ -1199,6 +1215,10 @@ narrative_event = {
 		name = EXCELLENT
 
 		add_class_trait_effect = yes
+	}
+	
+	after = {
+		notifies_class_training_initiator_effect = yes
 	}
 }
 
@@ -1364,6 +1384,10 @@ narrative_event = {
 
 		add_class_trait_effect = yes
 	}
+	
+	after = {
+		notifies_class_training_initiator_effect = yes
+	}
 }
 
 #########################
@@ -1423,7 +1447,13 @@ character_event = {
 	# Imp
 	option = {
 		name = EVTOPTA_WCCLS_610
-		add_character_modifier = { name = pet_imp duration = -1 }
+		trigger_switch = {
+			on_trigger = has_character_modifier
+			# pet_imp = { remove_character_modifier = pet_imp }
+			pet_felhunter = { remove_character_modifier = pet_felhunter }
+			pet_felguard = { remove_character_modifier = pet_felguard }
+		}
+		add_character_modifier = { name = pet_imp years = 10 }
 	}
 	# Succubus
 	option = {
@@ -1480,12 +1510,24 @@ character_event = {
 	# Felhunter
 	option = {
 		name = EVTOPTC_WCCLS_610
-		add_character_modifier = { name = pet_felhunter duration = -1 }
+		trigger_switch = {
+			on_trigger = has_character_modifier
+			pet_imp = { remove_character_modifier = pet_imp }
+			# pet_felhunter = { remove_character_modifier = pet_felhunter }
+			pet_felguard = { remove_character_modifier = pet_felguard }
+		}
+		add_character_modifier = { name = pet_felhunter years = 10 }
 	}
 	# Felguard
 	option = {
 		name = EVTOPTD_WCCLS_610
-		add_character_modifier = { name = pet_felguard duration = -1 }
+		trigger_switch = {
+			on_trigger = has_character_modifier
+			pet_imp = { remove_character_modifier = pet_imp }
+			pet_felhunter = { remove_character_modifier = pet_felhunter }
+			# pet_felguard = { remove_character_modifier = pet_felguard }
+		}
+		add_character_modifier = { name = pet_felguard years = 10 }
 	}
 
 	after = {
@@ -1522,28 +1564,32 @@ character_event = {
 						}
 					}
 					modifier = {
-						factor = 1.5
+						factor = 1.35
 						trait = creature_nathrezim
 					}
 					modifier = {
-						factor = 1.5
+						factor = 1.35
 						trait = creature_cthraxxi
 					}
 					modifier = {
-						factor = 1.5
+						factor = 1.35
 						trait = creature_qiraji
 					}
 					modifier = {
-						factor = 1.5
+						factor = 1.35
 						trait = vampire
 					}
 					modifier = {
-						factor = 1.5
+						factor = 1.35
 						society_rank > 3
 					}
 					modifier = {
-						factor = 1.5
+						factor = 1.35
 						true_religion_group = void_group
+					}
+					modifier = {
+						factor = 1.35
+						has_character_modifier = pet_merciless_one
 					}
 					modifier = {
 						factor = 2
@@ -1599,14 +1645,26 @@ character_event = {
 	option = {
 		name = EVTOPTA_WCCLS_616
 
+		# Complete quest
 		if = {
 			limit = {
-				has_quest = quest_control_mind
-				quest_target = { character = event_target:target_mind }
+				has_quest_control_mind_trigger = yes
+				event_target:target_mind = { quest_control_mind_prev_target_trigger = yes }
 			}
-			clr_quest = quest_control_mind
+			if = {
+				limit = { has_quest = quest_control_mind_smart }
+				clr_quest = quest_control_mind_smart
+			}
+			else_if = {
+				limit = { has_quest = quest_control_mind_strong }
+				clr_quest = quest_control_mind_strong
+			}
+			else = {
+				clr_quest = quest_control_mind_fair
+			}
 			add_society_currency_medium_effect = yes
 		}
+		
 		reverse_opinion = {
 			who = event_target:target_mind
 			modifier = opinion_loyal_servant
@@ -1631,16 +1689,6 @@ character_event = {
 	option = {
 		name = EVTOPTA_WCCLS_617
 
-		if = {
-			limit = {
-				has_quest = quest_control_mind
-				quest_target = { character = event_target:target_mind }
-			}
-			clr_quest = {
-				id = quest_control_mind
-				failure = yes
-			}
-		}
 		event_target:target_mind = { add_trait = lunatic }
 		major_soul_corruption_effect = yes
 	}
@@ -1662,16 +1710,6 @@ character_event = {
 	option = {
 		name = EVTOPTA_WCCLS_618
 
-		if = {
-			limit = {
-				has_quest = quest_control_mind
-				quest_target = { character = event_target:target_mind }
-			}
-			clr_quest = {
-				id = quest_control_mind
-				failure = yes
-			}
-		}
 		add_trait = incapable
 		event_target:target_mind = { add_trait = incapable }
 		major_soul_corruption_effect = yes
@@ -1713,6 +1751,10 @@ narrative_event = {
 		add_class_trait_effect = yes
 
 		hidden_effect = { character_event = { id = WCFEL.170 days = 60 } }		# Changes religion
+	}
+	
+	after = {
+		notifies_class_training_initiator_effect = yes
 	}
 }
 
@@ -1768,6 +1810,10 @@ narrative_event = {
 		name = EXCELLENT
 
 		add_class_trait_effect = yes
+	}
+	
+	after = {
+		notifies_class_training_initiator_effect = yes
 	}
 }
 
@@ -2123,36 +2169,11 @@ narrative_event = {
 	option = {
 		name = EXCELLENT
 
-		# if = {
-			# limit = {
-				# OR = {
-					# religion = old_ways
-					# event_target:mentor = { religion = old_ways }
-				# }
-			# }
-			# random = {
-				# chance = 90
-				# if = {
-					# limit = { is_female = yes }
-					# add_trait = harvest_witch
-				# }
-				# if = {
-					# limit = { is_female = no }
-					# add_trait = harvest_warlock
-				# }
-				# modifier = {
-					# factor = 0.5
-					# event_target:mentor = {
-						# NOR = {
-							# trait = harvest_witch
-							# trait = harvest_warlock
-						# }
-					# }
-				# }
-			# }
-		# }
-
 		add_class_trait_effect = yes
+	}
+	
+	after = {
+		notifies_class_training_initiator_effect = yes
 	}
 }
 
@@ -2414,6 +2435,10 @@ narrative_event = {
 
 		add_class_trait_effect = yes
 	}
+	
+	after = {
+		notifies_class_training_initiator_effect = yes
+	}
 }
 
 #########################
@@ -2471,6 +2496,10 @@ narrative_event = {
 		add_class_trait_effect = yes
 		
 		hidden_effect = { character_event = { id = WCUND.1301 days = 60 } }		# Changes religion
+	}
+	
+	after = {
+		notifies_class_training_initiator_effect = yes
 	}
 }
 
@@ -2559,6 +2588,10 @@ narrative_event = {
 		add_class_trait_effect = yes
 		
 		hidden_effect = { character_event = { id = WCUND.1301 days = 60 } }		# Changes religion
+	}
+	
+	after = {
+		notifies_class_training_initiator_effect = yes
 	}
 }
 
@@ -2725,16 +2758,86 @@ character_event = {
 }
 
 # summon_void_creature
-# Creates creature_nraqi
-# If FROM fails, kills FROM
+# Picks type of void creature
+character_event = {
+	id = WCCLS.1213
+	desc = EVTDESC_WCCLS_1213
+	picture = GFX_evt_nraqi
+	border = GFX_event_normal_frame_intrigue
+	
+	is_triggered_only = yes
+	
+	# C'thrax
+	option = {
+		trigger = {
+			religion = old_gods_worship
+			true_religion = old_gods_worship
+			OR = {
+				trait = being_void
+				is_9_10_physical_class_trigger = yes
+			}
+		}
+		name = EVTOPTA_WCCLS_1213
+		
+		set_character_flag = summon_void_creature_cthrax_flag
+		character_event = { id = WCCLS.1215 days = 3 }
+		
+		ai_chance = {
+			factor = 20
+		}
+	}
+	# N'raqi
+	option = {
+		trigger = {
+			religion = old_gods_worship
+			true_religion = old_gods_worship
+			NOT = {
+				trait = being_void
+				is_9_10_physical_class_trigger = yes
+			}
+		}
+		name = EVTOPTB_WCCLS_1213
+		
+		set_character_flag = summon_void_creature_nraqi_flag
+		character_event = { id = WCCLS.1215 days = 3 }
+		
+		ai_chance = {
+			factor = 20
+		}
+	}
+	# Merciless one
+	option = {
+		trigger = {
+			NOT = { has_character_modifier = pet_merciless_one }
+		}
+		name = EVTOPTC_WCCLS_1213
+		
+		clr_character_flag = summon_void_creature_ongoing_flag
+		
+		add_character_modifier = { name = pet_merciless_one years = 10 }
+		
+		ai_chance = {
+			factor = 80
+		}
+	}
+	# Changed my mind
+	option = {
+		name = CHANGED_MY_MIND
+		
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+# Creates creature_nraqi or creature_cthraxxi
 character_event = {
 	id = WCCLS.1215
 	desc = {
-		trigger = { NOT = { has_character_flag = summon_void_creature_fail_flag } }
+		trigger = { always = yes }
 		text = EVTDESC_WCCLS_1215_success
 	}
 	desc = {
-		trigger = { has_character_flag = summon_void_creature_fail_flag }
+		trigger = { always = no }
 		text = EVTDESC_WCCLS_1215_fail
 	}
 	picture = GFX_evt_nraqi
@@ -2746,8 +2849,7 @@ character_event = {
 		create_character = {
 			female = no
 			dynasty = none
-			culture = nraqi religion = ROOT secret_religion = ROOT
-			trait = cruel
+			culture = nraqi religion = ROOT
 			random_traits = yes
 			age = 300
 			flag = race_delay_flag
@@ -2756,7 +2858,7 @@ character_event = {
 			save_event_target_as = target_nraqi
 
 			if = {
-				limit = { ROOT = { trait = being_void } }
+				limit = { ROOT = { has_character_flag = summon_void_creature_cthrax_flag } }
 				set_graphical_culture = cthraxxi
 			}
 			
@@ -2795,33 +2897,17 @@ character_event = {
 					give_nickname = nick_the_seeker
 				}
 			}
-			if = {
-				limit = { ROOT = { has_character_flag = summon_void_creature_secret_flag } }
-				set_secret_religion = old_gods_worship
-			}
 		}
 	}
 
 	option = {
-		trigger = { NOT = { has_character_flag = summon_void_creature_fail_flag } }
 		name = EXCELLENT
-
-		# reverse_opinion = { modifier = opinion_loyal_servant who = event_target:target_nraqi }
-	}
-
-	option = {
-		trigger = { has_character_flag = summon_void_creature_fail_flag }
-		name = ARGH
-
-		death = { death_reason = death_execution_eaten killer = event_target:target_nraqi }
-		hidden_effect = { event_target:target_nraqi = { death = { death_reason = death_missing } } }
 	}
 
 	after = {
 		clr_character_flag = summon_void_creature_ongoing_flag
-		clr_character_flag = summon_void_creature_success_flag
-		clr_character_flag = summon_void_creature_secret_flag
-		clr_character_flag = summon_void_creature_fail_flag
+		clr_character_flag = summon_void_creature_cthrax_flag
+		clr_character_flag = summon_void_creature_nraqi_flag
 	}
 }
 
@@ -2849,6 +2935,26 @@ narrative_event = {
 
 		hidden_effect = { character_event = { id = WCVOD.170 days = 60 } }		# Changes religion
 	}
+	
+	after = {
+		notifies_class_training_initiator_effect = yes
+	}
+}
+
+#########################
+
+# Notifies target_initiator about the end of the training
+character_event = {
+	id = WCCLS.1440
+	desc = EVTDESC_WCCLS_1440
+	picture = GFX_evt_recieve_letter
+	border = GFX_event_normal_frame_diplomacy
+
+	is_triggered_only = yes
+
+	option = {
+		name = EXCELLENT
+	}
 }
 
 # Something went wrong during class training
@@ -2862,7 +2968,7 @@ character_event = {
 
 	immediate = {
 		reset_experience_effect = yes
-		remove_training_modifiers_effect = yes
+		clean_class_training_effect = yes
 	}
 
 	option = {
@@ -2873,31 +2979,28 @@ character_event = {
 ###########################################
 # Correspondence between mentor and student
 ###########################################
-
-# Choses class after ask_to_be_your_mentor or offer_to_be_mentor decision
+# Picks class after ask_to_be_mentor or offer_to_be_mentor decisions
 character_event = {
 	id = WCCLS.1500
 	desc = {
-		trigger = {
-			character = event_target:student
-			is_adult = yes
-		}
-		text = EVTDESC_WCCLS_1500
+		trigger = { character = event_target:student }
+		text = EVTDESC_WCCLS_1500_yourself
 	}
 	desc = {
 		trigger = { NOT = { character = event_target:student } }
-		text = EVTDESC_WCCLS_1500_other
-	}
-	desc = {
-		trigger = {
-			character = event_target:student
-			is_adult = no
-		}
-		text = EVTDESC_WCCLS_1500_underage
+		text = EVTDESC_WCCLS_1500_others
 	}
 	picture = GFX_evt_recieve_letter
+	border = GFX_event_normal_frame_diplomacy
 
 	is_triggered_only = yes
+	
+	immediate = {
+		# Fallback and cleanup
+		event_target:target_initiator = {
+			character_event = { id = WCCLS.2151 years = 1 }
+		}
+	}
 
 	# Mage
 	option = {
@@ -2915,15 +3018,16 @@ character_event = {
 		}
 		name = A_MAGE
 
-		event_target:student = { set_character_flag = training_mentor_mage_flag }
 		event_target:student = {
+			show_scope_change = no
+
 			set_character_flag = training_mentor_mage_flag
 			if = {
 				limit = {
 					NOT = { guardian = { character = event_target:mentor } }
 					NOT = { educator = { character = event_target:mentor } }
 				}
-				event_target:mentor = { letter_event = { id = WCCLS.2100 days = 1 } }
+				event_target:mentor = { letter_event = { id = WCCLS.2100 days = 14 } }
 			}
 			else = {
 				custom_tooltip = {
@@ -2931,6 +3035,10 @@ character_event = {
 					hidden_effect = { character_event = { id = WCCLS.2150 } }
 				}
 			}
+		}
+		
+		ai_chance = {
+			factor = 99
 		}
 	}
 
@@ -2951,13 +3059,15 @@ character_event = {
 		name = A_HUNTER
 
 		event_target:student = {
+			show_scope_change = no
+
 			set_character_flag = training_mentor_hunter_flag
 			if = {
 				limit = {
 					NOT = { guardian = { character = event_target:mentor } }
 					NOT = { educator = { character = event_target:mentor } }
 				}
-				event_target:mentor = { letter_event = { id = WCCLS.2100 days = 1 } }
+				event_target:mentor = { letter_event = { id = WCCLS.2100 days = 14 } }
 			}
 			else = {
 				custom_tooltip = {
@@ -2965,6 +3075,10 @@ character_event = {
 					hidden_effect = { character_event = { id = WCCLS.2150 } }
 				}
 			}
+		}
+		
+		ai_chance = {
+			factor = 99
 		}
 	}
 
@@ -2985,13 +3099,15 @@ character_event = {
 		name = A_WARRIOR
 
 		event_target:student = {
+			show_scope_change = no
+
 			set_character_flag = training_mentor_warrior_flag
 			if = {
 				limit = {
 					NOT = { guardian = { character = event_target:mentor } }
 					NOT = { educator = { character = event_target:mentor } }
 				}
-				event_target:mentor = { letter_event = { id = WCCLS.2100 days = 1 } }
+				event_target:mentor = { letter_event = { id = WCCLS.2100 days = 14 } }
 			}
 			else = {
 				custom_tooltip = {
@@ -2999,6 +3115,10 @@ character_event = {
 					hidden_effect = { character_event = { id = WCCLS.2150 } }
 				}
 			}
+		}
+		
+		ai_chance = {
+			factor = 99
 		}
 	}
 
@@ -3019,13 +3139,15 @@ character_event = {
 		name = A_PALADIN
 
 		event_target:student = {
+			show_scope_change = no
+
 			set_character_flag = training_mentor_paladin_flag
 			if = {
 				limit = {
 					NOT = { guardian = { character = event_target:mentor } }
 					NOT = { educator = { character = event_target:mentor } }
 				}
-				event_target:mentor = { letter_event = { id = WCCLS.2100 days = 1 } }
+				event_target:mentor = { letter_event = { id = WCCLS.2100 days = 14 } }
 			}
 			else = {
 				custom_tooltip = {
@@ -3033,6 +3155,10 @@ character_event = {
 					hidden_effect = { character_event = { id = WCCLS.2150 } }
 				}
 			}
+		}
+		
+		ai_chance = {
+			factor = 99
 		}
 	}
 
@@ -3053,13 +3179,15 @@ character_event = {
 		name = A_PRIEST
 
 		event_target:student = {
+			show_scope_change = no
+
 			set_character_flag = training_mentor_priest_flag
 			if = {
 				limit = {
 					NOT = { guardian = { character = event_target:mentor } }
 					NOT = { educator = { character = event_target:mentor } }
 				}
-				event_target:mentor = { letter_event = { id = WCCLS.2100 days = 1 } }
+				event_target:mentor = { letter_event = { id = WCCLS.2100 days = 14 } }
 			}
 			else = {
 				custom_tooltip = {
@@ -3067,6 +3195,10 @@ character_event = {
 					hidden_effect = { character_event = { id = WCCLS.2150 } }
 				}
 			}
+		}
+		
+		ai_chance = {
+			factor = 99
 		}
 	}
 
@@ -3087,13 +3219,15 @@ character_event = {
 		name = A_ROGUE
 
 		event_target:student = {
+			show_scope_change = no
+
 			set_character_flag = training_mentor_rogue_flag
 			if = {
 				limit = {
 					NOT = { guardian = { character = event_target:mentor } }
 					NOT = { educator = { character = event_target:mentor } }
 				}
-				event_target:mentor = { letter_event = { id = WCCLS.2100 days = 1 } }
+				event_target:mentor = { letter_event = { id = WCCLS.2100 days = 14 } }
 			}
 			else = {
 				custom_tooltip = {
@@ -3101,6 +3235,10 @@ character_event = {
 					hidden_effect = { character_event = { id = WCCLS.2150 } }
 				}
 			}
+		}
+		
+		ai_chance = {
+			factor = 99
 		}
 	}
 
@@ -3121,13 +3259,15 @@ character_event = {
 		name = A_WARLOCK
 
 		event_target:student = {
+			show_scope_change = no
+
 			set_character_flag = training_mentor_warlock_flag
 			if = {
 				limit = {
 					NOT = { guardian = { character = event_target:mentor } }
 					NOT = { educator = { character = event_target:mentor } }
 				}
-				event_target:mentor = { letter_event = { id = WCCLS.2100 days = 1 } }
+				event_target:mentor = { letter_event = { id = WCCLS.2100 days = 14 } }
 			}
 			else = {
 				custom_tooltip = {
@@ -3135,6 +3275,10 @@ character_event = {
 					hidden_effect = { character_event = { id = WCCLS.2150 } }
 				}
 			}
+		}
+		
+		ai_chance = {
+			factor = 99
 		}
 	}
 
@@ -3155,13 +3299,15 @@ character_event = {
 		name = A_SHAMAN
 
 		event_target:student = {
+			show_scope_change = no
+
 			set_character_flag = training_mentor_shaman_flag
 			if = {
 				limit = {
 					NOT = { guardian = { character = event_target:mentor } }
 					NOT = { educator = { character = event_target:mentor } }
 				}
-				event_target:mentor = { letter_event = { id = WCCLS.2100 days = 1 } }
+				event_target:mentor = { letter_event = { id = WCCLS.2100 days = 14 } }
 			}
 			else = {
 				custom_tooltip = {
@@ -3169,6 +3315,10 @@ character_event = {
 					hidden_effect = { character_event = { id = WCCLS.2150 } }
 				}
 			}
+		}
+		
+		ai_chance = {
+			factor = 99
 		}
 	}
 
@@ -3189,13 +3339,15 @@ character_event = {
 		name = A_DRUID
 
 		event_target:student = {
+			show_scope_change = no
+
 			set_character_flag = training_mentor_druid_flag
 			if = {
 				limit = {
 					NOT = { guardian = { character = event_target:mentor } }
 					NOT = { educator = { character = event_target:mentor } }
 				}
-				event_target:mentor = { letter_event = { id = WCCLS.2100 days = 1 } }
+				event_target:mentor = { letter_event = { id = WCCLS.2100 days = 14 } }
 			}
 			else = {
 				custom_tooltip = {
@@ -3203,6 +3355,10 @@ character_event = {
 					hidden_effect = { character_event = { id = WCCLS.2150 } }
 				}
 			}
+		}
+		
+		ai_chance = {
+			factor = 99
 		}
 	}
 
@@ -3223,13 +3379,15 @@ character_event = {
 		name = A_LOA_PRIEST
 
 		event_target:student = {
+			show_scope_change = no
+
 			set_character_flag = training_mentor_loa_priest_flag
 			if = {
 				limit = {
 					NOT = { guardian = { character = event_target:mentor } }
 					NOT = { educator = { character = event_target:mentor } }
 				}
-				event_target:mentor = { letter_event = { id = WCCLS.2100 days = 1 } }
+				event_target:mentor = { letter_event = { id = WCCLS.2100 days = 14 } }
 			}
 			else = {
 				custom_tooltip = {
@@ -3237,6 +3395,10 @@ character_event = {
 					hidden_effect = { character_event = { id = WCCLS.2150 } }
 				}
 			}
+		}
+		
+		ai_chance = {
+			factor = 99
 		}
 	}
 
@@ -3257,13 +3419,15 @@ character_event = {
 		name = A_DEATH_KNIGHT
 
 		event_target:student = {
+			show_scope_change = no
+
 			set_character_flag = training_mentor_death_knight_flag
 			if = {
 				limit = {
 					NOT = { guardian = { character = event_target:mentor } }
 					NOT = { educator = { character = event_target:mentor } }
 				}
-				event_target:mentor = { letter_event = { id = WCCLS.2100 days = 1 } }
+				event_target:mentor = { letter_event = { id = WCCLS.2100 days = 14 } }
 			}
 			else = {
 				custom_tooltip = {
@@ -3271,6 +3435,10 @@ character_event = {
 					hidden_effect = { character_event = { id = WCCLS.2150 } }
 				}
 			}
+		}
+		
+		ai_chance = {
+			factor = 99
 		}
 	}
 
@@ -3291,13 +3459,15 @@ character_event = {
 		name = A_NECROMANCER
 
 		event_target:student = {
+			show_scope_change = no
+
 			set_character_flag = training_mentor_necromancer_flag
 			if = {
 				limit = {
 					NOT = { guardian = { character = event_target:mentor } }
 					NOT = { educator = { character = event_target:mentor } }
 				}
-				event_target:mentor = { letter_event = { id = WCCLS.2100 days = 1 } }
+				event_target:mentor = { letter_event = { id = WCCLS.2100 days = 14 } }
 			}
 			else = {
 				custom_tooltip = {
@@ -3305,6 +3475,10 @@ character_event = {
 					hidden_effect = { character_event = { id = WCCLS.2150 } }
 				}
 			}
+		}
+		
+		ai_chance = {
+			factor = 99
 		}
 	}
 
@@ -3325,13 +3499,15 @@ character_event = {
 		name = A_SHADOW_PRIEST
 
 		event_target:student = {
+			show_scope_change = no
+
 			set_character_flag = training_mentor_shadow_priest_flag
 			if = {
 				limit = {
 					NOT = { guardian = { character = event_target:mentor } }
 					NOT = { educator = { character = event_target:mentor } }
 				}
-				event_target:mentor = { letter_event = { id = WCCLS.2100 days = 1 } }
+				event_target:mentor = { letter_event = { id = WCCLS.2100 days = 14 } }
 			}
 			else = {
 				custom_tooltip = {
@@ -3339,6 +3515,10 @@ character_event = {
 					hidden_effect = { character_event = { id = WCCLS.2150 } }
 				}
 			}
+		}
+		
+		ai_chance = {
+			factor = 99
 		}
 	}
 
@@ -3348,234 +3528,129 @@ character_event = {
 
 		event_target:student = {
 			show_scope_change = no
-			clr_training_mentor_flag_effect = yes
-			opinion = { who = event_target:mentor modifier = opinion_rejected_request_for_mentoring }
+			
+			clean_mentor_correspondence_effect = yes
+		}
+		
+		ai_chance = {
+			factor = 1
 		}
 	}
 }
-
-# Mentor: student asks you
+# Character asks you to be mentor
 letter_event = {
 	id = WCCLS.2100
-	desc = EVTDESC_WCCLS_2100
+	desc = {
+		trigger = {
+			event_target:target_initiator = { character = event_target:student }
+		}
+		text = EVTDESC_WCCLS_2100_yourself
+	}
+	desc = {
+		trigger = {
+			event_target:target_initiator = { NOT = { character = event_target:student } }
+		}
+		text = EVTDESC_WCCLS_2100_others
+	}
 
 	is_triggered_only = yes
+	
+	trigger = {
+		class_mentor_correspondence_trigger = yes
+	}
 
 	option = {														# Mentor accepts
 		name = EVTOPTA_WCCLS_2100
 
-		event_target:student = { letter_event = { id = WCCLS.2101 days = 1 } }
+		event_target:target_initiator = { letter_event = { id = WCCLS.2101 days = 14 } }
 
 		ai_chance = {
 			factor = 1
-			modifier = {
-				factor = 15
-				OR = {
-					opinion = { who = event_target:student value = 75 }
-					AND = {
-						OR = {
-							trait = kind
-							trait = charitable
-							trait = diligent
-						}
-						opinion = { who = event_target:student value = 25 }
-					}
-					event_target:student =  {
-						ai = yes
-						NOT = { wealth = 25 }
-					}
-				}
-			}
-		}
-	}
-	option = {														# Mentor requires payment
-		name = EVTOPTB_WCCLS_2100
-
-		event_target:student = { letter_event = { id = WCCLS.2102 days = 1 } }
-
-		ai_chance = {
-			factor = 5
-			# It's impossible to say "no" to Khadgar :3
-			modifier = {
-				factor = 0
-				event_target:student = { has_character_flag = is_khadgar }
-			}
-			modifier = {
-				factor = 0
-				has_opinion_modifier = { who = event_target:student modifier = opinion_loyal_servant }
-			}
 		}
 	}
 	option = {														# Mentor refuses
 		name = EVTOPTC_WCCLS_2100
 
-		event_target:student = {
+		event_target:target_initiator = {
 			show_scope_change = no
-			letter_event = { id = WCCLS.2103 days = 1 }
-			clr_training_mentor_flag_effect = yes
-			opinion = { who = event_target:mentor modifier = opinion_rejected_request_for_mentoring }
+			
+			opinion = { who = event_target:mentor modifier = opinion_refused_to_be_mentor }
+			
+			letter_event = { id = WCCLS.2103 days = 14 }
 		}
 
 		ai_chance = {
-			factor = 1
-			# It's impossible to say "no" to Khadgar :3
-			modifier = {
-				factor = 0
-				event_target:student = { has_character_flag = is_khadgar }
-			}
-			modifier = {
-				factor = 0
-				has_opinion_modifier = { who = event_target:student modifier = opinion_loyal_servant }
-			}
+			factor = 0
 		}
 	}
 }
-
-# Student: mentor accepts
+# Character agrees to be mentor
 letter_event = {
 	id = WCCLS.2101
-	desc = EVTDESC_WCCLS_2101
+	desc = {
+		trigger = {
+			character = event_target:student
+		}
+		text = EVTDESC_WCCLS_2101_yourself
+	}
+	desc = {
+		trigger = {
+			NOT = { character = event_target:student }
+		}
+		text = EVTDESC_WCCLS_2101_others
+	}
 
 	is_triggered_only = yes
+	
+	trigger = {
+		class_mentor_correspondence_trigger = yes
+	}
 
 	option = {
 		name = EXCELLENT
 
-		custom_tooltip = {
-			text = starts_training_tooltip
-			hidden_effect = { character_event = { id = WCCLS.2150 } }
-		}
-	}
-}
-
-# Student: mentor requires payment
-letter_event = {
-	id = WCCLS.2102
-	desc = EVTDESC_WCCLS_2102
-
-	is_triggered_only = yes
-
-	option = {
-		name = EVTOPTA_WCCLS_2102
-
-		event_target:mentor = { letter_event = { id = WCCLS.2104 days = 1 } }
-		custom_tooltip = {
-			text = starts_training_tooltip
-			hidden_effect = { character_event = { id = WCCLS.2150 } }
-		}
-		wealth = -25
-
-		ai_chance = {
-			factor = 90
-			modifier = {
-				factor = 1.2
-				ai_ambition = 75
-
-			}
-			modifier = {
-				factor = 1.2
-				ai_ambition = 50
-
-			}
-			modifier = {
-				factor = 1.2
-				ai_ambition = 25
-
-			}
-			modifier = {
-				factor = 0
-				NOT = { wealth = 25 }
-			}
-		}
-	}
-
-	option = {
-		name = EVTOPTB_WCCLS_2102
-
-		event_target:mentor = { letter_event = { id = WCCLS.2105 days = 1 } }
 		event_target:student = {
 			show_scope_change = no
-			clr_training_mentor_flag_effect = yes
-			opinion = { who = event_target:mentor modifier = opinion_rejected_request_for_mentoring }
-		}
 
-		ai_chance = {
-			factor = 10
-			modifier = {
-				factor = 2.6
-				is_ruler = yes
-				ai_greed = 100
-				NOT = { wealth = 250 }
-			}
-			modifier = {
-				factor = 2.6
-				is_ruler = yes
-				ai_greed = 50
-				NOT = { wealth = 125 }
-			}
-			modifier = {
-				factor = 2.6
-				is_ruler = yes
-				ai_greed = 25
-				NOT = { wealth = 63 }
+			custom_tooltip = {
+				text = starts_training_tooltip
+				hidden_effect = { character_event = { id = WCCLS.2150 } }
 			}
 		}
 	}
 }
-
-# Student: mentor refuses
+# Characters refuses to be mentor
 letter_event = {
 	id = WCCLS.2103
-	desc = EVTDESC_WCCLS_2103
+	desc = {
+		trigger = {
+			character = event_target:student
+		}
+		text = EVTDESC_WCCLS_2103_yourself
+	}
+	desc = {
+		trigger = {
+			NOT = { character = event_target:student }
+		}
+		text = EVTDESC_WCCLS_2103_others
+	}
 
 	is_triggered_only = yes
+	
+	trigger = {
+		class_mentor_correspondence_trigger = yes
+	}
 
 	option = {
 		name = ALAS
-
-		tooltip = {
-			event_target:student = {
-				show_scope_change = no
-				clr_training_mentor_flag_effect = yes
-				opinion = { who = event_target:mentor modifier = opinion_rejected_request_for_mentoring }
-			}
-		}
+	}
+	
+	after = {
+		event_target:student = { clean_mentor_correspondence_effect = yes }
 	}
 }
 
-# Mentor: student accepts to pay money
-letter_event = {
-	id = WCCLS.2104
-	desc = EVTDESC_WCCLS_2104
-
-	is_triggered_only = yes
-
-	option = {
-		name = EXCELLENT
-
-		wealth = 25
-	}
-}
-
-# Mentor: student refuses to pay money
-letter_event = {
-	id = WCCLS.2105
-	desc = EVTDESC_WCCLS_2105
-
-	is_triggered_only = yes
-
-	option = {
-		name = ALAS
-
-		tooltip = {
-			event_target:student = {
-				show_scope_change = no
-				clr_training_mentor_flag_effect = yes
-				opinion = { who = event_target:mentor modifier = opinion_rejected_request_for_mentoring }
-			}
-		}
-	}
-}
+###########################################
 
 # Event-sorter
 character_event = {
@@ -3583,13 +3658,19 @@ character_event = {
 
 	hide_window = yes
 	is_triggered_only = yes
+	
+	trigger = {
+		class_mentor_correspondence_trigger = yes
+	}
 
 	immediate = {
+		# WARNING! Training should take less time than opinion_teaching_me (6 years right now)
+
+		# Just good opinion
 		event_target:mentor = {
-			opinion = { who = event_target:student modifier = opinion_student years = 5 }
-			character_event = { id = WCCLS.2151 years = 5 }				# Removes opinion when the training is done
+			opinion = { who = event_target:student modifier = opinion_student years = 10 }
 		}
-		opinion = { who = event_target:mentor modifier = opinion_wc_mentor years = 5 }
+		opinion = { who = event_target:mentor modifier = opinion_wc_mentor years = 10 }
 
 		if = {
 			limit = {
@@ -3731,21 +3812,41 @@ character_event = {
 			clr_character_flag = training_mentor_shadow_priest_flag
 			narrative_event = { id = WCCLS.1300 years = 5 }
 		}
+		
+		clr_character_flag = ask_to_be_mentor_ongoing_flag
+		
 		character_event = { id = WCCLS.2152 }
 	}
 }
-
-# Removes one student from the mentor
+# Fallback and cleanup in case of mentor death
 character_event = {
 	id = WCCLS.2151
-
+	desc = EVTDESC_WCCLS_2151
+	picture = GFX_evt_recieve_letter
+	border = GFX_event_normal_frame_diplomacy
+	
 	is_triggered_only = yes
-	hide_window = yes
-
-	immediate = {
-		event_target:student = { remove_opinion = { who = ROOT modifier = opinion_teaching_me } }
+	
+	trigger = {
+		event_target:student = {
+			is_alive = yes
+			
+			has_character_flag = ask_to_be_mentor_ongoing_flag
+		}
+	}
+	
+	option = {
+		name = ALAS
+	}
+	
+	after = {
+		event_target:student = {
+			clean_mentor_correspondence_effect = yes
+		}
 	}
 }
+
+###########################################
 
 # Level up/changes class after training
 character_event = {
@@ -3761,6 +3862,9 @@ character_event = {
 			limit = { is_training_self_trigger = yes }
 			random_list = {
 				10 = {
+					trigger = {
+						NOT = { check_variable = { which = wc_experience value = 10 } }
+					}
 					change_variable = { which = wc_experience value = 1 }
 					trigger_switch = {
 						on_trigger = has_character_modifier
@@ -3778,12 +3882,11 @@ character_event = {
 						training_self_necromancer 		= { change_variable = { which = wc_experience_necromancer 		value = 1 } }
 						training_self_shadow_priest 	= { change_variable = { which = wc_experience_shadow_priest 	value = 1 } }
 					}
-					modifier = {
-						factor = 0
-						check_variable = { which = wc_experience value = 10 }
-					}
 				}
 				10 = {
+					trigger = {
+						NOT = { check_variable = { which = wc_experience value = 9 } }
+					}
 					change_variable = { which = wc_experience value = 2 }
 					trigger_switch = {
 						on_trigger = has_character_modifier
@@ -3800,10 +3903,6 @@ character_event = {
 						training_self_death_knight 		= { change_variable = { which = wc_experience_death_knight 		value = 2 } }
 						training_self_necromancer 		= { change_variable = { which = wc_experience_necromancer 		value = 2 } }
 						training_self_shadow_priest 	= { change_variable = { which = wc_experience_shadow_priest 	value = 2 } }
-					}
-					modifier = {
-						factor = 0
-						check_variable = { which = wc_experience value = 9 }
 					}
 				}
 			}
@@ -3889,6 +3988,10 @@ character_event = {
 				}
 				random_list = {
 					10 = {
+						trigger = {
+							NOT = { check_variable = { which = wc_experience value = 9 } }
+							check_variable = { which = wc_experience_difference value = 2 }
+						}
 						change_variable = { which = wc_experience value = 1 }
 						trigger_switch = {
 							on_trigger = has_character_modifier
@@ -3925,16 +4028,12 @@ character_event = {
 							factor = 1.5
 							has_mental_disorder_trigger = yes
 						}
-						modifier = {
-							factor = 0
-							check_variable = { which = wc_experience value = 10 }
-						}
-						modifier = {
-							factor = 0
-							NOT = { check_variable = { which = wc_experience_difference value = 1 } }
-						}
 					}
 					10 = {
+						trigger = {
+							NOT = { check_variable = { which = wc_experience value = 8 } }
+							check_variable = { which = wc_experience_difference value = 3 }
+						}
 						change_variable = { which = wc_experience value = 2 }
 						trigger_switch = {
 							on_trigger = has_character_modifier
@@ -3971,16 +4070,12 @@ character_event = {
 							factor = 1.5
 							has_mental_disorder_trigger = yes
 						}
-						modifier = {
-							factor = 0
-							check_variable = { which = wc_experience value = 9 }
-						}
-						modifier = {
-							factor = 0
-							NOT = { check_variable = { which = wc_experience_difference value = 2 } }
-						}
 					}
 					10 = {
+						trigger = {
+							NOT = { check_variable = { which = wc_experience value = 7 } }
+							check_variable = { which = wc_experience_difference value = 4 }
+						}
 						change_variable = { which = wc_experience value = 3 }
 						trigger_switch = {
 							on_trigger = has_character_modifier
@@ -4009,16 +4104,12 @@ character_event = {
 							factor = 1.5
 							has_mental_disorder_trigger = yes
 						}
-						modifier = {
-							factor = 0
-							check_variable = { which = wc_experience value = 8 }
-						}
-						modifier = {
-							factor = 0
-							NOT = { check_variable = { which = wc_experience_difference value = 3 } }
-						}
 					}
 					10 = {
+						trigger = {
+							NOT = { check_variable = { which = wc_experience value = 6 } }
+							check_variable = { which = wc_experience_difference value = 5 }
+						}
 						change_variable = { which = wc_experience value = 4 }
 						trigger_switch = {
 							on_trigger = has_character_modifier
@@ -4047,16 +4138,12 @@ character_event = {
 							factor = 1.5
 							has_mental_disorder_trigger = yes
 						}
-						modifier = {
-							factor = 0
-							check_variable = { which = wc_experience value = 7 }
-						}
-						modifier = {
-							factor = 0
-							NOT = { check_variable = { which = wc_experience_difference value = 4 } }
-						}
 					}
 					10 = {
+						trigger = {
+							NOT = { check_variable = { which = wc_experience value = 5 } }
+							check_variable = { which = wc_experience_difference value = 6 }
+						}
 						change_variable = { which = wc_experience value = 5 }
 						trigger_switch = {
 							on_trigger = has_character_modifier
@@ -4088,16 +4175,12 @@ character_event = {
 								trait = willful
 							}
 						}
-						modifier = {
-							factor = 0
-							check_variable = { which = wc_experience value = 6 }
-						}
-						modifier = {
-							factor = 0
-							NOT = { check_variable = { which = wc_experience_difference value = 5 } }
-						}
 					}
 					10 = {
+						trigger = {
+							NOT = { check_variable = { which = wc_experience value = 4 } }
+							check_variable = { which = wc_experience_difference value = 7 }
+						}
 						change_variable = { which = wc_experience value = 6 }
 						trigger_switch = {
 							on_trigger = has_character_modifier
@@ -4129,16 +4212,12 @@ character_event = {
 								trait = willful
 							}
 						}
-						modifier = {
-							factor = 0
-							check_variable = { which = wc_experience value = 5 }
-						}
-						modifier = {
-							factor = 0
-							NOT = { check_variable = { which = wc_experience_difference value = 6 } }
-						}
 					}
 					10 = {
+						trigger = {
+							NOT = { check_variable = { which = wc_experience value = 3 } }
+							check_variable = { which = wc_experience_difference value = 8 }
+						}
 						change_variable = { which = wc_experience value = 7 }
 						trigger_switch = {
 							on_trigger = has_character_modifier
@@ -4170,16 +4249,12 @@ character_event = {
 								trait = willful
 							}
 						}
-						modifier = {
-							factor = 0
-							check_variable = { which = wc_experience value = 4 }
-						}
-						modifier = {
-							factor = 0
-							NOT = { check_variable = { which = wc_experience_difference value = 7 } }
-						}
 					}
 					10 = {
+						trigger = {
+							NOT = { check_variable = { which = wc_experience value = 2 } }
+							check_variable = { which = wc_experience_difference value = 9 }
+						}
 						change_variable = { which = wc_experience value = 8 }
 						trigger_switch = {
 							on_trigger = has_character_modifier
@@ -4219,16 +4294,12 @@ character_event = {
 								trait = willful
 							}
 						}
-						modifier = {
-							factor = 0
-							check_variable = { which = wc_experience value = 3 }
-						}
-						modifier = {
-							factor = 0
-							NOT = { check_variable = { which = wc_experience_difference value = 7 } }
-						}
 					}
 					10 = {
+						trigger = {
+							NOT = { check_variable = { which = wc_experience value = 1 } }
+							check_variable = { which = wc_experience_difference value = 10 }
+						}
 						change_variable = { which = wc_experience value = 9 }
 						trigger_switch = {
 							on_trigger = has_character_modifier
@@ -4268,14 +4339,6 @@ character_event = {
 								trait = willful
 							}
 						}
-						modifier = {
-							factor = 0
-							check_variable = { which = wc_experience value = 2 }
-						}
-						modifier = {
-							factor = 0
-							NOT = { check_variable = { which = wc_experience_difference value = 8 } }
-						}
 					}
 				}
 			}
@@ -4302,22 +4365,18 @@ character_event = {
 		if = {
 			limit = {
 				guardian = {
-					has_class_trait_trigger = yes
-					is_alternative_class_trigger = no
+					potential_mentor_class_trigger = yes
 				}
 			}
 			guardian = { character_event = { id = WCCLS.3003 } }
 		}
-		else = {
-			if = {
-				limit = {
-					educator = {
-						has_class_trait_trigger = yes
-						is_alternative_class_trigger = no
-					}
+		else_if = {
+			limit = {
+				educator = {
+					potential_mentor_class_trigger = yes
 				}
-				educator = { character_event = { id = WCCLS.3003 } }
 			}
+			educator = { character_event = { id = WCCLS.3003 } }
 		}
 	}
 }
@@ -4328,24 +4387,47 @@ character_event = {
 	hide_window = yes
 
 	immediate = {
+		FROM = {
+			if = {
+				limit = { is_ruler = no }
+				liege = { save_event_target_as = target_initiator }
+			}
+			else = { save_event_target_as = target_initiator }
+		}
+
 		if = {
 			limit = {
-				ask_to_be_your_mentor_decision_potential = yes
-				ask_to_be_your_mentor_decision_allowed = yes
-				FROM = { ask_to_be_your_mentor_decision_from_potential = yes }
+				ROOT = {
+					event_target:target_initiator = {
+						this_see_prev_class_trait_trigger = yes
+					}
+				}
+
+				FROM = {
+					ROOT = {
+						prev_student_this_class_mentor_potential = yes
+						prev_student_this_class_mentor_allow = yes
+					}
+				}
+				ROOT = {
+					FROM = {
+						prev_mentor_this_class_student_potential = yes
+						event_target:target_initiator = {
+							# If it's true, target_initiator will be able to see FROM's class after the end of the training
+							this_would_see_prev_class_trait_if_prev_was_prevprev_class_trigger = yes
+						}
+					}
+				}
 			}
 			log = "[Root.GetBestName] chosen as class mentor of [From.GetBestName]"
 			save_event_target_as = mentor
 			FROM = {
 				save_event_target_as = student
-				opinion = { modifier = opinion_teaching_me who = ROOT }
-				set_character_flag = sent_letter_to_mentor
-				if = {
-					limit = { is_ruler = no }
-					liege = { character_event = { id = WCCLS.1500 } }
-				}
-				else = { character_event = { id = WCCLS.1500 } }
+
+				pre_class_mentoring_effect = yes
 			}
+			
+			event_target:target_initiator = { character_event = { id = WCCLS.1500 } }
 		}
 	}
 }
@@ -5333,15 +5415,15 @@ character_event = {
 	option = {
 		name = EVTOPTA_WCCLS.10201
 		random_list = {
-			60 = {
+			70 = {
 				add_artifact = libram_of_guardianship_01
 			}
-			25 = {
+			20 = {
 				add_artifact = libram_of_guardianship_02
 				
 				paladin_half_score = yes
 			}
-			15 = {
+			10 = {
 				add_artifact = libram_of_guardianship_03
 				
 				paladin_score = yes
@@ -5368,15 +5450,15 @@ character_event = {
 	option = {
 		name = EVTOPTA_WCCLS.10202
 		random_list = {
-			60 = {
+			70 = {
 				add_artifact = libram_of_righteousness_01
 			}
-			25 = {
+			20 = {
 				add_artifact = libram_of_righteousness_02
 				
 				paladin_half_score = yes
 			}
-			15 = {
+			10 = {
 				add_artifact = libram_of_righteousness_03
 				
 				paladin_score = yes
@@ -5403,15 +5485,15 @@ character_event = {
 	option = {
 		name = EVTOPTA_WCCLS.10203
 		random_list = {
-			60 = {
+			70 = {
 				add_artifact = libram_of_reckoning_01
 			}
-			25 = {
+			20 = {
 				add_artifact = libram_of_reckoning_02
 				
 				paladin_half_score = yes
 			}
-			15 = {
+			10 = {
 				add_artifact = libram_of_reckoning_03
 				
 				paladin_score = yes
@@ -5438,15 +5520,15 @@ character_event = {
 	option = {
 		name = EVTOPTA_WCCLS.10204
 		random_list = {
-			60 = {
+			70 = {
 				add_artifact = libram_of_devoutness_01
 			}
-			25 = {
+			20 = {
 				add_artifact = libram_of_devoutness_02
 				
 				paladin_half_score = yes
 			}
-			15 = {
+			10 = {
 				add_artifact = libram_of_devoutness_03
 				
 				paladin_score = yes
