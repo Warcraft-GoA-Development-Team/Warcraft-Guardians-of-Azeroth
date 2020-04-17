@@ -635,7 +635,7 @@ narrative_event = {
 
 		add_5_void_corruption_effect = yes
 
-		hidden_effect = { 73 = { province_event = { id = WCDAC.5009 days = 90 } } }
+		hidden_effect = { 73 = { province_event = { id = WCDAC.5009 days = 3 } } }
 	}
 	# Suppress them!
 	option = {
@@ -833,6 +833,7 @@ province_event = {
 					has_holder = yes
 					holder_scope = {
 						prisoner = no
+						
 						true_religion = old_gods_worship
 					}
 				}
@@ -888,7 +889,7 @@ narrative_event = {
 	border = GFX_event_narrative_frame_intrigue
 
 	is_triggered_only = yes
-
+	
 	immediate = {
 		add_trait = travelling
 	}
@@ -954,20 +955,8 @@ province_event = {
 narrative_event = {
 	id = WCDAC.5035
 	title = EVTTITLE_WCDAC_5030
-	desc = {
-		trigger = {
-			has_global_flag = twilights_hammer_kalimdor
-		}
-		text = EVTDESC_WCDAC_5035_kalimdor
-		picture = GFX_evt_ahnqiraj
-	}
-	desc = {
-		trigger = {
-			NOT = { has_global_flag = twilights_hammer_kalimdor }
-		}
-		text = EVTDESC_WCDAC_5035_northrend
-		picture = GFX_evt_ahnqiraj
-	}
+	desc = EVTDESC_WCDAC_5035
+	picture = GFX_evt_ahnqiraj
 	border = GFX_event_narrative_frame_intrigue
 
 	is_triggered_only = yes
@@ -991,9 +980,9 @@ province_event = {
 			if = {
 				limit = {
 					is_alive = yes
-
+					
 					prisoner = no
-
+					
 					true_religion = old_gods_worship
 				}
 				narrative_event = { id = WCDAC.5040 }
@@ -1006,6 +995,7 @@ province_event = {
 					has_holder = yes
 					holder_scope = {
 						prisoner = no
+						
 						true_religion = old_gods_worship
 					}
 				}
@@ -1046,15 +1036,6 @@ province_event = {
 						add_trait = class_shadow_priest_9
 					}
 				}
-				
-				#Makes him follow old god that's on the continent he's travelling to
-				if = {
-					limit = { has_global_flag = twilights_hammer_kalimdor }
-					add_character_modifier = { name = follower_of_cthun duration = -1 }
-				}
-				else = {
-					add_character_modifier = { name = follower_of_yogg_saron duration = -1 }
-				}
 
 				# Removes wrong traits
 				remove_trait = chaste
@@ -1068,24 +1049,12 @@ province_event = {
 		}
 	}
 }
-# The Ruins of Ahn'Qiraj and Darkness in Uldaur
+# The Ruins of Ahn'Qiraj
 narrative_event = {
 	id = WCDAC.5040
 	title = EVTTITLE_WCDAC_5030
-	desc = {
-		trigger = {
-			has_global_flag = twilights_hammer_kalimdor
-		}
-		text = EVTDESC_WCDAC_5040_kalimdor
-		picture = GFX_evt_ahnqiraj
-	}
-	desc = {
-		trigger = {
-			NOT = { has_global_flag = twilights_hammer_kalimdor }
-		}
-		text = EVTDESC_WCDAC_5040_northrend
-		picture = GFX_evt_yogg_saron
-	}
+	desc = EVTDESC_WCDAC_5040
+	picture = GFX_evt_ahnqiraj
 	border = GFX_event_narrative_frame_intrigue
 
 	is_triggered_only = yes
@@ -1093,67 +1062,49 @@ narrative_event = {
 	immediate = {
 		# Used in scripted effects
 		save_event_target_as = target_settler
-
+		
 		religion = old_gods_worship
 		clear_event_target = yes
-		any_courtier = {
-			limit = {
-				culture = twilights_hammer
-				can_switch_religion_character_trigger = yes
-			}
-			religion = old_gods_worship
-		}
-
+		
 		remove_trait = travelling
-
-		if = {
-			limit = { has_global_flag = twilights_hammer_kalimdor }
-			c_southmoon = {
+		
+		c_hivezora = {
+			# event_target:target_settler and its people settle here
+			settle_as_target_settler_effect = yes
+		}
+		
+		# If you're not independent ruler, gives old titles to liege
+		give_old_titles_to_heir_effect = yes
+		
+		d_crystalvale = {
+			any_direct_de_jure_vassal_title = {
 				# event_target:target_settler and its people settle here
 				settle_as_target_settler_effect = yes
 			}
-
-			# If you're not independent ruler, gives old titles to liege
-			give_old_titles_to_heir_effect = yes
-
-			c_southmoon = {
-				# Declares war against player
-				target_settler_declare_war_effect = yes
-			}
 		}
-		else = {
-			c_strand_of_ancients = {
+		d_scarab_wall = {
+			any_direct_de_jure_vassal_title = {
 				# event_target:target_settler and its people settle here
 				settle_as_target_settler_effect = yes
 			}
-
-			# If you're not independent ruler, gives old titles to liege
-			give_old_titles_to_heir_effect = yes
-			
-			c_strand_of_ancients = {
-				# Declares war against player
-				target_settler_declare_war_effect = yes
-			}
 		}
+		
+		c_hivezora = {
+			# Declares war against player
+			target_settler_declare_war_effect = yes
+		}
+		
 		clear_settler_flag_effect = yes
+		
+		# Spawns army for start
+		spawn_colonial_troops_effect = yes
 	}
 
-	# I'll spread its will across Kalimdor/Northrend!
+	# I'll spread its will across Kalimdor!
 	option = {
 		name = EVTOPTA_WCDAC_5040
 
-		if = {
-			limit = { potential_shadow_priest_wo_training_trigger = yes }
-			hidden_effect = {
-				add_character_modifier = { name = training_self_shadow_priest duration = -1 }
-				recount_experience_effect = yes
-				narrative_event = { id = WCCLS.1300 }
-			}
-		}
-		if = { limit = { NOT = { trait = zealous } add_trait = zealous } }
-
-		add_35_void_corruption_effect = yes
-
+		add_artifact = hammer_of_the_twilight
 		leave_society = yes
 		set_global_flag = twilights_hammer_cult_active_flag
 		join_society_twilights_hammer_cult_effect = yes
@@ -1162,7 +1113,11 @@ narrative_event = {
 			add_society_currency_massive_effect = yes # Give the Grand Master a start-up capital to induct members
 		}
 
+		add_35_void_corruption_effect = yes
+
 		hidden_effect = {
+			activate_title = { title = d_twilights_hammer status = no }
+			d_twilights_hammer = { destroy_landed_title = THIS }
 			any_playable_ruler = {
 				limit = {
 					ai = yes
@@ -1171,253 +1126,7 @@ narrative_event = {
 				character_event = { id = MNM.10030 }
 			}
 			narrative_event = { id = WCDAC.5050 }
-			character_event = { id = WCDAC.5041 days = 7 }
-			character_event = { id = WCDAC.5045 years = 5 }
 		}
-	}
-}
-character_event = {
-	id = WCDAC.5041
-	desc = {
-		trigger = { NOT = { has_character_flag = hunted_by_garona } }
-		text = EVTDESC_WCDAC_5041_first_kill
-	}
-	desc = {
-		trigger = {
-			trigger = { has_character_flag = hunted_by_garona }
-		}
-		text = EVTDESC_WCDAC_5041_later_kills
-	}
-	picture = GFX_evt_ahnqiraj
-	border = GFX_event_normal_frame_intrigue
-
-	is_triggered_only = yes
-	
-	trigger = {
-		NOT = { trait = travelling }
-		c_10620 = {
-			is_alive = yes
-			NOT = { religion = old_gods_worship }
-			NOT = { is_married = 52000 }
-			prisoner = no
-		}
-		character = 52000
-	}
-	
-	immediate = {
-		random_courtier = {
-			limit = {
-				NOT = { character = 10620 }
-				religion = old_gods_worship
-				is_adult = yes
-				NOR = {
-					trait = in_hiding
-					trait = travelling
-				}
-				is_incapable = no
-				combat_rating_diff = { who = 10620 value < 10 }
-			}
-			death = { death_reason = death_murder }
-		}
-		c_10620 = {
-			save_event_target_as = target_garona
-			add_trait = travelling
-			add_trait = temporary_immortal
-			add_trait = in_hiding
-		}
-	}
-
-	# Let's continue the journey.
-	option = {
-		name = EVTOPTA_WCDAC_5041
-		trigger = { NOT = { has_character_flag = hunted_by_garona } }
-
-		set_character_flag = hunted_by_garona
-		character_event = { id = WCDAC.5042 months = 40 }
-	}
-	option = {
-		name = EVTOPTB_WCDAC_5041
-		trigger = { has_character_flag = hunted_by_garona }
-	}
-	after = {
-		if = {
-			limit = { has_character_flag = hunted_by_garona }
-			character_event = { id = WCDAC.5041 months = 10 random = 90 }
-		}
-	}
-}
-character_event = {
-	id = WCDAC.5042
-	desc = EVTDESC_WCDAC_5042
-	picture = GFX_evt_ahnqiraj
-	border = GFX_event_normal_frame_intrigue
-
-	is_triggered_only = yes
-
-	option = {
-		name = EVTOPTA_WCDAC_5042
-		
-		add_trait = travelling
-		character_event = { id = WCDAC.5043 months = 14 }
-	}
-}
-character_event = {
-	id = WCDAC.5043
-	desc = EVTDESC_WCDAC_5043
-	picture = GFX_evt_ahnqiraj
-	border = GFX_event_normal_frame_intrigue
-
-	is_triggered_only = yes
-
-	option = {
-		name = EVTOPTA_WCDAC_5043
-		
-		clr_character_flag = hunted_by_garona
-		remove_trait = travelling
-		event_target:target_garona = {
-			remove_trait = travelling
-			remove_trait = temporary_immortal
-			remove_trait = in_hiding
-			move_character = PREV
-		}
-		reverse_imprison = event_target:target_garona
-		character_event = { id = WCDAC.5044 days = 1 }
-	}
-}
-character_event = {
-	id = WCDAC.5044
-	desc = EVTDESC_WCDAC_5044
-	picture = GFX_evt_ahnqiraj
-	border = GFX_event_normal_frame_intrigue
-
-	is_triggered_only = yes
-
-	option = {
-		name = EVTOPTA_WCDAC_5044
-		
-		reverse_opinion = { modifier = opinion_loyal_servant who = event_target:target_garona }
-		event_target:target_garona = { imprison = no }
-	}
-}
-character_event = {
-	id = WCDAC.5045
-	desc = EVTDESC_WCDAC_5045
-	picture = GFX_evt_ahnqiraj
-	border = GFX_event_normal_frame_intrigue
-
-	is_triggered_only = yes
-
-	option = {
-		name = EVTOPTA_WCDAC_5044
-		
-		narrative_event = { id = WCDAC.5046 years = 2 }
-		add_trait = travelling
-	}
-}
-# The Ruins of Ahn'Qiraj and Darkness in Uldaur
-narrative_event = {
-	id = WCDAC.5046
-	title = EVTTITLE_WCDAC_5030
-	desc = {
-		trigger = {
-			has_global_flag = twilights_hammer_kalimdor
-		}
-		text = EVTDESC_WCDAC_5046_kalimdor
-		picture = GFX_evt_ahnqiraj
-	}
-	desc = {
-		trigger = {
-			NOT = { has_global_flag = twilights_hammer_kalimdor }
-		}
-		text = EVTDESC_WCDAC_5046_nortrend
-		picture = GFX_evt_yogg_saron
-	}
-	border = GFX_event_narrative_frame_intrigue
-
-	is_triggered_only = yes
-
-	immediate = {
-		# Used in scripted effects
-		save_event_target_as = target_settler
-		
-		clear_event_target = yes
-		remove_trait = travelling
-
-		if = {
-			limit = { has_global_flag = twilights_hammer_kalimdor }
-			c_hivezora = {
-				# event_target:target_settler and its people settle here
-				settle_as_target_settler_effect = yes
-			}
-
-			# If you're not independent ruler, gives old titles to liege
-			give_old_titles_to_heir_effect = yes
-
-			c_hiveashi = {
-				# event_target:target_settler and its people settle here
-				settle_as_target_settler_effect = yes
-			}
-			c_crystalvale = {
-				settle_as_target_settler_effect = yes
-			}
-			c_ishrak = {
-				settle_as_target_settler_effect = yes
-			}
-			c_ashakx = {
-				settle_as_target_settler_effect = yes
-			}
-			c_hiveregal = {
-				settle_as_target_settler_effect = yes
-			}
-			c_scarab_wall = {
-				settle_as_target_settler_effect = yes
-			}
-			c_hivezora = {
-				# Declares war against player
-				target_settler_declare_war_effect = yes
-			}
-
-			c_hivezora = { location = { culture = qiraji } }
-			c_hiveashi = { location = { culture = qiraji } }
-			c_crystalvale = { location = { culture = qiraji } }
-			c_ishrak = { location = { culture = qiraji } }
-			c_ashakx = { location = { culture = qiraji } }
-			c_hiveregal = { location = { culture = qiraji } }
-			c_scarab_wall = { location = { culture = qiraji } }
-		}
-		else = {
-			c_bouldercrag = {
-				# event_target:target_settler and its people settle here
-				settle_as_target_settler_effect = yes
-			}
-
-			# If you're not independent ruler, gives old titles to liege
-			give_old_titles_to_heir_effect = yes
-
-			c_snowdrift = {
-				# event_target:target_settler and its people settle here
-				settle_as_target_settler_effect = yes
-			}
-			c_nidavelir = {
-				settle_as_target_settler_effect = yes
-			}
-			c_bouldercrag = {
-				# Declares war against player
-				target_settler_declare_war_effect = yes
-			}
-		}
-		clear_settler_flag_effect = yes
-	}
-
-	# I'll spread its will across Kalimdor!
-	option = {
-		name = EVTOPTA_WCDAC_5046
-		
-		if = {
-			limit = { has_global_flag = twilights_hammer_kalimdor }
-			clr_global_flag = twilights_hammer_kalimdor
-		}
-		clr_character_flag = important_old_god_task_flag
 	}
 }
 # Notification of creation of the Twilight's Hammer Cult
