@@ -224,7 +224,7 @@ decisions = {
 
 		effect = {
 			set_global_flag = sunwell_is_being_restored_flag
-
+			
 			clr_global_flag = sunwell_naaru_spark_flag
 			clr_global_flag = voidwell_restoring_flag
 			clr_global_flag = felwell_restoring_flag
@@ -581,6 +581,70 @@ decisions = {
 			factor = 1
 		}
 	}
+	
+	# Regent Lord of Quel'thalas removes Regent Lord title (makes Quel'thalas elective)
+	remove_regent_lord_title = {
+		is_high_prio = yes
+		
+		ai_check_interval = 120
+		
+		only_playable = yes
+		
+		potential = {
+			is_untouchable_trigger = no
+			
+			is_adult = yes
+			is_incapable = no
+			
+			has_character_flag = is_regent_lord_flag
+		}
+		
+		allow = {
+			prisoner = no
+			is_inaccessible_trigger = no
+			
+			ruled_years = 20
+		}
+		
+		effect = {
+			clr_character_flag = is_regent_lord_flag
+			
+			# Makes de-jure Quel'thalas titles elective
+			if = {
+				limit = {
+					is_feudal = yes
+					evil_public_religion_trigger = no
+					
+					any_demesne_title = {
+						de_jure_sunstrider_title_trigger = yes
+						prevs_title_can_has_laws_trigger = yes
+						is_law_potential = succ_feudal_elective
+						is_law_allowed = succ_feudal_elective
+						NOT = { has_law = succ_feudal_elective }
+					}
+				}
+				any_demesne_title = {
+					limit = {
+						de_jure_sunstrider_title_trigger = yes
+						prevs_title_can_has_laws_trigger = yes
+						is_law_potential = succ_feudal_elective
+						is_law_allowed = succ_feudal_elective
+						NOT = { has_law = succ_feudal_elective }
+					}
+					add_law = succ_feudal_elective
+				}
+				
+				# Small notification to players
+				any_player = {
+					limit = {
+						same_realm = ROOT
+					}
+					character_event = { id = WCTFT.600 }
+				}
+			}
+			remove_special_character_title = REGENT_LORD_TITLE
+		}
+	}
 }
 targeted_decisions = {
 	# Ability to get rid of evil character without penalties
@@ -654,10 +718,10 @@ title_decisions = {
 		}
 
 		allow = {
-			NOT = { has_province_modifier = genocide_province_cooldown }
-
 			FROM = { completely_controls = ROOT }
 			location = {
+				NOT = { has_province_modifier = genocide_province_cooldown }
+				
 				trigger_if = {
 					limit = { from_potential_cull_this_province_trigger = yes }
 					from_allow_cull_this_province_trigger = yes
@@ -677,6 +741,14 @@ title_decisions = {
 
 		effect = {
 			hidden_effect = {
+				location = {
+					add_province_modifier = {
+						name = genocide_province_cooldown
+						years = 3
+						hidden = yes
+					}
+				}
+				
 				FROM = {
 					if = {
 						limit = { independent = no }
@@ -736,8 +808,6 @@ title_decisions = {
 			}
 
 			location = {
-				add_province_modifier = { name = genocide_realm_cooldown years = 4 }
-				
 				if = {
 					limit = { from_potential_cull_this_province_trigger = yes }
 					add_province_modifier = { name = ongoing_culling years = 2 }
