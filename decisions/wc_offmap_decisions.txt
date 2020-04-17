@@ -779,3 +779,210 @@ offmap_decisions = {
 			}
 		}
 	}
+	request_healing_offmap = {
+		only_playable = yes
+		button_name = offmap_boons
+
+		ai_check_interval = 24
+
+		potential = {
+			is_old_god_offmap_tag_trigger = yes
+		}
+		from_potential = {
+			offmap_from_potential_trigger = yes
+		}
+		allow = {
+			trigger_if = {
+				limit = { is_offmap_tag = offmap_cthun }
+				FROM = {
+					has_offmap_currency = { offmap = offmap_cthun value = 500 }
+					cthun_offmap_decisions_enabled_trigger = yes
+				}
+			}
+			trigger_else_if = {
+				limit = { is_offmap_tag = offmap_nzoth }
+				FROM = {
+					has_offmap_currency = { offmap = offmap_nzoth value = 500 }
+					nzoth_offmap_decisions_enabled_trigger = yes
+				}
+			}
+			trigger_else = {
+				FROM = {
+					has_offmap_currency = { offmap = offmap_yoggsaron value = 500 }
+					yogg_saron_offmap_decisions_enabled_trigger = yes
+				}
+			}
+			FROM = {
+				custom_tooltip = {
+					text = devil_worshipers_dark_healing_tooltip
+					OR = {
+						has_disease_trigger = yes
+						has_symptom_trigger = yes
+						has_injury_trigger = yes
+						is_maimed_trigger = yes
+						has_disability_trigger = yes
+					}
+				}
+			}
+		}
+		effect = {
+			if = {
+				limit = {
+					is_offmap_tag = offmap_cthun
+				}
+				FROM = {
+					add_offmap_currency = {
+						offmap = offmap_cthun
+						value = -500
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					is_offmap_tag = offmap_nzoth
+				}
+				FROM = {
+					add_offmap_currency = {
+						offmap = offmap_nzoth
+						value = -500
+					}
+				}
+			}
+			else = {
+				FROM = {
+					add_offmap_currency = {
+						offmap = offmap_yoggsaron
+						value = -500
+					}
+				}
+			}
+			FROM = { character_event = { id = WCOME.500 } }
+		}
+		ai_will_do = {
+			factor = 1
+			modifier = {
+				factor = 0.3 # slow down
+			}
+		}
+	}
+	wake_old_god_offmap = {
+		only_playable = yes
+		button_name = offmap_boons
+
+		ai_check_interval = 36
+
+		potential = {
+			OR = {
+				AND = {
+					is_offmap_tag = offmap_cthun
+					offmap_cthun = { 
+						NOR = {
+							has_status = old_god_free
+							has_status = old_god_full_power
+							has_status = old_god_dead
+						} 
+					}
+				}
+				AND = {
+					is_offmap_tag = offmap_nzoth
+					offmap_nzoth = { 
+						NOR = {
+							has_status = old_god_free
+							has_status = old_god_full_power
+							has_status = old_god_dead
+						} 
+					}
+				}
+				AND = {
+					is_offmap_tag = offmap_yoggsaron
+					offmap_yoggsaron = { 
+						NOR = {
+							has_status = old_god_free
+							has_status = old_god_full_power
+							has_status = old_god_dead
+						} 
+					}
+				}
+			}
+		}
+		from_potential = {
+			mercenary = no
+			holy_order = no
+			is_landed = yes
+		}
+		allow = {
+			trigger_if = {
+				limit = { is_offmap_tag = offmap_cthun }
+				FROM = {
+					has_offmap_currency = { offmap = offmap_cthun value = 8000 }
+					cthun_offmap_decisions_enabled_trigger = yes
+					OR = {
+						has_wonder = wonder_ahnqiraj
+						offmap_cthun = { has_status = old_god_imprisoned }
+					}
+				}
+			}
+			trigger_else_if = {
+				limit = { is_offmap_tag = offmap_nzoth }
+				FROM = {
+					has_offmap_currency = { offmap = offmap_nzoth value = 8000 }
+					nzoth_offmap_decisions_enabled_trigger = yes
+					OR = {
+						has_wonder = wonder_shrine_storm
+						offmap_nzoth = { has_status = old_god_imprisoned }
+					}
+				}
+			}
+			trigger_else = {
+				FROM = {
+					has_offmap_currency = { offmap = offmap_yoggsaron value = 8000 }
+					yogg_saron_offmap_decisions_enabled_trigger = yes
+					OR = {
+						has_wonder = wonder_ulduar
+						offmap_yoggsaron = { has_status = old_god_imprisoned }
+					}
+				}
+			}
+			FROM = { religion = old_gods_worship }
+		}
+		effect = {
+			if = {
+				limit = {
+					is_offmap_tag = offmap_cthun
+				}
+				FROM = {
+					add_offmap_currency = {
+						offmap = offmap_cthun
+						value = -8000
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					is_offmap_tag = offmap_nzoth
+				}
+				FROM = {
+					add_offmap_currency = {
+						offmap = offmap_nzoth
+						value = -8000
+					}
+				}
+			}
+			else = {
+				FROM = {
+					add_offmap_currency = {
+						offmap = offmap_yoggsaron
+						value = -8000
+					}
+				}
+			}
+			FROM = {
+				set_character_flag = freeing_old_god_flag
+				character_event = { id = WCOME.300 }
+			}
+		}
+		ai_will_do = {
+			factor = 1
+		}
+	}
+}
