@@ -15,6 +15,6 @@ Included modules:
 	Warcraft: Guardians of Azeroth - main mod.
 	Warcraft: GoA Russian - Russian localization.
 	Warcraft: GoA Music - music pack of Wacraft music.
-	Warcraft:_GoA_Models - model pack. WARNING: This submod can cause lag and crashes to those who are unlucky, use at your own risk.
+	Warcraft: GoA Models - model pack. WARNING: This submod can cause lag and crashes to those who are unlucky, use at your own risk.
 	
 	
