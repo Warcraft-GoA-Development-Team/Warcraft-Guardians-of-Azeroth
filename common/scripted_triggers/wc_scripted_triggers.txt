@@ -304,6 +304,7 @@ can_switch_culture_character_trigger = {
 }
 # CAN'T CHANGE CULTURE TO PREV CULTURE IF IT'S NOT TRUE
 can_switch_culture_to_prev_character_trigger = {
+	can_switch_culture_character_trigger = yes
 	trigger_if = {
 		limit = { PREV = { culture_group = aqir_group } }
 		is_aqir_trigger = yes
@@ -2627,60 +2628,6 @@ destroyable_religious_head_trigger = {
 	religion = tidemother
 }
 
-# Note: better stop using this triggers, they're CPU heavy
-# If you want to make gender-equal culture, the best way is adding Status of Woman law to every title of the culture
-is_matriarchal_trigger = {
-	custom_tooltip = {
-		text = is_matriarchal_trigger_tooltip
-		hidden_tooltip = {
-			OR = {
-				has_religion_feature = religion_matriarchal
-				AND = {
-					NOR = {
-						has_religion_feature = religion_patriarchal
-						has_religion_feature = religion_equal
-					}
-					OR = {
-						# Better not add cultures here
-						culture_group = harpy_group
-						culture = blood_troll
-						culture = hyldnir
-						culture = frostnymph
-					}
-				}
-			}
-		}
-	}
-}
-is_gender_equal_trigger = {
-	custom_tooltip = {
-		text = is_gender_equal_trigger_tooltip
-		hidden_tooltip = {
-			OR = {
-				has_religion_feature = religion_equal
-				AND = {
-					NOR = {
-						has_religion_feature = religion_patriarchal
-						is_matriarchal_trigger = yes
-					}
-					OR = {
-						# Better not add cultures here
-						religion_group = arcane_group
-						religion_group = dragon_religion_group
-						religion = kaldorei_religion
-						religion_group = fel_group
-						religion_group = loa_group
-						religion_group = necromancy_group
-						religion_group = nerubian_religion_group
-						religion_group = secular_group
-						religion_group = void_group
-					}
-				}
-			}
-		}
-	}
-}
-
 light_public_religion_trigger = {
 	OR = {
 		religion_group = light_group
@@ -4946,5 +4893,29 @@ is_plaguelands_belligerent_trigger = {
 		has_character_flag = is_balnazzar
 		has_character_flag = is_sylvanas
 		has_character_flag = is_garithos
+	}
+}
+
+# True if THIS can lend money to PREV
+this_can_lend_prev_money_trigger = {
+	war = no
+	
+	is_within_diplo_range = PREV
+	
+	custom_tooltip = {
+		text = borrowing_bothering_tooltip
+		NOT = { has_character_modifier = borrowing_bothering_cooldown }
+	}
+	
+	wealth = 600 # Let's say 500 is enough to build holding, so if you have 600 you don't know how to spend money
+	
+	trigger_if = {
+		limit = {
+			is_patrician = yes
+		}
+		opinion = { who = PREV value = -30 }
+	}
+	trigger_else = {
+		opinion = { who = PREV value = -20 }
 	}
 }
