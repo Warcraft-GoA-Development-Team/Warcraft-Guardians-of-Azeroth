@@ -614,13 +614,22 @@ character_event = {
 			NOR = {
 				trait = skeleton
 				trait = creature_lich
+				trait = creature_wickerman
+				trait = creature_wicker_behemoth
+				trait = creature_wicker_golem
 			}
 		}
 		text = EVTDESC_WCUND_150_flesh
 	}
 	desc = {
 		trigger = {
-			trait = skeleton
+			OR = {
+				trait = skeleton
+				trait = creature_lich
+				trait = creature_wickerman
+				trait = creature_wicker_behemoth
+				trait = creature_wicker_golem
+			}
 		}
 		text = EVTDESC_WCUND_150_bones
 	}
@@ -645,6 +654,9 @@ character_event = {
 			trait = creature_banshee
 			trait = creature_lich
 			trait = vampire				# Have the vampiric hunger for instead
+			trait = creature_wickerman
+			trait = creature_wicker_behemoth
+			trait = creature_wicker_golem
 		}
 		
 		NOT = { trait = lich_king }
@@ -917,6 +929,9 @@ character_event = {
 			trait = creature_abomination
 			trait = skeleton
 			trait = creature_lich
+			trait = creature_wickerman
+			trait = creature_wicker_behemoth
+			trait = creature_wicker_golem
 		}
 		is_ruler = no
 		dynasty = none
@@ -1132,6 +1147,49 @@ character_event = {
 		}
 	}
 
+	# Wickerman
+	option = {
+		trigger = {
+			event_target:target_undead = { NOT = {  trait = creature_wickerman } }
+			
+			event_target:target_necromancer = {
+				true_religion = throsic
+				NOT = { event_target:target_undead = { is_paladin_class_trigger = yes } }
+			}
+		}
+		name = EVTOPTG_WCUND_300
+
+		event_target:target_undead = {
+			show_scope_change = no
+			
+			ROOT = {
+				show_scope_change = no
+				
+				complete_quest_turn_into_undead_prev_effect = yes
+			}
+		}
+		event_target:target_undead = {
+			set_character_flag = transition_into_wickerman_flag
+			tooltip = {
+				remove_racial_traits_effect = yes
+				add_trait = creature_wickerman
+				add_trait_undead_effect = yes
+				if = {
+					limit = { event_target:target_undead = { NOT = { character = ROOT } } }
+					opinion = {
+						modifier = opinion_loyal_servant
+						who = ROOT
+					}
+				}
+			}
+		}
+		hidden_effect = { event_target:target_undead = { character_event = { id = WCPOD.5013 } } }
+
+		ai_chance = {
+			factor = 15
+		}
+	}
+
 	# Vampire
 	option = {
 		trigger = {
@@ -1139,6 +1197,7 @@ character_event = {
 			
 			NOT = { event_target:target_undead = { is_paladin_class_trigger = yes } }
 			event_target:target_necromancer = {
+				NOT = { true_religion = throsic }
 				OR = {
 					has_7_8_magic_class_or_higher_trigger = yes
 					trait = lich_king
@@ -1178,6 +1237,50 @@ character_event = {
 
 		ai_chance = {
 			factor = 5
+		}
+	}
+
+	# Wicker behemoth
+	option = {
+		trigger = {
+			event_target:target_undead = { NOT = {  trait = creature_wicker_behemoth } }
+			
+			NOT = { event_target:target_undead = { is_paladin_class_trigger = yes } }
+			event_target:target_necromancer = {
+				true_religion = throsic
+				has_7_8_magic_class_or_higher_trigger = yes
+			}
+		}
+		name = EVTOPTH_WCUND_300
+
+		event_target:target_undead = {
+			show_scope_change = no
+			
+			ROOT = {
+				show_scope_change = no
+				
+				complete_quest_turn_into_undead_prev_effect = yes
+			}
+		}
+		event_target:target_undead = {
+			set_character_flag = transition_into_wicker_behemoth_flag
+			tooltip = {
+				remove_racial_traits_effect = yes
+				add_trait = creature_wicker_behemoth
+				add_trait_undead_effect = yes
+				if = {
+					limit = { event_target:target_undead = { NOT = { character = ROOT } } }
+					opinion = {
+						modifier = opinion_loyal_servant
+						who = ROOT
+					}
+				}
+			}
+		}
+		hidden_effect = { event_target:target_undead = { character_event = { id = WCPOD.5013 } } }
+
+		ai_chance = {
+			factor = 25
 		}
 	}
 
@@ -1241,6 +1344,7 @@ character_event = {
 			
 			NOT = { event_target:target_undead = { is_paladin_class_trigger = yes } }
 			event_target:target_necromancer = {
+				NOT = { true_religion = throsic }
 				OR = {
 					has_7_8_magic_class_or_higher_trigger = yes
 					trait = lich_king
@@ -1267,54 +1371,6 @@ character_event = {
 			tooltip = {
 				remove_racial_traits_effect = yes
 				add_trait = creature_lich
-				add_trait_undead_effect = yes
-				if = {
-					limit = { event_target:target_undead = { NOT = { character = ROOT } } }
-					opinion = {
-						modifier = opinion_loyal_servant
-						who = ROOT
-					}
-				}
-			}
-		}
-		hidden_effect = { event_target:target_undead = { character_event = { id = WCPOD.5013 } } }
-
-		ai_chance = {
-			factor = 25
-		}
-	}
-	
-	# Wickerman
-	option = {
-		trigger = {
-			event_target:target_undead = { NOT = {  trait = creature_wickerman } }
-			
-			NOT = { event_target:target_undead = { is_paladin_class_trigger = yes } }
-			event_target:target_necromancer = {
-				OR = {
-					has_7_8_magic_class_or_higher_trigger = yes
-					AND = {
-						religion = throsic
-					}
-				}
-			}
-		}
-		name = EVTOPTG_WCUND_300
-
-		event_target:target_undead = {
-			show_scope_change = no
-			
-			ROOT = {
-				show_scope_change = no
-				
-				complete_quest_turn_into_undead_prev_effect = yes
-			}
-		}
-		event_target:target_undead = {
-			set_character_flag = transition_into_wickerman_flag
-			tooltip = {
-				remove_racial_traits_effect = yes
-				add_trait = creature_wickerman
 				add_trait_undead_effect = yes
 				if = {
 					limit = { event_target:target_undead = { NOT = { character = ROOT } } }
@@ -1368,7 +1424,7 @@ character_event = {
 	desc = {
 		trigger = {
 			NOT = {
-				religion = throsic
+				true_religion = throsic
 			}
 		}
 		text = EVTDESC_WCUND_350_abomination
@@ -1377,7 +1433,7 @@ character_event = {
 	
 	desc = {
 		trigger = {
-			religion = throsic
+			true_religion = throsic
 		}
 		text = EVTDESC_WCUND_350_wickergolem
 		picture = GFX_evt_drustvar
@@ -1391,7 +1447,7 @@ character_event = {
 	option = {
 		trigger = {
 			NOT = {
-				religion = throsic
+				true_religion = throsic
 			}
 		}
 		name = EVTOPTA_WCUND_350_abomination
@@ -1399,7 +1455,7 @@ character_event = {
 	
 	option = {
 		trigger = {
-			religion = throsic
+			true_religion = throsic
 		}
 		name = EVTOPTA_WCUND_350_wickergolem
 	}	
@@ -1416,7 +1472,7 @@ character_event = {
 	desc = {
 		trigger = {
 			NOT = {
-				religion = throsic
+				true_religion = throsic
 			}
 		}
 		text = EVTDESC_WCUND_355_abomination
@@ -1425,7 +1481,7 @@ character_event = {
 	
 	desc = {
 		trigger = {
-			religion = throsic
+			true_religion = throsic
 		}
 		text = EVTDESC_WCUND_355_wickergolem
 		picture = GFX_evt_drustvar
@@ -1443,7 +1499,7 @@ character_event = {
 			text = EVTOPTA_WCUND_355_abomination
 			trigger = {
 				NOT = {
-					religion = throsic
+					true_religion = throsic
 				}
 			}
 		}
@@ -1451,7 +1507,7 @@ character_event = {
 		name = {
 			text = EVTOPTA_WCUND_355_wickergolem
 			trigger = {
-				religion = throsic
+				true_religion = throsic
 			}
 		}
 
@@ -1515,7 +1571,7 @@ character_event = {
 			text = EVTOPTB_WCUND_355_abomination
 			trigger = {
 				NOT = {
-					religion = throsic
+					true_religion = throsic
 				}
 			}
 		}
@@ -1523,7 +1579,7 @@ character_event = {
 		name = {
 			text = EVTOPTB_WCUND_355_wickergolem
 			trigger = {
-				religion = throsic
+				true_religion = throsic
 			}
 		}
 
@@ -1594,18 +1650,11 @@ character_event = {
 			new_character = {
 				# Add race trait depending on religion
 				if = {
-					limit = {
-						NOT = {
-							religion = throsic
-						}
-					}
-					set_character_flag = transition_into_abomination_flag
-				}				
-				if = {
-					limit = {
-						religion = throsic
-					}
+					limit = { ROOT = {  true_religion = throsic } }
 					set_character_flag = transition_into_wicker_golem_flag
+				}				
+				else = {
+					set_character_flag = transition_into_abomination_flag
 				}
 				
 				# Fire the event
@@ -1696,7 +1745,7 @@ character_event = {
 	desc = {
 		trigger = {
 			NOT = {
-				religion = throsic
+				true_religion = throsic
 			}
 		}
 		text = EVTDESC_WCUND_360_abomination
@@ -1705,7 +1754,7 @@ character_event = {
 	
 	desc = {
 		trigger = {
-			religion = throsic
+			true_religion = throsic
 		}
 		text = EVTDESC_WCUND_360_wickergolem
 		picture = GFX_evt_drustvar
@@ -1734,7 +1783,7 @@ character_event = {
 	desc = {
 		trigger = {
 			NOT = {
-				religion = throsic
+				true_religion = throsic
 			}
 		}
 		text = EVTDESC_WCUND_370_abomination
@@ -1743,7 +1792,7 @@ character_event = {
 	
 	desc = {
 		trigger = {
-			religion = throsic
+			true_religion = throsic
 		}
 		text = EVTDESC_WCUND_370_wickergolem
 		picture = GFX_evt_drustvar
@@ -1757,7 +1806,7 @@ character_event = {
 	option = {
 		trigger = {
 			NOT = {
-				religion = throsic
+				true_religion = throsic
 			}
 		}
 		name = EVTOPTA_WCUND_370_abomination
@@ -1765,7 +1814,7 @@ character_event = {
 	
 	option = {
 		trigger = {
-			religion = throsic
+			true_religion = throsic
 		}
 		name = EVTOPTA_WCUND_370_wickergolem
 	}
@@ -1780,7 +1829,7 @@ character_event = {
 	desc = {
 		trigger = {
 			NOT = {
-				religion = throsic
+				true_religion = throsic
 			}
 		}
 		text = EVTDESC_WCUND_375_abomination
@@ -1789,7 +1838,7 @@ character_event = {
 	
 	desc = {
 		trigger = {
-			religion = throsic
+			true_religion = throsic
 		}
 		text = EVTDESC_WCUND_375_wickergolem
 		picture = GFX_evt_drustvar
@@ -1807,17 +1856,11 @@ character_event = {
 		
 		# Assign creature trait depending on religion		
 		if = {
-			limit = { 
-				NOT = {
-					religion = throsic
-				}
-			}
-			add_trait = creature_abomination
-		}
-		
-		if = {
-			limit = { religion = throsic }
+			limit = { true_religion = throsic } 
 			add_trait = creature_wicker_golem
+		}
+		else = {
+			add_trait = creature_abomination
 		}
 
 		# Fixes immortal age
@@ -1825,14 +1868,13 @@ character_event = {
 
 		# Set graphical culture depending on creature type
 		if = {
-			trait = creature_abomination
+			limit = { trait = creature_abomination }
+			hidden_effect = { set_graphical_culture = abomination }
 		}
-		hidden_effect = { set_graphical_culture = abomination }
-		
-		if = {
-			trait = creature_wicker_golem
+		else_if = {
+			limit = { trait = creature_wicker_golem }
+			hidden_effect = { set_graphical_culture = wicker_golem }
 		}
-		hidden_effect = { set_graphical_culture = wicker_golem }
 	}
 
 	after = {
@@ -2973,7 +3015,7 @@ character_event = {
 		else = { set_secret_religion = death_god }
 
 		ai_chance = {
-			factor = 50
+			factor = 25
 			
 			evil_ai_chance_score = yes
 			evil_ai_chance_religion_score = yes
@@ -2994,28 +3036,19 @@ character_event = {
 			limit = {
 				OR = {
 					is_dark_being_trigger = yes
-					liege = { religion = throssian }
+					liege = { religion = throsic }
 				}
 			}
 			if = { limit = { has_secret_religion = yes } clear_secret_religion = yes }
-			religion = throssian
+			religion = throsic
 		}
-		else = { set_secret_religion = throssian }
+		else = { set_secret_religion = throsic }
 
 		ai_chance = {
-			factor = 40
-			modifier = {
-				factor = 2.25
-				has_impious_trait_trigger = yes
-			}
-			modifier = {
-				factor = 1.75
-				has_evil_trait_trigger = yes
-			}
-			modifier = {
-				factor = 1.75
-				has_unpleasant_trait_trigger = yes
-			}
+			factor = 25
+			
+			evil_ai_chance_score = yes
+			evil_ai_chance_religion_score = yes
 		}
 	}
 	
