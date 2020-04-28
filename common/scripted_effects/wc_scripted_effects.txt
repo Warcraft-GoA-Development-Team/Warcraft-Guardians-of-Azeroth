@@ -4117,3 +4117,36 @@ claim_western_lordaeron_effect = {
 	# Hillsbrad
 	add_pressed_claim = d_hillsbrad
 }
+
+# Borrows 300 gold from PREV
+this_borrows_300_gold_from_prev_effect = {
+	this_borrows_300_effect = yes
+	
+	PREV = {
+		wealth = -300
+	
+		add_character_modifier = { name = interest_payment_360_gold years = 10 inherit = yes stacking = yes }
+	}
+}
+# target_borrower borrows 300 gold from target_moneylender
+borrower_borrows_300_gold_from_moneylender_effect = {
+	event_target:target_moneylender = {
+		show_scope_change = no
+		
+		event_target:target_borrower = {
+			this_borrows_300_gold_from_prev_effect = yes
+		}
+	}
+}
+# Borrows 300 gold from unknown moneylenders
+this_borrows_300_effect = {
+	wealth = 300
+	
+	add_character_modifier = { name = debt_360_gold duration = -1 inherit = yes }
+}
+# Clears flags and delayed events of borrowing decisions
+clean_up_borrowing_effect = {
+	clr_character_flag = ongoing_borrow_money_flag
+	# Fallback: conversation fails in 4 months
+	clear_delayed_event = { id = WCECO.150 }
+}
