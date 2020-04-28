@@ -1,101 +1,93 @@
-# # Targetted decisions are possible vs _all_ other characters and shown are in the Diplomacy View, not the Intrigue View. The taker is in the FROM scope.
-# #
-# # filter = [self/court/home_court/vassals/sub_realm/realm/dynasty/all] (self MUST be set for decisions targetting only the taker, the other filter types can be set to lessen CPU load)
-# # ai_target_filter = [self/court/home_court/vassals/sub_realm/realm/dynasty/all] (which characters for which the AI evaluates the decision.)
-# #	court: all characters in the AI's host court, including prisoners, and characters currently away (wards, prisoners, etc)
-# #	home_court: all characters in the AI's home court, including prisoners, and characters currently away (wards, prisoners, etc)
-# #	vassals: direct vassal rulers of the AI's employer
-# #	sub_realm: all characters below the AI's employer
-# #	realm: all characters in the same top realm as the AI
-# #	dynasty: all members of the same dynasty (including the dead!)
-# #	rivals: your rivals plus any character you have an opinion modifier with 'crime = yes' set (the same set of characters the 'is_foe' trigger evaluates)
-# #	all: all living characters (Avoid if possible. VERY CPU-HEAVY!)
-# #	
+# Targetted decisions are possible vs _all_ other characters and shown are in the Diplomacy View, not the Intrigue View. The taker is in the FROM scope.
+#
+# filter = [self/court/home_court/vassals/sub_realm/realm/dynasty/all] (self MUST be set for decisions targetting only the taker, the other filter types can be set to lessen CPU load)
+# ai_target_filter = [self/court/home_court/vassals/sub_realm/realm/dynasty/all] (which characters for which the AI evaluates the decision.)
+#	court: all characters in the AI's host court, including prisoners, and characters currently away (wards, prisoners, etc)
+#	home_court: all characters in the AI's home court, including prisoners, and characters currently away (wards, prisoners, etc)
+#	vassals: direct vassal rulers of the AI's employer
+#	sub_realm: all characters below the AI's employer
+#	realm: all characters in the same top realm as the AI
+#	dynasty: all members of the same dynasty (including the dead!)
+#	rivals: your rivals plus any character you have an opinion modifier with 'crime = yes' set (the same set of characters the 'is_foe' trigger evaluates)
+#	all: all living characters (Avoid if possible. VERY CPU-HEAVY!)
+#	
 
-# targetted_decisions = {
+targetted_decisions = {
 
-	# vassal_sacrifice_decision = {
-		# only_playable = yes
-	    # diplomacy_icon = GFX_sacrifice_decision
+	vassal_sacrifice_decision = {
+		only_playable = yes
+	    diplomacy_icon = GFX_sacrifice_decision
 	
-		# ai_target_filter = home_court
-		# ai_check_interval = 6
+		filter = court
+		ai_target_filter = court
+
+		# Warcraft
+		ai_check_interval = 12
+
+		from_potential = {
+			is_playable = yes
+
+			# Warcraft
+			is_untouchable_trigger = no
+			religion_have_ritual_sacrifice_trigger = yes
+
+			NOT = { has_religion_feature = religion_peaceful } #Aztecs could reform as Peaceful.
+		}
 	
-		# from_potential = {
-			# is_playable = yes
-			# OR = {
-				# religion = aztec
-				# religion = aztec_reformed
-			# }
-			# NOT = { has_religion_feature = religion_peaceful } #Aztecs could reform as Peaceful.
-		# }
-	
-		# potential = {
-			# prisoner = yes
-			# is_adult = yes
-			# host = { character = FROM }
-		# }
+		potential = {
+			prisoner = yes
+			
+			# Warcraft
+			is_untouchable_trigger = no
+			can_be_sacrificed_trigger = yes
+
+			host = { character = FROM }
+		}
 		
-		# allow = {
-			# NOT = { diplomatic_immunity = yes }
-			# prisoner = yes
-		# }
+		allow = {
+			NOT = { diplomatic_immunity = yes }
+			prisoner = yes
+		}
 		
-		# effect = {
-			# any_liege = {
-				# limit = { 
-					# ai = no
-					# NOT = { character = FROM }
-				# }
-				# character_event = { id = SSI.60 }
-			# }
-			# hidden_tooltip = {
-				# FROM = {
-					# character_event = { id = SSI.72 }
-				# }
-				# if = {
-					# limit = {
-						# controls_religion = yes
-						# NOR = {
-							# religion = aztec
-							# religion = aztec_reformed
-						# }
-						# FROM = { ai = no }
-					# }
-					# FROM = { set_character_flag = achievement_holy_smoke }
-				# }
-			# }
-			# death = {
-				# death_reason = death_execution_aztec_sacrifice
-				# killer = FROM
-			# }
-		# }
-		# revoke_allowed = {
-			# always = no
-		# }
-		# ai_will_do = {
-			# factor = 1
-			# modifier = {
-				# factor = 0
-				# trait = cynical
-			# }
-			# modifier = {
-				# factor = 1.5
-				# trait = zealous
-			# }
-			# modifier = {
-				# factor = 1.5
-				# trait = bloodthirsty_gods_1
-			# }
-			# modifier = {
-				# factor = 1.75
-				# trait = bloodthirsty_gods_2
-			# }
-			# modifier = {
-				# factor = 2
-				# trait = bloodthirsty_gods_3
-			# }
-		# }
-	# }
+		effect = {
+
+			# Warcraft
+			FROM = {
+				show_scope_change = no
+
+				ROOT = {
+					show_scope_change = no
+
+					PREV_public_sacrifice_THIS_effect = yes
+				}
+			}
+		}
+		revoke_allowed = {
+			always = no
+		}
+		ai_will_do = {
+			factor = 1
+			modifier = {
+				factor = 0
+				trait = cynical
+			}
+			modifier = {
+				factor = 1.5
+				trait = zealous
+			}
+			modifier = {
+				factor = 1.5
+				trait = bloodthirsty_gods_1
+			}
+			modifier = {
+				factor = 1.75
+				trait = bloodthirsty_gods_2
+			}
+			modifier = {
+				factor = 2
+				trait = bloodthirsty_gods_3
+			}
+		}
+	}
 	
-# }
+}

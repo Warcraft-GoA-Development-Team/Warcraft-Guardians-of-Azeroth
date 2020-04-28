@@ -7,7 +7,10 @@ become_leader_of_horde_faction_effect = {
 		}
 		add_trait = leader_of_horde_trait
 		# Creates the Horde title
-		create_e_horde_effect = yes
+		if = {
+			limit = { NOT = { has_landed_title = e_horde } }
+			create_e_horde_effect = yes
+		}
 		hidden_effect = {
 			clr_character_flag = being_joined_horde_flag
 			# add_alliances_with_faction_effect = yes
@@ -30,8 +33,23 @@ become_leader_of_alliance_faction_effect = {
 		add_trait = leader_of_alliance_trait
 		# Creates the Alliance title
 		if = {
-			limit = { has_global_flag = centralized_alliance_flag }
+			limit = {
+				NOT = { has_landed_title = e_alliance }
+				has_global_flag = centralized_alliance_flag
+			}
 			create_e_alliance_effect = yes
+		}
+		else_if = {
+			limit = { NOT = { tier = EMPEROR } }
+			creates_empire_for_alliance_leader_effect = yes
+			primary_title = {
+				save_this_title_as_temporary_alliance_title_effect = yes
+			}
+		}
+		else = {
+			primary_title = {
+				save_this_title_as_temporary_alliance_title_effect = yes
+			}
 		}
 		hidden_effect = {
 			clr_character_flag = being_joined_alliance_flag
@@ -236,8 +254,10 @@ leave_alliance_faction_effect = {
 							}
 						}
 					}
-					add_trait = leader_of_alliance_trait
+					set_character_flag = mention_alliance_flag	# Forces event to mention alliance
 					narrative_event = { id = WCPLF.60 }
+					clr_character_flag = mention_alliance_flag
+					become_leader_of_alliance_faction_effect = yes
 				}
 				hidden_effect = {
 					any_tributary = {
@@ -258,6 +278,7 @@ leave_alliance_faction_effect = {
 				narrative_event = { id = WCPLF.205 }
 				activate_title = { title = e_alliance status = no }
 				e_alliance = { destroy_landed_title = THIS }
+				clear_temporary_alliance_title_effect = yes
 			}
 		}
 		if = {
@@ -289,8 +310,8 @@ add_alliances_with_faction_effect = {
 					NOT = { character = PREVPREV }
 					is_tributary = { type = political_faction suzerain = suzerain }
 				}
-				opinion = { modifier = in_non_aggression_pact who = PREVPREV years = 1 }
-				reverse_opinion = { modifier = in_non_aggression_pact who = PREVPREV years = 1 }
+				opinion = { modifier = in_non_aggression_pact who = PREVPREV years = 1 origin_description = TRIBUTARY_POLITICAL_FACTION_NAME }
+				reverse_opinion = { modifier = in_non_aggression_pact who = PREVPREV years = 1 origin_description = TRIBUTARY_POLITICAL_FACTION_NAME }
 				add_alliance = { who = PREVPREV years = 9999 }
 			}
 		}
@@ -464,6 +485,8 @@ create_e_horde_effect = {
 	}
 }
 create_e_alliance_effect = {
+	clear_temporary_alliance_title_effect = yes
+	
 	if = {
 		limit = { NOT = { has_landed_title = e_alliance } }
 		primary_title = {
@@ -630,4 +653,40 @@ change_faction_laws = {
 		}
 		add_law = { law = succession_voting_power_1 cooldown = no opinion_effect = no }
 	}
+}
+
+# Creates empire title for Alliance leader
+creates_empire_for_alliance_leader_effect = {
+	primary_title = {
+		create_title = {
+			tier = EMPEROR
+			landless = no
+			temporary = no
+			custom_created = yes
+			culture = PREV
+			holder = PREV
+			base_title = THIS
+			copy_title_laws = yes
+		}
+
+		# new_title = {
+			# copy_title_history = PREV
+		# }
+	}
+	# hidden_effect = {
+		# primary_title = {
+			# holder_scope = {
+				# prev_empire_de_jure_claim_control_titles_effect = yes
+			# }
+		# }
+	# }
+}
+
+# Saves this title as leader of alliance
+save_this_title_as_temporary_alliance_title_effect = {
+	clear_global_event_target = target_temporary_alliance_title
+	save_global_event_target_as = target_temporary_alliance_title
+}
+clear_temporary_alliance_title_effect = {
+	clear_global_event_target = target_temporary_alliance_title
 }
