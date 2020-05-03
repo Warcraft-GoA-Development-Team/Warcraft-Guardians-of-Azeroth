@@ -1,0 +1,185 @@
+namespace = WCECO
+
+# You search for moneylenders
+character_event = {
+	id = WCECO.100
+	desc = EVTDESC_WCECO_100
+	picture = GFX_evt_chests_with_gold
+	border = GFX_event_normal_frame_economy
+
+	is_triggered_only = yes
+	
+	immediate = {
+		save_event_target_as = target_borrower
+		
+		# A well-known moneylender
+		random_playable_ruler = {
+			limit = {
+				this_can_lend_prev_money_trigger = yes
+			}
+			save_event_target_as = target_moneylender
+		}
+	}
+	
+	# Borrow from well-known moneylender
+	option = {
+		trigger = {
+			event_target:target_moneylender = { character = yes }
+		}
+		name = EVTOPTA_WCECO_100
+		
+		tooltip = {
+			borrower_borrows_300_gold_from_moneylender_effect = yes
+		}
+		
+		event_target:target_moneylender = { letter_event = { id = WCECO.110 days = 15 } }
+		
+		# Fallback: conversation fails in 4 months
+		character_event = { id = WCECO.150 months = 4 }
+	}
+	# Unknown moneylenders
+	option = {
+		trigger = {
+			NOT = {
+				event_target:target_moneylender = { character = yes }
+			}
+		}
+		name = EVTOPTB_WCECO_100
+		
+		clean_up_borrowing_effect = yes
+		
+		this_borrows_300_effect = yes
+	}
+	# I changed my mind
+	option = {
+		name = CHANGED_MY_MIND
+		
+		clean_up_borrowing_effect = yes
+		
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+# target_borrower wants to borrow your money
+letter_event = {
+	id = WCECO.110
+	desc = EVTDESC_WCECO_110
+	border = GFX_event_letter_frame_economy
+
+	is_triggered_only = yes
+	
+	trigger = {
+		event_target:target_borrower = {
+			is_alive = yes
+			
+			has_character_flag = ongoing_borrow_money_flag
+		}
+	}
+	
+	option = {
+		name = ACCEPT
+		
+		borrower_borrows_300_gold_from_moneylender_effect = yes
+		
+		event_target:target_borrower = { letter_event = { id = WCECO.115 } }
+		
+		ai_chance = {
+			factor = 50
+			
+			modifier = {
+				factor = 0
+				event_target:target_borrower = { ROOT = { this_can_lend_prev_money_trigger = no } }
+			}
+		}
+	}
+	option = {
+		name = DECLINE
+		
+		event_target:target_borrower = { letter_event = { id = WCECO.120 } }
+		
+		ai_chance = {
+			factor = 50
+			
+			modifier = {
+				factor = 0
+				event_target:target_borrower = { ROOT = { this_can_lend_prev_money_trigger = yes } }
+			}
+		}
+	}
+	# Don't bother me
+	option = {
+		trigger = {
+			ai = no
+		}
+		name = EVTOPTC_WCECO_110
+		
+		custom_tooltip = {
+			text = no_borrowing_letters_next_10_years_tooltip
+			add_character_modifier = { name = borrowing_bothering_cooldown years = 10 hidden = yes }
+		}
+		
+		event_target:target_borrower = { letter_event = { id = WCECO.120 } }
+	}
+}
+# target_moneylender accepted
+letter_event = {
+	id = WCECO.115
+	desc = EVTDESC_WCECO_115
+	border = GFX_event_letter_frame_economy
+
+	is_triggered_only = yes
+	
+	option = {
+		name = EXCELLENT
+		
+		tooltip = {
+			borrower_borrows_300_gold_from_moneylender_effect = yes
+		}
+	}
+	
+	after = {
+		clean_up_borrowing_effect = yes
+	}
+}
+# target_moneylender declined
+letter_event = {
+	id = WCECO.120
+	desc = EVTDESC_WCECO_120
+	border = GFX_event_letter_frame_economy
+
+	is_triggered_only = yes
+	
+	option = {
+		name = ALAS
+	}
+	
+	after = {
+		clean_up_borrowing_effect = yes
+	}
+}
+# Fallback: conversation fails in 4 months
+character_event = {
+	id = WCECO.150
+	desc = EVTDESC_WCECO_150
+	picture = GFX_evt_chests_with_gold
+	border = GFX_event_normal_frame_economy
+
+	is_triggered_only = yes
+	
+	trigger = {
+		event_target:target_borrower = {
+			is_alive = yes
+			
+			has_character_flag = ongoing_borrow_money_flag
+		}
+	}
+	
+	option = {
+		name = ALAS
+	}
+	
+	after = {
+		clean_up_borrowing_effect = yes
+	}
+}
