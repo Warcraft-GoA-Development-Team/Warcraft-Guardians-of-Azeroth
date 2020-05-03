@@ -23,14 +23,19 @@ set_cannot_marry_flag_effect = {
 		}
 	}
 }
-find_right_spouse_effect = {
+# Set cannot_marry flag or find right spouse
+set_cannot_marry_or_find_spouse_effect = {
 	if = {
-		limit = {
-			ai = yes
-			
-			is_in_player_sphere_of_influence_trigger = no
-		}
-		character_event = { id = WCCLN.130 }		# Finds right spouse
+		limit = { require_cannot_marry_flag_trigger = yes }
+		set_cannot_marry_flag_effect = yes
+	}
+	else_if = {
+		limit = { can_marry_trigger = yes }
+		# Finds right spouse
+		character_event = { id = WCCLN.130 }
+	}
+	else = {
+		set_cannot_marry_flag_effect = yes
 	}
 }
 
@@ -91,6 +96,9 @@ remove_racial_traits_effect = {
 	if = { limit = { trait = creature_plague_eruptor 		} remove_trait = creature_plague_eruptor 		}
 	if = { limit = { trait = creature_abomination 			} remove_trait = creature_abomination 		}
 	if = { limit = { trait = creature_lich 					} remove_trait = creature_lich 				}
+	if = { limit = { trait = creature_wickerman 			} remove_trait = creature_wickerman 		}
+	if = { limit = { trait = creature_wicker_behemoth 		} remove_trait = creature_wicker_behemoth 		}
+	if = { limit = { trait = creature_wicker_golem 			} remove_trait = creature_wicker_golem 				}
 
 	# Demons
 	if = { limit = { trait = creature_annihilan 			} remove_trait = creature_annihilan 			}
@@ -3021,6 +3029,22 @@ add_random_martial_education_effect = {
 		}
 	}
 }
+add_random_intrigue_education_effect = {
+	random_list = {
+		15 = {
+			add_trait = amateurish_plotter
+		}
+		35 = {
+			add_trait = flamboyant_schemer
+		}
+		35 = {
+			add_trait = intricate_webweaver
+		}
+		15 = {
+			add_trait = elusive_shadow
+		}
+	}
+}
 add_random_learning_education_effect = {
 	random_list = {
 		15 = {
@@ -4014,6 +4038,7 @@ add_artifact_frostmourne_effect = {
 	save_global_event_target_as = target_frostmourne_holder
 	add_artifact = frostmourne
 	hidden_effect = {
+		e_scourge = { holder_scope = { save_event_target_as = target_lich_king } }
 		new_artifact = {
 			set_creation_date = 591.11.1
 			set_original_owner = event_target:target_lich_king
@@ -4105,4 +4130,37 @@ claim_western_lordaeron_effect = {
 	
 	# Hillsbrad
 	add_pressed_claim = d_hillsbrad
+}
+
+# Borrows 300 gold from PREV
+this_borrows_300_gold_from_prev_effect = {
+	this_borrows_300_effect = yes
+	
+	PREV = {
+		wealth = -300
+	
+		add_character_modifier = { name = interest_payment_360_gold years = 10 inherit = yes stacking = yes }
+	}
+}
+# target_borrower borrows 300 gold from target_moneylender
+borrower_borrows_300_gold_from_moneylender_effect = {
+	event_target:target_moneylender = {
+		show_scope_change = no
+		
+		event_target:target_borrower = {
+			this_borrows_300_gold_from_prev_effect = yes
+		}
+	}
+}
+# Borrows 300 gold from unknown moneylenders
+this_borrows_300_effect = {
+	wealth = 300
+	
+	add_character_modifier = { name = debt_360_gold duration = -1 inherit = yes }
+}
+# Clears flags and delayed events of borrowing decisions
+clean_up_borrowing_effect = {
+	clr_character_flag = ongoing_borrow_money_flag
+	# Fallback: conversation fails in 4 months
+	clear_delayed_event = { id = WCECO.150 }
 }
