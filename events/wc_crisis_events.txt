@@ -77,7 +77,7 @@ character_event = {
 		
 		if = {
 			limit = { is_female = no }
-			save_event_target_as = target_mothers_spouse
+			save_event_target_as = target_father
 		}
 		else = {
 			save_event_target_as = target_mother
@@ -85,7 +85,7 @@ character_event = {
 		spouse = {
 			if = {
 				limit = { is_female = no }
-				save_event_target_as = target_mothers_spouse
+				save_event_target_as = target_father
 			}
 			else = {
 				save_event_target_as = target_mother
@@ -118,15 +118,62 @@ narrative_event = {
 		
 		event_target:target_mother = {
 			remove_racial_traits_effect = yes
-			# set_graphical_culture = human_undead	# Who said they're humans? :3
 			add_trait_undead_effect = yes			# This effect sets portrait
-			# Check for class trait and replace it with a Necromancer/DK, depending on the character being a caster or a melee class
+			if = {
+				limit = {
+					is_magic_class_trigger = yes
+					is_necromancer_class_trigger = no
+				}
+				set_character_flag = transition_into_necromancer_flag
+			}
+			else_if = {
+				limit = {
+					OR = {
+						is_melee_class_trigger = yes
+						is_alternative_class_trigger = yes
+					}
+					is_death_knight_class_trigger = no
+				}
+				set_character_flag = transition_into_death_knight_flag
+			}
+			else_if = {
+				limit = {
+					is_magic_class_trigger = no
+					is_melee_class_trigger = no
+					is_alternative_class_trigger = no
+				}
+				add_trait = class_necromancer_4
+			}
 			religion = throsic
 		}
-		event_target:target_mothers_spouse = {
+		event_target:target_father = {
 			# set_graphical_culture = human_undead
 			add_trait_undead_effect = yes
-			# Check for class trait and replace it with a Necromancer/DK, depending on the character being a caster or a melee class
+			if = {
+				limit = {
+					is_magic_class_trigger = yes
+					is_necromancer_class_trigger = no
+				}
+				set_character_flag = transition_into_necromancer_flag
+			}
+			else_if = {
+				limit = {
+					OR = {
+						is_melee_class_trigger = yes
+						is_alternative_class_trigger = yes
+					}
+					is_death_knight_class_trigger = no
+				}
+				set_character_flag = transition_into_death_knight_flag
+			}
+			else_if = {
+				limit = {
+					is_magic_class_trigger = no
+					is_melee_class_trigger = no
+					is_alternative_class_trigger = no
+				}
+				add_trait = class_death_knight_4
+			}
 			religion = throsic
 			narrative_event = { id = WCCRS.111 }
 		}
@@ -139,8 +186,8 @@ narrative_event = {
 			}
 		}
 		else_if = {
-			limit = { event_target:target_mothers_spouse = { is_landed = yes } }
-			event_target:target_mothers_spouse = {
+			limit = { event_target:target_father = { is_landed = yes } }
+			event_target:target_father = {
 				save_event_target_as = target_unit_owner
 				capital_scope = { save_event_target_as = target_unit_province }
 			}
@@ -167,16 +214,16 @@ narrative_event = {
 		
 		# Independence?
 		if = {
-			limit = { event_target:target_mother = { de_facto_liege = event_target:target_mothers_spouse } }
-			event_target:target_mothers_spouse = { set_defacto_liege = THIS }
+			limit = { event_target:target_mother = { de_facto_liege = event_target:target_father } }
+			event_target:target_father = { set_defacto_liege = THIS }
 		}
 		else_if = {
-			limit = { event_target:target_mothers_spouse = { de_facto_liege = event_target:target_mother } }
+			limit = { event_target:target_father = { de_facto_liege = event_target:target_mother } }
 			event_target:target_mother = { set_defacto_liege = THIS }
 		}
 		else = {
 			event_target:target_mother = { set_defacto_liege = THIS }
-			event_target:target_mothers_spouse = { set_defacto_liege = THIS }
+			event_target:target_father = { set_defacto_liege = THIS }
 		}
 
 		# The Order of Embers
@@ -342,7 +389,7 @@ narrative_event = {
 					limit = {
 						OR = {
 							character = event_target:target_mother
-							character = event_target:target_mothers_spouse
+							character = event_target:target_father
 						}
 					}
 					reverse_unsafe_war = {
