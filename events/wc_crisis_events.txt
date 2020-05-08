@@ -32,8 +32,7 @@ character_event = {
 		dark_public_religion_trigger = no
 		dark_true_religion_trigger = no
 
-		trigger_if = {
-			limit = { is_female = no }
+		trigger = {
 			character_disease_trigger = yes
 		}
 
@@ -57,8 +56,7 @@ character_event = {
 			dark_public_religion_trigger = no
 			dark_true_religion_trigger = no
 
-			trigger_if = {
-				limit = { is_female = no }
+			trigger = {
 				character_disease_trigger = yes
 			}
 		}
@@ -91,8 +89,27 @@ character_event = {
 				save_event_target_as = target_mother
 			}
 		}
-
-		event_target:target_mother = { narrative_event = { id = WCCRS.110 } }
+		
+		if = {
+			limit = {
+				is_female = no
+				character_disease_trigger = yes
+			}
+			event_target:target_mother = { 
+				save_event_target_as = target_sick_spouse
+				narrative_event = { id = WCCRS.110 } 
+			}
+		}		
+		else_if = {
+			limit = {
+				is_female = yes
+				character_disease_trigger = yes
+			}
+			event_target:target_father = { 
+				save_event_target_as = target_sick_spouse
+				narrative_event = { id = WCCRS.110 } 
+			}
+		}
 	}
 }
 
@@ -144,7 +161,6 @@ narrative_event = {
 				add_trait = class_necromancer_4
 			}
 			religion = throsic
-			# WCCRS.111 should fire here only if father got WCCRS.110
 		}
 		event_target:target_father = {
 			add_trait_undead_effect = yes
@@ -174,8 +190,9 @@ narrative_event = {
 				add_trait = class_death_knight_4
 			}
 			religion = throsic
-			narrative_event = { id = WCCRS.111 } 	# WCCRS.111 should fire here only if mother got WCCRS.110
 		}
+		
+		event_target:target_sick_spouse = { narrative_event = { id = WCCRS.111 } }
 		
 		if = {
 			limit = { event_target:target_mother = { is_landed = yes } }
