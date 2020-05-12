@@ -78,15 +78,35 @@ narrative_event = {
 		
 		event_target:target_sick_spouse = { narrative_event = { id = WCCRS.111 } }
 		
-		# Gives units
+		# Gives units to d_drustwar holder
 		if = {
+			limit = {
+				d_drustwar = {
+					holder_scope = {
+						OR = {
+							character = event_target:target_worried_spouse
+							character = event_target:target_sick_spouse
+						}
+					}
+				}
+			}
+			d_drustwar = {
+				holder_scope = {
+					save_event_target_as = target_unit_owner
+					capital_scope = { save_event_target_as = target_unit_province }
+				}
+			}
+		}
+		# ...otherwise, gives units to target_worried_spouse
+		else_if = {
 			limit = { event_target:target_worried_spouse = { is_landed = yes } }
 			event_target:target_worried_spouse = {
 				save_event_target_as = target_unit_owner
 				capital_scope = { save_event_target_as = target_unit_province }
 			}
 		}
-		else_if = {
+		# ...otherwise, gives units to target_sick_spouse
+		else = {
 			limit = { event_target:target_sick_spouse = { is_landed = yes } }
 			event_target:target_sick_spouse = {
 				save_event_target_as = target_unit_owner
@@ -117,8 +137,10 @@ narrative_event = {
 		if = {
 			limit = {
 				event_target:target_worried_spouse = {
+					independent = no
 					is_ruler = yes
-					NOT = { is_vassal_or_below_of = event_target:target_sick_spouse }
+					
+					liege = { NOT = { religion = throsic } }
 				} 
 			}
 			event_target:target_worried_spouse = { set_defacto_liege = THIS }
@@ -126,8 +148,10 @@ narrative_event = {
 		if = {
 			limit = {
 				event_target:target_sick_spouse = {
+					independent = no
 					is_ruler = yes
-					NOT = { is_vassal_or_below_of = event_target:target_worried_spouse }
+					
+					liege = { NOT = { religion = throsic } }
 				} 
 			}
 			event_target:target_sick_spouse = { set_defacto_liege = THIS }
@@ -255,7 +279,6 @@ narrative_event = {
 			limit = {
 				k_kul_tiras = {
 					holder_scope = {
-						is_dark_being_trigger = no
 						religion = tidemother
 					}
 				}
