@@ -113,6 +113,9 @@ narrative_event = {
 		if = {
 			limit = { event_target:target_unit_owner = { character = yes } }
 			event_target:target_unit_owner = {
+				# Gives money, spawn commanders
+				for_war_start_pack_effect = yes
+				# Gives troops
 				spawn_colonial_troops_effect = yes
 				spawn_colonial_troops_effect = yes
 			}
@@ -273,6 +276,8 @@ narrative_event = {
 		
 		#Gives money and moral authority
 		holy_order_start_pack_effect = yes
+		# Gives money, spawn commanders
+		for_war_start_pack_effect = yes
 
 		# Declares war against the duchy of Drustvar
 		d_drustwar = {
@@ -299,7 +304,7 @@ narrative_event = {
 			location = {
 				ROOT = {
 					spawn_unit = {
-						owner = ROOT
+						owner = THIS
 						province = PREV
 						home = PREV
 						match_character = event_target:target_drustwar_leader
@@ -344,9 +349,11 @@ narrative_event = {
 	major_trigger = {
 		ai = no
 	}
+	show_root = yes
 
 	immediate = {
 		log = "WCCRS.130 fired for [Root.GetBestName]"
+		save_event_target_as = target_summoner_of_gorak
 		
 		set_global_flag = drust_incursion_happened		# Locks the crisis opening event if it didn't happen
 		
@@ -392,28 +399,6 @@ narrative_event = {
 			wealth = 1000
 			set_government_type = tribal_monarchy_government
 			
-			spawn_unit = {
-				owner = event_target:target_gorak_tul
-				province = 2209 # Fate's End
-				home = 2209 # Fate's End
-				match_character = PREVPREVPREV		# Admiral of KT
-				match_mult = 1
-				match_min = 1000
-				match_max = 15000
-				cannot_inherit = no
-				attrition = 1.0
-				reinforces = yes
-				maintenance = no
-			}
-			spawn_fleet = {
-				province = closest # closest sea zone
-				owner = event_target:target_gorak_tul
-				disband_on_peace = yes
-				troops = {
-					galleys = { 100 100 }
-				}
-			}
-			
 			create_character = {
 				name = Maloch
 				dynasty = 70202
@@ -427,7 +412,6 @@ narrative_event = {
 				trait=zealous trait=cruel trait=proud trait=being_undead
 				age = 400
 			}
-			
 			new_character = {
 				set_graphical_culture = vrykul_undead
 			}
@@ -445,7 +429,6 @@ narrative_event = {
 				trait=zealous trait=sturdy trait=brave trait=wroth trait=being_undead
 				age = 400
 			}
-			
 			new_character = {
 				set_graphical_culture = vrykul_undead
 			}
@@ -464,7 +447,6 @@ narrative_event = {
 				age = 400
 				add_trait_undead_effect = yes
 			}
-			
 			new_character = {
 				set_graphical_culture = vrykul_undead
 			}
@@ -472,27 +454,51 @@ narrative_event = {
 		# Make the person that fired the decison a vassal of Gorak Tul
 		event_target:target_summoner_of_gorak = {
 			if = {
-				limit = {
-					character_can_be_vassalized_trigger = yes
-				}
+				limit = { character_can_be_vassalized_trigger = yes }
 				set_defacto_liege = event_target:target_gorak_tul
 			}
 		}
 		# Declares war against Kul Tiras (wip)
-		k_kul_tiras = {
+		c_boralus = {
 			holder_scope = {
-				if = {
-					limit = {
-						dark_public_religion_trigger = no
+				top_liege = {
+					save_event_target_as = target_gorak_tul_enemy
+					reverse_war = {
+						target = event_target:target_gorak_tul
+						casus_belli = invasion
+						thirdparty_title = k_kul_tiras
 					}
-					reverse_unsafe_war = {
-                        target = event_target:target_gorak_tul
-                        casus_belli = invasion
-                        thirdparty_title = PREV
-                    }
 				}
             }
         }
+		#Gives troops
+		event_target:target_gorak_tul = {
+			# Gives money, spawn commanders
+			for_war_start_pack_effect = yes
+			# Gives troops
+			spawn_colonial_troops_effect = yes
+			spawn_colonial_troops_effect = yes
+			# Gives troops to fight c_boralus's liege
+			if = {
+				limit = { war = yes }
+				location = {
+					event_target:target_gorak_tul = {
+						spawn_unit = {
+							owner = THIS
+							province = PREV
+							home = PREV
+							match_character = event_target:target_gorak_tul_enemy
+							match_mult = 1
+							match_min = 1500
+							match_max = 15000
+							attrition = 1.0
+							maintenance = no
+						}
+					}
+				}
+			}
+		}
+		
 		
 		# The Thornspeakers take action
 		73 = { province_event = { id = WCCRS.149 days = 7 } }
@@ -525,7 +531,6 @@ narrative_event = {
 		ai = no
 	}
 	show_root = yes
-	hide_from = yes
 	
 	religion = throsic
 
@@ -645,7 +650,6 @@ narrative_event = {
 		ai = no
 	}
 	show_root = yes
-	hide_from = yes
 
 	is_triggered_only = yes
 
