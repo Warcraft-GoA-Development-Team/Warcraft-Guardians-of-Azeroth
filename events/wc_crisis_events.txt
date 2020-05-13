@@ -11,6 +11,9 @@ character_event = {
 	only_playable = yes
 
 	trigger = {
+		NOT = {	has_global_flag = drust_incursion_happened }
+		NOT = {	has_global_flag = heartsbane_coven_event_flag }
+		
 		trigger_if = {
 			limit = { drust_sick_spouse_trigger = yes }
 			any_spouse = { drust_worried_spouse_trigger = yes }
@@ -67,129 +70,54 @@ narrative_event = {
 		name = EVTOPTA_WCCRS_110
 		
 		event_target:target_worried_spouse = {
-			add_trait_undead_effect = yes			# This effect sets portrait
-			religion = throsic		# Need to set undead religion before necromantic classes can be assigned
-			if = {
-				limit = {
-					is_death_knight_class_trigger = no
-					OR = {
-						is_physical_class_trigger = yes
-						is_combined_class_trigger = yes
-					}
-					potential_death_knight_trigger = yes
-				}
-				add_character_modifier = { name = training_self_death_knight duration = -1 }
-				recount_experience_effect = yes
-				add_class_trait_effect = yes
-			}
-			else_if = {
-				limit = {
-					is_necromancer_class_trigger = no
-					is_magic_class_trigger = yes
-					potential_necromancer_trigger = yes
-				}
-				add_character_modifier = { name = training_self_necromancer duration = -1 }
-				recount_experience_effect = yes
-				add_class_trait_effect = yes
-			}
-			else_if = {
-				limit = {
-					is_magic_class_trigger = no
-					is_physical_class_trigger = no
-					is_combined_class_trigger = no
-					is_female = yes
-				}
-				add_trait = class_necromancer_4
-			}
-			else_if = {
-				limit = {
-					is_magic_class_trigger = no
-					is_physical_class_trigger = no
-					is_combined_class_trigger = no
-					is_female = no
-				}
-				add_trait = class_death_knight_4
-			}
+			drust_spouse_becomes_undead_effect = yes
 		}
 		event_target:target_sick_spouse = {
-			add_trait_undead_effect = yes
-			religion = throsic
-			if = {
-				limit = {
-					is_death_knight_class_trigger = no
-					OR = {
-						is_physical_class_trigger = yes
-						is_combined_class_trigger = yes
-					}
-					potential_death_knight_trigger = yes
-				}
-				add_character_modifier = { name = training_self_death_knight duration = -1 }
-				recount_experience_effect = yes
-				add_class_trait_effect = yes
-			}
-			else_if = {
-				limit = {
-					is_necromancer_class_trigger = no
-					is_magic_class_trigger = yes
-					potential_necromancer_trigger = yes
-				}
-				add_character_modifier = { name = training_self_necromancer duration = -1 }
-				recount_experience_effect = yes
-				add_class_trait_effect = yes
-			}
-			else_if = {
-				limit = {
-					is_magic_class_trigger = no
-					is_physical_class_trigger = no
-					is_combined_class_trigger = no
-					is_female = yes
-				}
-				add_trait = class_necromancer_4
-			}
-			else_if = {
-				limit = {
-					is_magic_class_trigger = no
-					is_physical_class_trigger = no
-					is_combined_class_trigger = no
-					is_female = no
-				}
-				add_trait = class_death_knight_4
-			}
+			drust_spouse_becomes_undead_effect = yes
 		}
 		
 		event_target:target_sick_spouse = { narrative_event = { id = WCCRS.111 } }
 		
+		# Gives units to d_drustwar holder
 		if = {
+			limit = {
+				d_drustwar = {
+					holder_scope = {
+						OR = {
+							character = event_target:target_worried_spouse
+							character = event_target:target_sick_spouse
+						}
+					}
+				}
+			}
+			d_drustwar = {
+				holder_scope = {
+					save_event_target_as = target_unit_owner
+				}
+			}
+		}
+		# ...otherwise, gives units to target_worried_spouse
+		else_if = {
 			limit = { event_target:target_worried_spouse = { is_landed = yes } }
 			event_target:target_worried_spouse = {
 				save_event_target_as = target_unit_owner
-				capital_scope = { save_event_target_as = target_unit_province }
 			}
 		}
-		else_if = {
+		# ...otherwise, gives units to target_sick_spouse
+		else = {
 			limit = { event_target:target_sick_spouse = { is_landed = yes } }
 			event_target:target_sick_spouse = {
 				save_event_target_as = target_unit_owner
-				capital_scope = { save_event_target_as = target_unit_province }
 			}
 		}
 		if = {
 			limit = { event_target:target_unit_owner = { character = yes } }
-			spawn_unit = {
-				owner = event_target:target_unit_owner
-				province = event_target:target_unit_province
-				home = event_target:target_unit_province
-				troops = {
-					archers = { 1000 1000 }
-					light_infantry = { 1500 1500 }
-					heavy_infantry = { 1875 1875 }
-					light_cavalry = { 250 250 }
-					knights = { 375 375 }
-				}
-				cannot_inherit = no
-				attrition = 1.0
-				reinforces = yes
-				maintenance = no
+			event_target:target_unit_owner = {
+				# Gives money, spawn commanders
+				for_war_start_pack_effect = yes
+				# Gives troops
+				spawn_colonial_troops_effect = yes
+				spawn_colonial_troops_effect = yes
 			}
 		}
 		
@@ -197,8 +125,10 @@ narrative_event = {
 		if = {
 			limit = {
 				event_target:target_worried_spouse = {
+					independent = no
 					is_ruler = yes
-					NOT = { is_vassal_or_below_of = event_target:target_sick_spouse }
+					
+					liege = { NOT = { religion = throsic } }
 				} 
 			}
 			event_target:target_worried_spouse = { set_defacto_liege = THIS }
@@ -206,8 +136,10 @@ narrative_event = {
 		if = {
 			limit = {
 				event_target:target_sick_spouse = {
+					independent = no
 					is_ruler = yes
-					NOT = { is_vassal_or_below_of = event_target:target_worried_spouse }
+					
+					liege = { NOT = { religion = throsic } }
 				} 
 			}
 			event_target:target_sick_spouse = { set_defacto_liege = THIS }
@@ -335,43 +267,22 @@ narrative_event = {
 			limit = {
 				k_kul_tiras = {
 					holder_scope = {
-						is_dark_being_trigger = no
 						religion = tidemother
 					}
 				}
 			}
 			set_defacto_liege = k_kul_tiras
 		}
-		religion_authority = {
-			modifier = religious_order_formed
-			years = 10
-		}
-		event_target:target_ooe_founder = {
-			wealth = 500
-		}
-		2193 = {
-			ROOT = {
-				spawn_unit = {
-					owner = ROOT
-					province = PREV
-					home = PREV
-					troops = {
-						archers = { 1000 1000 }
-						light_infantry = { 1500 1500 }
-						heavy_infantry = { 1875 1875 }
-						light_cavalry = { 250 250 }
-						knights = { 375 375 }
-					}
-					cannot_inherit = no
-					attrition = 1.0
-					reinforces = yes
-					maintenance = no
-				}
-			}
-		}
+		
+		#Gives money and moral authority
+		holy_order_start_pack_effect = yes
+		# Gives money, spawn commanders
+		for_war_start_pack_effect = yes
+
 		# Declares war against the duchy of Drustvar
 		d_drustwar = {
 			holder_scope = {
+				save_event_target_as = target_drustwar_leader
 				if = {
 					limit = {
 						OR = {
@@ -383,6 +294,25 @@ narrative_event = {
 						target = event_target:target_ooe_founder
 						casus_belli = religious
 						thirdparty_title = PREV
+					}
+				}
+			}
+		}
+		# Gives units to fight d_drustwar
+		if = {
+			limit = { war = yes }
+			location = {
+				ROOT = {
+					spawn_unit = {
+						owner = THIS
+						province = PREV
+						home = PREV
+						match_character = event_target:target_drustwar_leader
+						match_mult = 0.75
+						match_min = 1000
+						match_max = 10000
+						attrition = 1.0
+						maintenance = no
 					}
 				}
 			}
@@ -419,11 +349,13 @@ narrative_event = {
 	major_trigger = {
 		ai = no
 	}
+	show_root = yes
 
 	immediate = {
 		log = "WCCRS.130 fired for [Root.GetBestName]"
+		save_event_target_as = target_summoner_of_gorak
 		
-		set_global_flag = drust_incursion_happened
+		set_global_flag = drust_incursion_happened		# Locks the crisis opening event if it didn't happen
 		
 		create_character = {
 			name = Gorak
@@ -468,31 +400,6 @@ narrative_event = {
 			wealth = 1000
 			set_government_type = tribal_monarchy_government
 			
-			spawn_unit = {
-				owner = event_target:target_gorak_tul
-				province = 2209 # Fate's End
-				home = 2209 # Fate's End
-				troops = {
-					archers = { 2000 2000 }
-					light_infantry = { 3000 3000 }
-					heavy_infantry = { 3750 3750 }
-					light_cavalry = { 500 500 }
-					knights = { 750 750 }
-				}
-				cannot_inherit = no
-				attrition = 1.0
-				reinforces = yes
-				maintenance = no
-			}
-			spawn_fleet = {
-				province = closest # closest sea zone
-				owner = event_target:target_gorak_tul
-				disband_on_peace = yes
-				troops = {
-					galleys = { 100 100 }
-				}
-			}
-			
 			create_character = {
 				name = Maloch
 				dynasty = 70202
@@ -506,7 +413,6 @@ narrative_event = {
 				trait=zealous trait=cruel trait=proud trait=being_undead
 				age = 400
 			}
-			
 			new_character = {
 				set_graphical_culture = vrykul_undead
 			}
@@ -524,7 +430,6 @@ narrative_event = {
 				trait=zealous trait=sturdy trait=brave trait=wroth trait=being_undead
 				age = 400
 			}
-			
 			new_character = {
 				set_graphical_culture = vrykul_undead
 			}
@@ -543,7 +448,6 @@ narrative_event = {
 				age = 400
 				add_trait_undead_effect = yes
 			}
-			
 			new_character = {
 				set_graphical_culture = vrykul_undead
 			}
@@ -551,27 +455,51 @@ narrative_event = {
 		# Make the person that fired the decison a vassal of Gorak Tul
 		event_target:target_summoner_of_gorak = {
 			if = {
-				limit = {
-					character_can_be_vassalized_trigger = yes
-				}
+				limit = { character_can_be_vassalized_trigger = yes }
 				set_defacto_liege = event_target:target_gorak_tul
 			}
 		}
 		# Declares war against Kul Tiras (wip)
-		k_kul_tiras = {
+		c_boralus = {
 			holder_scope = {
-				if = {
-					limit = {
-						dark_public_religion_trigger = no
+				top_liege = {
+					save_event_target_as = target_gorak_tul_enemy
+					reverse_war = {
+						target = event_target:target_gorak_tul
+						casus_belli = invasion
+						thirdparty_title = k_kul_tiras
 					}
-					reverse_unsafe_war = {
-                        target = event_target:target_gorak_tul
-                        casus_belli = invasion
-                        thirdparty_title = PREV
-                    }
 				}
             }
         }
+		#Gives troops
+		event_target:target_gorak_tul = {
+			# Gives money, spawn commanders
+			for_war_start_pack_effect = yes
+			# Gives troops
+			spawn_colonial_troops_effect = yes
+			spawn_colonial_troops_effect = yes
+			# Gives troops to fight c_boralus's liege
+			if = {
+				limit = { war = yes }
+				location = {
+					event_target:target_gorak_tul = {
+						spawn_unit = {
+							owner = THIS
+							province = PREV
+							home = PREV
+							match_character = event_target:target_gorak_tul_enemy
+							match_mult = 1
+							match_min = 1500
+							match_max = 15000
+							attrition = 1.0
+							maintenance = no
+						}
+					}
+				}
+			}
+		}
+		
 		
 		# The Thornspeakers take action
 		73 = { province_event = { id = WCCRS.149 days = 7 } }
@@ -587,11 +515,11 @@ narrative_event = {
 	id = WCCRS.140
 	title = "EVTTITLE_WCCRS_140"
 	desc = {
-		trigger = { NOT = { religion = throsic } }
+		trigger = { NOT = { true_religion = throsic } }
 		text = EVTDESC_WCCRS_140
 	}
 	desc = {
-		trigger = { religion = throsic }
+		trigger = { true_religion = throsic }
 		text = EVTDESC_WCCRS_141
 	}
 	picture = "GFX_evt_boralus_siege"
@@ -604,7 +532,6 @@ narrative_event = {
 		ai = no
 	}
 	show_root = yes
-	hide_from = yes
 	
 	religion = throsic
 
@@ -652,11 +579,11 @@ narrative_event = {
 
 	option = {
 		name = "EVTOPTA_WCCRS_140"
-		trigger = { NOT = { religion = throsic } }
+		trigger = { NOT = { true_religion = throsic } }
 	}
 	option = {
 		name = "EVTOPTB_WCCRS_140"
-		trigger = { religion = throsic }
+		trigger = { true_religion = throsic }
 		
 		prestige = 100
 	}
@@ -724,7 +651,6 @@ narrative_event = {
 		ai = no
 	}
 	show_root = yes
-	hide_from = yes
 
 	is_triggered_only = yes
 
@@ -733,13 +659,9 @@ narrative_event = {
 		
 		activate_title = { title = d_thornspeakers status = yes }
 		d_thornspeakers = { grant_title = event_target:target_thornspeakers_founder }
-		religion_authority = {
-			modifier = religious_order_formed
-			years = 10
-		}
-		event_target:target_thornspeakers_founder = {
-			wealth = 500
-		}
+		
+		#Gives money and moral authority
+		holy_order_start_pack_effect = yes
 	}
 
 	option = {
