@@ -489,6 +489,8 @@ show_close_people_what_this_become_effect = {
 		any_spouse = {
 			limit = {
 				NOT = { character = event_target:target_necromancer }	# This character turned THIS, so it already know
+				NOT = { character = event_target:target_worried_spouse }
+				NOT = { character = event_target:target_sick_spouse }
 			}
 			set_notification_type_of_prev_effect = yes
 			character_event = { id = WCDAC.150 }
@@ -496,6 +498,9 @@ show_close_people_what_this_become_effect = {
 		any_friend = {
 			limit = {
 				NOT = { character = event_target:target_necromancer }	# This character turned THIS, so it already know
+				NOT = { character = event_target:target_worried_spouse }
+				NOT = { character = event_target:target_sick_spouse }
+				
 				NOT = { is_married = PREV }
 			}
 			set_notification_type_of_prev_effect = yes
@@ -504,6 +509,9 @@ show_close_people_what_this_become_effect = {
 		any_lover = {
 			limit = {
 				NOT = { character = event_target:target_necromancer }	# This character turned THIS, so it already know
+				NOT = { character = event_target:target_worried_spouse }
+				NOT = { character = event_target:target_sick_spouse }
+				
 				NOT = { is_married = PREV }
 				NOT = { is_friend = PREV }
 			}
@@ -513,6 +521,9 @@ show_close_people_what_this_become_effect = {
 		any_close_relative = {
 			limit = {
 				NOT = { character = event_target:target_necromancer }	# This character turned THIS, so it already know
+				NOT = { character = event_target:target_worried_spouse }
+				NOT = { character = event_target:target_sick_spouse }
+				
 				NOT = { is_married = PREV }
 				NOT = { is_friend = PREV }
 				NOT = { is_lover = PREV }
@@ -531,6 +542,9 @@ show_close_people_what_this_become_effect = {
 
 				liege = {
 					NOT = { character = event_target:target_necromancer }	# This character turned THIS, so it already know
+					NOT = { character = event_target:target_worried_spouse }
+					NOT = { character = event_target:target_sick_spouse }
+					
 					NOT = { is_married = PREV }
 					NOT = { is_friend = PREV }
 					NOT = { is_lover = PREV }
@@ -2119,7 +2133,7 @@ corrupt_world_tree_effect = {
 					limit = { NOT = { has_global_flag = night_elves_lost_immortality_flag } }
 					set_global_flag = night_elves_lost_immortality_flag
 					# Delayed notification event
-					3264 = { province_event = { id = WCDRU.5500 days = 10 random = 10 } }
+					1921 = { province_event = { id = WCDRU.5500 days = 10 random = 10 } }
 				}
 			}
 		}
@@ -2154,7 +2168,7 @@ burn_world_tree_effect = {
 					limit = { NOT = { has_global_flag = night_elves_lost_immortality_flag } }
 					set_global_flag = night_elves_lost_immortality_flag
 					# Delayed notification event
-					3264 = { province_event = { id = WCDRU.5500 days = 10 random = 10 } }
+					1921 = { province_event = { id = WCDRU.5500 days = 10 random = 10 } }
 				}
 			}
 		}
@@ -4153,4 +4167,66 @@ clean_up_borrowing_effect = {
 	clr_character_flag = ongoing_borrow_money_flag
 	# Fallback: conversation fails in 4 months
 	clear_delayed_event = { id = WCECO.150 }
+}
+
+#Gives money and moral authority
+holy_order_start_pack_effect = {
+	religion_authority = {
+		modifier = religious_order_formed
+		years = 10
+	}
+	wealth = 500
+}
+# Gives money, spawn commanders
+for_war_start_pack_effect = {
+	wealth = 500
+	spawn_fantastic_commander_effect = yes
+	spawn_great_commander_effect = yes
+	spawn_great_commander_effect = yes
+	spawn_good_commander_effect = yes
+	spawn_good_commander_effect = yes
+}
+
+drust_spouse_becomes_undead_effect = {
+	add_trait_undead_effect = yes			# This effect sets portrait
+	religion = throsic		# Need to set undead religion before necromantic classes can be assigned
+	if = {
+		limit = {
+			is_death_knight_class_trigger = no
+			OR = {
+				is_physical_class_trigger = yes
+				is_combined_class_trigger = yes
+			}
+			potential_death_knight_trigger = yes
+		}
+		add_character_modifier = { name = training_self_death_knight duration = -1 }
+		recount_experience_effect = yes
+		add_class_trait_effect = yes
+	}
+	else_if = {
+		limit = {
+			is_necromancer_class_trigger = no
+			is_magic_class_trigger = yes
+			potential_necromancer_trigger = yes
+		}
+		add_character_modifier = { name = training_self_necromancer duration = -1 }
+		recount_experience_effect = yes
+		add_class_trait_effect = yes
+	}
+	else_if = {
+		limit = {
+			has_class_trait_trigger = no
+			potential_necromancer_trigger = yes
+			is_female = yes
+		}
+		add_trait = class_necromancer_4
+	}
+	else_if = {
+		limit = {
+			has_class_trait_trigger = no
+			potential_death_knight_trigger = yes
+			is_female = no
+		}
+		add_trait = class_death_knight_4
+	}
 }
