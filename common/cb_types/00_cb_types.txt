@@ -6806,6 +6806,14 @@ overthrow_ruler = {
 				limit = { character_can_lose_title_trigger = no }
 				bid_for_independence_effect = yes
 			}
+			# Faction leader loses faction title, but not demesne, tries to leave faction or becomes imprisoned
+			else_if = {
+				limit = {
+					leads_centralized_faction_trigger = yes
+					any_vassal = { can_lead_faction_being_dependent_trigger = yes }
+				}
+				overthrow_faction_leader_effect = yes
+			}
 			else = { abdicate = yes }
 		}
 		ROOT = {
@@ -7016,6 +7024,14 @@ overthrow_ruler_no_calls = {
 			if = {
 				limit = { character_can_lose_title_trigger = no }
 				bid_for_independence_effect = yes
+			}
+			# Faction leader loses faction title, but not demesne, tries to leave faction or becomes imprisoned
+			else_if = {
+				limit = {
+					leads_centralized_faction_trigger = yes
+					any_vassal = { can_lead_faction_being_dependent_trigger = yes }
+				}
+				overthrow_faction_leader_effect = yes
 			}
 			else = { abdicate = yes }
 		}
@@ -11365,7 +11381,7 @@ pagan_county_conquest = {
 						religion_group = vrykul_religion_group
 						culture = pirate_culture
 						culture_group = murloc_group
-						culture_group = naga_group
+						culture = naga
 					}
 				}
 				
@@ -16602,49 +16618,41 @@ powerful_vassal_takeover_war = { # Started from faction
 		increase_council_power_effect = yes
 		increase_vassal_freedom_effect = yes
 		increase_vassal_freedom_effect = yes
+		
+		# Warcraft
 		if = {
-			limit = { has_law = succession_voting_power_0 }
-			add_law_w_cooldown = succession_voting_power_1
-		}
-		if = { 
-			limit = { #Should not be changed from Imperial Elective
-				# Warcraft
-				always = yes
+			limit = {
+				FROM = {
+					leads_centralized_faction_trigger = yes
+					any_vassal = { can_lead_faction_being_dependent_trigger = yes }
+				}
 			}
-			custom_tooltip = {
-				text = overthrow_text
-				hidden_tooltip = {
+			FROM = { overthrow_faction_leader_effect = yes }
+		}
+		else = {
+			if = {
+				limit = { has_law = succession_voting_power_0 }
+				add_law_w_cooldown = succession_voting_power_1
+			}
+			if = { 
+				limit = { #Should not be changed from Imperial Elective
 					# Warcraft
+					always = yes
+				}
+				custom_tooltip = {
+					text = overthrow_text
+					hidden_tooltip = {
+						# Warcraft
 					
-					if = {
-						limit = { 
-							# Warcraft
+						if = {
+							limit = { 
+								# Warcraft
 							
-							NOR = {
-								has_law = succ_feudal_elective
+								NOR = {
+									has_law = succ_feudal_elective
 								
-								# Warcraft
-							}
-							has_law = law_voting_power_1
-							has_law = banish_voting_power_1
-							has_law = execution_voting_power_1
-							has_law = revoke_title_voting_power_1
-							has_law = grant_title_voting_power_1
-							has_law = imprison_voting_power_1
-							has_law = war_voting_power_1						
-						}
-						add_law_w_cooldown = succ_feudal_elective
-					}
-					if = {
-						limit = {
-							NOT = { has_law = succ_gavelkind }
-							NOR = {
-								has_law = succ_feudal_elective
-								
-								# Warcraft
-							}
-							NAND = {
-								has_law = succ_feudal_elective
+									# Warcraft
+								}
 								has_law = law_voting_power_1
 								has_law = banish_voting_power_1
 								has_law = execution_voting_power_1
@@ -16653,46 +16661,67 @@ powerful_vassal_takeover_war = { # Started from faction
 								has_law = imprison_voting_power_1
 								has_law = war_voting_power_1						
 							}
+							add_law_w_cooldown = succ_feudal_elective
 						}
-						add_law_w_cooldown = succ_gavelkind
+						if = {
+							limit = {
+								NOT = { has_law = succ_gavelkind }
+								NOR = {
+									has_law = succ_feudal_elective
+								
+									# Warcraft
+								}
+								NAND = {
+									has_law = succ_feudal_elective
+									has_law = law_voting_power_1
+									has_law = banish_voting_power_1
+									has_law = execution_voting_power_1
+									has_law = revoke_title_voting_power_1
+									has_law = grant_title_voting_power_1
+									has_law = imprison_voting_power_1
+									has_law = war_voting_power_1						
+								}
+							}
+							add_law_w_cooldown = succ_gavelkind
+						}
 					}
 				}
 			}
-		}
-		holder_scope = {
-			clr_character_flag = powerful_vassal_takeover_target
-			most_popular_vassal = {
-				limit = {
-					higher_tier_than = BARON
-					is_feudal = yes
-					prisoner = no
-					NOR = {
-						is_inaccessible_trigger = yes
-						is_incapable = yes
-						trait = eunuch
-					}
-					age = 16
-					#can_hold_title = PREVPREV
-					OR = {
-						is_female = no
-						AND = {
-							is_female = yes
-							ROOT = { has_law = true_cognatic_succession }
+			holder_scope = {
+				clr_character_flag = powerful_vassal_takeover_target
+				most_popular_vassal = {
+					limit = {
+						higher_tier_than = BARON
+						is_feudal = yes
+						prisoner = no
+						NOR = {
+							is_inaccessible_trigger = yes
+							is_incapable = yes
+							trait = eunuch
+						}
+						age = 16
+						#can_hold_title = PREVPREV
+						OR = {
+							is_female = no
+							AND = {
+								is_female = yes
+								ROOT = { has_law = true_cognatic_succession }
+							}
 						}
 					}
-				}
-				usurp_title = {
-					target = PREVPREV
-					type = faction_demand
-				}
-				save_event_target_as = new_title_holder
-				hidden_tooltip = {
-					any_attacker = {
-						limit = { NOT = { character = PREV } }
-						set_character_flag = helped_win_war
+					usurp_title = {
+						target = PREVPREV
+						type = faction_demand
 					}
+					save_event_target_as = new_title_holder
+					hidden_tooltip = {
+						any_attacker = {
+							limit = { NOT = { character = PREV } }
+							set_character_flag = helped_win_war
+						}
+					}
+					character_event = { id = 8226 days = 1 }
 				}
-				character_event = { id = 8226 days = 1 }
 			}
 		}
 
