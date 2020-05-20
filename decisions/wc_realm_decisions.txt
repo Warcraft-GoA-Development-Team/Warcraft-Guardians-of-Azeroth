@@ -645,6 +645,49 @@ decisions = {
 			remove_special_character_title = REGENT_LORD_TITLE
 		}
 	}
+	
+	#hive_government
+	#Gives 10 year bonus to morale, vassal opinion, but minus to taxes and building cost
+	song_of_swarm = {
+		is_high_prio = yes
+		
+		ai_check_interval = 24
+		
+		only_playable = yes
+		
+		potential = {
+			is_untouchable_trigger = no
+			
+			is_adult = yes
+			is_incapable = no
+			
+			government = hive_government
+		}
+		
+		allow = {
+			prisoner = no
+			is_inaccessible_trigger = no
+			
+			NOT = { has_character_modifier = song_of_swarm_cooldown }
+			NOT = { has_character_modifier = song_of_swarm_modifier }
+			
+			# AI preferences
+			trigger_if = {
+				limit = { ai = yes }
+				war = yes	# AI uses it at war
+			}
+		}
+		
+		effect = {
+			add_character_modifier = { name = song_of_swarm_cooldown years = 50 }
+			
+			add_character_modifier = { name = song_of_swarm_modifier years = 10 }
+		}
+		
+		ai_will_do = {
+			factor = 1
+		}
+	}
 }
 targeted_decisions = {
 	# Ability to get rid of evil character without penalties
@@ -734,7 +777,18 @@ title_decisions = {
 					from_allow_genocide_this_province_trigger = yes
 				}
 				
-				NOT = { has_province_modifier = nomad_agitation }
+				trigger_if = {
+					limit = { has_province_modifier = nomad_agitation }
+					custom_tooltip = {
+						text = has_castle_or_city_tooltip
+						any_province_holding = {
+							OR = {
+								holding_type = castle
+								holding_type = city
+							}
+						}
+					}
+				}
 				is_occupied = no
 			}
 		}
@@ -891,7 +945,7 @@ title_decisions = {
 				from_can_switch_religion_province_trigger = yes
 				
 				NOT = { religion = FROM }
-				culture_group = high_elf_group
+				culture_group = elf_group
 			}
 			holder_scope = {
 				OR = {
