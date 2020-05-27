@@ -4992,8 +4992,10 @@ potential_adoption_by_prev_trigger = {
 	is_ruler = no
 	
 	NOT = {
+		character = PREV #Can't adopt itself... just to make sure
 		dynasty = PREV
 		any_dynasty_member = { is_ruler = yes }
+		any_spouse = { character = PREVPREV } # Can't adopt its own spouses
 	}
 }
 allow_adoption_by_prev_trigger = {
@@ -5010,7 +5012,21 @@ allow_adoption_by_prev_trigger = {
 		}
 	}
 	
-	has_living_children = no
-	opinion = { who = PREV value = 25 }
-	NOT = { num_of_children = 5 }
+	NOT = { num_of_claims = 1 }				# Without claims...
+	NOT = { num_of_dynasty_members = 5 }	# Small dynasty...
+	has_living_children = no				# Without children...
+	opinion = { who = PREV value = 25 }		# Good opinion of me
+	trigger_if = {
+		limit = { is_married = yes }
+		# Spouses are from §Y[Prev.GetOnlyDynastyName]§! dynasty or lowborn
+		custom_tooltip = {
+			text = spouse_are_from_prev_dynasty_or_lowborn_tooltip
+			NOT = {
+				any_spouse = {
+					is_lowborn = no
+					NOT = { dynasty = PREVPREV }
+				}
+			}
+		}
+	}
 }
