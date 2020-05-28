@@ -4994,7 +4994,7 @@ potential_adoption_by_prev_trigger = {
 	NOT = {
 		character = PREV #Can't adopt itself... just to make sure
 		dynasty = PREV
-		any_dynasty_member = { is_ruler = yes }
+		any_dynasty_member = { ai = no }
 		any_spouse = { character = PREVPREV } # Can't adopt its own spouses
 	}
 }
@@ -5005,15 +5005,22 @@ allow_adoption_by_prev_trigger = {
 	}
 	has_prev_race_trigger = yes
 	
+	# If character has claims, pay more
 	trigger_if = {
+		limit = { num_of_claims = 1 }
+		PREV = {
+			prestige = 1000
+		}
+	}
+	# If you have children, pay more
+	trigger_else_if = {
 		limit = { PREV = { has_living_children = yes } }
 		PREV = {
 			prestige = 500
 		}
 	}
 	
-	NOT = { num_of_claims = 1 }				# Without claims...
-	NOT = { num_of_dynasty_members = 5 }	# Small dynasty...
+	is_heir = no							# Not first in any succession line
 	has_living_children = no				# Without children...
 	opinion = { who = PREV value = 25 }		# Good opinion of me
 	trigger_if = {
@@ -5025,6 +5032,7 @@ allow_adoption_by_prev_trigger = {
 				any_spouse = {
 					is_lowborn = no
 					NOT = { dynasty = PREVPREV }
+					num_of_dynasty_members = 3
 				}
 			}
 		}
