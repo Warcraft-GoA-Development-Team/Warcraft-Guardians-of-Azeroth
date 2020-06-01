@@ -5285,6 +5285,7 @@ have_duplicate_smith_artifacts_flag_expensive_optionC_trigger = {
     }
 }
 
+# Warcraft
 can_be_asked_to_leave_court_trigger = {
 	NOR = {
 		# Warcraft
@@ -5317,6 +5318,63 @@ can_be_asked_to_leave_court_trigger = {
 			}
 		}
 
+		is_primary_heir = yes
+
+		# Warcraft
+		is_inaccessible_trigger = yes
+
+		# Warcraft
+		# This immunity is so random, looks like characters having bloodlines, artifacts, too much health are immune
+		# So, don't think it's good reason to make characters not able to leave your court
+		# custom_tooltip = {
+			# text = is_immune_to_pruning_tooltip
+			# is_immune_to_pruning = yes
+		# }
+		# Looks like any character created... with traits is historical
+		# So, don't think it's good reason to make characters not able to leave your court
+		# custom_tooltip = {
+			# text = is_historical_tooltip
+			# historical = yes
+		# }
+
+		trigger_if = {
+			limit = {
+				trait = horse
+			}
+			trait = horse
+		}
+	}
+}
+can_be_asked_to_leave_court_by_root_trigger = {
+	can_be_asked_to_leave_court_trigger = yes
+	NOR = {
+		custom_tooltip = {
+			text = is_spouse_consort_or_of_your_dynasty
+			OR = {
+				is_married = ROOT
+				is_consort = ROOT
+				is_close_relative = ROOT
+				sibling = ROOT
+			}
+		}
+		#Special circumstances
+		custom_tooltip = {
+			text = is_character_in_important_chain_of_events_tt
+			OR = {
+				# Warcraft
+				reverse_has_opinion_modifier = { who = ROOT modifier = opinion_jailer }
+				
+				has_character_flag = eternal_life_mystic
+				has_character_flag = immortal_rival
+				has_character_flag = flag_special_event_character
+				has_character_flag = is_death
+			}
+		}
+	}
+}
+can_be_asked_to_leave_court_by_from_trigger = {
+	can_be_asked_to_leave_court_trigger = yes
+	NOR = {
 		custom_tooltip = {
 			text = is_spouse_consort_or_of_your_dynasty
 			OR = {
@@ -5326,33 +5384,6 @@ can_be_asked_to_leave_court_trigger = {
 				sibling = FROM
 			}
 		}
-
-		is_primary_heir = yes
-
-		#trigger_if has Reaper's Due
-		trigger_if = {
-			limit = { has_dlc = "Reapers"}
-			in_seclusion = yes
-		}
-		custom_tooltip = {
-			text = is_inaccessible_tt
-			OR = {
-				has_character_flag = flag_holding_great_tribal_festival
-				trait = in_hiding
-				trait = on_hajj
-				trait = on_pilgrimage
-				trait = on_indian_pilgrimage
-				trait = kow_tow_travels
-				trait = travelling
-				trait = troubled_pregnancy
-				trait = pregnancy_finishing
-				has_character_modifier = mother_minor_rest
-				has_character_modifier = in_meditation
-				has_character_modifier = doing_penance
-				has_character_modifier = out_traveling
-			}
-		}
-
 		#Special circumstances
 		custom_tooltip = {
 			text = is_character_in_important_chain_of_events_tt
@@ -5365,22 +5396,6 @@ can_be_asked_to_leave_court_trigger = {
 				has_character_flag = flag_special_event_character
 				has_character_flag = is_death
 			}
-		}
-		# Warcraft
-		custom_tooltip = {
-			text = is_immune_to_pruning_tooltip
-			is_immune_to_pruning = yes
-		}
-		custom_tooltip = {
-			text = is_historical_tooltip
-			historical = yes
-		}
-
-		trigger_if = {
-			limit = {
-				trait = horse
-			}
-			trait = horse
 		}
 	}
 }
@@ -9458,180 +9473,179 @@ ere_elective_politician_titles_trigger = { #Used in Imperial Elective to determi
 }
 
 can_still_be_commander_byzantine_trigger = { 
-	# Warcraft
-	always = no
+	NOT = { 
+		primary_title = { temporary = yes } 
+	}
+	liege = { 
+		character = FROMFROM 
+		has_law = succ_byzantine_elective
+	}
+	OR = {
+		AND = {
+			OR = {
+				male_can_hold_minor_title_trigger = yes
+				female_can_hold_minor_commander_title_trigger = yes
+			}
+			OR = {
+				NOT = { religion = hindu }
+				trait = kshatriya
+			}
+			is_adult = yes
+		}
+		has_character_flag = special_marshal
+	}
 	
-	# Warcraft
-	# NOT = { 
-		# primary_title = { temporary = yes } 
-	# }
-	# liege = { 
-		# character = FROMFROM 
-		# has_law = succ_byzantine_elective
-	# }
-	# OR = {
-		# AND = {
-			# OR = {
-				# male_can_hold_minor_title_trigger = yes
-				# female_can_hold_minor_commander_title_trigger = yes
-			# }
-			# OR = {
-				# NOT = { religion = hindu }
-				# trait = kshatriya
-			# }
-			# is_adult = yes
-		# }
-		# has_character_flag = special_marshal
-	# }
-	
-	# prisoner = no
-	# NOT = { is_incapable = yes }
- 	# NOT = { trait = sick_incapable }
-	# NOT = { is_inaccessible_trigger = yes }
-	# NOT = { has_character_flag = guru }
-	# NOT = { has_character_modifier = refusing_to_lead }
-	# NOR = { 
-		# war_with = FROMFROM
-		# any_liege = {  
-			# war_with = FROMFROM
-		# }
-	# }
-	# OR = { 
-		# higher_real_tier_than = BARON #Either potential commander is vassal...
-		# NOT = { #...Or there are no valid vassal candidates that can be commanders.
-			# custom_tooltip = { 
-				# text = tooltip_byzantine_empire_can_appoint_commanders
-				# liege = { 
-					# any_vassal = { 
-						# higher_real_tier_than = BARON
-						# NOT = { 
-							# primary_title = { temporary = yes } 
-						# }
-						# OR = {
-							# AND = {
-								# OR = {
-									# male_can_hold_minor_title_trigger = yes
-									# female_can_hold_minor_commander_title_trigger = yes
-								# }
-								# OR = {
-									# NOT = { religion = hindu }
-									# trait = kshatriya
-								# }
-								# is_adult = yes
-							# }
-							# has_character_flag = special_marshal
-						# }
+	prisoner = no
+	NOT = { trait = incapable }
+ 	NOT = { trait = sick_incapable }
+	NOT = { is_inaccessible_trigger = yes }
+	NOT = { has_character_flag = guru }
+	NOT = { has_character_modifier = refusing_to_lead }
+	NOR = { 
+		war_with = FROMFROM
+		any_liege = {  
+			war_with = FROMFROM
+		}
+	}
+	OR = { 
+		higher_real_tier_than = BARON #Either potential commander is vassal...
+		NOT = { #...Or there are no valid vassal candidates that can be commanders.
+			custom_tooltip = { 
+				text = tooltip_byzantine_empire_can_appoint_commanders
+				liege = { 
+					any_vassal = { 
+						higher_real_tier_than = BARON
+						NOT = { 
+							primary_title = { temporary = yes } 
+						}
+						OR = {
+							AND = {
+								OR = {
+									male_can_hold_minor_title_trigger = yes
+									female_can_hold_minor_commander_title_trigger = yes
+								}
+								OR = {
+									NOT = { religion = hindu }
+									trait = kshatriya
+								}
+								is_adult = yes
+							}
+							has_character_flag = special_marshal
+						}
 						
-						# prisoner = no
-						# NOT = { is_incapable = yes }
-						# NOT = { is_inaccessible_trigger = yes }
-						# NOT = { has_character_flag = guru }
-						# NOT = { has_character_modifier = refusing_to_lead }
-						# NOR = {
-							# has_job_title = job_chancellor
-							# has_job_title = job_marshal
-							# has_job_title = job_treasurer
-							# has_job_title = job_spymaster
-							# has_job_title = job_spiritual
-							# has_minor_title = title_commander
-						# }
-					# } 
-				# } 
-			# } 
-		# }
-	# }
+						prisoner = no
+						NOT = { trait = incapable }
+						NOT = { is_inaccessible_trigger = yes }
+						NOT = { has_character_flag = guru }
+						NOT = { has_character_modifier = refusing_to_lead }
+						NOR = {
+							has_job_title = job_chancellor
+							has_job_title = job_marshal
+							has_job_title = job_treasurer
+							has_job_title = job_spymaster
+							has_job_title = job_spiritual
+							has_minor_title = title_commander
+						}
+					} 
+				} 
+			} 
+		}
+	}
 }
 
 can_still_be_marshal_byzantine_trigger = {
-	# Warcraft
-	always = no
-	
-	# Warcraft
-	# liege = { 
-		# character = FROMFROM
-		# has_law = succ_byzantine_elective
-	# }
-	# NOR = { 
-		# war_with = FROMFROM
-		# any_liege = {  
-			# war_with = FROMFROM
-		# }
-	# }
-	# OR = {
-		# AND = {
-			# OR = {
-				# AND = { #Patriarchal religions can only hire males. Matriarchal religions can only hire females.
-					# is_female = no 
-					# NOT = { liege = { has_religion_feature = religion_matriarchal } } 
-				# }
-				# AND = {
-					# is_female = yes 
-					# OR = { 
-						# liege = { has_religion_feature = religion_matriarchal } 
-						# liege = { has_religion_feature = religion_equal } 
-						# liege = { has_religion_feature = religion_feature_bon } 
-					# } 
-				# }
-				# trait = horse # So we can have female glitterhoofs! :D
-				
-				# # Warcraft
-				
-				# AND = {
-					# liege = {
-						# primary_title = {
-							# OR = {
-								# has_law = status_of_women_3
-							# }
-						# }
-					# }
-					# OR = {
-						# liege = {
-							# OR = {
-								# dynasty = ROOT
-								# is_close_relative = ROOT
-								# any_spouse = { character = ROOT }
-								# any_consort = { character = ROOT }
-							# }
-						# }
-						# is_landed = yes
+	liege = { 
+		character = FROMFROM
+		has_law = succ_byzantine_elective
+	}
+	NOR = { 
+		war_with = FROMFROM
+		any_liege = {  
+			war_with = FROMFROM
+		}
+	}
+	OR = {
+		AND = {
+			OR = {
+				AND = { #Patriarchal religions can only hire males. Matriarchal religions can only hire females.
+					is_female = no 
+					NOT = { liege = { has_religion_feature = religion_matriarchal } } 
+				}
+				AND = {
+					is_female = yes 
+					OR = { 
+						liege = { has_religion_feature = religion_matriarchal } 
+						liege = { has_religion_feature = religion_equal } 
+						liege = { has_religion_feature = religion_feature_bon } 
+					} 
+				}
+				trait = horse # So we can have female glitterhoofs! :D
+				OR = {
+					AND = {
+						religion = cathar
+						liege = { religion = cathar }
+					}
+					AND = {
+						religion = messalian
+						liege = { religion = messalian }
+					}
+				}
+				AND = {
+					liege = {
+						primary_title = {
+							OR = {
+								has_law = status_of_women_3
+							}
+						}
+					}
+					OR = {
+						liege = {
+							OR = {
+								dynasty = ROOT
+								is_close_relative = ROOT
+								any_spouse = { character = ROOT }
+								any_consort = { character = ROOT }
+							}
+						}
+						is_landed = yes
 						
-					# }
-				# }
-				# OR = {
-					# AND = { 
-						# is_female = yes
-						# liege = { primary_title = { has_law = status_of_women_4 } } 
-					# }
-					# has_game_rule = {
-						# name = gender
-						# value = all
-					# }
-				# }
-			# }
-			# OR = {
-				# NOT = { religion = hindu }
-				# trait = kshatriya
-			# }
-			# is_adult = yes
-		# }
-		# has_character_flag = special_marshal
-	# }
+					}
+				}
+				OR = {
+					AND = { 
+						is_female = yes
+						liege = { primary_title = { has_law = status_of_women_4 } } 
+					}
+					has_game_rule = {
+						name = gender
+						value = all
+					}
+				}
+			}
+			OR = {
+				NOT = { religion = hindu }
+				trait = kshatriya
+			}
+			is_adult = yes
+		}
+		has_character_flag = special_marshal
+	}
 	
-	# independent = no
-	# prisoner = no
-	# NOT = { is_incapable = yes }
- 	# NOT = { trait = sick_incapable }
-	# NOT = { trait = in_hiding }
-	# NOT = { has_character_flag = guru }
-	# NOT = { has_character_modifier = resigned_in_anger }
-	# NOT = { 
-		# liege = { 
-			# has_opinion_modifier = {
-				# who = ROOT	
-				# modifier = opinion_resigned_from_council 
-			# } 
-		# } 
-	# }
+	independent = no
+	prisoner = no
+	NOT = { trait = incapable }
+ 	NOT = { trait = sick_incapable }
+	NOT = { trait = in_hiding }
+	NOT = { has_character_flag = guru }
+	NOT = { has_character_modifier = resigned_in_anger }
+	NOT = { 
+		liege = { 
+			has_opinion_modifier = {
+				who = ROOT	
+				modifier = opinion_resigned_from_council 
+			} 
+		} 
+	}
 }
 
 
