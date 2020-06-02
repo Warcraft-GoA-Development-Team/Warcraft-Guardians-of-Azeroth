@@ -2,7 +2,7 @@
 name: Suggestion Request
 about: Suggest an idea for this mod
 title: "Suggestion Title"
-labels: ":question: suggestion :question:"
+labels: ":question: suggestion :question:" ":grey_exclamation: priority low"
 
 ---
 <!--

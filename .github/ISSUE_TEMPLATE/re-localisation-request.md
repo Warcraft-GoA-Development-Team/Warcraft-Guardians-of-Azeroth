@@ -2,7 +2,7 @@
 name: Re-Localization Request
 about: Report about localization problems
 title: "Issue Title"
-labels: ":beetle: bug - localisation :scroll:" 
+labels: ":beetle: bug - localisation :scroll:" ":grey_exclamation: priority low"
 
 ---
 <!--

@@ -2,7 +2,7 @@
 name: Re-Origination Request
 about: Bug Report
 title: "Issue Title"
-labels: ":beetle: bug :beetle:"
+labels: ":beetle: bug :beetle:" ":grey_exclamation: priority low"
 
 ---
 <!--

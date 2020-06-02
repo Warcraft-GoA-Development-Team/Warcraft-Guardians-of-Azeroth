@@ -2,7 +2,7 @@
 name: Installation Problem
 about: Report about installation problems
 title: "Issue Title"
-labels: ":beetle: bug - installation :computer:" 
+labels: ":beetle: bug - installation :computer:" ":grey_exclamation: priority low"
 
 ---
 <!--
