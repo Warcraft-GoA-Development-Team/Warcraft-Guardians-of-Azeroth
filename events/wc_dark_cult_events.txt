@@ -1170,6 +1170,111 @@ character_event = {
 	}
 }
 
+# on_new_holder of e_scourge e_burning_legion e_black_empire
+# Gives traits when character gets e_scourge e_burning_legion e_black_empire
+character_event = {
+	id = WCDAC.5200
+
+	is_triggered_only = yes
+	hide_window = yes
+	
+	only_playable = yes
+	only_independent = yes
+
+	trigger = {
+		FROM = {
+			OR = {
+				title = e_scourge
+				title = e_burning_legion
+				title = e_black_empire
+			}
+		}
+	}
+
+	immediate = {
+		log = "WCDAC.5200 fired for [Root.GetBestName]"
+
+		#e_scourge
+		if = {
+			limit = { FROM = { title = e_scourge } }
+			if = {
+				limit = {
+					NOT = { trait = being_undead }
+					can_be_undead_trigger = yes
+				}
+				set_character_flag = transition_into_lich_flag
+				character_event = { id = WCPOD.5013 }
+			}
+			clear_secret_religion = yes
+			if = {
+				limit = {
+					NOR = {
+						religion = death_god
+						religion = burning_legion_religion
+					}
+				}
+				religion = death_god
+			}
+			culture = scourge
+			add_trait = lich_king
+			
+			FROMFROM = {
+				if = {
+					limit = {
+						is_alive = yes
+						is_dying = no
+					}
+					death = { death_reason = death_merged killer = ROOT }
+					remove_trait = lich_king
+				}
+			}
+			
+			character_event = { id = WCUND.1106 days = 1 }
+			narrative_event = { id = WCUND.551 }
+		}
+		#e_burning_legion
+		if = {
+			limit = { FROM = { title = e_burning_legion } }
+			clear_secret_religion = yes
+			if = {
+				limit = { NOT = { religion = burning_legion_religion } }
+				religion = burning_legion_religion
+			}
+			add_character_modifier = { name = legion_overlord duration = -1 }
+			
+			FROMFROM = {
+				if = {
+					limit = {
+						is_alive = yes
+						is_dying = no
+					}
+					remove_character_modifier = legion_overlord
+				}
+			}
+		}
+		#e_black_empire
+		if = {
+			limit = { FROM = { title = e_black_empire } }
+			clear_secret_religion = yes
+			if = {
+				limit = { NOT = { religion = old_gods_worship } }
+				religion = old_gods_worship
+			}
+			add_character_modifier = { name = black_empire_overlord duration = -1 }
+			
+			FROMFROM = {
+				if = {
+					limit = {
+						is_alive = yes
+						is_dying = no
+					}
+					remove_character_modifier = black_empire_overlord
+				}
+			}
+		}
+	}
+}
+
 # Fired from decision patrons_old_gods_worship
 character_event = {
 	id = WCDAC.5110
