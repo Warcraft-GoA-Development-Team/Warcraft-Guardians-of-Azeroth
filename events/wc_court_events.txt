@@ -159,11 +159,18 @@ character_event = {
 		picture = GFX_evt_nraqi
 	}
 	desc = {
+		trigger = { is_plant_race_trigger = yes }
+		text = EVTDESC_WCRAC.300
+		picture = GFX_evt_emerald_dream
+	}
+	desc = {
 		trigger = { 
 			NOR = {
 				trait = being_undead
 				trait = being_demon
+				is_uncursed_titanforged_trigger = yes
 				trait = being_void
+				is_plant_race_trigger = yes
 			}
 		}
 		text = EVTDESC_WCCOU_200_other
@@ -174,52 +181,11 @@ character_event = {
 	is_triggered_only = yes
 	
 	only_playable = yes
-	min_age = 50
+	min_age = 16
 	prisoner = no
 	
 	trigger = {
-		mercenary = no
-		holy_order = no
-		NOT = { is_offmap_governor = yes }
-		is_theocracy = no
-		OR = {
-			is_republic = no
-			is_patrician = yes
-		}
-
-		trigger_if = {
-			limit = {
-				has_game_rule = {
-					name = adoption
-					value = no_player_dynastly
-				}
-				ai = yes
-			}
-			NOT = { any_dynasty_member = { ai = no } }
-		}
-		trigger_else = {
-			NOT = {
-				has_game_rule = {
-					name = adoption
-					value = disabled
-				}
-			}
-		}
-
-		is_alive = yes
-		is_dying = no
-
-		is_lowborn = no
-
-		OR = {
-			can_marry_trigger = no
-			can_has_children_trigger = no
-		}
-		OR = {
-			has_living_children = no
-			NOT = { num_of_children = 5 }
-		}
-		is_plant_race_trigger = no
+		can_adopt_characters_trigger = yes
 	}
 	
 	weight_multiplier = {
@@ -240,9 +206,13 @@ character_event = {
 			limit = { event_target:target_new_member = { is_alive = yes } }
 			# Nothing
 		}
+		else_if = {
+			limit = { is_plant_race_trigger = yes }
+			#Gets seed in options
+		}
 		else = {
 			create_character = {
-				female = no
+				female = random
 				dynasty = none
 				culture = ROOT religion = ROOT
 				random_traits = yes
@@ -252,58 +222,63 @@ character_event = {
 			new_character = {
 				save_event_target_as = target_new_member
 				if = {
-					limit = { ROOT = { trait = being_void } }
-					culture = nraqi
-					set_graphical_culture = nraqi
-					character_event = { id = WCRAC.10 } 	# Adds race trait
+					limit = { is_matriarchal_trigger = yes }
+					set_gender = female
 				}
-				else = {
-					set_prev_gfx_effect = yes
-					character_event = { id = WCRAC.10 } 	# Adds race trait
+				
+				set_prev_gfx_effect = yes
+				character_event = { id = WCRAC.10 } 	# Adds race trait
+				if = {
+					limit = { ROOT = { trait = being_undead } }
 					if = {
-						limit = { ROOT = { trait = being_undead } }
-						if = {
-							limit = { can_be_undead_trigger = yes }
-							save_event_target_as = target_necromancer
-							character_event = { id = WCPOD.5013 }	# Turns into undead
-						}
+						limit = { can_be_undead_trigger = yes }
+						save_event_target_as = target_necromancer
+						character_event = { id = WCPOD.5013 }	# Turns into undead
 					}
-					else_if = {
-						limit = { ROOT = { trait = being_demon } }
-						if = {
-							limit = { is_susceptible_to_fel_corruption_trigger = yes }
-							set_variable = { which = fel_corruption value = 100 }
-							character_event = { id = WCFEL.10 }
-						}
+				}
+				else_if = {
+					limit = { ROOT = { trait = being_demon } }
+					if = {
+						limit = { is_susceptible_to_fel_corruption_trigger = yes }
+						set_variable = { which = fel_corruption value = 100 }
+						character_event = { id = WCFEL.10 }
 					}
 				}
 			}
 		}
 	}
 	
+	#I'll take him
 	option = {
+		trigger = { is_plant_race_trigger = no }
 		name = EVTOPTA_WCCOU_200
 		
 		event_target:target_new_member = {
-			dynasty = ROOT
-			if = {
-				limit  = { ROOT = { is_female = yes } }
-				set_mother = ROOT
-			}
-			else = {
-				set_father = ROOT
-			}
-			# opinion = { modifier = opinion_loyal_servant who = ROOT }
-			add_trait = adopted
+			show_scope_change = no
+			prev_adopts_effect = yes
 		}
 	}
-	
+	#Never
 	option = {
+		trigger = { is_plant_race_trigger = no }
 		name = EVTOPTB_WCCOU_200
 		
 		hidden_effect = {
 			event_target:target_new_member = { death = { death_reason = death_missing } }
 		}
+		
+		ai_chance = {
+			factor = 0
+		}
+	}
+	#Pick up seed
+	option = {
+		trigger = { is_plant_race_trigger = yes }
+		name = EVTOPTA_WCRAC.300
+		
+		add_artifact = ancient_kernel
+		
+		character_event = { id = WCRAC.310 years = 8 random = 730 }
 	}
 }
 
