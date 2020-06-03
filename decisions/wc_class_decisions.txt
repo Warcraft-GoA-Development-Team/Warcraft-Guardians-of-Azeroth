@@ -1507,11 +1507,11 @@ decisions = {
 			is_incapable = no
 
 			is_paladin_class_trigger = yes
-			NOT = { is_weak_paladin_class_trigger = yes }
 
-			OR = {
-				ai = no
+			trigger_if = {
+				limit = { ai = yes }
 				NOT = { has_character_flag = wrote_libram }		# Otherwise, AI create a ton of librams
+				NOT = { any_artifact = { has_artifact_flag = libram } }
 			}
 
 			can_write_libram = yes
@@ -1532,7 +1532,8 @@ decisions = {
 			set_character_flag = do_not_disturb			# Otherwise, you can fire decision twice
 			set_character_flag = wrote_libram
 
-			piety = -750
+			tooltip = { piety = -750 }
+			
 			character_event = { id = WCCLS.10200 }
 		}
 		revoke_allowed = {
@@ -1889,16 +1890,14 @@ decisions = {
 			is_incapable = no
 
 			OR = {
-				AND = {
-					is_death_knight_class_trigger = yes
-					NOT = { is_weak_death_knight_class_trigger = yes }
-				}
+				is_death_knight_class_trigger = yes
 				trait = creature_nathrezim
 			}
 
-			OR = {
-				ai = no
-				NOT = { has_character_flag = forged_runeblade }		# Otherwise, AI create a ton of runeblades
+			trigger_if = {
+				limit = { ai = yes }
+				NOT = { has_character_flag = forged_runeblade }		# Otherwise, AI create a ton of librams
+				NOT = { any_artifact = { has_artifact_flag = combat_weapon } }
 			}
 		}
 		allow = {
@@ -1923,15 +1922,10 @@ decisions = {
 			set_character_flag = do_not_disturb				# Otherwise, you can fire decision twice
 			set_character_flag = forged_runeblade
 
-			if = {
-				limit = {
-					trait = creature_nathrezim
-				}
-				wealth = -500
+			tooltip = {
+				forge_runeblade_cost_effect = yes
 			}
-			else = {
-				piety = -500
-			}
+			
 			character_event = { id = WCCLS.10300 }
 		}
 		revoke_allowed = {
@@ -2182,10 +2176,7 @@ targetted_decisions = {
 				}
 				if = {
 					limit = { character = FROM }
-					if = { limit = { has_character_flag = pending_infection } clr_character_flag = pending_infection }
-
-					if = { limit = { trait = severely_injured } character_event = { id = RIP.11000 } }
-					if = { limit = { trait = wounded } character_event = { id = 6081 } }
+					heal_wounds_magic_effect = yes
 				}
 				else = {
 					letter_event = { id = WCCLS.805 }
