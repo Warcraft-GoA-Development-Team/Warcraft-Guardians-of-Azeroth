@@ -22,6 +22,16 @@ has_active_faction_title_trigger = {
 		}
 	}
 }
+leads_centralized_faction_trigger = {
+	trigger_if = {
+		limit = { has_landed_title = e_horde }
+		has_global_flag = centralized_horde_flag
+	}
+	trigger_else = {
+		has_landed_title = e_alliance
+		has_global_flag = centralized_alliance_flag
+	}
+}
 # Common condtions to stay
 common_faction_trigger = {
 	is_untouchable_trigger = no
@@ -36,7 +46,6 @@ common_faction_trigger = {
 			primary_title = { is_landless_type_title = no }
 		}
 	}
-	independent = yes
 	mercenary = no
 	holy_order = no
 	OR = {
@@ -49,6 +58,14 @@ common_faction_trigger = {
 }
 # If it's not true, character can't lead faction in and must be kicked
 can_lead_faction_trigger = {
+	independent = yes
+	
+	is_republic = no
+	is_theocracy = no
+	
+	common_faction_trigger = yes
+}
+can_lead_faction_being_dependent_trigger = {
 	is_republic = no
 	is_theocracy = no
 	
@@ -56,6 +73,8 @@ can_lead_faction_trigger = {
 }
 # If it's not true, character can't stay in and must be kicked
 can_be_in_faction_trigger = {
+	independent = yes
+	
 	evil_public_religion_trigger = no
 	
 	common_faction_trigger = yes
@@ -306,4 +325,24 @@ faction_realm_size_over_limit_trigger = {
 	trigger_else = {
 		realm_size = 100
 	}
+}
+horde_is_centralized_faction_trigger = {
+	OR = {
+		has_game_rule = { name = political_faction_centralization value = centralized }
+		has_global_flag = centralized_horde_flag
+	}
+}
+alliance_is_centralized_faction_trigger = {
+	OR = {
+		has_game_rule = { name = political_faction_centralization value = centralized }
+		has_global_flag = centralized_alliance_flag
+	}
+}
+horde_can_be_centralized_faction_trigger = {
+	NOT = { has_game_rule = { name = political_faction_centralization value = uncentralized } }
+	NOT = { has_global_flag = centralized_horde_flag }
+}
+alliance_can_be_centralized_faction_trigger = {
+	NOT = { has_game_rule = { name = political_faction_centralization value = uncentralized } }
+	NOT = { has_global_flag = centralized_alliance_flag }
 }
