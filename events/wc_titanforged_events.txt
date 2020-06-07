@@ -1,1 +1,218 @@
 namespace = WCUTF
+character_event = {
+	#Basic event information
+	id = WCUTF.1
+	desc = {
+		trigger = {
+			character = event_target:target_loken
+		}
+		text = EVTDESC_WCUTF.1_loken
+	}
+
+	desc = {
+		trigger = {
+			character = event_target:target_thorim
+		}
+		text = EVTDESC_WCUTF.1_thorim
+	}
+	picture = GFX_evt_thorim_sif
+	border = GFX_event_normal_frame_intrigue
+
+	is_triggered_only = yes
+	
+	#Fast event triggers
+	only_playable = yes
+	ai = no
+
+	trigger = {
+		OR = {
+			character = 400501
+			character = 400502
+		}
+		is_save_game = no
+	}
+
+	immediate = {
+		c_400501 = {
+			save_event_target_as = target_loken
+		}
+		c_400502 = {
+			save_event_target_as = target_thorim
+		}
+	}
+	option = {
+		name = EVTOPTA_WCUTF.1
+		trigger = {
+			OR = {
+				ai = yes
+				AND = {
+					character = event_target:target_thorim
+					event_target:target_loken = { ai = no }
+				}
+			}
+		}
+	}
+	option = {
+		name = EVTOPTB_WCUTF.1
+		trigger = {
+			OR = {
+				character = event_target:target_loken
+				AND = {
+					character = event_target:target_thorim
+					event_target:target_loken = { ai = yes }
+				}
+			}
+		}
+		character_event = { id = WCUTF.2 days = 7 }
+		
+		ai_chance = {
+			factor = 0
+		}
+	}
+	option = {
+		name = EVTOPTC_WCUTF.1
+		trigger = {
+			OR = {
+				character = event_target:target_loken
+				AND = {
+					character = event_target:target_thorim
+					event_target:target_loken = { ai = yes }
+				}
+			}
+		}
+		character_event = { id = WCUTF.3 days = 7 }
+		
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+character_event = {
+	#Basic event information
+	id = WCUTF.2
+	desc = {
+		trigger = {
+			character = event_target:target_loken
+		}
+		text = EVTDESC_WCUTF.2_loken
+	}
+
+	desc = {
+		trigger = {
+			character = event_target:target_thorim
+		}
+		text = EVTDESC_WCUTF.2_thorim
+	}
+	picture = GFX_evt_thorim_sif
+	border = GFX_event_normal_frame_intrigue
+
+	is_triggered_only = yes
+	
+	#Fast event triggers
+	only_playable = yes
+	ai = no
+
+	option = {
+		name = EVTOPTA_WCUTF.2
+		trigger = {
+			character = event_target:target_loken
+		}
+		religion = old_gods_worship
+	}
+	option = {
+		name = EVTOPTB_WCUTF.2
+		trigger = {
+			character = event_target:target_thorim
+		}
+		religion = old_gods_worship
+		if = {
+			limit = { event_target:target_loken = { is_alive = yes } }
+			event_target:target_loken = {
+				show_scope_change = no
+
+				this_abdicate_transfer_wealth_to_prev_effect = yes
+			
+				death = { death_reason = death_duel killer = ROOT }
+			}
+		}
+	}
+	after = {
+		hidden_effect = {
+			d_ulduar = { any_de_jure_vassal_title = { location = { remove_province_modifier = ulduar_closed_down } } }
+			set_global_flag = ulduar_opened_flag
+		}
+	}
+}
+character_event = {
+	#Basic event information
+	id = WCUTF.3
+	desc = {
+		trigger = {
+			character = event_target:target_loken
+		}
+		text = EVTDESC_WCUTF.3_loken
+	}
+
+	desc = {
+		trigger = {
+			character = event_target:target_thorim
+		}
+		text = EVTDESC_WCUTF.3_thorim
+	}
+	picture = GFX_evt_thorim_sif
+	border = GFX_event_normal_frame_intrigue
+
+	is_triggered_only = yes
+	
+	#Fast event triggers
+	only_playable = yes
+	ai = no
+
+	option = {
+		name = EVTOPTA_WCUTF.3
+		trigger = {
+			character = event_target:target_loken
+		}
+		if = {
+			limit = { event_target:target_thorim = { is_alive = yes } }
+			event_target:target_thorim = {
+				show_scope_change = no
+				ROOT = {
+					show_scope_change = no
+					this_abdicate_transfer_wealth_to_play_prev_effect = yes
+				}
+			}
+		}
+		death = { death_reason = death_suicide }
+	}
+	option = {
+		name = EVTOPTB_WCUTF.3
+		trigger = {
+			character = event_target:target_thorim
+		}
+		if = {
+			limit = { event_target:target_loken = { is_alive = yes } }
+				event_target:target_loken = {
+					show_scope_change = no
+
+					this_abdicate_transfer_wealth_to_prev_effect = yes
+				
+					death = { death_reason = death_duel killer = ROOT }
+				}
+		}
+	}
+	after = {
+		hidden_effect = {
+			event_target:target_thorim = {
+				d_ulduar = {
+					any_de_jure_vassal_title = {
+						location = {
+							remove_province_modifier = ulduar_closed_down
+						}
+					}
+				}
+				set_global_flag = ulduar_opened_flag
+			}
+		}
+	}
+}

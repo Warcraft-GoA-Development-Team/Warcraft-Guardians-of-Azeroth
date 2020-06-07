@@ -300,6 +300,9 @@ add_class_trait_effect = {
 			# Remove mortal traits
 			clr_mortal_traits_effect = yes
 		}
+		
+		# Sets Light portrait
+		set_light_gfx_effect = yes
 	}
 	if = {
 		limit = { check_variable = { which = wc_experience_priest value = 1 } }
@@ -378,7 +381,12 @@ add_class_trait_effect = {
 			# Remove mortal traits
 			clr_mortal_traits_effect = yes
 		}
+		
+		# Add Moon Priest subclass
 		add_subclass_moon_priest_effect = yes
+		
+		# Sets Light portrait
+		set_light_gfx_effect = yes
 	}
 	if = {
 		limit = { check_variable = { which = wc_experience_rogue value = 1 } }
@@ -1012,7 +1020,7 @@ add_class_trait_effect = {
 	# Fixes immortal age
 	add_age_back_effect = yes
 	
-	remove_training_modifiers_effect = yes
+	clean_class_training_effect = yes
 	remove_class_things_effect = yes
 
 	# Ding!
@@ -1260,6 +1268,9 @@ ai_add_paladin_class_effect = {
 				50 = { add_trait = class_paladin_1 }
 			}
 		}
+		
+		# Sets Light portrait
+		set_light_gfx_effect = yes
 	}
 }
 ai_add_priest_class_effect = {
@@ -1320,7 +1331,12 @@ ai_add_priest_class_effect = {
 				50 = { add_trait = class_priest_1 }
 			}
 		}
+		
+		# Adds Moon Priest subclass
 		add_subclass_moon_priest_effect = yes
+		
+		# Sets Light portrait
+		set_light_gfx_effect = yes
 	}
 }
 ai_add_rogue_class_effect = {
@@ -3331,9 +3347,20 @@ recount_experience_effect = {
 	}
 }
 
-clr_training_mentor_flag_effect = {
-	remove_opinion = { who = event_target:mentor modifier = opinion_teaching_me }
-	clr_character_flag = sent_letter_to_mentor
+clean_mentor_correspondence_effect = {
+	any_opinion_modifier_target = {
+		limit = {
+			reverse_has_opinion_modifier = {
+				who = PREV
+				modifier = opinion_teaching_me
+			}
+		}
+		reverse_remove_opinion = {
+			who = PREV
+			modifier = opinion_teaching_me
+		}
+	}
+	clr_character_flag = ask_to_be_mentor_ongoing_flag
 	
 	clr_character_flag = training_mentor_mage_flag
 	clr_character_flag = training_mentor_hunter_flag
@@ -3348,8 +3375,13 @@ clr_training_mentor_flag_effect = {
 	clr_character_flag = training_mentor_loa_priest_flag
 	clr_character_flag = training_mentor_necromancer_flag
 	clr_character_flag = training_mentor_shadow_priest_flag
+	
+	# Clear "cleanup in case of mentor death" event
+	hidden_effect = {
+		event_target:target_initiator = { clear_delayed_event = { id = WCCLS.2151 } }
+	}
 }
-remove_training_modifiers_effect = {
+clean_class_training_effect = {
 	if = { limit = { has_character_modifier = training_self_mage				} remove_character_modifier = training_self_mage					}
 	if = { limit = { has_character_modifier = training_self_hunter				} remove_character_modifier = training_self_hunter				}
 	if = { limit = { has_character_modifier = training_self_warrior				} remove_character_modifier = training_self_warrior				}
@@ -3378,8 +3410,9 @@ remove_training_modifiers_effect = {
 	if = { limit = { has_character_modifier = training_mentor_necromancer		} remove_character_modifier = training_mentor_necromancer		}
 	if = { limit = { has_character_modifier = training_mentor_shadow_priest		} remove_character_modifier = training_mentor_shadow_priest		}
 
-	clr_training_mentor_flag_effect = yes
+	clean_mentor_correspondence_effect = yes
 	
+	# Clear "finish training" events
 	hidden_effect = {
 		clear_delayed_event = { id = WCCLS.100 }
 		clear_delayed_event = { id = WCCLS.200 }
@@ -3722,5 +3755,33 @@ add_class_religion_trait_effect = {
 	else_if = {
 		limit = { religion_group = void_group }
 		ai_add_shadow_priest_class_effect = yes
+	}
+}
+
+# Notifies target_initiator about the end of the training
+notifies_class_training_initiator_effect = {
+	if = {
+		limit = {
+			event_target:target_initiator = {
+				is_alive = yes
+				
+				NOT = { character = ROOT }
+			}
+		}
+		event_target:target_initiator = { character_event = { id = WCCLS.1440 } }
+	}
+}
+
+# Adds opinions/flags pre class mentoring
+pre_class_mentoring_effect = {
+	hidden_effect = {
+		set_character_flag = ask_to_be_mentor_ongoing_flag
+		
+		opinion = { modifier = opinion_teaching_me who = event_target:mentor }
+		event_target:mentor = {
+			# Makes no sense, right? Well, agree, but without this any_opinion_modifier_target doesn't update its opinions, so JUST IGNORE
+			opinion = { who = event_target:student modifier = opinion_dislike years = 1 }
+			remove_opinion = { who = event_target:student modifier = opinion_dislike years = 1 }
+		}
 	}
 }

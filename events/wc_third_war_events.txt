@@ -281,7 +281,7 @@ narrative_event = {
 	is_triggered_only = yes
 
 	trigger = {
-		3625 = {
+		2281 = {
 			holder_scope = {
 				top_liege = {
 					horde_exodus_trolls_trigger = yes
@@ -296,7 +296,7 @@ narrative_event = {
 	}
 
 	immediate = {
-		3625 = {
+		2281 = {
 			holder_scope = {
 				top_liege = {
 					narrative_event = { id = WCTHW.111 }
@@ -372,7 +372,7 @@ narrative_event = {
 	is_triggered_only = yes
 	
 	trigger = {
-		3625 = {
+		2281 = {
 			holder_scope = {
 				top_liege = {
 					horde_exodus_trolls_trigger = yes
@@ -395,7 +395,7 @@ narrative_event = {
 		
 		prestige = 100
 
-		3625 = {
+		2281 = {
 			show_scope_change = no
 			
 			holder_scope = {
@@ -416,7 +416,7 @@ narrative_event = {
 		
 		prestige = -100
 
-		3625 = {
+		2281 = {
 			show_scope_change = no
 			
 			holder_scope = {
@@ -436,7 +436,7 @@ narrative_event = {
 	}
 
 	after = {
-		3625 = {
+		2281 = {
 			holder_scope = {
 				top_liege = {
 					narrative_event = { id = WCTHW.116 }
@@ -466,7 +466,7 @@ narrative_event = {
 	immediate = {
 		if = {
 			limit = { event_target:target_trolls = { NOT = { has_title_flag = trolls_sailed_to_kalimdor_flag } } }
-			3625 = { province_event = { id = WCVOD.705 } }
+			2281 = { province_event = { id = WCVOD.705 } }
 		}
 	}
 
@@ -1341,7 +1341,7 @@ narrative_event = {
 	option = {
 		name = EVTOPTA_WCTHW_1010
 
-		become_blood_elf_effect = yes
+		convert_this_and_vassals_to_blood_elves_effect = yes
 
 		custom_tooltip = {
 			text = proclaims_your_people_the_blood_elves
@@ -1399,7 +1399,7 @@ narrative_event = {
 		}
 		name = EVTOPTA_WCTHW_1010
 		
-		become_blood_elf_effect = yes
+		convert_this_and_vassals_to_blood_elves_effect = yes
 
 		ai_chance = {
 			factor = 90
@@ -1835,6 +1835,7 @@ letter_event = {
 			factor = 50
 			
 			evil_ai_chance_score = yes
+			evil_ai_chance_religion_score = yes
 		}
 	}
 	# We will never sink so low!
@@ -2348,7 +2349,29 @@ narrative_event = {
 }
 
 ### "Arthas's" event chain ###
-# Introductory event
+### Introductory event
+# Delayer event
+province_event = {
+	id = WCTHW.1999
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
+		event_target:target_champion = {
+			if = {
+				limit = {
+					scourge_champion_event_trigger = yes
+				}
+				narrative_event = { id = WCTHW.2000 }
+			}
+			else = {
+				clr_global_flag = arthas_chain_ongoing
+			}
+		}
+	}
+}
+# Delayed event
 narrative_event = {
 	id = WCTHW.2000
 	title = EVTTITLE_WCTHW_2000
@@ -2359,15 +2382,10 @@ narrative_event = {
 	is_triggered_only = yes
 	hide_from = yes
 
-	trigger = {
-		is_incapable = no
-		prisoner = no
-		
-		e_scourge = { has_holder = yes }
-	}
-
 	immediate = {
 		save_event_target_as = target_champion
+		
+		set_global_flag = arthas_chain_ongoing
 		
 		# If you don't have realm that you can get via this event chain...
 		if = {
@@ -2396,10 +2414,32 @@ narrative_event = {
 			}
 		}
 
-		hidden_effect = { narrative_event = { id = WCTHW.2005 days = 20 } }
+		73 = { province_event = { id = WCTHW.2004 days = 20 } }
 	}
 }
-# Horrors of the Plague
+### Horrors of the Plague
+#Delayer event
+province_event = {
+	id = WCTHW.2004
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
+		event_target:target_champion = {
+			if = {
+				limit = {
+					scourge_champion_event_trigger = yes
+				}
+				narrative_event = { id = WCTHW.2005 }
+			}
+			else = {
+				clr_global_flag = arthas_chain_ongoing
+			}
+		}
+	}
+}
+#Delayed event
 narrative_event = {
 	id = WCTHW.2005
 	title = EVTTITLE_WCTHW_2000
@@ -2409,13 +2449,6 @@ narrative_event = {
 
 	is_triggered_only = yes
 	hide_from = yes
-
-	trigger = {
-		is_incapable = no
-		prisoner = no
-		
-		e_scourge = { has_holder = yes }
-	}
 
 	option = {
 		name = EVTOPTA_WCTHW_2005
@@ -2441,10 +2474,48 @@ narrative_event = {
 			}
 		}
 
-		hidden_effect = { narrative_event = { id = WCTHW.2010 days = 15 } }
+		73 = { province_event = { id = WCTHW.2009 days = 15 } }
 	}
 }
-# Purge is a good thought
+### Purge is a good thought
+#Delayer event
+province_event = {
+	id = WCTHW.2009
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
+		event_target:target_champion = {
+			if = {
+				limit = {
+					scourge_champion_event_trigger = yes
+					top_liege = {
+						any_realm_province = {
+							religion_group = light_group
+							culture_group = human_group
+							
+							NOT = { has_province_modifier = undead_province }
+							region = world_eastern_kingdoms_lordaeron
+							holder_scope = { NOT = { character = PREVPREV } }
+						}
+					}
+				}
+				narrative_event = { id = WCTHW.2010 }
+			}
+			else_if = {
+				limit = {
+					scourge_champion_event_trigger = yes
+				}
+				narrative_event = { id = WCTHW.2015 }
+			}
+			else = {
+				clr_global_flag = arthas_chain_ongoing
+			}
+		}
+	}
+}
+#Delayed event
 narrative_event = {
 	id = WCTHW.2010
 	title = EVTTITLE_WCTHW_2000
@@ -2454,28 +2525,6 @@ narrative_event = {
 
 	is_triggered_only = yes
 	hide_from = yes
-
-	trigger = {
-		is_incapable = no
-		prisoner = no
-		
-		e_scourge = { has_holder = yes }
-		top_liege = {
-			any_realm_province = {
-				religion_group = light_group
-				culture_group = human_group
-				
-				NOT = { has_province_modifier = undead_province }
-				region = world_eastern_kingdoms_lordaeron
-				holder_scope = { NOT = { character = PREVPREV } }
-			}
-		}
-	}
-	
-	fail_trigger_effect = {
-		# Just skip this event if it can't be fired
-		narrative_event = { id = WCTHW.2015 days = 1 }
-	}
 
 	immediate = {
 		# Selects a province for culling
@@ -2527,9 +2576,6 @@ narrative_event = {
 
 		event_target:target_province = {
 			add_max_depopulation_effect = yes
-		}
-
-		event_target:target_province = {
 			hidden_effect = {
 				province_event = { id = WCTHW.2013 }
 				any_province_character = {
@@ -2558,10 +2604,22 @@ narrative_event = {
 	}
 
 	after = {
-		hidden_effect = { narrative_event = { id = WCTHW.2015 days = 1 } }
+		73 = { province_event = { id = WCTHW.2014 days = 1 } }
 	}
 }
-# Tells the world about what you did
+### Tells the world about what you did
+#Ping event
+province_event = {
+	id = WCTHW.2013
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		FROM = { narrative_event = { id = WCTHW.2011 } }
+	}
+}
+#Main event
 narrative_event = {
 	id = WCTHW.2011
 	title = EVTTITLE_WCTHW_2011
@@ -2607,18 +2665,29 @@ narrative_event = {
 		}
 	}
 }
-# Ping event
+### A short trip to Northrend
+#Delayer event
 province_event = {
-	id = WCTHW.2013
-
+	id = WCTHW.2014
+	
 	is_triggered_only = yes
 	hide_window = yes
-
+	
 	immediate = {
-		FROM = { narrative_event = { id = WCTHW.2011 } }
+		event_target:target_champion = {
+			if = {
+				limit = {
+					scourge_champion_event_trigger = yes
+				}
+				narrative_event = { id = WCTHW.2015 }
+			}
+			else = {
+				clr_global_flag = arthas_chain_ongoing
+			}
+		}
 	}
 }
-# A short trip to Northrend
+#Delayed event
 narrative_event = {
 	id = WCTHW.2015
 	title = EVTTITLE_WCTHW_2000
@@ -2627,13 +2696,6 @@ narrative_event = {
 	border = GFX_event_narrative_frame_war
 
 	is_triggered_only = yes
-
-	trigger = {
-		is_incapable = no
-		prisoner = no
-		
-		e_scourge = { has_holder = yes }
-	}
 
 	immediate = {
 		hidden_effect = {
@@ -2671,7 +2733,7 @@ narrative_event = {
 
 		prestige = 100
 
-		hidden_effect = { narrative_event = { id = WCTHW.2020 days = 10 } }
+		73 = { province_event = { id = WCTHW.2019 days = 10 } }
 	}
 	option = {
 		name = EVTOPTB_WCTHW_2015
@@ -2680,6 +2742,7 @@ narrative_event = {
 
 		custom_tooltip = {
 			text = you_manage_to_avoid_your_fate_tooltip
+			clr_global_flag = arthas_chain_ongoing
 		}
 		remove_trait = travelling
 
@@ -2688,7 +2751,29 @@ narrative_event = {
 		}
 	}
 }
-# Arrival in Northrend
+### Arrival in Northrend
+#Delayer event
+province_event = {
+	id = WCTHW.2019
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
+		event_target:target_champion = {
+			if = {
+				limit = {
+					scourge_champion_event_trigger = yes
+				}
+				narrative_event = { id = WCTHW.2020 }
+			}
+			else = {
+				clr_global_flag = arthas_chain_ongoing
+			}
+		}
+	}
+}
+#Delayed event
 narrative_event = {
 	id = WCTHW.2020
 	title = EVTTITLE_WCTHW_2000
@@ -2697,13 +2782,6 @@ narrative_event = {
 	border = GFX_event_narrative_frame_war
 
 	is_triggered_only = yes
-
-	trigger = {
-		is_incapable = no
-		prisoner = no
-		
-		e_scourge = { has_holder = yes }
-	}
 
 	immediate = {
 		hidden_effect = {
@@ -2726,10 +2804,12 @@ narrative_event = {
 			add_trait = wroth
 		}
 
-		hidden_effect = { character_event = { id = WCTHW.2035 days = 10 } }
+		73 = { province_event = { id = WCTHW.2035 days = 10 } }
 	}
 }
-# The Lich King's reaction to target_champion's arrival in Northrend
+
+# Reactions
+### The Lich King's reaction to target_champion's arrival in Northrend
 narrative_event = {
 	id = WCTHW.2021
 	title = EVTTITLE_WCTHW_2021
@@ -2743,13 +2823,13 @@ narrative_event = {
 		name = EXCELLENT
 	}
 }
-# Ends event chain if you left Northrend
-narrative_event = {
+### Ends event chain if you left Northrend
+character_event = {
 	id = WCTHW.2025
 	title = EVTTITLE_WCTHW_2000
 	picture = GFX_evt_icecrown
 	desc = EVTDESC_WCTHW_2025
-	border = GFX_event_narrative_frame_war
+	border = GFX_event_normal_frame_war
 
 	is_triggered_only = yes
 
@@ -2769,7 +2849,7 @@ narrative_event = {
 		remove_trait = travelling
 	}
 }
-# The Lich King's reaction to target_champion's leaving of Northrend
+### The Lich King's reaction to target_champion's leaving of Northrend
 narrative_event = {
 	id = WCTHW.2026
 	title = EVTTITLE_WCTHW_2021
@@ -2781,11 +2861,9 @@ narrative_event = {
 
 	option = {
 		name = ALAS
-
-		add_artifact_frostmourne_effect = yes
 	}
 }
-# Close relative's reaction to target_champion's arrival in Northrend
+### Close relative's reaction to target_champion's arrival in Northrend
 character_event = {
 	id = WCTHW.2030
 	picture = GFX_evt_icecrown
@@ -2798,7 +2876,7 @@ character_event = {
 		name = EVTOPTA_WCTHW_2030
 	}
 }
-# Close relative's reaction to target_champion's leaving of Northrend
+### Close relative's reaction to target_champion's leaving of Northrend
 character_event = {
 	id = WCTHW.2031
 	picture = GFX_evt_icecrown
@@ -2811,28 +2889,31 @@ character_event = {
 		name = EXCELLENT
 	}
 }
-# Desertion in the army: сheck event
-character_event = {
+
+### Desertion in the army
+#Delayer event
+province_event = {
 	id = WCTHW.2035
 
 	is_triggered_only = yes
 	hide_window = yes
 
 	immediate = {
-		if = {
-			limit = {
-				is_incapable = no
-				prisoner = no
-				
-				e_scourge = { has_holder = yes }
+		event_target:target_champion = {
+			if = {
+				limit = {
+					scourge_champion_event_trigger = yes
+				}
+				narrative_event = { id = WCTHW.2036 }
 			}
-			narrative_event = { id = WCTHW.2036 }
-			break = yes
+			else = {
+				clr_global_flag = arthas_chain_ongoing
+				narrative_event = { id = WCTHW.2025 }
+			}
 		}
-		narrative_event = { id = WCTHW.2025 }
 	}
 }
-# Desertion in the army: main event
+#Delayed event
 narrative_event = {
 	id = WCTHW.2036
 	title = EVTTITLE_WCTHW_2000
@@ -2857,7 +2938,7 @@ narrative_event = {
 			add_trait = deceitful
 		}
 		
-		hidden_effect = { character_event = { id = WCTHW.2040 days = 2 } }
+		73 = { province_event = { id = WCTHW.2040 days = 2 } }
 	}
 
 	# Let them run!
@@ -2866,7 +2947,7 @@ narrative_event = {
 
 		prestige = -100
 		
-		hidden_effect = { character_event = { id = WCTHW.2040 days = 2 } }
+		73 = { province_event = { id = WCTHW.2040 days = 2 } }
 
 		ai_chance = {
 			factor = 0
@@ -2879,35 +2960,41 @@ narrative_event = {
 		
 		prestige = -50
 		
-		hidden_effect = { character_event = { id = WCTHW.2025 days = 15 } }
+		custom_tooltip = {
+			text = you_manage_to_avoid_your_fate_tooltip
+			clr_global_flag = arthas_chain_ongoing
+			character_event = { id = WCTHW.2025 days = 15 }
+		}
 		
 		ai_chance = {
 			factor = 0
 		}
 	}
 }
-# Rumors about a powerful artifact: сheck event
-character_event = {
+### Rumors about a powerful artifact
+#Delayer event
+province_event = {
 	id = WCTHW.2040
 
 	is_triggered_only = yes
 	hide_window = yes
 
 	immediate = {
-		if = {
-			limit = {
-				is_incapable = no
-				prisoner = no
-				
-				e_scourge = { has_holder = yes }
+		event_target:target_champion = {
+			if = {
+				limit = {
+					scourge_champion_event_trigger = yes
+				}
+				narrative_event = { id = WCTHW.2041 }
 			}
-			narrative_event = { id = WCTHW.2041 }
-			break = yes
+			else = {
+				clr_global_flag = arthas_chain_ongoing
+				narrative_event = { id = WCTHW.2025 }
+			}
 		}
-		narrative_event = { id = WCTHW.2025 }
 	}
 }
-# Rumors about a powerful artifact: main event
+#Delayed event
 narrative_event = {
 	id = WCTHW.2041
 	title = EVTTITLE_WCTHW_2000
@@ -2922,31 +3009,33 @@ narrative_event = {
 
 		prestige = 100
 
-		hidden_effect = { character_event = { id = WCTHW.2045 days = 2 } }
+		73 = { province_event = { id = WCTHW.2045 days = 2 } }
 	}
 }
-# Frostmourne cave: сheck event
-character_event = {
+### Frostmourne cave
+#Delayer event
+province_event = {
 	id = WCTHW.2045
 
 	is_triggered_only = yes
 	hide_window = yes
 
 	immediate = {
-		if = {
-			limit = {
-				is_incapable = no
-				prisoner = no
-				
-				e_scourge = { has_holder = yes }
+		event_target:target_champion = {
+			if = {
+				limit = {
+					scourge_champion_event_trigger = yes
+				}
+				narrative_event = { id = WCTHW.2046 }
 			}
-			narrative_event = { id = WCTHW.2046 }
-			break = yes
+			else = {
+				clr_global_flag = arthas_chain_ongoing
+				narrative_event = { id = WCTHW.2025 }
+			}
 		}
-		narrative_event = { id = WCTHW.2025 }
 	}
 }
-# Frostmourne cave: main event
+#Delayed event
 narrative_event = {
 	id = WCTHW.2046
 	title = EVTTITLE_WCTHW_2000
@@ -2955,13 +3044,6 @@ narrative_event = {
 	border = GFX_event_narrative_frame_war
 
 	is_triggered_only = yes
-
-	trigger = {
-		is_incapable = no
-		prisoner = no
-		
-		e_scourge = { has_holder = yes }
-	}
 
 	immediate = {
 		e_scourge = { holder_scope = { save_event_target_as = target_lich_king } }
@@ -2972,10 +3054,33 @@ narrative_event = {
 
 		add_artifact_frostmourne_effect = yes
 
-		hidden_effect = { narrative_event = { id = WCTHW.2050 days = 1 } }
+		73 = { province_event = { id = WCTHW.2049 days = 1 } }
 	}
 }
-# The Last Vestiges of the Sanity
+### The Last Vestiges of the Sanity
+#Delayer event
+province_event = {
+	id = WCTHW.2049
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		event_target:target_champion = {
+			if = {
+				limit = {
+					scourge_champion_event_trigger = yes
+				}
+				narrative_event = { id = WCTHW.2050 }
+			}
+			else = {
+				clr_global_flag = arthas_chain_ongoing
+				narrative_event = { id = WCTHW.2025 }
+			}
+		}
+	}
+}
+#Delayed event
 narrative_event = {
 	id = WCTHW.2050
 	title = EVTTITLE_WCTHW_2000
@@ -2990,18 +3095,39 @@ narrative_event = {
 
 		if = {
 			limit = {
-				is_incapable = no
-				
-				e_scourge = { has_holder = yes }
+				scourge_champion_event_trigger = yes
 			}
-			hidden_effect = { narrative_event = { id = WCTHW.2055 days = 10 } }
+			73 = { province_event = { id = WCTHW.2054 days = 10 } }
 		}
 		else = {
 			death = { death_reason = death_missing }
 		}
 	}
 }
-# The Homecoming
+### The Homecoming
+#Delayer event
+province_event = {
+	id = WCTHW.2054
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		event_target:target_champion = {
+			if = {
+				limit = {
+					scourge_champion_event_trigger = yes
+				}
+				narrative_event = { id = WCTHW.2055 }
+			}
+			else = {
+				clr_global_flag = arthas_chain_ongoing
+				death = { death_reason = death_missing }
+			}
+		}
+	}
+}
+#Delayed event
 narrative_event = {
 	id = WCTHW.2055
 	title = EVTTITLE_WCTHW_2000
@@ -3025,16 +3151,6 @@ narrative_event = {
 	border = GFX_event_narrative_frame_war
 
 	is_triggered_only = yes
-
-	trigger = {
-		is_incapable = no
-		
-		e_scourge = { has_holder = yes }
-	}
-
-	fail_trigger_effect = {
-		death = { death_reason = death_missing }
-	}
 
 	immediate = {
 		remove_trait = travelling
@@ -3147,10 +3263,12 @@ narrative_event = {
 	}
 	
 	after = {
-		set_character_flag = finished_champion_event_chain_flag
+		clr_global_flag = arthas_chain_ongoing
 	}
 }
-# target_ruler's reaction
+
+#Reactions
+### target_ruler's reaction
 narrative_event = {
 	id = WCTHW.2056
 	title = EVTTITLE_WCTHW_2056
@@ -3183,7 +3301,7 @@ narrative_event = {
 		}
 	}
 }
-# Tells the world about what you did
+### Tells the world about what you did
 narrative_event = {
 	id = WCTHW.2057
 	title = EVTTITLE_WCTHW_2057
@@ -3227,5 +3345,49 @@ narrative_event = {
 			}
 			text = EXCELLENT
 		}
+	}
+}
+
+###Fallback: spawns generic holder of Frostmourne if Arthas failed
+character_event = {
+	id = WCTHW.2060
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	only_playable = yes
+	only_independent = yes
+	
+	trigger = {
+		NOT = { has_global_flag = arthas_chain_ongoing }
+		NOT = { has_global_flag = frostmourne_spawned_flag }
+		
+		has_landed_title = e_scourge
+		OR = {
+			year = 620
+			ruled_years = 20
+		}
+	}
+	
+	immediate = {
+		create_character = {
+			dynasty = culture
+			religion = death_god
+			culture = lordaeronian
+			female = no
+			age = 20
+			random_traits = yes
+			trait = creature_human
+			trait = brilliant_strategist
+			trait = cruel
+			trait = zealous
+			trait = ambitious
+		}
+		new_character = {
+			save_event_target_as = target_champion
+			
+			add_artifact_frostmourne_effect = yes
+		}
+		narrative_event = { id = WCTHW.2021 }
 	}
 }
