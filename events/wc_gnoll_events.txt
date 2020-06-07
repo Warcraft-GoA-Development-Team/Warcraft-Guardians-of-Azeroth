@@ -1,4 +1,4 @@
-#Skinning Festival
+#Skinning Festival by fivesanon UwU
 
 namespace=WCGW
 
@@ -7,6 +7,8 @@ character_event={
 	id=WCGW.100
 	desc=WCGWDESC.100
 	is_triggered_only=yes
+	picture = GFX_evt_campfire_hf
+	border=GFX_event_letter_frame_diplomacy
 
 	option={
 		name=EVTOPTA_WCGW.100
@@ -14,7 +16,6 @@ character_event={
 		set_character_flag = holding_skinning_festival
 		set_character_flag = recent_minor_decision
 		set_character_flag = do_not_disturb
-		hidden_tooltip = { character_event = { id = WCGW.699 days = 150 } } # Safety catch flag clearing
 		any_vassal={
 			limit={
 				prisoner=no
@@ -26,7 +27,6 @@ character_event={
 			}
 			character_event = { id = WCGW.102 tooltip = EVTTOOLTIP_WCGW_102 days = 2 }
 		}
-		hidden_tooltip = { character_event = { id = WCGW.101 days = 10 } }
 		if = {
 			limit = {
 				has_dlc = "Reapers"
@@ -40,9 +40,12 @@ character_event={
 				}
 			}
 		}
+		hidden_tooltip = { character_event = { id = WCGW.101 days = 10 } }
+		hidden_tooltip = { character_event = { id = WCGW.699 days = 150 } } # Safety catch flag clearing
 	}
 	option={
-		name=EVTOPTB_WCGW.100
+		name = EVTOPTB_WCGW.100
+		tooltip = stops_the_event_chain
 		clr_character_flag = holding_skinning_festival
 		clr_character_flag = recent_minor_decision
 		clr_character_flag = do_not_disturb
@@ -53,16 +56,20 @@ character_event={
 	id=WCGW.101
 	desc=WCGWDESC.101
 	is_triggered_only=yes
+	picture = GFX_evt_campfire_hf
+	border=GFX_event_normal_frame_diplomacy
 
 	option={
 		name=EVTOPTA_WCGW.101
-		random_courtier = {
+		if = {
 			limit = {
-				prisoner = yes
-				host = { character = ROOT }
-				can_be_sacrificed_trigger = yes
+				any_courtier={
+					prisoner = yes
+					host = { character = ROOT }
+					can_be_sacrificed_trigger = yes
+				}
 			}
-			hidden_tooltip = { character_event = { id = WCGW.103 } }
+			character_event = { id = WCGW.103 days = 1 }
 		}
 	}
 }
@@ -71,13 +78,49 @@ character_event={
 	id=WCGW.102
 	desc=WCGWDESC.102
 	is_triggered_only=yes
+	picture = GFX_evt_campfire_hf
 	border=GFX_event_letter_frame_diplomacy
 
 	option={
 		name=EVTOPTA_WCGW.102
+		set_character_flag = attending_skinning_festival
+		set_character_flag = do_not_disturb
 	}
 	option={
 		name=EVTOPTB_WCGW.102
-		add_character_modifier = { name = declined_skinning_festival years = 2 }
+		add_character_modifier = { name = declined_skinning_festival months = 18 }
+	}
+}
+#selected to be skinned by captor
+character_event={
+	id=WCGW.103
+	desc=WCGWDESC.103
+	is_triggered_only=yes
+	picture = GFX_evt_campfire_hf
+	border=GFX_event_letter_frame_diplomacy
+
+	option={
+		name=EVTOPTA_WCGW.103
+		if={
+			limit={
+				NOT={
+					sibling = FROM
+					father = { character = FROM }
+					mother = { character = FROM }
+					any_spouse = { character = FROM }
+					any_child = { character = FROM }
+					any_dynasty_member = { character = FROM}
+					prestige = 1000
+					ruler = yes
+				}
+				random_list = {
+					25 = { FROM = { character_event = { id = WCGW.999 } } } #skinned evt1
+					25 = { FROM = { character_event = { id = WCGW.999 } } } #skinned evt2
+					25 = { FROM = { character_event = { id = WCGW.999 } } } #skinned evt3
+					10 = { FROM = { character_event = { id = WCGW.999 } } } #escaped evt1
+					5 = { FROM = { character_event = { id = WCGW.999 } } } #escaped evt2
+				}
+			}
+		}
 	}
 }
