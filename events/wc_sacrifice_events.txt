@@ -1,6 +1,6 @@
 namespace = WCSCRFC
 
-character_event = { # Army commander sacrifice province population
+character_event = { # Army commander sacrifice province population, owner gets boni
 	id = WCSCRFC.1
 
 	desc = {
@@ -143,6 +143,11 @@ character_event = { # Army commander sacrifice province population
 					else = { set_variable = { which = local_received_offmap_old_gods_currency_insanity_from_province_population_sacrifice_variable value = 80 } }
 				}
 			}
+
+			set_variable = {
+				which = local_received_offmap_old_gods_currency_insanity_from_sacrifices_total_variable
+				which = local_received_offmap_old_gods_currency_insanity_from_province_population_sacrifice_variable
+			}
 		}
 		else_if = { # Or get sacrifice points
 			limit = { religion_have_ritual_sacrifice_trigger = yes }
@@ -169,45 +174,10 @@ character_event = { # Army commander sacrifice province population
 				}
 			}
 
-			if = { # Pick character to sacrifice
-				limit = { is_capital = yes }
-				owner = {
-					random_courtier = {
-						limit = {
-							is_ruler = no
-							can_be_sacrificed_trigger = yes
-						}
-						random = {
-							chance = 25
-							modifier = {
-								factor = 3
-								is_unimportant_trigger = yes
-							}
-							modifier = {
-								factor = 3
-								has_minor_title = title_commander
-							}
-							modifier = { #Less likely to be in battle.
-								factor = 0.5
-								is_adult = no
-							}
-							modifier = { #Less likely to be in battle.
-								factor = 0.5
-								is_adult = no
-								is_child_of = PREV
-							}
-							ROOT = { PREV = { save_event_target_as = target_sacrificed_character } }
-						}
-					}
-				}
-			}
-
-			ROOT = {
-
-				# Ping event and negative opinion effect
-				THIS_sacrifice_PREV_subjects_opinion_effect = yes
-				PREV = {
-					owner = {
+			owner = { # Ping event and negative opinion effect
+				ROOT = {
+					THIS_sacrifice_PREV_subjects_opinion_effect = yes
+					PREV = {
 						if = { limit = { ai = no } character_event = { id = WCSCRFC.2 } }
 						any_liege = {
 							if = { limit = { ai = no } character_event = { id = WCSCRFC.2 } }
@@ -215,38 +185,79 @@ character_event = { # Army commander sacrifice province population
 						}
 					}
 				}
-				
-				if = { # Get offmap Old Gods Currency
-					limit = { publicly_worship_one_of_old_gods_trigger = yes }
+			}
+			if = { # Sacrifice characters
+				limit = { is_capital = yes }
+				owner = {
+					while = {
+						count = 3
 
-					set_variable = {
-						which = local_received_offmap_old_gods_currency_insanity_from_sacrifices_total_variable
-						which = local_received_offmap_old_gods_currency_insanity_from_province_population_sacrifice_variable
-					}
-					if = { # Sacrifice character
-						limit = { event_target:target_sacrificed_character = { always = yes } }
-						set_character_flag = wc_do_not_show_post_sacrifice_ping_event_flag
-						event_target:target_sacrificed_character = {
-							caltulate_PREV_offmap_old_gods_currency_insanity_effect = yes
-							change_variable = {
-								which = local_received_offmap_old_gods_currency_insanity_from_sacrifices_total_variable
-								which = local_received_offmap_old_gods_currency_insanity_from_character_sacrifice_variable
+						random_courtier = {
+							limit = {
+								is_ruler = no
+								can_be_sacrificed_trigger = yes
 							}
-							PREV_public_sacrifice_THIS_effect = yes
-						}
-						clr_character_flag = wc_do_not_show_post_sacrifice_ping_event_flag
-					}
 
-					trigger_switch = {
-						on_trigger = has_character_modifier
-						follower_of_cthun = {		add_offmap_currency = { offmap = offmap_cthun		value = local_received_offmap_old_gods_currency_insanity_from_sacrifices_total_variable } }
-						follower_of_nzoth = {		add_offmap_currency = { offmap = offmap_nzoth		value = local_received_offmap_old_gods_currency_insanity_from_sacrifices_total_variable } }
-						follower_of_yogg_saron = {	add_offmap_currency = { offmap = offmap_yoggsaron	value = local_received_offmap_old_gods_currency_insanity_from_sacrifices_total_variable } }
-						follower_of_yshaarj = {		add_offmap_currency = { offmap = offmap_yshaarj		value = local_received_offmap_old_gods_currency_insanity_from_sacrifices_total_variable } }
+							random = {
+								chance = 25
+								modifier = {
+									factor = 3
+									is_unimportant_trigger = yes
+								}
+								modifier = {
+									factor = 3
+									has_minor_title = title_commander
+								}
+								modifier = { #Less likely to be in battle.
+									factor = 0.5
+									is_adult = no
+								}
+								modifier = { #Less likely to be in battle.
+									factor = 0.5
+									is_adult = no
+									is_child_of = PREV
+								}
+
+								save_event_target_as = target_sacrificed_character
+
+								ROOT = {
+									set_character_flag = wc_do_not_show_post_sacrifice_ping_event_flag
+									set_character_flag = wc_do_not_show_post_sacrifice_cannibal_event_flag_temp
+
+									event_target:target_sacrificed_character = {
+										caltulate_PREV_offmap_old_gods_currency_insanity_effect = yes
+										change_variable = {
+											which = local_received_offmap_old_gods_currency_insanity_from_sacrifices_total_variable
+											which = local_received_offmap_old_gods_currency_insanity_from_character_sacrifice_variable
+										}
+										PREV_public_sacrifice_THIS_effect = yes
+									}
+
+									clr_character_flag = wc_do_not_show_post_sacrifice_ping_event_flag
+									clr_character_flag = wc_do_not_show_post_sacrifice_cannibal_event_flag_temp
+								}
+
+								clear_event_target = target_sacrificed_character
+
+							}
+						}
 					}
 				}
 			}
 		}
+
+		if = { # Get Offmap Old Gods Currency if worship Old Gods
+			limit = { publicly_worship_one_of_old_gods_trigger = yes }
+
+			trigger_switch = {
+				on_trigger = has_character_modifier
+				follower_of_cthun = {		add_offmap_currency = { offmap = offmap_cthun		value = local_received_offmap_old_gods_currency_insanity_from_sacrifices_total_variable } }
+				follower_of_nzoth = {		add_offmap_currency = { offmap = offmap_nzoth		value = local_received_offmap_old_gods_currency_insanity_from_sacrifices_total_variable } }
+				follower_of_yogg_saron = {	add_offmap_currency = { offmap = offmap_yoggsaron	value = local_received_offmap_old_gods_currency_insanity_from_sacrifices_total_variable } }
+				follower_of_yshaarj = {		add_offmap_currency = { offmap = offmap_yshaarj		value = local_received_offmap_old_gods_currency_insanity_from_sacrifices_total_variable } }
+			}
+		}
+
 	}
 
 	option = { name = EVTOPT_WCSCRFC_1 }
