@@ -1168,7 +1168,6 @@ character_event = {
 	is_triggered_only = yes
 	
 	trigger = {
-		NOT = { trait = travelling }
 		c_10620 = {
 			is_alive = yes
 			NOT = { religion = old_gods_worship }
@@ -1178,6 +1177,11 @@ character_event = {
 			is_landed = no
 		}
 		character = 52000
+	}
+	
+	fail_trigger_effect = {
+		# Skip event
+		character_event = { id = WCDAC.5045 months = 12 }
 	}
 	
 	immediate = {
@@ -1198,7 +1202,7 @@ character_event = {
 		c_10620 = {
 			save_event_target_as = target_garona
 			add_trait = travelling
-			hidden_effect = { add_trait = unable_to_interact_trait }
+			#hidden_effect = { add_trait = unable_to_interact_trait }
 			diplomatic_immunity = yes
 		}
 	}
@@ -1209,16 +1213,20 @@ character_event = {
 		trigger = { NOT = { has_character_flag = hunted_by_garona } }
 
 		set_character_flag = hunted_by_garona
-		character_event = { id = WCDAC.5042 months = 40 }
+		set_variable = { which = garona_kills value = 1 }
 	}
 	option = {
 		name = EVTOPTB_WCDAC_5041
 		trigger = { has_character_flag = hunted_by_garona }
 	}
 	after = {
+		change_variable = { which = garona_kills value = 1 }
 		if = {
-			limit = { has_character_flag = hunted_by_garona }
+			limit = { NOT = { check_variable = { which = garona_kills = 5 } } }
 			character_event = { id = WCDAC.5041 months = 10 random = 90 }
+		}
+		else = {
+			character_event = { id = WCDAC.5042 months = 6 }
 		}
 	}
 }
@@ -1254,7 +1262,7 @@ character_event = {
 		diplomatic_immunity = no
 		event_target:target_garona = {
 			remove_trait = travelling
-			hidden_effect = { remove_trait = unable_to_interact_trait }
+			#hidden_effect = { remove_trait = unable_to_interact_trait }
 			diplomatic_immunity = no
 			move_character = PREV
 		}
