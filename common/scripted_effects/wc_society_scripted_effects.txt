@@ -1,0 +1,570 @@
+# IMPORTANT! Effect from MNM.10031 that forces AI to join society
+ai_join_random_society_effect = {
+	random_list = {
+		700 = { } # Fall back dead weight
+		
+		# Warcraft
+		# cult_of_the_damned
+		50 = {
+			trigger = {
+				can_join_society = cult_of_the_damned
+			}
+			modifier = {
+				factor = 5
+				has_common_dark_cult_preferences = yes
+			}
+			modifier = {
+				factor = 2
+				cult_of_the_damned = { num_of_society_members < 15 }
+			}
+			modifier = {
+				factor = 2
+				cult_of_the_damned = { num_of_society_members < 10 }
+			}
+			join_society_cult_of_the_damned_effect = yes
+			
+			# Warcraft
+			ai_increase_influence_and_set_grandmaster_effect = yes
+		}
+		# shadow_council
+		50 = {
+			trigger = {
+				can_join_society = shadow_council
+			}
+			modifier = {
+				factor = 5
+				has_common_dark_cult_preferences = yes
+			}
+			modifier = {
+				factor = 2
+				shadow_council = { num_of_society_members < 15 }
+			}
+			modifier = {
+				factor = 2
+				shadow_council = { num_of_society_members < 10 }
+			}
+			join_society_shadow_council_effect = yes
+			
+			# Warcraft
+			ai_increase_influence_and_set_grandmaster_effect = yes
+		}
+		# twilights_hammer_cult
+		50 = {
+			trigger = {
+				can_join_society = twilights_hammer_cult
+			}
+			modifier = {
+				factor = 5
+				has_common_dark_cult_preferences = yes
+			}
+			modifier = {
+				factor = 2
+				twilights_hammer_cult = { num_of_society_members < 15 }
+			}
+			modifier = {
+				factor = 2
+				twilights_hammer_cult = { num_of_society_members < 10 }
+			}
+			join_society_twilights_hammer_cult_effect = yes
+			
+			# Warcraft
+			ai_increase_influence_and_set_grandmaster_effect = yes
+		}
+		# cenarion_circle
+		100 = {
+			trigger = {
+				can_join_society = cenarion_circle
+			}
+			modifier = {
+				factor = 1.5
+				has_common_religious_preferences = yes
+			}
+			modifier = {
+				factor = 1.5
+				has_common_learning_preferences = yes
+			}
+			modifier = {
+				factor = 2
+				cenarion_circle = { num_of_society_members < 15 }
+			}
+			modifier = {
+				factor = 2
+				cenarion_circle = { num_of_society_members < 10 }
+			}
+			join_society_cenarion_circle_effect = yes
+			
+			# Warcraft
+			ai_increase_influence_and_set_grandmaster_effect = yes
+		}
+		# sisterhood_of_elune
+		100 = {
+			trigger = {
+				can_join_society = sisterhood_of_elune
+			}
+			modifier = {
+				factor = 1.5
+				has_common_religious_preferences = yes
+			}
+			modifier = {
+				factor = 1.5
+				has_common_learning_preferences = yes
+			}
+			modifier = {
+				factor = 2
+				sisterhood_of_elune = { num_of_society_members < 15 }
+			}
+			modifier = {
+				factor = 2
+				sisterhood_of_elune = { num_of_society_members < 10 }
+			}
+			join_society_sisterhood_of_elune_effect = yes
+			
+			# Warcraft
+			ai_increase_influence_and_set_grandmaster_effect = yes
+		}
+	}
+}
+ai_increase_influence_and_set_grandmaster_effect = {
+	random_list = { # Artificially increase society influence for balance purposes
+		75 = {
+			modifier = {
+				factor = 0
+				society_influence >= 30
+			}
+			add_mission_succeed_influence_effect = yes
+		}
+		25 = {
+		}
+	}
+	if = {
+		limit = {
+			NOT = {
+				society = {
+					any_society_member = {
+						is_society_grandmaster = yes
+					}
+				}
+			}
+		}
+		set_society_grandmaster = yes
+	}
+}
+
+# IMPORTANT! Effect from  MNM.10011 that fires joining chain if you're interested in society
+# When add new society, change is_interested_in_joining_trigger
+join_interesting_society_effect = {
+	# Warcraft
+	
+	#Secret religious society
+	if = {
+		limit = {
+			interested_in_society = secret_religious_cult
+			NOT = { has_character_modifier = secret_religions_recruitment_timer }
+			any_society_member = {
+				is_in_prevs_interesting_society_trigger = yes
+			}
+		}
+		add_character_modifier = {
+			name = secret_religions_recruitment_timer
+			years = 5
+			hidden = yes
+		}
+		character_event = { id = MNM.3420 }
+	}
+
+	# Warcraft
+	# cult_of_the_damned
+	if = {
+		limit = {
+			interested_in_society = cult_of_the_damned
+			NOT = { has_character_flag = being_recruited_by_cult_of_the_damned }
+		}
+		if = {
+			limit = {
+				has_dlc = Mystics # MNM.7001 is DLC-locked
+				NOT = { true_religion = death_god }
+				any_society_member = {
+					is_within_diplo_range = ROOT
+					
+					society_member_of = cult_of_the_damned
+					is_society_grandmaster = no
+					opinion = { who = ROOT value = -25 }
+				}
+			}
+			random_society_member = {
+				limit = {
+					is_within_diplo_range = ROOT
+					
+					society_member_of = cult_of_the_damned
+					is_society_grandmaster = no
+					opinion = { who = ROOT value = -25 }
+				}
+				save_event_target_as = satanists_recruiter
+			}
+			set_cult_of_the_damned_recruitment_flags_effect = yes
+			character_event = { id = MNM.7001 days = 3 }
+		}
+		else = {
+			join_society_cult_of_the_damned_effect = yes
+			character_event = { id = WCCSO.7250 }
+		}
+	}
+	# shadow_council
+	if = {
+		limit = {
+			interested_in_society = shadow_council
+			NOT = { has_character_flag = being_recruited_by_shadow_council }
+		}
+		if = {
+			limit = {
+				has_dlc = Mystics # MNM.7001 is DLC-locked
+				NOR = {
+					true_religion = orcish_fel
+					true_religion = burning_legion_religion
+				}
+				any_society_member = {
+					is_within_diplo_range = ROOT
+					
+					society_member_of = shadow_council
+					is_society_grandmaster = no
+					opinion = { who = ROOT value = -25 }
+				}
+			}
+			random_society_member = {
+				limit = {
+					is_within_diplo_range = ROOT
+					
+					society_member_of = shadow_council
+					is_society_grandmaster = no
+					opinion = { who = ROOT value = -25 }
+				}
+				save_event_target_as = satanists_recruiter
+			}
+			set_shadow_council_recruitment_flags_effect = yes
+			character_event = { id = MNM.7001 days = 3 }
+		}
+		else = {
+			join_society_shadow_council_effect = yes
+			character_event = { id = WCCSO.7250 }
+		}
+	}
+	# twilights_hammer_cult
+	if = {
+		limit = {
+			interested_in_society = twilights_hammer_cult
+			NOT = { has_character_flag = being_recruited_by_twilights_hammer_cult }
+		}
+		if = {
+			limit =  {
+				has_dlc = Mystics # MNM.7001 is DLC-locked
+				NOT = { true_religion = old_gods_worship }
+				any_society_member = {
+					is_within_diplo_range = ROOT
+					
+					society_member_of = twilights_hammer_cult
+					is_society_grandmaster = no
+					opinion = { who = ROOT value = -25 }
+				}
+			}
+			random_society_member = {
+				limit = {
+					is_within_diplo_range = ROOT
+					
+					society_member_of = twilights_hammer_cult
+					is_society_grandmaster = no
+					opinion = { who = ROOT value = -25 }
+				}
+				save_event_target_as = satanists_recruiter
+			}
+			set_twilights_hammer_cult_recruitment_flags_effect = yes
+			character_event = { id = MNM.7001 days = 3 }
+		}
+		else = {
+			join_society_twilights_hammer_cult_effect = yes
+			character_event = { id = WCCSO.7250 }
+		}
+	}
+}
+
+# Effects to join this society
+join_society_cult_of_the_damned_effect = {
+	if = {
+		limit = { NOT = { society_member_of = cult_of_the_damned } }
+		leave_society_if_part_of_society_effect = yes
+		if = {
+			limit = { NOT = { true_religion = death_god } }
+			if = {
+				limit = {
+					OR = {
+						independent = yes
+						liege = { NOT = { religion = death_god } }
+					}
+				}
+				set_secret_religion = death_god
+			}
+			if = {
+				limit = {
+					independent = no
+					liege = { religion = death_god }
+				}
+				if = { limit = { has_secret_religion = yes } clear_secret_religion = yes }
+				religion = death_god
+			}
+		}
+		join_society = cult_of_the_damned
+	}
+}
+join_society_shadow_council_effect = {
+	if = {
+		limit = { NOT = { society_member_of = shadow_council } }
+		leave_society_if_part_of_society_effect = yes
+		if = {
+			limit = {
+				NOR = {
+					true_religion = orcish_fel
+					true_religion = burning_legion_religion
+				}
+			}
+			if = {
+				limit = {
+					OR = {
+						independent = yes
+						liege = {
+							NOR = {
+								religion = orcish_fel
+								religion = burning_legion_religion
+							}
+						}
+					}
+				}
+				set_secret_religion = burning_legion_religion
+			}
+			if = {
+				limit = {
+					independent = no
+					liege = { religion = orcish_fel }
+				}
+				if = { limit = { has_secret_religion = yes } clear_secret_religion = yes }
+				religion = orcish_fel
+			}
+			if = {
+				limit = {
+					independent = no
+					liege = { religion = burning_legion_religion }
+				}
+				if = { limit = { has_secret_religion = yes } clear_secret_religion = yes }
+				religion = burning_legion_religion
+			}
+		}
+		join_society = shadow_council
+	}
+}
+join_society_twilights_hammer_cult_effect = {
+	if = {
+		limit = { NOT = { society_member_of = twilights_hammer_cult } }
+		leave_society_if_part_of_society_effect = yes
+		if = {
+			limit = { NOT = { true_religion = old_gods_worship } }
+			if = {
+				limit = {
+					OR = {
+						independent = yes
+						liege = { NOT = { religion = old_gods_worship } }
+					}
+				}
+				set_secret_religion = old_gods_worship
+			}
+			if = {
+				limit = {
+					independent = no
+					liege = { religion = old_gods_worship }
+				}
+				if = { limit = { has_secret_religion = yes } clear_secret_religion = yes }
+				religion = old_gods_worship
+			}
+		}
+		join_society = twilights_hammer_cult
+	}
+}
+join_society_cenarion_circle_effect = {
+	if = {
+		limit = { NOT = { society_member_of = cenarion_circle } }
+		leave_society_if_part_of_society_effect = yes
+		join_society = cenarion_circle
+		if = {
+			limit = {
+				ai = yes
+				
+				is_druid_class_trigger = no
+			}
+			ai_add_druid_class_effect = yes
+		}
+	}
+}
+join_society_sisterhood_of_elune_effect = {
+	if = {
+		limit = { NOT = { society_member_of = sisterhood_of_elune } }
+		leave_society_if_part_of_society_effect = yes
+		join_society = sisterhood_of_elune
+		if = {
+			limit = {
+				ai = yes
+				
+				is_priest_class_trigger = no
+			}
+			ai_add_priest_class_effect = yes
+		}
+	}
+}
+# Join society based on being_recruited_by_ flag
+join_society_flag_effect = {
+	trigger_switch = {
+		on_trigger = has_character_flag
+		being_recruited_by_cult_of_the_damned = { join_society_cult_of_the_damned_effect = yes }
+		being_recruited_by_shadow_council = { join_society_shadow_council_effect = yes }
+		being_recruited_by_twilights_hammer_cult = { join_society_twilights_hammer_cult_effect = yes }
+	}
+}
+# Join ROOT's society
+join_society_root_effect = {
+	if = {
+		limit = { ROOT = { society_member_of = cult_of_the_damned } }
+		join_society_cult_of_the_damned_effect = yes
+	}
+	else_if = {
+		limit = { ROOT = { society_member_of = shadow_council } }
+		join_society_shadow_council_effect = yes
+	}
+	else_if = {
+		limit = { ROOT = { society_member_of = twilights_hammer_cult } }
+		join_society_twilights_hammer_cult_effect = yes
+	}
+	else_if = {
+		limit = { ROOT = { society_member_of = cenarion_circle } }
+		join_society_cenarion_circle_effect = yes
+	}
+	else_if = {
+		limit = { ROOT = { society_member_of = sisterhood_of_elune } }
+		join_society_sisterhood_of_elune_effect = yes
+	}
+}
+# Join FROM's society
+join_society_from_effect = {
+	if = {
+		limit = { FROM = { society_member_of = cult_of_the_damned } }
+		join_society_cult_of_the_damned_effect = yes
+	}
+	else_if = {
+		limit = { FROM = { society_member_of = shadow_council } }
+		join_society_shadow_council_effect = yes
+	}
+	else_if = {
+		limit = { FROM = { society_member_of = twilights_hammer_cult } }
+		join_society_twilights_hammer_cult_effect = yes
+	}
+	else_if = {
+		limit = { FROM = { society_member_of = cenarion_circle } }
+		join_society_cenarion_circle_effect = yes
+	}
+	else_if = {
+		limit = { FROM = { society_member_of = sisterhood_of_elune } }
+		join_society_sisterhood_of_elune_effect = yes
+	}
+}
+# Join PREV's society
+join_society_prev_effect = {
+	if = {
+		limit = { PREV = { society_member_of = cult_of_the_damned } }
+		join_society_cult_of_the_damned_effect = yes
+	}
+	else_if = {
+		limit = { PREV = { society_member_of = shadow_council } }
+		join_society_shadow_council_effect = yes
+	}
+	else_if = {
+		limit = { PREV = { society_member_of = twilights_hammer_cult } }
+		join_society_twilights_hammer_cult_effect = yes
+	}
+	else_if = {
+		limit = { PREV = { society_member_of = cenarion_circle } }
+		join_society_cenarion_circle_effect = yes
+	}
+	else_if = {
+		limit = { PREV = { society_member_of = sisterhood_of_elune } }
+		join_society_sisterhood_of_elune_effect = yes
+	}
+}
+# Join ascetic society
+# Used in order_to_take_vows
+join_ascetic_society_effect = {
+	if = {
+		limit = { can_join_society = cenarion_circle }
+		join_society_cenarion_circle_effect = yes
+	}
+	else_if = {
+		limit = { can_join_society = sisterhood_of_elune }
+		join_society_sisterhood_of_elune_effect = yes
+	}
+}
+
+set_cult_of_the_damned_recruitment_flags_effect = {
+	set_character_flag = cult_of_the_damned_attempted_recruitment
+	set_character_flag = being_recruited_by_cult_of_the_damned
+}
+set_shadow_council_recruitment_flags_effect = {
+	set_character_flag = shadow_council_attempted_recruitment
+	set_character_flag = being_recruited_by_shadow_council
+}
+set_twilights_hammer_cult_recruitment_flags_effect = {
+	set_character_flag = twilights_hammer_cult_attempted_recruitment
+	set_character_flag = being_recruited_by_twilights_hammer_cult
+}
+
+leave_society_if_part_of_society_effect = {
+	if = {
+		limit = { is_in_society = yes }
+		leave_society = yes
+	}
+}
+
+betray_and_leave_society_effect = {
+	hidden_effect = {
+		if = {
+			limit = { society_member_of = cenarion_circle }
+			set_character_flag = cenarion_circle_betrayed_flag
+		}
+		else_if = {
+			limit = { society_member_of = cenarion_circle }
+			set_character_flag = sisterhood_of_elune_betrayed_flag
+		}
+	}
+	leave_society = yes
+}
+# Clear society recruitment flags
+clr_society_recruitment_flags_effect = {
+	clr_character_flag = being_recruited_by_cult_of_the_damned
+	clr_character_flag = being_recruited_by_shadow_council
+	clr_character_flag = being_recruited_by_twilights_hammer_cult
+}
+
+### QUEST EFFECTS ###
+complete_quest_turn_into_undead_prev_effect = {
+	if = {
+		limit = {
+			has_quest_turn_into_undead_trigger = yes
+			PREV = { quest_turn_into_undead_prev_target_trigger = yes }
+		}
+		if = {
+			limit = { has_quest = quest_turn_into_undead_smart }
+			clr_quest = quest_turn_into_undead_smart
+		}
+		else_if = {
+			limit = { has_quest = quest_turn_into_undead_strong }
+			clr_quest = quest_turn_into_undead_strong
+		}
+		else = {
+			clr_quest = quest_turn_into_undead_fair
+		}
+		add_society_currency_medium_effect = yes
+	}
+}

@@ -9,6 +9,13 @@ decisions = {
 
 		potential = {
 			can_lead_faction_trigger = yes
+			
+			NOT = {
+				has_game_rule = {
+					name = political_factions
+					value = disabled
+				}
+			}
 
 			is_in_political_faction_trigger = no
 			NOT = { has_landed_title = e_alliance }
@@ -35,6 +42,8 @@ decisions = {
 		}
 
 		allow = {
+			NOT = { has_character_modifier = faction_action_cooldown }
+			
 			realm_size = 50
 			
 			trigger_if = {
@@ -48,6 +57,8 @@ decisions = {
 		}
 
 		effect = {
+			add_character_modifier = { name = faction_action_cooldown years = 1 }
+
 			hidden_tooltip = {
 				narrative_event = { id = WCPLF.100 }
 			}
@@ -76,8 +87,8 @@ decisions = {
 
 			# AI preferences
 			# AI join only if it prefers faction more
-			OR = {
-				ai = no
+			trigger_if = {
+				limit = { ai = yes }
 				trigger_if = {
 					limit = {
 						leader_of_alliance_trait = { always = yes }
@@ -99,48 +110,24 @@ decisions = {
 						}
 					}
 				}
-				trigger_else = {
-					always = yes
+				# Only AI in EK joins faction before 603 year
+				OR = {
+					capital_scope = { region = world_eastern_kingdoms }
+					year = 603
 				}
-			}
-			# Only AI in EK joins faction before 603 year
-			OR = {
-				ai = no
-				capital_scope = { region = world_eastern_kingdoms }
-				year = 603
-			}
-			# AI join only if there's more place in faction
-			OR = {
-				ai = no
-				NOT = {
-					leader_of_horde_trait = {
-						any_tributary = {
-							count = 10
-							is_tributary = { type = political_faction suzerain = suzerain }
-						}
-					}
-				}
-			}
-			# AI joins only if leader's realm isn't too strong
-			OR = {
-				ai = no
-				NOT = { leader_of_horde_trait = { realm_size = 150 } }
+				# AI prefers factions with small number of tributes
+				NOT = { leader_of_horde_trait = { faction_tributes_over_limit_trigger = yes } }
+				# AI prefers factions with small realm size
+				NOT = { leader_of_horde_trait = { faction_realm_size_over_limit_trigger = yes } }
 			}
 		}
 
 		allow = {
 			war = no
 
-			custom_tooltip = {
-				text = has_not_tried_to_join_faction_recently_tooltip
-				hidden_tooltip = {
-					OR = {
-						NOT = { has_character_flag = attempted_join_political_faction }
-						had_character_flag = { flag = attempted_join_political_faction days = 365 }
-					}
-				}
-			}
+			NOT = { has_character_modifier = faction_action_cooldown }
 
+			can_join_faction_trigger = yes
 			leader_of_horde_trait = {
 				trigger_if = {
 					limit = { ROOT = { ai = no } }
@@ -151,11 +138,11 @@ decisions = {
 		}
 
 		effect = {
+			add_character_modifier = { name = faction_action_cooldown years = 1 }
+			
 			custom_tooltip = {
 				text = join_in_political_faction_tooltip
 				hidden_tooltip = {
-					set_character_flag = attempted_join_political_faction
-
 					set_character_flag = being_joined_horde_flag
 					leader_of_horde_trait = { letter_event = { id = WCPLF.110 days = 1 } }
 				}
@@ -186,6 +173,8 @@ decisions = {
 		}
 	}
 	leave_horde_political_faction = {
+		is_high_prio = yes
+		
 		ai_check_interval = 24
 		
 		only_playable = yes
@@ -196,34 +185,30 @@ decisions = {
 			
 			trigger_if = {
 				limit = { independent = yes }
-				is_tributary = { type = political_faction suzerain = suzerain }
-				suzerain = { trait = leader_of_horde_trait }
+				is_member_of_horde_faction_trigger = yes
+				# Leader can't leave faction if it's centralized
+				trigger_if = {
+					limit = { trait = leader_of_horde_trait }
+					horde_is_centralized_faction_trigger = no
+				}
 			}
 			trigger_else = {
-				has_global_flag = centralized_horde_flag
+				horde_is_centralized_faction_trigger = yes
 				de_facto_liege = e_horde
 				NOT = { has_landed_title = e_horde }
 				real_tier = KING
 			}
-
-			NOT = { has_character_flag = traitor_of_political_faction_flag }
 		}
 
 		allow = {
 			rebel = no
 
-			custom_tooltip = {
-				text = has_not_tried_to_join_faction_recently_tooltip
-				hidden_tooltip = {
-					OR = {
-						NOT = { has_character_flag = attempted_join_political_faction }
-						had_character_flag = { flag = attempted_join_political_faction days = 365 }
-					}
-				}
-			}
+			NOT = { has_character_modifier = faction_action_cooldown }
 		}
 
 		effect = {
+			add_character_modifier = { name = faction_action_cooldown years = 1 }
+
 			leave_horde_faction_effect = yes
 			hidden_tooltip = {
 				leader_of_horde_trait = { letter_event = { id = WCPLF.130 } }
@@ -240,6 +225,10 @@ decisions = {
 				factor = 0
 				leader_of_horde_trait = { ROOT = { has_good_opinion_with_prev_faction_leader_trigger = yes } }
 			}
+			modifier = {
+				factor = 0
+				trait = leader_of_horde_trait
+			}
 		}
 	}
 	found_alliance_political_faction = {
@@ -252,6 +241,13 @@ decisions = {
 
 		potential = {
 			can_lead_faction_trigger = yes
+			
+			NOT = {
+				has_game_rule = {
+					name = political_factions
+					value = disabled
+				}
+			}
 
 			is_in_political_faction_trigger = no
 			NOT = { has_landed_title = e_horde }
@@ -300,6 +296,8 @@ decisions = {
 		}
 
 		allow = {
+			NOT = { has_character_modifier = faction_action_cooldown }
+			
 			realm_size = 50
 			
 			trigger_if = {
@@ -312,12 +310,12 @@ decisions = {
 		}
 
 		effect = {
-			hidden_tooltip = {
-				narrative_event = { id = WCPLF.200 }
-			}
+			add_character_modifier = { name = faction_action_cooldown years = 1 }
+
 			if = {
 				limit = {
-					has_dlc = "Holy Fury"
+					NOT = { has_global_flag = alliance_faction_was_created_flag }	# Only once
+					
 					has_global_flag = orcish_invasion_flag
 					e_horde = { has_holder = yes }
 				}
@@ -340,15 +338,13 @@ decisions = {
 						inheritance = matrilineal
 					}
 				}
-				else_if = {
-					limit = {
-						is_female = no
-					}
+				else = {
 					create_bloodline = {
 						type = alliance_of_lordaeron_founder
 					}
 				}
 			}
+			hidden_tooltip = { narrative_event = { id = WCPLF.200 } }
 		}
 
 		revoke_allowed = {
@@ -374,8 +370,8 @@ decisions = {
 
 			# AI preferences
 			# AI join only if it prefers faction more
-			OR = {
-				ai = no
+			trigger_if = {
+				limit = { ai = yes }
 				trigger_if = {
 					limit = {
 						leader_of_alliance_trait = { always = yes }
@@ -395,48 +391,24 @@ decisions = {
 						}
 					}
 				}
-				trigger_else = {
-					always = yes
+				# Only AI in EK joins faction before 603 year
+				OR = {
+					capital_scope = { region = world_eastern_kingdoms }
+					year = 603
 				}
-			}
-			# Only AI in EK joins faction before 603 year
-			OR = {
-				ai = no
-				capital_scope = { region = world_eastern_kingdoms }
-				year = 603
-			}
-			# AI joins only if there's more place in faction
-			OR = {
-				ai = no
-				NOT = {
-					leader_of_alliance_trait = {
-						any_tributary = {
-							count = 10
-							is_tributary = { type = political_faction suzerain = suzerain }
-						}
-					}
-				}
-			}
-			# AI joins only if leader's realm isn't too strong
-			OR = {
-				ai = no
-				NOT = { leader_of_alliance_trait = { realm_size = 150 } }
+				# AI prefers factions with small number of tributes
+				NOT = { leader_of_alliance_trait = { faction_tributes_over_limit_trigger = yes } }
+				# AI prefers factions with small realm size
+				NOT = { leader_of_alliance_trait = { faction_realm_size_over_limit_trigger = yes } }
 			}
 		}
 
 		allow = {
 			war = no
 
-			custom_tooltip = {
-				text = has_not_tried_to_join_faction_recently_tooltip
-				hidden_tooltip = {
-					OR = {
-						NOT = { has_character_flag = attempted_join_political_faction }
-						had_character_flag = { flag = attempted_join_political_faction days = 365 }
-					}
-				}
-			}
+			NOT = { has_character_modifier = faction_action_cooldown }
 
+			can_join_faction_trigger = yes
 			leader_of_alliance_trait = {
 				trigger_if = {
 					limit = { ROOT = { ai = no } }
@@ -447,11 +419,11 @@ decisions = {
 		}
 
 		effect = {
+			add_character_modifier = { name = faction_action_cooldown years = 1 }
+			
 			custom_tooltip = {
 				text = join_in_political_faction_tooltip
 				hidden_tooltip = {
-					set_character_flag = attempted_join_political_faction
-
 					set_character_flag = being_joined_alliance_flag
 					leader_of_alliance_trait = { letter_event = { id = WCPLF.110 days = 1 } }
 				}
@@ -482,6 +454,8 @@ decisions = {
 		}
 	}
 	leave_alliance_political_faction = {
+		is_high_prio = yes
+		
 		ai_check_interval = 24
 		
 		only_playable = yes
@@ -492,34 +466,30 @@ decisions = {
 			
 			trigger_if = {
 				limit = { independent = yes }
-				is_tributary = { type = political_faction suzerain = suzerain }
-				suzerain = { trait = leader_of_alliance_trait }
+				is_member_of_alliance_faction_trigger = yes
+				# Leader can't leave faction if it's centralized
+				trigger_if = {
+					limit = { trait = leader_of_alliance_trait }
+					alliance_is_centralized_faction_trigger = no
+				}
 			}
 			trigger_else = {
-				has_global_flag = centralized_alliance_flag
+				alliance_is_centralized_faction_trigger = yes
 				de_facto_liege = e_alliance
 				NOT = { has_landed_title = e_alliance }
 				real_tier = KING
 			}
-
-			NOT = { has_character_flag = traitor_of_political_faction_flag }
 		}
 
 		allow = {
 			rebel = no
 
-			custom_tooltip = {
-				text = has_not_tried_to_join_faction_recently_tooltip
-				hidden_tooltip = {
-					OR = {
-						NOT = { has_character_flag = attempted_join_political_faction }
-						had_character_flag = { flag = attempted_join_political_faction days = 365 }
-					}
-				}
-			}
+			NOT = { has_character_modifier = faction_action_cooldown }
 		}
 
 		effect = {
+			add_character_modifier = { name = faction_action_cooldown years = 1 }
+
 			leave_alliance_faction_effect = yes
 			hidden_effect = {
 				leader_of_alliance_trait = { letter_event = { id = WCPLF.130 } }
@@ -536,55 +506,12 @@ decisions = {
 				factor = 0
 				leader_of_alliance_trait = { ROOT = { has_good_opinion_with_prev_faction_leader_trigger = yes } }
 			}
+			modifier = {
+				factor = 0
+				trait = leader_of_alliance_trait
+			}
 		}
 	}
-	# betray_political_faction = {
-		# is_high_prio = yes
-
-		# ai_check_interval = 12
-
-		# potential = {
-			# NOT = { has_character_flag = betrayed_political_faction_flag }
-
-			# has_character_flag = traitor_of_political_faction_flag
-
-			# has_global_flag = orcish_invasion_flag		# Works only in the orcish invasion time (the First and Second war)
-			# OR = {
-				# has_character_modifier = member_of_horde_political_faction
-				# has_character_modifier = member_of_alliance_political_faction
-			# }
-		# }
-
-		# allow = {
-			# always = yes
-		# }
-
-		# effect = {
-			# custom_tooltip = {
-				# text = betray_political_faction_desc
-				# hidden_tooltip = {
-					# character_event = { id = WCPLF.400 }
-				# }
-			# }
-		# }
-
-		# revoke_allowed = {
-			# always = no
-		# }
-
-		# ai_will_do = {
-			# factor = 1
-			# modifier = {
-				# factor = 0
-				# NOT = {
-					# any_war = {
-						# using_cb = total_invasion
-						# NOT = { war_score = -50 }
-					# }
-				# }
-			# }
-		# }
-	# }
 	centralize_political_faction = {
 		is_high_prio = yes
 
@@ -603,11 +530,13 @@ decisions = {
 			OR = {
 				AND = {
 					trait = leader_of_horde_trait
-					NOT = { has_global_flag = centralized_horde_flag }
+					horde_is_centralized_faction_trigger = no
+					horde_can_be_centralized_faction_trigger = yes
 				}
 				AND = {
 					trait = leader_of_alliance_trait
-					NOT = { has_global_flag = centralized_alliance_flag }
+					alliance_is_centralized_faction_trigger = no
+					alliance_can_be_centralized_faction_trigger = yes
 				}
 			}
 		}
@@ -669,18 +598,12 @@ decisions = {
 		effect = {
 			if = {
 				limit = { trait = leader_of_horde_trait }
-				if = {
-					limit = { NOT = { has_global_flag = centralized_horde_flag } }
-					set_global_flag = centralized_horde_flag
-				}
+				centralize_horde_faction_effect = yes
 				create_e_horde_effect = yes
 			}
 			if = {
 				limit = { trait = leader_of_alliance_trait }
-				if = {
-					limit = { NOT = { has_global_flag = centralized_alliance_flag } }
-					set_global_flag = centralized_alliance_flag
-				}
+				centralize_alliance_faction_effect = yes
 				create_e_alliance_effect = yes
 			}
 			hidden_effect = { character_event = { id = WCPLF.2 } }
@@ -728,22 +651,16 @@ targetted_decisions = {
 		allow = {
 			war = no
 
-			custom_tooltip = {
-				text = has_not_tried_to_join_faction_recently_tooltip
-				hidden_tooltip = {
-					OR = {
-						NOT = { has_character_flag = attempted_join_political_faction }
-						had_character_flag = { flag = attempted_join_political_faction days = 365 }
-					}
-				}
-			}
+			NOT = { has_character_modifier = faction_action_cooldown }
 
+			can_join_faction_trigger = yes
 			opinion = { who = FROM value = 100 }
 		}
 
 		effect = {
+			add_character_modifier = { name = faction_action_cooldown years = 1 }
+			
 			hidden_tooltip = {
-				set_character_flag = attempted_join_political_faction
 				set_character_flag = being_joined_horde_flag
 				letter_event = { id = WCPLF.120 days = 1 }
 			}
@@ -785,22 +702,16 @@ targetted_decisions = {
 		allow = {
 			war = no
 
-			custom_tooltip = {
-				text = has_not_tried_to_join_faction_recently_tooltip
-				hidden_tooltip = {
-					OR = {
-						NOT = { has_character_flag = attempted_join_political_faction }
-						had_character_flag = { flag = attempted_join_political_faction days = 365 }
-					}
-				}
-			}
+			NOT = { has_character_modifier = faction_action_cooldown }
 
+			can_join_faction_trigger = yes
 			opinion = { who = FROM value = 100 }
 		}
 
 		effect = {
+			add_character_modifier = { name = faction_action_cooldown years = 1 }
+			
 			hidden_tooltip = {
-				set_character_flag = attempted_join_political_faction
 				set_character_flag = being_joined_alliance_flag
 				letter_event = { id = WCPLF.120 days = 1 }
 			}

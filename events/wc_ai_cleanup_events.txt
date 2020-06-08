@@ -84,12 +84,32 @@ character_event = {
 			limit = { trait = cannot_marry_trait }
 			log = "(IMPORTANT) [This.GetBestName] cannot_marry, but tried to marry"
 		}
-		remove_spouse = event_target:target_other_spouse
-		break_betrothal = event_target:target_other_spouse
+		
+		if = {
+			limit = {
+				OR = {
+					is_betrothed = yes
+					is_marriage_adult = no
+					event_target:target_other_spouse = { is_marriage_adult = no }
+				}
+			}
+			break_betrothal = event_target:target_other_spouse
+			
+			# target_other_spouse and her/his relatives get bad opinion of FROM, the one who organized marriage
+			event_target:target_other_spouse = {
+				opinion = { modifier = opinion_betrothal_broken who = FROM }
+				any_close_relative = { opinion = { modifier = opinion_betrothal_broken who = FROM } }
+			}
+		}
+		else = {
+			remove_spouse = event_target:target_other_spouse
+			
+			opinion = { modifier = opinion_divorced who = event_target:target_other_spouse }
+			any_close_relative = { opinion = { modifier = opinion_divorced_relative who = event_target:target_other_spouse } }
+		}
+		
 		character_event = { id = WCCLN.102 }
 
-		opinion = { modifier = opinion_divorced who = event_target:target_other_spouse }
-		any_close_relative = { opinion = { modifier = opinion_divorced_relative who = event_target:target_other_spouse } }
 		if = {
 			limit = {
 				is_pregnant = yes 
@@ -98,13 +118,8 @@ character_event = {
 			death = { death_reason = death_childbirth }
 			break = yes
 		}
-		if = {
-			limit = { require_cannot_marry_flag_trigger = yes }
-			set_cannot_marry_flag_effect = yes
-		}
-		else = {
-			find_right_spouse_effect = yes
-		}
+		# Set cannot_marry flag or find right spouse
+		set_cannot_marry_or_find_spouse_effect = yes
 	}
 }
 # Choses "messanger" or type of notification
@@ -214,14 +229,20 @@ character_event = {
 
 	trigger = {
 		ai = yes
+			
 		is_married = no
 		is_betrothed = no
+			
+		is_in_player_sphere_of_influence_trigger = no
 	}
 
 	immediate = {
-		# Finds/spawns spouse
+		# Finds spouse...
+		# For adults only
 		if = {
 			limit = {
+				is_marriage_adult = yes
+				
 				any_realm_character = {
 					ai = yes
 					is_incapable = no
@@ -231,11 +252,10 @@ character_event = {
 					is_marriage_adult = yes
 					can_marry = yes
 					can_marry_trigger = yes
-					has_prev_race_trigger = yes
+					can_has_sexual_relation_with_prev = yes
 
 					NOT = { is_close_relative = ROOT }
 					is_consort = no
-					is_lowborn = yes
 					is_married = no
 					is_opposite_sex = ROOT
 					is_pregnant = no
@@ -251,18 +271,27 @@ character_event = {
 					is_marriage_adult = yes
 					can_marry = yes
 					can_marry_trigger = yes
-					has_prev_race_trigger = yes
+					can_has_sexual_relation_with_prev = yes
 
 					NOT = { is_close_relative = ROOT }
 					is_consort = no
-					is_lowborn = yes
 					is_married = no
 					is_opposite_sex = ROOT
 					is_pregnant = no
 				}
+				preferred_limit = {
+					is_lover = ROOT
+				}
+				preferred_limit = {
+					has_prev_race_trigger = yes
+				}
+				preferred_limit = {
+					is_lowborn = yes
+				}
 				save_event_target_as = target_new_spouse
 			}
 		}
+		# ...if can't find, spawns spouse
 		else = {
 			log = "[This.GetBestName] spawned a spouse"
 			if = {
@@ -354,13 +383,8 @@ character_event = {
 						}
 						death = { death_reason = death_childbirth }
 					}
-					if = {
-						limit = { require_cannot_marry_flag_trigger = yes }
-						set_cannot_marry_flag_effect = yes
-					}
-					else = {
-						find_right_spouse_effect = yes
-					}
+					# Set cannot_marry flag or find right spouse
+					set_cannot_marry_or_find_spouse_effect = yes
 				}
 				if = {
 					limit = {
@@ -369,13 +393,8 @@ character_event = {
 					}
 					death = { death_reason = death_childbirth }
 				}
-				if = {
-					limit = { require_cannot_marry_flag_trigger = yes }
-					set_cannot_marry_flag_effect = yes
-				}
-				else = {
-					find_right_spouse_effect = yes
-				}
+				# Set cannot_marry flag or find right spouse
+				set_cannot_marry_or_find_spouse_effect = yes
 			}
 		}
 		FROM = {
@@ -393,13 +412,8 @@ character_event = {
 							}
 							death = { death_reason = death_childbirth }
 						}
-						if = {
-							limit = { require_cannot_marry_flag_trigger = yes }
-							set_cannot_marry_flag_effect = yes
-						}
-						else = {
-							find_right_spouse_effect = yes
-						}
+						# Set cannot_marry flag or find right spouse
+						set_cannot_marry_or_find_spouse_effect = yes
 					}
 					if = {
 						limit = {
@@ -408,13 +422,8 @@ character_event = {
 						}
 						death = { death_reason = death_childbirth }
 					}
-					if = {
-						limit = { require_cannot_marry_flag_trigger = yes }
-						set_cannot_marry_flag_effect = yes
-					}
-					else = {
-						find_right_spouse_effect = yes
-					}
+					# Set cannot_marry flag or find right spouse
+					set_cannot_marry_or_find_spouse_effect = yes
 				}
 			}
 		}
@@ -439,6 +448,8 @@ character_event = {
 		
 		has_class_trait_trigger = no
 		united_class_trigger = yes
+		
+		is_in_player_sphere_of_influence_trigger = no
 	}
 	
 	immediate = {

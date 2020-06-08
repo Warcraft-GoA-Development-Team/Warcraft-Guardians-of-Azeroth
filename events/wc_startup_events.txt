@@ -13,11 +13,23 @@ character_event = {
 		
 		is_save_game = no
 		# potential_race_trigger = yes
-		has_race_trait_trigger = no
+		# has_race_trait_trigger = no
 	}
 	
 	immediate = {
-		character_event = { id = WCRAC.10 }
+		if = {
+			limit = { has_race_trait_trigger = no }
+			character_event = { id = WCRAC.10 }
+		}
+		else = {
+			# Adds tattoos
+			add_random_tattoo_effect = yes
+			# Adds religious branch
+			if = {
+				limit = { religion_has_branches_trigger = yes }
+				liege = { ROOT = { add_prev_religious_branch_or_random_effect = yes } }
+			}
+		}
 	}
 }
 
@@ -36,13 +48,21 @@ character_event = {
 	trigger = {
 		is_untouchable_trigger = no
 
-		is_lowborn = yes
-		is_patrician = no
-		
-		OR = {
-			is_ruler = no
-			is_theocracy = yes
-			tier = BARON
+
+		trigger_if = {
+			limit = {	# Gives class traits to members of CC and SoE no matter what
+				NOT = {
+					society_member_of = cenarion_circle
+					society_member_of = sisterhood_of_elune
+				}
+			}
+			is_lowborn = yes
+			
+			OR = {
+				is_ruler = no
+				is_theocracy = yes
+				tier = BARON
+			}
 		}
 		
 		is_save_game = no
@@ -50,7 +70,17 @@ character_event = {
 		united_class_trigger = yes
 	}
 	immediate = {
-		ai_add_random_class_effect = yes
+		if = {
+			limit = { society_member_of = cenarion_circle }
+			ai_add_druid_class_effect = yes
+		}
+		else_if = {
+			limit = { society_member_of = sisterhood_of_elune }
+			ai_add_priest_class_effect = yes
+		}
+		else = {
+			ai_add_random_class_effect = yes
+		}
 	}
 }
 
@@ -87,6 +117,7 @@ character_event = {
 	
 	trigger = {
 		is_save_game = no
+		
 		any_demesne_title = {
 			NOT = { has_law = succ_evil_elective }
 			is_law_potential = succ_evil_elective
@@ -120,6 +151,8 @@ character_event = {
 			OR = {
 				culture = scourge
 				culture = kvaldir
+				culture = forsaken
+				religion = shadowlander
 			}
 		}
 	}
@@ -130,6 +163,8 @@ character_event = {
 				OR = {
 					culture = scourge
 					culture = kvaldir
+					culture = forsaken
+					religion = shadowlander
 				}
 			}
 			add_province_modifier = { name = undead_province duration = -1 }

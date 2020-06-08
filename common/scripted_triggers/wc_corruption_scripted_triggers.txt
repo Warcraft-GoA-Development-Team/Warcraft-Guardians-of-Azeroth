@@ -2,27 +2,30 @@
 
 # YOU CAN'T BE UNDEAD IF IT'S NOT TRUE
 can_be_undead_trigger = {
-	is_adult = yes
-	OR = {
-		AND = {
-			controls_religion = no
-			holy_order = no
-			mercenary = no
+	custom_tooltip = {
+		text = can_be_undead_tooltip
+		is_adult = yes
+		OR = {
+			AND = {
+				controls_religion = no
+				holy_order = no
+				mercenary = no
+			}
+			religion_group = necromancy_group
 		}
-		religion_group = necromancy_group
-	}
 
-	is_humanoid_trigger = yes
-	NOR = {
-		trait = being_demon
-		trait = being_void
-		trait = worgen
-		trait = creature_dryad
-		trait = creature_frostnymph
-		is_uncursed_titanforged_trigger = yes
-	}
+		is_humanoid_trigger = yes
+		NOT = {
+			trait = being_demon
+			trait = being_void
+			trait = worgen
+			trait = creature_dryad
+			trait = creature_frostnymph
+			is_uncursed_titanforged_trigger = yes
+		}
 
-	is_pregnant = no
+		is_pregnant = no
+	}
 }
 # YOU CAN'T BE DEMON AND GET FEL CORRUPTION IF IT'S NOT TRUE
 is_susceptible_to_fel_corruption_trigger = {
@@ -83,6 +86,9 @@ is_susceptible_to_void_corruption_trigger = {
 		has_character_flag = consuming_fel_magic_flag
 	}
 }
+has_max_mutations_trigger = {
+	check_variable = { which = void_mutations value = 5 }
+}
 
 is_dark_being_trigger = {
 	OR = {
@@ -90,4 +96,37 @@ is_dark_being_trigger = {
 		trait = being_demon
 		trait = being_void
 	}
+}
+is_prev_dark_being_trigger = {
+	trigger_if = {
+		limit = { PREV = { trait = being_undead } }
+		trait = being_undead
+	}
+	trigger_else_if = {
+		limit = { PREV = { trait = being_demon } }
+		trait = being_demon
+	}
+	trigger_else_if = {
+		limit = { PREV = { trait = being_void } }
+		trait = being_void
+	}
+	trigger_else = {
+		always = no
+	}
+}
+potential_mutation_trigger = {
+	is_untouchable_trigger = no
+	
+	is_alive = yes
+	is_dying = no
+	
+	is_susceptible_to_void_corruption_trigger = yes
+	OR = {
+		NOT = { trait = being_void }
+		trait = creature_naga
+	}
+}
+allow_mutation_trigger = {
+	religion = old_gods_worship
+	true_religion = old_gods_worship
 }

@@ -1,36 +1,32 @@
 offmap_decisions = {
 	offmap_sacrifice = {
-		only_playable = yes
+		ai = no
 		button_name = offmap_gifts
-		
+
 		third_party_filter = home_court
-		ai_third_party_filter = home_court
-		third_party = FROM
-		ai_check_interval = 24
 		show_third_party_potential = yes
 
+		diplomacy_icon = GFX_old_gods_sacrifice_decision
+
 		potential = {
-			OR = {
-				is_offmap_tag = offmap_cthun
-				is_offmap_tag = offmap_nzoth
-				is_offmap_tag = offmap_yoggsaron
-			}
+			is_old_god_offmap_tag_trigger = yes
 		}
 	
 		from_potential = {
-			has_dlc = "Jade Dragon"
-			mercenary = no
-			holy_order = no
-			is_landed = yes
+			offmap_from_potential_trigger = yes
+			can_sacrifice_characters_to_og_potential_trigger = yes
 		}
 
 		allow = {
 			FROM = {
+				show_only_failed_conditions = yes
 				show_scope_change = no
-				
-				prisoner = no
-				is_incapable = no
-				is_inaccessible_trigger = no
+
+				OR = {
+					religion = old_gods_worship
+					society_member_of = twilights_hammer_cult
+				}
+				can_sacrifice_characters_allow_trigger = yes
 
 				trigger_if = {
 					limit = { ROOT = { is_offmap_tag = offmap_cthun } }
@@ -47,20 +43,22 @@ offmap_decisions = {
 		}
 		
 		third_party_potential = {
-			show_only_failed_conditions = yes
 			FROMFROM = {
 				show_scope_change = no
-				prisoner = yes
+
+				THIS_is_prisoner_that_can_be_sacrificed_trigger = yes
 				host = { character = ROOT_FROM }
 			}
 		}
-		
+
 		third_party_allow = {
 			#show_only_failed_conditions = yes
 		}
-		
+
+		# DO NOT FORGET TO CHANGE "caltulate_PREV_offmap_old_gods_currency_insanity_effect" IF YOU CHANGE THIS!
+		# THIS IS ONLY NEEDED FOR SHOWING OFFMAP CURRENCY AMOUNT THAT YOUR CHARACTER WILL RECEIVE ON OG SCREEN THIRD PARTY SELECTOR
 		third_party_score = {
-			factor = 100
+			factor = 50
 			
 			# Priests
 			additive_modifier = {
@@ -90,14 +88,14 @@ offmap_decisions = {
 				}
 			}
 			additive_modifier = {
-				value = 500
+				value = 650
 				FROMFROM = { 
 					show_scope_change = no
 					tier = EMPEROR
 				}
 			}
 			additive_modifier = {
-				value = 300
+				value = 350
 				FROMFROM = { 
 					show_scope_change = no
 					tier = KING
@@ -118,12 +116,121 @@ offmap_decisions = {
 				}
 			}
 			
-			# Child
+			# Class levels
+			additive_modifier = {
+				value = 50
+				FROMFROM = {
+					is_1_2_physical_class_trigger = yes
+				}
+			}
+			additive_modifier = {
+				value = 50
+				FROMFROM = {
+					is_1_2_magic_class_trigger = yes
+				}
+			}
 			additive_modifier = {
 				value = 100
-				FROMFROM = { 
-					show_scope_change = no
-					is_adult = no
+				FROMFROM = {
+					is_3_4_physical_class_trigger = yes
+				}
+			}
+			additive_modifier = {
+				value = 100
+				FROMFROM = {
+					is_3_4_magic_class_trigger = yes
+				}
+			}
+			additive_modifier = {
+				value = 150
+				FROMFROM = {
+					is_5_6_physical_class_trigger = yes
+				}
+			}
+			additive_modifier = {
+				value = 150
+				FROMFROM = {
+					is_5_6_magic_class_trigger = yes
+				}
+			}
+			additive_modifier = {
+				value = 250
+				FROMFROM = {
+					is_7_8_physical_class_trigger = yes
+				}
+			}
+			additive_modifier = {
+				value = 250
+				FROMFROM = {
+					is_7_8_magic_class_trigger = yes
+				}
+			}
+			additive_modifier = {
+				value = 400
+				FROMFROM = {
+					is_9_10_physical_class_trigger = yes
+				}
+			}
+			additive_modifier = {
+				value = 400
+				FROMFROM = {
+					is_9_10_magic_class_trigger = yes
+				}
+			}
+			#Races that cant have class
+			additive_modifier = {
+				value = 50
+				FROMFROM = {
+					is_whelp_trigger = yes
+				}
+			}
+			additive_modifier = {
+				value = 100
+				FROMFROM = {
+					is_drake_trigger = yes
+				}
+			}
+			additive_modifier = {
+				value = 200
+				FROMFROM = {
+					is_dragon_trigger = yes
+				}
+			}
+			additive_modifier = {
+				value = 400
+				FROMFROM = {
+					is_wyrm_trigger = yes
+				}
+			}
+			additive_modifier = {
+				value = 200
+				FROMFROM = {
+					trait = creature_observer
+				}
+			}
+			additive_modifier = {
+				value = 150
+				FROMFROM = {
+					is_plant_race_trigger = yes
+				}
+			}
+			additive_modifier = {
+				value = 150
+				FROMFROM = {
+					is_elemental_trigger = yes
+				}
+			}
+			#Aspects
+			additive_modifier = {
+				value = 200
+				FROMFROM = {
+					OR = {
+						trait = aspect_of_nature
+						trait = aspect_of_death
+						trait = aspect_of_life
+						trait = aspect_of_magic
+						trait = aspect_of_time
+					}
 				}
 			}
 			
@@ -237,48 +344,19 @@ offmap_decisions = {
 		}
 	
 		effect = {
-			log = "[From.GetBestName] sacrificed [FromFrom.GetBestName] to the Old Gods"
-
 			FROM = {
 				show_scope_change = no
-				
-				if = {
-					limit = { ROOT = { offmap_power = { is_offmap_tag = offmap_cthun } } }
-					add_offmap_currency = {
-						offmap = offmap_cthun
-						value = local_third_party_score
-					}
+
+				ROOT_FROMFROM = {
+					show_scope_change = no
+
+					PREV_sacrifice_THIS_to_old_god_effect = yes
 				}
-				else_if = {
-					limit = { ROOT = { offmap_power = { is_offmap_tag = offmap_nzoth } } }
-					add_offmap_currency = {
-						offmap = offmap_nzoth
-						value = local_third_party_score
-					}
-				}
-				else = {
-					add_offmap_currency = {
-						offmap = offmap_yoggsaron
-						value = local_third_party_score
-					}
-				}
-			}
-			FROMFROM = {
-				show_scope_change = no
-				
-				death = { death_reason = death_sacrificed }
 			}
 		}
 	
 		revoke_allowed = {
 			always = no
-		}
-	
-		ai_will_do = {
-			factor = 1
-			modifier = {
-				factor = 0.3 # slow down
-			}
 		}
 	}
 	request_army_offmap = {
@@ -288,17 +366,10 @@ offmap_decisions = {
 		ai_check_interval = 24
 
 		potential = {
-			OR = {
-				is_offmap_tag = offmap_cthun
-				is_offmap_tag = offmap_nzoth
-				is_offmap_tag = offmap_yoggsaron
-			}
+			is_old_god_offmap_tag_trigger = yes
 		}
 		from_potential = {
-			has_dlc = "Jade Dragon"
-			mercenary = no
-			holy_order = no
-			is_landed = yes
+			offmap_from_potential_trigger = yes
 		}
 		allow = {
 			trigger_if = {
@@ -318,9 +389,10 @@ offmap_decisions = {
 			trigger_else = {
 				FROM = {
 					has_offmap_currency = { offmap = offmap_yoggsaron value = 1000 }
-					yoggsaron_offmap_decisions_enabled_trigger = yes
+					yogg_saron_offmap_decisions_enabled_trigger = yes
 				}
 			}
+			FROM = { religion = old_gods_worship }
 		}
 		effect = {
 			if = {
@@ -422,20 +494,13 @@ offmap_decisions = {
 		only_playable = yes
 		button_name = offmap_boons
 		
-		ai_check_interval = 12
+		ai_check_interval = 48
 
 		potential = {
-			OR = {
-				is_offmap_tag = offmap_cthun
-				is_offmap_tag = offmap_nzoth
-				is_offmap_tag = offmap_yoggsaron
-			}
+			is_old_god_offmap_tag_trigger = yes
 		}
 		from_potential = {
-			has_dlc = "Jade Dragon"
-			mercenary = no
-			holy_order = no
-			is_landed = yes
+			offmap_from_potential_trigger = yes
 		}
 		allow = {
 			trigger_if = {
@@ -443,14 +508,6 @@ offmap_decisions = {
 				FROM = {
 					has_offmap_currency = { offmap = offmap_cthun value = 1000 }
 					cthun_offmap_decisions_enabled_trigger = yes
-					OR = {
-						offmap_cthun = {
-							has_policy = old_god_working
-						}
-						offmap_cthun = {
-							has_policy = old_god_black_empire
-						}
-					}
 				}
 			}
 			trigger_else_if = {
@@ -458,30 +515,15 @@ offmap_decisions = {
 				FROM = {
 					has_offmap_currency = { offmap = offmap_nzoth value = 1000 }
 					nzoth_offmap_decisions_enabled_trigger = yes
-					OR = {
-						offmap_nzoth = {
-							has_policy = old_god_working
-						}
-						offmap_nzoth = {
-							has_policy = old_god_black_empire
-						}
-					}
 				}
 			}
 			trigger_else = {
 				FROM = {
 					has_offmap_currency = { offmap = offmap_yoggsaron value = 1000 }
-					yoggsaron_offmap_decisions_enabled_trigger = yes
-					OR = {
-						offmap_yoggsaron = {
-							has_policy = old_god_working
-						}
-						offmap_yoggsaron = {
-							has_policy = old_god_black_empire
-						}
-					}
+					yogg_saron_offmap_decisions_enabled_trigger = yes
 				}
 			}
+			FROM = { religion = old_gods_worship }
 		}
 		effect = {
 			if = {
@@ -496,7 +538,7 @@ offmap_decisions = {
 					if = {
 						limit = {
 							offmap_cthun = {
-								has_policy = old_god_working
+								has_policy = old_god_plotting
 							}
 						}
 						character_event = { id = WCOME.20 }
@@ -518,7 +560,7 @@ offmap_decisions = {
 					if = {
 						limit = {
 							offmap_nzoth = {
-								has_policy = old_god_working
+								has_policy = old_god_plotting
 							}
 						}
 						character_event = { id = WCOME.21 }
@@ -537,7 +579,7 @@ offmap_decisions = {
 					if = {
 						limit = {
 							offmap_yoggsaron = {
-								has_policy = old_god_working
+								has_policy = old_god_plotting
 							}
 						}
 						character_event = { id = WCOME.22 }
@@ -562,23 +604,18 @@ offmap_decisions = {
 		ai_check_interval = 36
 
 		potential = {
-			OR = {
-				is_offmap_tag = offmap_cthun
-				is_offmap_tag = offmap_nzoth
-				is_offmap_tag = offmap_yoggsaron
-			}
+			is_old_god_offmap_tag_trigger = yes
 		}
 		from_potential = {
-			has_dlc = "Jade Dragon"
-			mercenary = no
-			holy_order = no
-			is_landed = yes
+			NOT = { has_character_flag = requested_offmap_power }
+
+			offmap_from_potential_trigger = yes
 		}
 		allow = {
 			trigger_if = {
 				limit = { is_offmap_tag = offmap_cthun }
 				FROM = {
-					has_offmap_currency = { offmap = offmap_cthun value = 750 }
+					has_offmap_currency = { offmap = offmap_cthun value = 500 }
 					cthun_offmap_decisions_enabled_trigger = yes
 					lacks_offmap_power_trigger = yes
 				}
@@ -586,19 +623,18 @@ offmap_decisions = {
 			trigger_else_if = {
 				limit = { is_offmap_tag = offmap_nzoth }
 				FROM = {
-					has_offmap_currency = { offmap = offmap_nzoth value = 750 }
+					has_offmap_currency = { offmap = offmap_nzoth value = 500 }
 					nzoth_offmap_decisions_enabled_trigger = yes
 					lacks_offmap_power_trigger = yes
 				}
 			}
 			trigger_else = {
 				FROM = {
-					has_offmap_currency = { offmap = offmap_yoggsaron value = 750 }
-					yoggsaron_offmap_decisions_enabled_trigger = yes
+					has_offmap_currency = { offmap = offmap_yoggsaron value = 500 }
+					yogg_saron_offmap_decisions_enabled_trigger = yes
 					lacks_offmap_power_trigger = yes
 				}
 			}
-			hidden_tooltip = { FROM = { NOT = { has_character_flag = requested_offmap_power } } }
 		}
 		effect = {
 			if = {
@@ -608,7 +644,7 @@ offmap_decisions = {
 				FROM = {
 					add_offmap_currency = {
 						offmap = offmap_cthun
-						value = -750
+						value = -500
 					}
 					hidden_effect = {
 						random_list = {
@@ -625,7 +661,7 @@ offmap_decisions = {
 				FROM = {
 					add_offmap_currency = {
 						offmap = offmap_nzoth
-						value = -750
+						value = -500
 					}
 					hidden_effect = {
 						random_list = {
@@ -639,7 +675,7 @@ offmap_decisions = {
 				FROM = {
 					add_offmap_currency = {
 						offmap = offmap_yoggsaron
-						value = -750
+						value = -500
 					}
 					hidden_effect = {
 						random_list = {
@@ -649,7 +685,169 @@ offmap_decisions = {
 					}
 				}
 			}
-			FROM = { hidden_effect = { set_character_flag = requested_offmap_power } }
+			FROM = {
+				set_character_flag = requested_offmap_power
+
+				add_10_void_corruption_effect = yes
+			}
+		}
+		ai_will_do = {
+			factor = 1
+			modifier = {
+				factor = 0.3 # slow down
+			}
+		}
+	}
+	request_elementium_offmap = {
+		only_playable = yes
+		button_name = offmap_boons
+
+		ai_check_interval = 36
+
+		potential = {
+			is_old_god_offmap_tag_trigger = yes
+		}
+		from_potential = {
+			offmap_from_potential_trigger = yes
+
+			NOT = { has_character_modifier = twilight_architecture }
+		}
+		allow = {
+			trigger_if = {
+				limit = { is_offmap_tag = offmap_cthun }
+				FROM = {
+					has_offmap_currency = { offmap = offmap_cthun value = 1000 }
+					cthun_offmap_decisions_enabled_trigger = yes
+				}
+			}
+			trigger_else_if = {
+				limit = { is_offmap_tag = offmap_nzoth }
+				FROM = {
+					has_offmap_currency = { offmap = offmap_nzoth value = 1000 }
+					nzoth_offmap_decisions_enabled_trigger = yes
+				}
+			}
+			trigger_else = {
+				FROM = {
+					has_offmap_currency = { offmap = offmap_yoggsaron value = 1000 }
+					yogg_saron_offmap_decisions_enabled_trigger = yes
+				}
+			}
+			FROM = {
+				religion = old_gods_worship
+			}
+		}
+		effect = {
+			if = {
+				limit = {
+					is_offmap_tag = offmap_cthun
+				}
+				FROM = {
+					add_offmap_currency = {
+						offmap = offmap_cthun
+						value = -1000
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					is_offmap_tag = offmap_nzoth
+				}
+				FROM = {
+					add_offmap_currency = {
+						offmap = offmap_nzoth
+						value = -1000
+					}
+				}
+			}
+			else = {
+				FROM = {
+					add_offmap_currency = {
+						offmap = offmap_yoggsaron
+						value = -1000
+					}
+				}
+			}
+			FROM = {
+				add_character_modifier = { name = twilight_architecture years = 5 }
+			}
+		}
+		ai_will_do = {
+			factor = 1
+			modifier = {
+				factor = 0.3 # slow down
+			}
+		}
+	}
+	request_healing_offmap = {
+		only_playable = yes
+		button_name = offmap_boons
+
+		ai_check_interval = 24
+
+		potential = {
+			is_old_god_offmap_tag_trigger = yes
+		}
+		from_potential = {
+			offmap_from_potential_trigger = yes
+		}
+		allow = {
+			trigger_if = {
+				limit = { is_offmap_tag = offmap_cthun }
+				FROM = {
+					has_offmap_currency = { offmap = offmap_cthun value = 750 }
+					cthun_offmap_decisions_enabled_trigger = yes
+				}
+			}
+			trigger_else_if = {
+				limit = { is_offmap_tag = offmap_nzoth }
+				FROM = {
+					has_offmap_currency = { offmap = offmap_nzoth value = 750 }
+					nzoth_offmap_decisions_enabled_trigger = yes
+				}
+			}
+			trigger_else = {
+				FROM = {
+					has_offmap_currency = { offmap = offmap_yoggsaron value = 750 }
+					yogg_saron_offmap_decisions_enabled_trigger = yes
+				}
+			}
+			FROM = {
+				devil_worshipers_dark_healing_trigger = yes
+			}
+		}
+		effect = {
+			if = {
+				limit = {
+					is_offmap_tag = offmap_cthun
+				}
+				FROM = {
+					add_offmap_currency = {
+						offmap = offmap_cthun
+						value = -750
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					is_offmap_tag = offmap_nzoth
+				}
+				FROM = {
+					add_offmap_currency = {
+						offmap = offmap_nzoth
+						value = -750
+					}
+				}
+			}
+			else = {
+				FROM = {
+					add_offmap_currency = {
+						offmap = offmap_yoggsaron
+						value = -750
+					}
+				}
+			}
+			FROM = { character_event = { id = WCOME.500 } }
 		}
 		ai_will_do = {
 			factor = 1

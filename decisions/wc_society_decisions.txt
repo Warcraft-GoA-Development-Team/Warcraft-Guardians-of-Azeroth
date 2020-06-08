@@ -1,377 +1,3 @@
-targeted_decisions = {
-	cult_of_the_damned_recruit = {
-		is_in_society = yes
-
-		ai_target_filter = realm
-		ai_check_interval = 12
-
-		from_potential = {
-			is_adult = yes
-			prisoner = no
-			is_incapable = no
-
-			NOT = { has_character_modifier = recruitment_timer }
-			society_member_of = cult_of_the_damned
-			OR = {
-				ai = no
-				society_rank = {
-					society = cult_of_the_damned
-					rank == 2
-				}
-				society_rank = {
-					society = cult_of_the_damned
-					rank == 3
-				}
-			}
-		}
-		potential = {
-			OR = {
-				FROM = { ai = no }
-				ai = no
-			}
-			OR = {
-				FROM = { ai = yes } # Only checks realm, so by definition in range
-				is_within_diplo_range = FROM
-			}
-			is_adult = yes
-			prisoner = no
-			is_incapable = no
-
-			is_in_society = no
-
-			#AI cannot invite other AIs when society is full
-			NAND = {
-				ai = yes
-				FROM = { ai = yes }
-				NOT = { can_join_society = cult_of_the_damned }
-			}
-
-			#Blocks so AI recruits sensible people (who might say no)
-			OR = {
-				FROM = { ai = no }
-				is_friend = FROM
-				is_lover = FROM
-				is_close_relative = FROM
-				trait = trusting
-				has_impious_trait_trigger = yes
-				trait = drunkard
-				trait = possessed
-				trait = lunatic
-				interested_in_society = cult_of_the_damned
-			}
-		}
-		allow = {
-			is_inaccessible_trigger = no
-
-			custom_tooltip = {
-				text = recruit_block_tooltip
-				OR = {
-					NOT = { has_character_flag = cult_of_the_damned_attempted_recruitment }
-					interested_in_society = cult_of_the_damned
-				}
-				NOT = { has_character_flag = being_recruited_by_cult_of_the_damned }
-			}
-			FROM = {
-				is_inaccessible_trigger = no
-				custom_tooltip = {
-					text = recruit_delay_timer_tooltip
-					NOT = { has_character_modifier = recruitment_delay_timer }
-				}
-			}
-
-			has_cult_of_the_damned_prerequisites = yes
-			opinion = { who = FROM value = 0 }
-		}
-		effect = {
-			set_character_flag = cult_of_the_damned_attempted_recruitment
-			set_character_flag = being_recruited_by_cult_of_the_damned
-			FROM = { save_event_target_as = secret_society_recruiter }
-			hidden_effect = {
-				character_event = { id = WCCSO.7001 days = 3 } # recruitment chain
-				character_event = { id = MNM.7030 days = 365 } # sends delayed back up, in case recruitment fails somehow
-				FROM = {
-					if = {
-						limit = { ai = yes }
-						add_character_modifier = {
-							name = recruitment_timer
-							days = 730
-							hidden = yes
-						}
-					}
-					add_character_modifier = {
-						name = recruitment_delay_timer
-						days = 90
-						hidden = yes
-					}
-				}
-			}
-		}
-		revoke_allowed = {
-			always = no
-		}
-		ai_will_do = {
-			factor = 0.1
-			modifier = {
-				factor = 10 # recruit interested parties
-				interested_in_society = cult_of_the_damned
-			}
-			modifier = {
-				factor = 0 # don't recruit characters interested in something else
-				NOT = { interested_in_society = cult_of_the_damned }
-				is_interested_in_any_society = yes
-			}
-		}
-	}
-	shadow_council_recruit = {
-		is_in_society = yes
-
-		ai_target_filter = realm
-		ai_check_interval = 12
-
-		from_potential = {
-			is_adult = yes
-			prisoner = no
-			is_incapable = no
-
-			NOT = { has_character_modifier = recruitment_timer }
-			society_member_of = shadow_council
-			OR = {
-				ai = no
-				society_rank = {
-					society = shadow_council
-					rank == 2
-				}
-				society_rank = {
-					society = shadow_council
-					rank == 3
-				}
-			}
-		}
-		potential = {
-			OR = {
-				FROM = { ai = no }
-				ai = no
-			}
-			OR = {
-				FROM = { ai = yes } # Only checks realm, so by definition in range
-				is_within_diplo_range = FROM
-			}
-			is_adult = yes
-			prisoner = no
-			is_incapable = no
-
-			is_in_society = no
-
-
-			#AI cannot invite other AIs when society is full
-			NAND = {
-				ai = yes
-				FROM = { ai = yes }
-				NOT = { can_join_society = shadow_council }
-			}
-
-			#Blocks so AI recruits sensible people (who might say no)
-			OR = {
-				FROM = { ai = no }
-				is_friend = FROM
-				is_lover = FROM
-				is_close_relative = FROM
-				trait = trusting
-				has_impious_trait_trigger = yes
-				trait = drunkard
-				trait = possessed
-				trait = lunatic
-				interested_in_society = shadow_council
-			}
-		}
-		allow = {
-			is_inaccessible_trigger = no
-
-			custom_tooltip = {
-				text = recruit_block_tooltip
-				OR = {
-					NOT = { has_character_flag = shadow_council_attempted_recruitment }
-					interested_in_society = shadow_council
-				}
-				NOT = { has_character_flag = being_recruited_by_shadow_council }
-			}
-			FROM = {
-				is_inaccessible_trigger = no
-				custom_tooltip = {
-					text = recruit_delay_timer_tooltip
-					NOT = { has_character_modifier = recruitment_delay_timer }
-				}
-			}
-
-			has_shadow_council_prerequisites = yes
-			opinion = { who = FROM value = 0 }
-		}
-		effect = {
-			set_character_flag = shadow_council_attempted_recruitment
-			set_character_flag = being_recruited_by_shadow_council
-			FROM = { save_event_target_as = secret_society_recruiter }
-			hidden_effect = {
-				character_event = { id = WCCSO.7001 days = 3 } # recruitment chain
-				character_event = { id = MNM.7030 days = 365 } # sends delayed back up, in case recruitment fails somehow
-				FROM = {
-					if = {
-						limit = { ai = yes }
-						add_character_modifier = {
-							name = recruitment_timer
-							days = 730
-							hidden = yes
-						}
-					}
-					add_character_modifier = {
-						name = recruitment_delay_timer
-						days = 90
-						hidden = yes
-					}
-				}
-			}
-		}
-		revoke_allowed = {
-			always = no
-		}
-		ai_will_do = {
-			factor = 0.1
-			modifier = {
-				factor = 10 # recruit interested parties
-				interested_in_society = shadow_council
-			}
-			modifier = {
-				factor = 0 # don't recruit characters interested in something else
-				NOT = { interested_in_society = shadow_council }
-				is_interested_in_any_society = yes
-			}
-		}
-	}
-	twilights_hammer_cult_recruit = {
-		is_in_society = yes
-
-		ai_target_filter = realm
-		ai_check_interval = 12
-
-		from_potential = {
-			is_adult = yes
-			prisoner = no
-			is_incapable = no
-
-			NOT = { has_character_modifier = recruitment_timer }
-			society_member_of = twilights_hammer_cult
-			OR = {
-				ai = no
-				society_rank = {
-					society = twilights_hammer_cult
-					rank == 2
-				}
-				society_rank = {
-					society = twilights_hammer_cult
-					rank == 3
-				}
-			}
-		}
-		potential = {
-			OR = {
-				FROM = { ai = no }
-				ai = no
-			}
-			OR = {
-				FROM = { ai = yes } # Only checks realm, so by definition in range
-				is_within_diplo_range = FROM
-			}
-			is_adult = yes
-			prisoner = no
-			is_incapable = no
-
-			is_in_society = no
-
-
-			#AI cannot invite other AIs when society is full
-			NAND = {
-				ai = yes
-				FROM = { ai = yes }
-				NOT = { can_join_society = twilights_hammer_cult }
-			}
-
-			#Blocks so AI recruits sensible people (who might say no)
-			OR = {
-				FROM = { ai = no }
-				is_friend = FROM
-				is_lover = FROM
-				is_close_relative = FROM
-				trait = trusting
-				has_impious_trait_trigger = yes
-				trait = drunkard
-				trait = possessed
-				trait = lunatic
-				interested_in_society = twilights_hammer_cult
-			}
-		}
-		allow = {
-			is_inaccessible_trigger = no
-
-			custom_tooltip = {
-				text = recruit_block_tooltip
-				OR = {
-					NOT = { has_character_flag = twilights_hammer_cult_attempted_recruitment }
-					interested_in_society = twilights_hammer_cult
-				}
-				NOT = { has_character_flag = being_recruited_by_twilights_hammer_cult }
-			}
-			FROM = {
-				is_inaccessible_trigger = no
-				custom_tooltip = {
-					text = recruit_delay_timer_tooltip
-					NOT = { has_character_modifier = recruitment_delay_timer }
-				}
-			}
-
-			has_twilights_hammer_cult_prerequisites = yes
-			opinion = { who = FROM value = 0 }
-		}
-		effect = {
-			set_character_flag = twilights_hammer_cult_attempted_recruitment
-			set_character_flag = being_recruited_by_twilights_hammer_cult
-			FROM = { save_event_target_as = secret_society_recruiter }
-			hidden_effect = {
-				character_event = { id = WCCSO.7001 days = 3 } # recruitment chain
-				character_event = { id = MNM.7030 days = 365 } # sends delayed back up, in case recruitment fails somehow
-				FROM = {
-					if = {
-						limit = { ai = yes }
-						add_character_modifier = {
-							name = recruitment_timer
-							days = 730
-							hidden = yes
-						}
-					}
-					add_character_modifier = {
-						name = recruitment_delay_timer
-						days = 90
-						hidden = yes
-					}
-				}
-			}
-		}
-		revoke_allowed = {
-			always = no
-		}
-		ai_will_do = {
-			factor = 0.1
-			modifier = {
-				factor = 10 # recruit interested parties
-				interested_in_society = twilights_hammer_cult
-			}
-			modifier = {
-				factor = 0 # don't recruit characters interested in something else
-				NOT = { interested_in_society = twilights_hammer_cult }
-				is_interested_in_any_society = yes
-			}
-		}
-	}
-}
-
 title_decisions = { #Template
 	build_temple_of_elune = {
 		filter = owned
@@ -637,10 +263,10 @@ society_decisions = {
 			new_character = {
 				if = {
 					limit = { ROOT = { society_member_of = sisterhood_of_elune } }
-					join_society = sisterhood_of_elune
+					join_society_sisterhood_of_elune_effect = yes
 				}
 				else = {
-					join_society = cenarion_circle
+					join_society_cenarion_circle_effect = yes
 				}
 				character_event = { id = WCCSO.10000 }
 			}
@@ -662,18 +288,41 @@ society_decisions = {
 		only_playable = yes
 
 		potential = {
-			is_adult = yes
-			is_incapable = no
-			prisoner = no
+			is_landed = yes
+			
 			society_member_of = cenarion_circle
 			society_rank > 3
-			capital_scope = {
-				NOT = { hospital_has_building = wc_cenarion_enclave }
+			trigger_if = {
+				limit = { has_dlc = "Reapers" }
+				capital_scope = { NOT = { hospital_has_building = hp_cenarion_enclave } }
+			}
+			trigger_else = {
+				capital_scope = {
+					NOT = {
+						any_province_holding = {
+							has_building = tp_cenarion_enclave
+						}
+					}
+					trigger_if = {
+						limit = { has_empty_holding = yes }
+						always = yes
+					}
+					trigger_else = {
+						any_province_holding = {
+							holding_type = temple
+							holder_scope = {
+								OR = {
+									character = ROOT
+									is_liege_or_above = ROOT
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 
 		allow = {
-			is_inaccessible_trigger = no
 			society_currency >= 1500
 		}
 
@@ -681,16 +330,35 @@ society_decisions = {
 			change_society_currency = -1500
 			capital_scope = {
 				if = {
-					limit = {
-					has_hospital = no
+					limit = { has_dlc = "Reapers" }
+					if = {
+						limit = { has_hospital = no }
+						build_holding = {
+							type = hospital
+							holder = ROOT
+						}
 					}
-				  	build_holding = {
-						type = hospital
-						holder = ROOT
+					add_to_extra_holding = { type = hospital building = hp_cenarion_enclave }
+				}
+				else = {
+					if = {
+						limit = { has_empty_holding = yes }
+						build_holding = { type = temple holder = ROOT }
+					}
+					random_province_holding = {
+						limit = {
+							holding_type = temple
+							holder_scope = {
+								OR = {
+									character = ROOT
+									is_liege_or_above = ROOT
+								}
+							}
+						}
+						add_building = tp_cenarion_enclave
 					}
 				}
-				add_to_extra_holding = { type = hospital building = wc_cenarion_enclave }
-				}
+			}
 		}
 
 		revoke_allowed = {
@@ -726,24 +394,7 @@ society_decisions = {
 		}
 
 		effect = {			
-			capital_scope = {
-					PREV = {
-						spawn_unit = {
-							owner = ROOT
-							province = PREV
-							home = PREV
-							troops = {
-								light_cavalry = { 1000 1000 }
-								knights = { 500 500 }
-								golems = { 100 100 }
-							}
-							attrition = 0.25
-							disband_on_peace = yes
-							maintenance_multiplier = 0
-							earmark = host_of_the_wilds
-						}
-					}
-				}
+			spawn_wild_troops_effect = yes
 		}
 
 		revoke_allowed = {
