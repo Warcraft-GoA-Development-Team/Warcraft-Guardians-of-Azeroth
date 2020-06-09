@@ -6,7 +6,7 @@ decisions = {
 		
 		potential = {
 			religion = holy_light
-
+			
 			controls_religion = yes
 			OR = {
 				# Alliance has been created
@@ -38,9 +38,9 @@ decisions = {
 		
 		potential = {
 			d_nethergarde = { has_holder = no }
-
+			
 			government = magocracy_government
-
+			
 			has_alliance_religion_trigger = yes
 			has_alliance_culture_trigger = yes
 			
@@ -53,7 +53,7 @@ decisions = {
 				holder_scope = {
 					has_alliance_religion_trigger = yes
 					has_alliance_culture_trigger = yes
-
+					
 					top_liege = {
 						has_alliance_religion_trigger = yes
 						has_alliance_culture_trigger = yes
@@ -76,12 +76,12 @@ decisions = {
 	}
 	form_korkron = {
 		is_high_prio = yes
-
+		
 		ai_check_interval = 12
-
+		
 		only_playable = yes
 		only_independent = yes
-
+		
 		potential = {
 			d_korkron = { has_holder = no }
 			
@@ -90,14 +90,17 @@ decisions = {
 			trait = leader_of_horde_trait
 			
 			has_landed_title = e_horde
-			has_global_flag = centralized_horde_flag
+			OR = {
+				horde_is_centralized_faction_trigger = yes
+				year = 608
+			}
 		}
-
+		
 		allow = {
 			wealth = 250
 			prestige = 1000
 		}
-
+		
 		effect = {
 			save_event_target_as = target_warchief
 			
@@ -179,13 +182,118 @@ decisions = {
 				}
 			}
 		}
-
+		
+		ai_will_do = {
+			factor = 1
+		}
+	}
+	
+	# Vassalize d_scarlet_crusade
+	vassalize_d_scarlet_crusade = {
+		is_high_prio = yes
+		
+		ai_check_interval = 60
+		
+		only_playable = yes
+		only_independent = yes
+		
+		potential = {
+			religion = scarlet_light
+			
+			any_owned_bloodline = {
+				has_bloodline_flag = bloodline_flag_scarlet_king
+			}
+			is_title_active = d_scarlet_crusade
+			d_scarlet_crusade = { holder_scope = { independent = yes } }
+			NOT = {
+				d_scarlet_crusade = {
+					holder_scope = {
+						has_opinion_modifier = {
+							who = ROOT
+							modifier = opinion_unfit_ruler
+						}
+					}
+				}
+			}
+		}
+		
+		allow = {
+			independent = yes
+			higher_tier_than = DUKE
+			
+			piety = 300
+			
+			d_scarlet_crusade = {
+				show_scope_change = no
+				
+				holder_scope = {
+					opinion = {
+						who = ROOT
+						value = 0
+					}
+				}
+			}
+		}
+		
+		effect = {
+			piety = -300
+			
+			d_scarlet_crusade = {
+				show_scope_change = no
+				
+				holder_scope = {
+					show_scope_change = no
+					
+					set_defacto_liege = ROOT
+				}
+			}
+		}
+		
+		ai_will_do = {
+			factor = 1
+		}
+	}
+	
+	create_blood_knights_order = {
+		ai_check_interval = 12
+		is_high_prio = yes
+		
+		only_playable = yes
+		
+		potential = {
+			religion = cult_of_sunwell
+			OR = {
+				has_landed_title = e_quelthalas
+				has_landed_title = k_quelthalas
+			}
+			is_high_elf_trigger = yes
+			is_high_elf_culture_trigger = yes
+			
+			d_blood_knights_order = { has_holder = no }
+		}
+		effect = {
+			narrative_event = { id = WCORD.501 }
+		}
+		allow = {
+		    trigger_if = {
+                limit = { has_global_flag = blood_elves_happened_flag }
+				num_of_holy_sites = 3
+				piety = 200
+			}
+            trigger_else = { 
+				num_of_holy_sites = 4
+				piety = 1000
+			}
+		}
+		revoke_allowed = {
+			always = no
+		}
 		ai_will_do = {
 			factor = 1
 		}
 	}
 }
-	
+
 targetted_decisions = {
 	donate_money_to_order = {
 		ai_check_interval = 60
@@ -282,4 +390,5 @@ targetted_decisions = {
 			factor = 0.1
 		}
 	}
-}
+	
+}	

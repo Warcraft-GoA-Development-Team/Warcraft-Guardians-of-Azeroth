@@ -23,14 +23,19 @@ set_cannot_marry_flag_effect = {
 		}
 	}
 }
-find_right_spouse_effect = {
+# Set cannot_marry flag or find right spouse
+set_cannot_marry_or_find_spouse_effect = {
 	if = {
-		limit = {
-			ai = yes
-			
-			is_in_player_sphere_of_influence_trigger = no
-		}
-		character_event = { id = WCCLN.130 }		# Finds right spouse
+		limit = { require_cannot_marry_flag_trigger = yes }
+		set_cannot_marry_flag_effect = yes
+	}
+	else_if = {
+		limit = { can_marry_trigger = yes }
+		# Finds right spouse
+		character_event = { id = WCCLN.130 }
+	}
+	else = {
+		set_cannot_marry_flag_effect = yes
 	}
 }
 
@@ -92,6 +97,9 @@ remove_racial_traits_effect = {
 	if = { limit = { trait = creature_plague_eruptor 		} remove_trait = creature_plague_eruptor 		}
 	if = { limit = { trait = creature_abomination 			} remove_trait = creature_abomination 		}
 	if = { limit = { trait = creature_lich 					} remove_trait = creature_lich 				}
+	if = { limit = { trait = creature_wickerman 			} remove_trait = creature_wickerman 		}
+	if = { limit = { trait = creature_wicker_behemoth 		} remove_trait = creature_wicker_behemoth 		}
+	if = { limit = { trait = creature_wicker_golem 			} remove_trait = creature_wicker_golem 				}
 
 	# Demons
 	if = { limit = { trait = creature_annihilan 			} remove_trait = creature_annihilan 			}
@@ -481,36 +489,47 @@ show_close_people_what_this_become_effect = {
 		any_spouse = {
 			limit = {
 				NOT = { character = event_target:target_necromancer }	# This character turned THIS, so it already know
+				NOT = { character = event_target:target_worried_spouse }
+				NOT = { character = event_target:target_sick_spouse }
 			}
 			set_notification_type_of_prev_effect = yes
-			character_event = { id = WCDAC.150 }
+			character_event = { id = WCDAC.150 days = 2 } #Must be delayed
 		}
 		any_friend = {
 			limit = {
 				NOT = { character = event_target:target_necromancer }	# This character turned THIS, so it already know
+				NOT = { character = event_target:target_worried_spouse }
+				NOT = { character = event_target:target_sick_spouse }
+				
 				NOT = { is_married = PREV }
 			}
 			set_notification_type_of_prev_effect = yes
-			character_event = { id = WCDAC.150 }
+			character_event = { id = WCDAC.150 days = 2 } #Must be delayed
 		}
 		any_lover = {
 			limit = {
 				NOT = { character = event_target:target_necromancer }	# This character turned THIS, so it already know
+				NOT = { character = event_target:target_worried_spouse }
+				NOT = { character = event_target:target_sick_spouse }
+				
 				NOT = { is_married = PREV }
 				NOT = { is_friend = PREV }
 			}
 			set_notification_type_of_prev_effect = yes
-			character_event = { id = WCDAC.150 }
+			character_event = { id = WCDAC.150 days = 2 } #Must be delayed
 		}
 		any_close_relative = {
 			limit = {
 				NOT = { character = event_target:target_necromancer }	# This character turned THIS, so it already know
+				NOT = { character = event_target:target_worried_spouse }
+				NOT = { character = event_target:target_sick_spouse }
+				
 				NOT = { is_married = PREV }
 				NOT = { is_friend = PREV }
 				NOT = { is_lover = PREV }
 			}
 			set_notification_type_of_prev_effect = yes
-			character_event = { id = WCDAC.150 }
+			character_event = { id = WCDAC.150 days = 2 } #Must be delayed
 		}
 		if = {		# ...liege is almost your family
 			limit = {
@@ -523,6 +542,9 @@ show_close_people_what_this_become_effect = {
 
 				liege = {
 					NOT = { character = event_target:target_necromancer }	# This character turned THIS, so it already know
+					NOT = { character = event_target:target_worried_spouse }
+					NOT = { character = event_target:target_sick_spouse }
+					
 					NOT = { is_married = PREV }
 					NOT = { is_friend = PREV }
 					NOT = { is_lover = PREV }
@@ -531,7 +553,7 @@ show_close_people_what_this_become_effect = {
 			}
 			liege = {
 				set_notification_type_of_prev_effect = yes
-				character_event = { id = WCDAC.150 }
+				character_event = { id = WCDAC.150 days = 2 } #Must be delayed
 			}
 		}
 	}
@@ -1200,31 +1222,87 @@ spawn_small_scourge_troops_effect = {
 }
 spawn_plague_troops_effect = {
 	# Must be 100 in total
+	spawn_small_plague_troops_effect = yes
+	if = {
+		limit = {
+			has_game_rule = {
+				name = scourge_invasion
+				value = x0_5
+			}
+		}
+		spawn_small_plague_troops_effect = yes
+	}
+	if = {
+		limit = {
+			has_game_rule = {
+				name = scourge_invasion
+				value = default
+			}
+		}
+		spawn_small_plague_troops_effect = yes
+		spawn_small_plague_troops_effect = yes
+		spawn_small_plague_troops_effect = yes
+	}
+	if = {
+		limit = {
+			has_game_rule = {
+				name = scourge_invasion
+				value = x1_5
+			}
+		}
+		spawn_small_plague_troops_effect = yes
+		spawn_small_plague_troops_effect = yes
+		spawn_small_plague_troops_effect = yes
+		spawn_small_plague_troops_effect = yes
+		spawn_small_plague_troops_effect = yes
+	}
+	if = {
+		limit = {
+			has_game_rule = {
+				name = scourge_invasion
+				value = x2
+			}
+		}
+		spawn_small_plague_troops_effect = yes
+		spawn_small_plague_troops_effect = yes
+		spawn_small_plague_troops_effect = yes
+		spawn_small_plague_troops_effect = yes
+		spawn_small_plague_troops_effect = yes
+		spawn_small_plague_troops_effect = yes
+		spawn_small_plague_troops_effect = yes
+	}
+}
+spawn_small_plague_troops_effect = {
 	spawn_unit = {
 		province = ROOT
 		home = ROOT
 		owner = THIS
-		scaled_by_biggest_garrison = 1
+		scaled_by_biggest_garrison = 0.25
 		troops = {
 			light_infantry = { 10 10 }
 			archers = { 12 12 }
 			undead = { 78 78 }
 		}
 		attrition = 0
+		merge = yes
 		maintenance = no
 	}
 }
 
 spawn_colonial_troops_effect = {
+	spawn_small_colonial_troops_effect = yes
+	spawn_small_colonial_troops_effect = yes
+}
+spawn_small_colonial_troops_effect = {
 	spawn_unit = {
 		owner = THIS
 		province = capital_scope
 		home = capital_scope
 		troops = {
-			light_infantry = { 300 300 }
-			heavy_infantry = { 1500 1500 }
-			light_cavalry = { 600 600 }
-			archers = { 900 900 }
+			light_infantry = { 150 150 }
+			heavy_infantry = { 750 750 }
+			light_cavalry = { 300 300 }
+			archers = { 450 450 }
 		}
 		attrition = 1.0
 		maintenance = no
@@ -1234,7 +1312,7 @@ spawn_colonial_troops_effect = {
 		owner = THIS
 		cannot_inherit = no
 		troops = {
-			galleys = { 65 65 }
+			galleys = { 30 30 }
 		}
 	}
 }
@@ -1250,6 +1328,18 @@ set_legion_government_effect = {
 set_black_pact_government_effect = {
 	set_government_type = black_pact_government
 	set_evil_government_laws_effect = yes
+}
+set_roman_imperial_government_effect = {
+	any_demesne_title = {
+		limit = {
+			is_law_potential = succ_byzantine_elective
+			NOT = { has_law = succ_byzantine_elective }
+			is_imperial_title = yes
+		}
+		add_law = { law = succ_byzantine_elective cooldown = no opinion_effect = no }
+	}
+	set_government_type = roman_imperial_government
+	recalc_succession = yes
 }
 set_evil_government_laws_effect = {
 	any_demesne_title = {
@@ -1326,11 +1416,14 @@ become_blood_elf_effect = {
 		limit = { trait = creature_high_elf }
 		remove_trait = creature_high_elf
 		add_trait = creature_blood_elf
-		if = {
-			limit = { NOT = { culture = blood_elf } }
-			culture = blood_elf
-		}
 	}
+	if = {
+		limit = { NOT = { culture = blood_elf } }
+		culture = blood_elf
+	}
+}
+convert_this_and_vassals_to_blood_elves_effect = {
+	become_blood_elf_effect = yes
 	hidden_effect = {
 		if = {
 			limit = { is_ruler = yes }
@@ -1346,7 +1439,7 @@ become_blood_elf_effect = {
 						tier = BARON
 					}
 				}
-				become_blood_elf_effect = yes
+				convert_this_and_vassals_to_blood_elves_effect = yes
 			}
 		}
 	}
@@ -1380,13 +1473,16 @@ add_lightwell_effect = {
 	}
 }
 add_deathwell_effect = {
+	add_deathwell_no_restore_effect = yes
+	394 = { wonder = { set_wonder_damaged = no } }
+}
+add_deathwell_no_restore_effect = {
 	clr_global_flag = sunwell_is_being_restored_flag
 	394 = {
 		wonder = {
 			remove_sunwells_effect = yes
 			set_wonder_flag = wonder_deathwell_flag
 			set_name = wonder_sunwell_deathwell
-			set_wonder_damaged = no
 		}
 	}
 }
@@ -2101,7 +2197,7 @@ corrupt_world_tree_effect = {
 					limit = { NOT = { has_global_flag = night_elves_lost_immortality_flag } }
 					set_global_flag = night_elves_lost_immortality_flag
 					# Delayed notification event
-					3264 = { province_event = { id = WCDRU.5500 days = 10 random = 10 } }
+					1921 = { province_event = { id = WCDRU.5500 days = 10 random = 10 } }
 				}
 			}
 		}
@@ -2136,7 +2232,7 @@ burn_world_tree_effect = {
 					limit = { NOT = { has_global_flag = night_elves_lost_immortality_flag } }
 					set_global_flag = night_elves_lost_immortality_flag
 					# Delayed notification event
-					3264 = { province_event = { id = WCDRU.5500 days = 10 random = 10 } }
+					1921 = { province_event = { id = WCDRU.5500 days = 10 random = 10 } }
 				}
 			}
 		}
@@ -3001,6 +3097,22 @@ add_random_martial_education_effect = {
 		}
 	}
 }
+add_random_intrigue_education_effect = {
+	random_list = {
+		15 = {
+			add_trait = amateurish_plotter
+		}
+		35 = {
+			add_trait = flamboyant_schemer
+		}
+		35 = {
+			add_trait = intricate_webweaver
+		}
+		15 = {
+			add_trait = elusive_shadow
+		}
+	}
+}
 add_random_learning_education_effect = {
 	random_list = {
 		15 = {
@@ -3614,6 +3726,16 @@ decrease_mind_control_stage_effect = {
 }
 
 support_scarlet_light_effect = {
+	# Vassals of d_order_of_the_silver_hand become vassals of d_scarlet_crusade
+	if = {
+		limit = {
+			is_landed = yes
+			
+			de_facto_liege = d_order_of_the_silver_hand
+		}
+		set_defacto_liege = d_scarlet_crusade
+	}
+	
 	religion = scarlet_light
 	if = {
 		limit = { has_secret_religion = yes }
@@ -3627,6 +3749,7 @@ support_scarlet_light_effect = {
 	if = {
 		limit = {
 			is_landed = yes
+			
 			higher_real_tier_than = BARON
 		}
 		capital_scope = { 
@@ -3641,17 +3764,6 @@ support_scarlet_light_effect = {
 		}
 		
 		hidden_effect = {
-			any_close_relative = {
-				limit = {
-					is_ruler = no
-					host = { character = ROOT }
-					
-					religion = holy_light
-					NOT = { religion = scarlet_light }
-				}
-				religion = scarlet_light
-				clear_secret_religion = yes
-			}
 			any_courtier_or_vassal = {
 				limit = {
 					OR = {
@@ -3664,8 +3776,8 @@ support_scarlet_light_effect = {
 					OR = {
 						trait = zealous
 						has_evil_trait_trigger = yes
-						has_unpleasant_trait_trigger = yes
-						has_impious_trait_trigger = yes
+						
+						is_close_relative = PREV	# Close relatives pick Scarlet religion
 					}
 				}
 				religion = scarlet_light
@@ -3674,56 +3786,120 @@ support_scarlet_light_effect = {
 		}
 	}
 }
+support_argent_dawn_effect = {
+	piety = 100
+	
+	# Vassals of d_order_of_the_silver_hand become vassals of d_argent_dawn
+	if = {
+		limit = {
+			is_landed = yes
+			
+			de_facto_liege = d_order_of_the_silver_hand
+			capital_scope = { region = world_eastern_kingdoms_lordaeron }
+		}
+		set_defacto_liege = d_argent_dawn
+	}
+}
 
+# Creates d_argent_dawn
 create_d_argent_dawn_effect = {
 	# Picks Highlord
-	create_character = {
-		female = no
-		dynasty = none
-		culture=lordaeronian religion=holy_light
-		trait=brilliant_strategist
-		trait=creature_human
-		trait=class_paladin_7
-		trait=kind trait=just
-		age = 50
+	# Raymond
+	if = {
+		limit = { c_60625 = { is_potential_argent_leader_trigger = yes } }
+		c_60625 = { save_event_target_as = target_argent_highlord }
 	}
-	new_character = {
-		activate_title = { title = d_argent_dawn status = yes }
-		d_argent_dawn = { grant_title = PREV }
+	# Maxwell Tyrosus
+	else_if = {
+		limit = { c_60650 = { is_potential_argent_leader_trigger = yes } }
+		c_60650 = { save_event_target_as = target_argent_highlord }
+	}
+	# Member of the Silver Hand
+	else_if = {
+		limit = {
+			d_order_of_the_silver_hand = {
+				has_holder = yes
+				holder_scope = {
+					any_courtier = {
+						is_potential_argent_leader_trigger = yes
+					}
+				}
+			}
+		}
+		d_order_of_the_silver_hand = {
+			holder_scope = {
+				random_courtier = {
+					limit = { is_potential_argent_leader_trigger = yes }
+					save_event_target_as = target_grand_crusader
+				}
+			}
+		}
+	}
+	else = {
+		create_character = {
+			female = no
+			dynasty = none
+			culture=lordaeronian religion=holy_light
+			trait=brilliant_strategist
+			trait=creature_human
+			trait=class_paladin_7
+			trait=kind trait=just
+			age = 50
+		}
+		new_character = { save_event_target_as = target_argent_highlord }
+	}
+	event_target:target_argent_highlord = {
+		wealth = 500
 		religion_authority = {
 			modifier = religious_order_formed
 			years = 10
 		}
-		religion_authority = {
-			modifier = religious_split_bad
-			years = 10
-		}
+		
+		activate_title = { title = d_argent_dawn status = yes }
+		d_argent_dawn = { grant_title = PREV }
 		set_defacto_liege = THIS
 	}
 }
+# Creates d_scarlet_crusade
 create_d_scarlet_crusade_effect = {
 	# Picks Grand Crusader
+	# Saidan Dathrohan
 	if = {
-		limit = {
-			c_60021 = {		# Saidan
-				ai = yes
-
-				is_alive = yes
-
-				OR = {
-					religion = holy_light
-					religion = scarlet_light
-				}
-				OR = {
-					true_religion = holy_light
-					true_religion = scarlet_light
-				}
-				culture = lordaeronian
-				trait = zealous
-			}
-		}
+		limit = { c_60021 = { is_potential_scarlet_leader_trigger = yes } }
 		c_60021 = { save_event_target_as = target_grand_crusader }
 	}
+	# James Abbendis
+	else_if = {
+		limit = { c_60560 = { is_potential_scarlet_leader_trigger = yes } }
+		c_60560 = { save_event_target_as = target_grand_crusader }
+	}
+	# Brigitte Abbendis
+	else_if = {
+		limit = { c_60561 = { is_potential_scarlet_leader_trigger = yes } }
+		c_60561 = { save_event_target_as = target_grand_crusader }
+	}
+	# Member of the Silver Hand
+	else_if = {
+		limit = {
+			d_order_of_the_silver_hand = {
+				has_holder = yes
+				holder_scope = {
+					any_courtier = {
+						is_potential_scarlet_leader_trigger = yes
+					}
+				}
+			}
+		}
+		d_order_of_the_silver_hand = {
+			holder_scope = {
+				random_courtier = {
+					limit = { is_potential_scarlet_leader_trigger = yes }
+					save_event_target_as = target_grand_crusader
+				}
+			}
+		}
+	}
+	# Spawned paladin
 	else = {
 		create_character = {
 			female = no
@@ -3751,15 +3927,12 @@ create_d_scarlet_crusade_effect = {
 			modifier = religious_order_formed
 			years = 10
 		}
-		religion_authority = {
-			modifier = religious_split_good
-			years = 10
-		}
 		
 		activate_title = { title = d_scarlet_crusade status = yes }
 		d_scarlet_crusade = { grant_title = PREV }
 		set_defacto_liege = THIS
 		
+		# Gives start lands
 		c_whispering_gardens = {
 			# event_target:target_settler and its people settle here
 			settle_as_target_settler_effect = yes
@@ -3777,33 +3950,37 @@ create_d_scarlet_crusade_effect = {
 		}
 		
 		clear_settler_flag_effect = yes
-		
-		narrative_event = { id = WCLAT.9001 }
 	}
 }
+# Creates d_church_scarlet_light
 create_d_church_scarlet_light_effect = {
 	# Picks Grand Inquisitor
 	if = {
-		limit = {
-			c_60550 = {		# Isillien
-				ai = yes
-
-				is_alive = yes
-
-				OR = {
-					religion = holy_light
-					religion = scarlet_light
-				}
-				OR = {
-					true_religion = holy_light
-					true_religion = scarlet_light
-				}
-				culture = lordaeronian
-				trait = zealous
-			}
-		}
+		limit = { c_60550 = { is_potential_scarlet_leader_trigger = yes } }
 		c_60550 = { save_event_target_as = target_grand_inquisitor }
 	}
+	# Member of the Silver Hand
+	else_if = {
+		limit = {
+			d_order_of_the_silver_hand = {
+				has_holder = yes
+				holder_scope = {
+					any_courtier = {
+						is_potential_scarlet_leader_trigger = yes
+					}
+				}
+			}
+		}
+		d_order_of_the_silver_hand = {
+			holder_scope = {
+				random_courtier = {
+					limit = { is_potential_scarlet_leader_trigger = yes }
+					save_event_target_as = target_grand_inquisitor
+				}
+			}
+		}
+	}
+	# Spawned priest
 	else = {
 		create_character = {
 			dynasty = none
@@ -3929,10 +4106,12 @@ add_artifact_frostmourne_effect = {
 	save_global_event_target_as = target_frostmourne_holder
 	add_artifact = frostmourne
 	hidden_effect = {
+		e_scourge = { holder_scope = { save_event_target_as = target_lich_king } }
 		new_artifact = {
 			set_creation_date = 591.11.1
 			set_original_owner = event_target:target_lich_king
 		}
+		set_global_flag = frostmourne_spawned_flag
 	}
 }
 
@@ -3955,6 +4134,209 @@ change_undead_demesne_provinces_religion_to_root_effect = {
 	}
 }
 
+# Heal traits
+heal_one_handed_magic_effect = {
+	remove_trait = one_handed
+	if = {
+		limit = {
+			has_artifact = prosthetic_hand_gold
+		}
+		destroy_artifact = prosthetic_hand_gold
+		wealth = 10
+	}
+	if = {
+		limit = {
+			has_artifact = prosthetic_hand_metal
+		}
+		destroy_artifact = prosthetic_hand_metal
+	}
+	if = {
+		limit = {
+			has_character_modifier = phantom_pain
+			NOT = { trait = one_eyed }
+			NOT = { trait = one_legged }
+			NOT = { trait = disfigured }
+		}
+		remove_character_modifier = phantom_pain
+	}
+}
+heal_one_eyed_magic_effect = {
+	remove_trait = one_eyed
+	if = {
+		limit = {
+			has_character_modifier = glass_eye
+		}
+		remove_character_modifier = glass_eye
+	}
+	if = {
+		limit = {
+			has_character_modifier = phantom_pain
+			NOT = { trait = one_handed }
+			NOT = { trait = one_legged }
+			NOT = { trait = disfigured }
+		}
+		remove_character_modifier = phantom_pain
+	}
+}
+heal_one_legged_magic_effect = {
+	remove_trait = one_legged
+	if = {
+		limit = {
+			has_character_modifier = peg_leg
+		}
+		remove_character_modifier = peg_leg
+	}
+	if = {
+		limit = {
+			has_artifact = prosthetic_leg_artifact
+		}
+		destroy_artifact = prosthetic_leg_artifact
+	}
+	if = {
+		limit = {
+			has_character_modifier = phantom_pain
+			NOT = { trait = one_handed }
+			NOT = { trait = one_eyed }
+			NOT = { trait = disfigured }
+		}
+		remove_character_modifier = phantom_pain
+	}
+}
+heal_disfigured_magic_effect = {
+	remove_trait = disfigured
+	if = {
+		limit = {
+			has_character_modifier = golden_mask
+		}
+		remove_character_modifier = golden_mask
+		wealth = 10
+	}
+	if = {
+		limit = {
+			has_character_modifier = phantom_pain
+			NOT = { trait = one_handed }
+			NOT = { trait = one_legged }
+			NOT = { trait = one_eyed }
+		}
+		remove_character_modifier = phantom_pain
+	}
+}
+# Warcraft - heal disease
+heal_disease_magic_effect = {
+	#Warcraft
+	if = {
+		limit = { has_character_flag = removing_corrupted_blood }
+		remove_trait = corrupted_blood
+		set_character_flag = immune_corrupted_blood
+	}
+
+	if = {
+		limit = { has_character_flag = removing_flu }
+		remove_trait = flu
+	}
+	if = {
+		limit = { has_character_flag = removing_measles }
+		remove_trait = has_measles
+		set_character_flag = immune_measles
+	}
+	if = {
+		limit = { has_character_flag = removing_food_poisoning }
+		remove_trait = food_poisoning
+	}
+	if = {
+		limit = { has_character_flag = removing_gout }
+		remove_trait = gout
+	}
+	if = {
+		limit = { has_character_flag = removing_scurvy }
+		remove_trait = scurvy
+	}
+	if = {
+		limit = { has_character_flag = removing_lovers_pox }
+		remove_trait = lovers_pox
+	}
+	if = {
+		limit = { has_character_flag = removing_cancer }
+		remove_trait = cancer
+	}
+	if = {
+		limit = { has_character_flag = removing_pneumonic }
+		remove_trait = pneumonic
+	}
+	if = {
+		limit = { has_character_flag = removing_syphilitic }
+		remove_trait = syphilitic
+		set_character_flag = immune_syphilis
+	}
+	if = {
+		limit = { has_character_flag = removing_leper }
+		remove_trait = leper
+	}
+	if = {
+		limit = { has_character_flag = removing_has_tuberculosis }
+		remove_trait = has_tuberculosis
+		set_character_flag = immune_tuberculosis
+	}
+	if = {
+		limit = { has_character_flag = removing_has_aztec_disease }
+		remove_trait = has_aztec_disease
+		set_character_flag = immune_aztec_disease
+	}
+	if = {
+		limit = { has_character_flag = removing_has_small_pox }
+		remove_trait = has_small_pox
+		set_character_flag = immune_smallpox
+	}
+	if = {
+		limit = { has_character_flag = removing_has_bubonic_plague }
+		remove_trait = has_bubonic_plague
+		set_character_flag = immune_bubonic_plague
+	}
+	if = {
+		limit = { has_character_flag = removing_has_typhus }
+		remove_trait = has_typhus
+		set_character_flag = immune_typhus
+	}
+	if = {
+		limit = { has_character_flag = removing_has_typhoid_fever }
+		remove_trait = has_typhoid_fever
+		set_character_flag = immune_typhoid_fever
+	}
+
+	# Warcraft
+	clr_character_flag = removing_corrupted_blood
+
+	clr_character_flag = removing_flu
+	clr_character_flag = removing_measles
+	clr_character_flag = removing_food_poisoning
+	clr_character_flag = removing_gout
+	clr_character_flag = removing_scurvy
+	clr_character_flag = removing_lovers_pox
+	clr_character_flag = removing_cancer
+	clr_character_flag = removing_leper
+	clr_character_flag = removing_has_tuberculosis
+	clr_character_flag = removing_has_aztec_disease
+	clr_character_flag = removing_has_small_pox
+	clr_character_flag = removing_has_bubonic_plague
+	clr_character_flag = removing_has_typhus
+	clr_character_flag = removing_has_typhoid_fever
+}
+heal_wounds_magic_effect = {
+	if = { limit = { has_character_flag = pending_infection } clr_character_flag = pending_infection }
+	if = {
+		limit = { trait = severely_injured }
+		remove_trait = severely_injured
+	}
+	if = {
+		limit = { trait = wounded }
+		remove_trait = wounded
+	}
+	if = {
+		limit = { trait = infection }
+		remove_trait = infection
+	}
+}
+
 adventurers_easter_egg_effect = {
 	if = {
 		limit = {
@@ -3969,5 +4351,190 @@ adventurers_easter_egg_effect = {
 			chance = 1
 			set_character_flag = adventurers_easter_egg_flag
 		}
+	}
+}
+
+# Holy Light religion gets bad authority
+religious_split_holy_light_bad_effect = {
+	d_church_of_the_holy_light = {
+		show_scope_change = no
+		holder_scope = {
+			show_scope_change = no
+			religion_authority = {
+				modifier = religious_split_bad
+				years = 10
+			}
+		}
+	}
+}
+# Holy Light religion gets good authority
+religious_split_scarlet_light_good_effect = {
+	d_church_scarlet_light = {
+		show_scope_change = no
+		holder_scope = {
+			show_scope_change = no
+			religion_authority = {
+				modifier = religious_split_good
+				years = 10
+			}
+		}
+	}
+}
+# Gives claims on western Lordaeron duchies
+claim_western_lordaeron_effect = {
+	# Silverpine
+	add_pressed_claim = d_ambermill
+	add_pressed_claim = d_deep_elem
+	add_pressed_claim = d_lordamere
+	add_pressed_claim = d_silverpine
+	
+	# Tirisfal
+	add_pressed_claim = d_brill
+	add_pressed_claim = d_lordaeron
+	add_pressed_claim = d_whispering_gardens
+	
+	# Gilneas
+	add_pressed_claim = d_crowvale
+	
+	# Andorhal
+	add_pressed_claim = d_andorhal
+	add_pressed_claim = d_hearthglen
+	
+	# Hillsbrad
+	add_pressed_claim = d_hillsbrad
+}
+
+# Borrows 300 gold from PREV
+this_borrows_300_gold_from_prev_effect = {
+	this_borrows_300_effect = yes
+	
+	PREV = {
+		wealth = -300
+	
+		add_character_modifier = { name = interest_payment_360_gold years = 10 inherit = yes stacking = yes }
+	}
+}
+# target_borrower borrows 300 gold from target_moneylender
+borrower_borrows_300_gold_from_moneylender_effect = {
+	event_target:target_moneylender = {
+		show_scope_change = no
+		
+		event_target:target_borrower = {
+			this_borrows_300_gold_from_prev_effect = yes
+		}
+	}
+}
+# Borrows 300 gold from unknown moneylenders
+this_borrows_300_effect = {
+	wealth = 300
+	
+	add_character_modifier = { name = debt_360_gold duration = -1 inherit = yes }
+}
+# Clears flags and delayed events of borrowing decisions
+clean_up_borrowing_effect = {
+	clr_character_flag = ongoing_borrow_money_flag
+	# Fallback: conversation fails in 4 months
+	clear_delayed_event = { id = WCECO.150 }
+}
+
+#Gives money and moral authority
+holy_order_start_pack_effect = {
+	religion_authority = {
+		modifier = religious_order_formed
+		years = 10
+	}
+	wealth = 500
+}
+# Gives money, spawn commanders
+for_war_start_pack_effect = {
+	wealth = 500
+	spawn_fantastic_commander_effect = yes
+	spawn_great_commander_effect = yes
+	spawn_great_commander_effect = yes
+	spawn_good_commander_effect = yes
+	spawn_good_commander_effect = yes
+}
+
+drust_spouse_becomes_undead_effect = {
+	add_trait_undead_effect = yes			# This effect sets portrait
+	religion = throsic		# Need to set undead religion before necromantic classes can be assigned
+	if = {
+		limit = {
+			is_death_knight_class_trigger = no
+			OR = {
+				is_physical_class_trigger = yes
+				is_combined_class_trigger = yes
+			}
+			potential_death_knight_trigger = yes
+		}
+		add_character_modifier = { name = training_self_death_knight duration = -1 }
+		recount_experience_effect = yes
+		add_class_trait_effect = yes
+	}
+	else_if = {
+		limit = {
+			is_necromancer_class_trigger = no
+			is_magic_class_trigger = yes
+			potential_necromancer_trigger = yes
+		}
+		add_character_modifier = { name = training_self_necromancer duration = -1 }
+		recount_experience_effect = yes
+		add_class_trait_effect = yes
+	}
+	else_if = {
+		limit = {
+			has_class_trait_trigger = no
+			potential_necromancer_trigger = yes
+			is_female = yes
+		}
+		add_trait = class_necromancer_4
+	}
+	else_if = {
+		limit = {
+			has_class_trait_trigger = no
+			potential_death_knight_trigger = yes
+			is_female = no
+		}
+		add_trait = class_death_knight_4
+	}
+}
+
+add_laid_eggs_effect = {
+	if = {
+		limit = { immortal = yes }
+		while = {
+			limit = { always = yes }
+			count = 2
+			add_character_modifier = { name = laid_eggs stacking = yes duration = -1 }
+		}
+	}
+	else = {
+		add_character_modifier = { name = laid_eggs stacking = yes duration = -1 }
+	}
+}
+
+prev_adopts_effect = {
+	hidden_effect = {
+		set_father = 0
+		set_mother = 0
+	}
+	if = {
+		limit = { PREV = { is_female = yes } }
+		set_mother = PREV
+	}
+	else = {
+		set_father = PREV
+	}
+	dynasty = PREV
+	add_trait = adopted
+}
+
+forge_runeblade_cost_effect = {
+	if = {
+		limit = { trait = creature_nathrezim }
+		wealth = -500
+	}
+	else = {
+		piety = -500
 	}
 }
