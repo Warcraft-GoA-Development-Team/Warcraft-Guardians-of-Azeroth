@@ -1280,3 +1280,131 @@ handle_control_religion_titles_convert_secret_effect = {
 		}
 	}
 }
+empire_de_jure_includes_titles_under_effect = {
+	holder_scope = {
+		any_title_under = {
+			limit = {
+				tier = KING
+				NOT = {
+					empire = { has_holder = yes }
+				}
+			}
+			de_jure_liege = PREVPREV
+		}
+		# For some reason, it doesn't work at all
+		# Tested both mod and vanilla
+		any_title_under = {
+			limit = {
+				tier = DUKE
+				location = {
+					kingdom = {
+						NOT = {
+							empire = { has_holder = yes }
+						}
+						
+						NOT = { de_jure_liege_or_above = PREVPREVPREVPREV }
+						ROOT = {
+							completely_controls = PREV
+						}
+					}
+				}
+			}
+			location = {
+				kingdom = {
+					de_jure_liege = PREVPREVPREVPREV
+				}
+			}
+		}
+	}
+}
+
+add_prev_religious_branch_effect = {
+	if = {
+		limit = { religion = mystery_of_the_makers }
+		if = {
+			limit = { PREV = { trait = storms_branch } }
+			add_trait = storms_branch
+		}
+		else_if = {
+			limit = { PREV = { trait = gears_branch } }
+			add_trait = gears_branch
+		}
+		else_if = {
+			limit = { PREV = { trait = rocks_branch } }
+			add_trait = rocks_branch
+		}
+	}
+	else_if = {
+		limit = { has_religion_feature = religion_no_leader }
+		if = {
+			limit = { PREV = { trait = pagan_branch_1 } }
+			add_trait = pagan_branch_1
+		}
+		else_if = {
+			limit = { PREV = { trait = pagan_branch_2 } }
+			add_trait = pagan_branch_2
+		}
+		else_if = {
+			limit = { PREV = { trait = pagan_branch_3 } }
+			add_trait = pagan_branch_3
+		}
+		else_if = {
+			limit = { PREV = { trait = pagan_branch_4 } }
+			add_trait = pagan_branch_4
+		}
+	}
+}
+add_random_religious_branch_effect = {
+	if = {
+		limit = { religion = mystery_of_the_makers }
+		random_list = {
+			33 = {
+				add_trait = storms_branch
+				modifier = {
+					factor = 2
+					this_is_warrior_culture_trigger = yes
+				}
+				martial_score = yes
+			}
+			33 = {
+				add_trait = gears_branch
+				modifier = {
+					factor = 2
+					this_is_spiritual_culture_trigger = yes
+				}
+				learning_score = yes
+			}
+			33 = {
+				add_trait = rocks_branch
+				modifier = {
+					factor = 2
+					this_is_stewardship_culture_trigger = yes
+				}
+				stewardship_score = yes
+			}
+		}
+	}
+	else_if = {
+		limit = { has_religion_feature = religion_no_leader }
+		random_list = {
+			5 = { add_trait = pagan_branch_1 }
+			25 = { add_trait = pagan_branch_2 }
+			25 = { add_trait = pagan_branch_3 }
+			25 = { add_trait = pagan_branch_4 }
+		}
+	}
+}
+add_prev_religious_branch_or_random_effect = {
+	random_list = {
+		50 = {
+			trigger = {
+				is_playable = no
+				PREV = { religion_has_branches_trigger = yes }
+			}
+			add_prev_religious_branch_effect = yes
+		}
+		50 = {
+			add_random_religious_branch_effect = yes
+		}
+	}
+}
