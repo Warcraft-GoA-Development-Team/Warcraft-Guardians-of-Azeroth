@@ -598,7 +598,20 @@ province_event = {
 	is_triggered_only = yes
 	hide_window = yes
 	
+	trigger = {
+		d_thornspeakers = { has_holder = no }
+	}
+	
 	immediate = {
+		# Picks relevant religion
+		if = {
+			limit = { has_global_flag = old_ways_reformation_flag }
+			old_ways_reformed = { save_event_target_as = target_relevant_religion }
+		}
+		else = {
+			old_ways = { save_event_target_as = target_relevant_religion }
+		}
+		
 		if = {
 			limit = {
 				c_460000 = {	# Ulfar
@@ -611,8 +624,8 @@ province_event = {
 
 					is_ruler = no	# ...since he's gonna become head of holy order
 					is_dark_being_trigger = no
-					religion = old_ways
-					true_religion = old_ways
+					religion = event_target:target_relevant_religion
+					true_religion = event_target:target_relevant_religion
 				}
 			}
 			c_460000 = { save_event_target_as = target_thornspeakers_founder }
@@ -622,7 +635,7 @@ province_event = {
 			create_character = {
 				random_traits = yes
 				dynasty = none
-				religion = old_ways
+				religion = event_target:target_relevant_religion
 				culture = drust
 				female = no
 				age = 80
@@ -659,7 +672,10 @@ narrative_event = {
 		# Moved to WCCRS.149
 		
 		activate_title = { title = d_thornspeakers status = yes }
-		d_thornspeakers = { grant_title = event_target:target_thornspeakers_founder }
+		d_thornspeakers = {
+			religion = event_target:target_relevant_religion
+			grant_title = event_target:target_thornspeakers_founder
+		}
 		
 		#Gives money and moral authority
 		holy_order_start_pack_effect = yes
