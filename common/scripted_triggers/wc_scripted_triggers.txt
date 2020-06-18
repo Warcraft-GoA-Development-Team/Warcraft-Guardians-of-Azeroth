@@ -135,12 +135,7 @@ is_susceptible_to_worgen_curse_province_trigger = {
 		culture_group = human_group
 		culture = night_elf
 	}
-	NOR = {
-		has_province_modifier = undead_province
-		religion_group = fel_group
-		religion_group = void_group
-		religion = wolf_cult_religion
-	}
+	province_can_get_disease_trigger = yes
 }
 # CAN'T CHANGE RELIGION IF IT'S NOT TRUE
 can_switch_religion_character_trigger = {
@@ -394,7 +389,7 @@ title_can_be_lost_trigger = {
 		limit = { tier = BARON }
 		NOT = { holding_type = family_palace }
 	}
-	invader_title_trigger = no
+	# invader_title_trigger = no # Allowed claiming via factions
 	dragonflight_title_trigger = no
 }
 # TITLES ARE IN DANGER, SO MANY ACTIONS CAN'T BE USED AGAINST THIS CHARACTER
@@ -403,7 +398,7 @@ character_can_lose_title_trigger = {
 
 	NOT = { is_offmap_governor = yes }
 	
-	has_invader_title_trigger = no
+	# has_invader_title_trigger = no # Allowed claiming via factions
 	has_dragonflight_title_trigger = no
 }
 character_can_be_vassalized_trigger = {
@@ -765,6 +760,13 @@ can_be_abducted_trigger = {
 	is_humanoid_trigger = yes
 	is_ethereal_trigger = no
 	has_invader_title_trigger = no
+}
+province_can_get_disease_trigger = {
+	NOT = {
+		has_province_modifier = undead_province
+		demon_being_province_trigger = yes
+		void_being_province_trigger = yes
+	}
 }
 ### IMPORTANT, WIDELY USED TRIGGERS ###
 
@@ -2186,12 +2188,9 @@ is_susceptible_to_plague_province_trigger = {
 			has_global_flag = trolls_susceptible_to_plague
 		}
 	}
-	NOR = {
-		has_province_modifier = undead_province
-		religion_group = fel_group
-		religion_group = void_group
+	province_can_get_disease_trigger = yes
+	NOT = {
 		religion = wolf_cult_religion
-		culture_group = dryad_group
 	}
 }
 
@@ -2283,6 +2282,8 @@ has_undead_gfx_trigger = {
 		graphical_culture = gnollundeadgfx
 		graphical_culture = undeadvrykulgfx
 		graphical_culture = highelfundeadgfx
+		graphical_culture = nightelfundeadgfx
+		graphical_culture = highborneundeadgfx
 	}
 }
 has_demon_gfx_trigger = {
@@ -2321,6 +2322,9 @@ has_void_gfx_trigger = {
 		graphical_culture = humanvoidgfx
 	}
 }
+has_light_gfx_trigger = {
+	graphical_culture = highelflightgfx
+}
 has_human_gfx_trigger = {
 	OR = {
 		graphical_culture = humanwhitegfx
@@ -2342,6 +2346,7 @@ has_nightelf_gfx_trigger = {
 		graphical_culture = nightelfgfx
 		graphical_culture = nightelfdemongfx	#Should be here to give Night Elf race to characters that look like this
 		graphical_culture = nightelffelgfx
+		graphical_culture = nightelfundeadgfx
 	}
 }
 has_highelf_gfx_trigger = {
@@ -2350,12 +2355,14 @@ has_highelf_gfx_trigger = {
 		graphical_culture = highelfdemongfx
 		graphical_culture = highelffelgfx
 		graphical_culture = highelfundeadgfx
+		graphical_culture = highelflightgfx
 	}
 }
 has_highborne_gfx_trigger = {
 	OR = {
 		graphical_culture = highbornegfx
 		graphical_culture = highbornefelgfx
+		graphical_culture = highborneundeadgfx
 	}
 }
 has_orc_gfx_trigger = {
@@ -3394,6 +3401,7 @@ prefer_zealous_trait_trigger = {
 	like_zealous_trait_trigger = yes
 	like_cynical_trait_trigger = no
 }
+#cannibal_trait
 like_cannibal_trait_trigger = {
 	OR = {
 		culture = amani
@@ -4249,7 +4257,7 @@ create_event_empire_allow_trigger = {
 }
 create_titular_duchy_common_trigger = {
 	prestige = 500
-	realm_size = 10
+	realm_size = 25
 	NOT = { higher_tier_than = FROM }
 }
 create_titular_kingdom_common_trigger = {
@@ -4259,7 +4267,7 @@ create_titular_kingdom_common_trigger = {
 }
 create_titular_empire_common_trigger = {
 	prestige = 2000
-	realm_size = 75
+	realm_size = 100
 	NOT = { higher_tier_than = FROM }
 }
 
@@ -5060,4 +5068,45 @@ allow_adoption_by_prev_trigger = {
 			}
 		}
 	}
+}
+
+heal_wounds_faster_trigger = {
+	OR = {
+		true_religion_group = loa_group
+		trait = creature_troll
+	}
+}
+
+suicide_always_successful_trigger = {
+	is_dark_being_trigger = yes
+}
+
+must_have_ruled_too_long_penalty_trigger = {
+	is_playable = yes
+	
+	NOT = {
+		has_game_rule = {
+			name = ruled_too_long_penalty
+			value = off
+		}
+	}
+	OR = {
+		AND = {
+			ai = yes										# Is AI
+			NOT = { any_dynasty_member = { ai = no } }		# There's no non-AI dynasty members
+		}
+		NOT = {
+			has_game_rule = {
+				name = ruled_too_long_penalty
+				value = ai
+			}
+		}
+	}
+	
+	NOT = { has_character_flag = ruled_too_long_timer_flag }
+}
+
+can_be_overthrown_trigger = {
+	can_rule_peacefully_trigger = yes
+	character_can_lose_title_trigger = yes
 }
