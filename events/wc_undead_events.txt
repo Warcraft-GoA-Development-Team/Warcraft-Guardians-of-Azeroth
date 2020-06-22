@@ -7,8 +7,6 @@ province_event = {
 	hide_window = yes
 
 	immediate = {
-		695 = { save_event_target_as = target_province }
-		
 		create_character = {
 			name = Ner'zhul
 			dynasty = 2353
@@ -58,29 +56,29 @@ province_event = {
 				}
 			}
 			d_skalmarnes = {
-					any_direct_de_jure_vassal_title = {
-						location = { convert_to_target_undead_province_effect = yes }
+				any_direct_de_jure_vassal_title = {
+					location = { convert_to_target_undead_province_effect = yes }
 				
 					# event_target:target_settler and its people settle here
 					settle_as_target_settler_effect = yes
-					}
 				}
+			}
 			d_silentreach = {
 				any_direct_de_jure_vassal_title = {
-						location = { convert_to_target_undead_province_effect = yes }
+					location = { convert_to_target_undead_province_effect = yes }
 				
 					# event_target:target_settler and its people settle here
 					settle_as_target_settler_effect = yes
-					}
 				}
+			}
 			d_dragonwastes = {
 				any_direct_de_jure_vassal_title = {
-						location = { convert_to_target_undead_province_effect = yes }
+					location = { convert_to_target_undead_province_effect = yes }
 				
 					# event_target:target_settler and its people settle here
 					settle_as_target_settler_effect = yes
-					}
 				}
+			}
 			d_snowdrift = {
 				any_direct_de_jure_vassal_title = {
 					location = { convert_to_target_undead_province_effect = yes }
@@ -98,7 +96,7 @@ province_event = {
 			spawn_scourge_troops_effect = yes
 			spawn_scourge_troops_effect = yes
 			spawn_scourge_troops_effect = yes
-			# spawn_scourge_troops_effect = yes
+			spawn_scourge_troops_effect = yes
 
 			c_icecrown = {
 				# Declares war against player
@@ -616,13 +614,22 @@ character_event = {
 			NOR = {
 				trait = skeleton
 				trait = creature_lich
+				trait = creature_wickerman
+				trait = creature_wicker_behemoth
+				trait = creature_wicker_golem
 			}
 		}
 		text = EVTDESC_WCUND_150_flesh
 	}
 	desc = {
 		trigger = {
-			trait = skeleton
+			OR = {
+				trait = skeleton
+				trait = creature_lich
+				trait = creature_wickerman
+				trait = creature_wicker_behemoth
+				trait = creature_wicker_golem
+			}
 		}
 		text = EVTDESC_WCUND_150_bones
 	}
@@ -647,6 +654,9 @@ character_event = {
 			trait = creature_banshee
 			trait = creature_lich
 			trait = vampire				# Have the vampiric hunger for instead
+			trait = creature_wickerman
+			trait = creature_wicker_behemoth
+			trait = creature_wicker_golem
 		}
 		
 		NOT = { trait = lich_king }
@@ -669,10 +679,6 @@ character_event = {
 		name = CURSES
 
 		add_maimed_trait_effect = yes
-	}
-
-	after = {
-		# character_event = { id = WCUND.200 days = 30 random = 30 }
 	}
 }
 
@@ -890,178 +896,6 @@ long_character_event = {
 	}
 }
 
-# Note: this event disabled
-# 'Natural' transition into other undead form
-character_event = {
-	id = WCUND.200
-	desc = {
-		trigger = { NOT = { has_character_flag = transition_into_ghoul_flag } }
-		text = EVTDESC_WCUND_200
-		picture = GFX_evt_plague_eruptor
-	}
-	desc = {
-		trigger = { has_character_flag = transition_into_ghoul_flag }
-		text = EVTDESC_WCUND_200
-		picture = GFX_evt_ghoul
-	}
-	picture = GFX_evt_plague_eruptor
-
-	is_triggered_only = yes
-
-	trigger = {
-		is_humanoid_trigger = yes
-		trait = being_undead
-		NOR = {
-			trait = creature_ghoul
-			trait = creature_wraith
-			trait = creature_banshee
-			trait = creature_plague_eruptor
-			trait = creature_abomination
-			trait = skeleton
-			trait = creature_lich
-		}
-		is_ruler = no
-		dynasty = none
-
-		has_severe_disability_trigger = yes
-		OR = {
-			# Transition into ghoul
-			AND = {
-				NOT = { trait = creature_ghoul }
-				OR = {
-					is_small_humanoid_trigger = yes
-					is_medium_humanoid_trigger = yes
-				}
-				OR = {
-					NOT = { learning = 5 }
-					is_dumb_trigger = yes
-				}
-			}
-			# Transition into skeleton
-			AND = {
-				NOT = { trait = skeleton }
-				OR = {
-					is_small_humanoid_trigger = yes
-					is_medium_humanoid_trigger = yes
-				}
-				OR = {
-					learning = 5
-					is_smart_trigger = yes
-				}
-			}
-			# Transition into plague eruptor
-			AND = {
-				NOT = { trait = creature_plague_eruptor }
-				is_large_humanoid_trigger = yes
-				OR = {
-					trait = creature_ghoul
-					NOT = { learning = 5 }
-					is_dumb_trigger = yes
-				}
-			}
-		}
-	}
-
-	immediate = {
-		log = "WCUND.200 fired for [Root.GetBestName]"
-
-		random_list = {
-			# Transition into a ghoul
-			10 = {
-				modifier = {
-					factor = 0
-					OR = {
-						trait = creature_ghoul
-						NOR = {
-							is_small_humanoid_trigger = yes
-							is_medium_humanoid_trigger = yes
-						}
-						NOR = {
-							NOT = { learning = 5 }
-							is_dumb_trigger = yes
-						}
-					}
-				}
-				set_character_flag = transition_into_ghoul_flag
-			}
-			# Transition into a skeleton
-			10 = {
-				modifier = {
-					factor = 0
-					OR = {
-						trait = skeleton
-						NOR = {
-							is_small_humanoid_trigger = yes
-							is_medium_humanoid_trigger = yes
-						}
-						NOR = {
-							learning = 5
-							is_smart_trigger = yes
-						}
-					}
-				}
-				set_character_flag = transition_into_skeleton_flag
-			}
-			# Transition into plague eruptor
-			10 = {
-				modifier = {
-					factor = 0
-					OR = {
-						trait = creature_plague_eruptor
-						NOT = { is_large_humanoid_trigger = yes }
-						NOR = {
-							trait = creature_ghoul
-							NOT = { learning = 5 }
-							is_dumb_trigger = yes
-						}
-					}
-				}
-				set_character_flag = transition_into_plague_eruptor_flag
-			}
-		}
-	}
-
-	weight_multiplier = {
-		days = 1
-	}
-
-	option = {
-		name = {
-			trigger = { NOT = { has_character_flag = transition_into_skeleton_flag } }
-			text = EVTOPTA_WCUND_200_case_01
-		}
-		name = {
-			trigger = { has_character_flag = transition_into_skeleton_flag }
-			text = EVTOPTA_WCUND_200_case_02
-		}
-		remove_racial_traits_effect = yes
-		trigger_switch = {
-			on_trigger = has_character_flag
-			transition_into_ghoul_flag = {
-				clr_character_flag = transition_into_ghoul_flag
-				add_trait = creature_ghoul
-			}
-			transition_into_skeleton_flag = {
-				clr_character_flag = transition_into_skeleton_flag
-				add_trait = skeleton
-			}
-			transition_into_plague_eruptor_flag = {
-				clr_character_flag = transition_into_plague_eruptor_flag
-				add_trait = creature_plague_eruptor
-			}
-		}
-
-		# Fixes immortal age
-		add_age_back_effect = yes
-
-		if = { limit = { trait = infirm 		} remove_trait = infirm 		}
-		if = { limit = { trait = mangled 		} remove_trait = mangled 		}
-		if = { limit = { trait = inbred 		} remove_trait = inbred 		}
-		if = { limit = { trait = blinded 		} remove_trait = blinded 		}
-		if = { limit = { trait = incapable 		} remove_trait = incapable 		}
-		if = { limit = { trait = maimed 		} remove_trait = maimed 		}
-	}
-}
 # Chooses form of undead
 character_event = {
 	id = WCUND.300
@@ -1134,6 +968,49 @@ character_event = {
 		}
 	}
 
+	# Wickerman
+	option = {
+		trigger = {
+			event_target:target_undead = { NOT = {  trait = creature_wickerman } }
+			
+			event_target:target_necromancer = {
+				true_religion = throsic
+				NOT = { event_target:target_undead = { is_paladin_class_trigger = yes } }
+			}
+		}
+		name = EVTOPTG_WCUND_300
+
+		event_target:target_undead = {
+			show_scope_change = no
+			
+			ROOT = {
+				show_scope_change = no
+				
+				complete_quest_turn_into_undead_prev_effect = yes
+			}
+		}
+		event_target:target_undead = {
+			set_character_flag = transition_into_wickerman_flag
+			tooltip = {
+				remove_racial_traits_effect = yes
+				add_trait = creature_wickerman
+				add_trait_undead_effect = yes
+				if = {
+					limit = { event_target:target_undead = { NOT = { character = ROOT } } }
+					opinion = {
+						modifier = opinion_loyal_servant
+						who = ROOT
+					}
+				}
+			}
+		}
+		hidden_effect = { event_target:target_undead = { character_event = { id = WCPOD.5013 } } }
+
+		ai_chance = {
+			factor = 15
+		}
+	}
+
 	# Vampire
 	option = {
 		trigger = {
@@ -1141,6 +1018,7 @@ character_event = {
 			
 			NOT = { event_target:target_undead = { is_paladin_class_trigger = yes } }
 			event_target:target_necromancer = {
+				NOT = { true_religion = throsic }
 				OR = {
 					has_7_8_magic_class_or_higher_trigger = yes
 					trait = lich_king
@@ -1180,6 +1058,50 @@ character_event = {
 
 		ai_chance = {
 			factor = 5
+		}
+	}
+
+	# Wicker behemoth
+	option = {
+		trigger = {
+			event_target:target_undead = { NOT = {  trait = creature_wicker_behemoth } }
+			
+			NOT = { event_target:target_undead = { is_paladin_class_trigger = yes } }
+			event_target:target_necromancer = {
+				true_religion = throsic
+				has_7_8_magic_class_or_higher_trigger = yes
+			}
+		}
+		name = EVTOPTH_WCUND_300
+
+		event_target:target_undead = {
+			show_scope_change = no
+			
+			ROOT = {
+				show_scope_change = no
+				
+				complete_quest_turn_into_undead_prev_effect = yes
+			}
+		}
+		event_target:target_undead = {
+			set_character_flag = transition_into_wicker_behemoth_flag
+			tooltip = {
+				remove_racial_traits_effect = yes
+				add_trait = creature_wicker_behemoth
+				add_trait_undead_effect = yes
+				if = {
+					limit = { event_target:target_undead = { NOT = { character = ROOT } } }
+					opinion = {
+						modifier = opinion_loyal_servant
+						who = ROOT
+					}
+				}
+			}
+		}
+		hidden_effect = { event_target:target_undead = { character_event = { id = WCPOD.5013 } } }
+
+		ai_chance = {
+			factor = 25
 		}
 	}
 
@@ -1243,6 +1165,7 @@ character_event = {
 			
 			NOT = { event_target:target_undead = { is_paladin_class_trigger = yes } }
 			event_target:target_necromancer = {
+				NOT = { true_religion = throsic }
 				OR = {
 					has_7_8_magic_class_or_higher_trigger = yes
 					trait = lich_king
@@ -1314,19 +1237,49 @@ character_event = {
 }
 
 #######################################
-# The Creation of a monstrous undead
+# The Creation of a monstrous undead / wicker golem
 #######################################
 character_event = {
 	id = WCUND.350
-	desc = EVTDESC_WCUND_350
+	
+	desc = {
+		trigger = {
+			NOT = {
+				true_religion = throsic
+			}
+		}
+		text = EVTDESC_WCUND_350_abomination
+		picture = GFX_evt_apothecary
+	}
+	
+	desc = {
+		trigger = {
+			true_religion = throsic
+		}
+		text = EVTDESC_WCUND_350_wickergolem
+		picture = GFX_evt_drustvar
+	}
+	
 	picture = GFX_evt_apothecary
 	border = GFX_event_normal_frame_religion
 
 	is_triggered_only = yes
-
+	
 	option = {
-		name = EVTOPTA_WCUND_350
+		trigger = {
+			NOT = {
+				true_religion = throsic
+			}
+		}
+		name = EVTOPTA_WCUND_350_abomination
 	}
+	
+	option = {
+		trigger = {
+			true_religion = throsic
+		}
+		name = EVTOPTA_WCUND_350_wickergolem
+	}	
 
 	after = {
 		character_event = { id = WCUND.355 }
@@ -1336,7 +1289,25 @@ character_event = {
 # Remove the higher cognitive functions?
 character_event = {
 	id = WCUND.355
-	desc = EVTDESC_WCUND_355
+	
+	desc = {
+		trigger = {
+			NOT = {
+				true_religion = throsic
+			}
+		}
+		text = EVTDESC_WCUND_355_abomination
+		picture = GFX_evt_apothecary
+	}
+	
+	desc = {
+		trigger = {
+			true_religion = throsic
+		}
+		text = EVTDESC_WCUND_355_wickergolem
+		picture = GFX_evt_drustvar
+	}
+	
 	picture = GFX_evt_apothecary
 	border = GFX_event_normal_frame_religion
 
@@ -1345,7 +1316,21 @@ character_event = {
 	show_from_from = yes
 
 	option = {
-		name = EVTOPTA_WCUND_355
+		name = {
+			text = EVTOPTA_WCUND_355_abomination
+			trigger = {
+				NOT = {
+					true_religion = throsic
+				}
+			}
+		}
+		
+		name = {
+			text = EVTOPTA_WCUND_355_wickergolem
+			trigger = {
+				true_religion = throsic
+			}
+		}
 
 		custom_tooltip = { text = EVTOPTA_WCUND_355_tooltip }
 		event_target:target_prisoner = {
@@ -1401,8 +1386,23 @@ character_event = {
 			}
 		}
 	}
+	
 	option = {
-		name = EVTOPTB_WCUND_355
+		name = {
+			text = EVTOPTB_WCUND_355_abomination
+			trigger = {
+				NOT = {
+					true_religion = throsic
+				}
+			}
+		}
+		
+		name = {
+			text = EVTOPTB_WCUND_355_wickergolem
+			trigger = {
+				true_religion = throsic
+			}
+		}
 
 		event_target:target_prisoner = {
 			random_list = {
@@ -1469,9 +1469,19 @@ character_event = {
 		}
 		hidden_effect = {
 			new_character = {
-				# Add race trait
-				set_character_flag = transition_into_abomination_flag
+				# Add race trait depending on religion
+				if = {
+					limit = { ROOT = {  true_religion = throsic } }
+					set_character_flag = transition_into_wicker_golem_flag
+				}				
+				else = {
+					set_character_flag = transition_into_abomination_flag
+				}
+				
+				# Fire the event
 				character_event = { id = WCPOD.5013 }
+				
+				# Set traits
 				if = {
 					limit = {
 						NOT = { trait = slow }
@@ -1552,7 +1562,25 @@ character_event = {
 # Notification about the end
 character_event = {
 	id = WCUND.360
-	desc = EVTDESC_WCUND_360
+	
+	desc = {
+		trigger = {
+			NOT = {
+				true_religion = throsic
+			}
+		}
+		text = EVTDESC_WCUND_360_abomination
+		picture = GFX_evt_apothecary
+	}
+	
+	desc = {
+		trigger = {
+			true_religion = throsic
+		}
+		text = EVTDESC_WCUND_360_wickergolem
+		picture = GFX_evt_drustvar
+	}
+	
 	picture = GFX_evt_apothecary
 	border = GFX_event_normal_frame_religion
 
@@ -1568,19 +1596,48 @@ character_event = {
 }
 
 #########################################
-# The Transformation into an Abomination
+# The Transformation into an Abomination / Wicker Golem
 #########################################
 # The first phase of the operation
 character_event = {
-	id = WCUND.370
-	desc = EVTDESC_WCUND_370
+	id = WCUND.370	
+	desc = {
+		trigger = {
+			NOT = {
+				true_religion = throsic
+			}
+		}
+		text = EVTDESC_WCUND_370_abomination
+		picture = GFX_evt_apothecary
+	}
+	
+	desc = {
+		trigger = {
+			true_religion = throsic
+		}
+		text = EVTDESC_WCUND_370_wickergolem
+		picture = GFX_evt_drustvar
+	}
+	
 	picture = GFX_evt_apothecary
 	border = GFX_event_normal_frame_religion
 
 	is_triggered_only = yes
 
 	option = {
-		name = EVTOPTA_WCUND_370
+		trigger = {
+			NOT = {
+				true_religion = throsic
+			}
+		}
+		name = EVTOPTA_WCUND_370_abomination
+	}
+	
+	option = {
+		trigger = {
+			true_religion = throsic
+		}
+		name = EVTOPTA_WCUND_370_wickergolem
 	}
 
 	after = {
@@ -1590,7 +1647,24 @@ character_event = {
 # The end
 character_event = {
 	id = WCUND.375
-	desc = EVTDESC_WCUND_375
+	desc = {
+		trigger = {
+			NOT = {
+				true_religion = throsic
+			}
+		}
+		text = EVTDESC_WCUND_375_abomination
+		picture = GFX_evt_apothecary
+	}
+	
+	desc = {
+		trigger = {
+			true_religion = throsic
+		}
+		text = EVTDESC_WCUND_375_wickergolem
+		picture = GFX_evt_drustvar
+	}
+	
 	picture = GFX_evt_apothecary
 	border = GFX_event_normal_frame_religion
 
@@ -1600,12 +1674,28 @@ character_event = {
 		name = EVTOPTA_WCUND_375
 
 		remove_racial_traits_effect = yes
-		add_trait = creature_abomination
+		
+		# Assign creature trait depending on religion		
+		if = {
+			limit = { true_religion = throsic } 
+			add_trait = creature_wicker_golem
+		}
+		else = {
+			add_trait = creature_abomination
+		}
 
 		# Fixes immortal age
 		add_age_back_effect = yes
 
-		hidden_effect = { set_graphical_culture = abomination }
+		# Set graphical culture depending on creature type
+		if = {
+			limit = { trait = creature_abomination }
+			hidden_effect = { set_graphical_culture = abomination }
+		}
+		else_if = {
+			limit = { trait = creature_wicker_golem }
+			hidden_effect = { set_graphical_culture = wicker_golem }
+		}
 	}
 
 	after = {
@@ -1645,16 +1735,26 @@ narrative_event = {
 	is_triggered_only = yes
 	
 	immediate = {
-		add_trait = travelling
-		
-		# You feel guilt of killing that character
-		if = {
-			limit = { any_kill_list_character = { is_close_relative = ROOT } }
-			random_kill_list_character = {
-				limit = { is_close_relative = ROOT }
-				save_event_target_as = target_killed_character
+		hidden_effect = {
+			e_scourge = {
+				holder_scope = {
+					save_event_target_as = target_lich_king
+					
+					set_character_flag = merge_with_champion_ongoing_flag
+				}
+			}
+			save_event_target_as = target_champion
+			# You feel guilt of killing that character
+			if = {
+				limit = { any_kill_list_character = { is_close_relative = ROOT } }
+				random_kill_list_character = {
+					limit = { is_close_relative = ROOT }
+					save_event_target_as = target_killed_character
+				}
 			}
 		}
+		
+		add_trait = travelling
 	}
 
 	option = { #For the champion
@@ -1983,55 +2083,6 @@ narrative_event = {
 		}
 	}
 }
-# on_new_holder e_scourge
-character_event = {
-	id = WCUND.552
-
-	is_triggered_only = yes
-	hide_window = yes
-	
-	only_playable = yes
-	only_independent = yes
-
-	trigger = {
-		FROM = {
-			title = e_scourge
-		}
-	}
-
-	immediate = {
-		log = "WCUND.552 fired for [Root.GetBestName]"
-
-		clear_secret_religion = yes
-		if = {
-			limit = {
-				NOR = {
-					religion = death_god
-					religion = burning_legion_religion
-				}
-			}
-			religion = death_god
-		}
-		culture = scourge
-		if = {
-			limit = {
-				NOT = { trait = being_undead }
-				can_be_undead_trigger = yes
-			}
-			set_character_flag = transition_into_lich_flag
-			character_event = { id = WCPOD.5013 }
-		}
-		add_trait = lich_king
-		FROMFROM = {
-			if = {
-				limit = { is_alive = yes }
-				death = { death_reason = death_merged killer = ROOT }
-			}
-		}
-		character_event = { id = WCUND.1106 days = 1 }
-		narrative_event = { id = WCUND.551 }
-	}
-}
 
 # Vampiric Hunger
 character_event = {
@@ -2137,6 +2188,47 @@ character_event = {
 #####################
 # End of the Scourge
 #####################
+# Delayer event
+character_event = {
+	id = WCUND.1009
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	trigger = {
+		has_landed_title = e_scourge
+	}
+	
+	immediate = {
+		save_event_target_as = target_lich_king
+		
+		activate_title = { title = e_scourge status = no }
+		e_scourge = { destroy_landed_title = THIS }
+		
+		any_playable_ruler = {
+			limit = {
+				OR = {
+					ai = no
+					has_character_flag = is_kaelthas_flag
+				}
+			}
+			if = {
+				limit = {
+					OR = {
+						reverse_has_opinion_modifier = { who = event_target:target_lich_king modifier = declared_war }
+						reverse_has_opinion_modifier = { who = event_target:target_lich_king modifier = opinion_tyrant }
+						reverse_has_opinion_modifier = { who = event_target:target_lich_king modifier = lost_war }
+					}
+				}
+				set_character_flag = interested_in_scourge_defeat_flag
+			}
+			narrative_event = { id = WCUND.1010 }
+		}
+		
+		event_target:target_lich_king = { death = { death_reason = death_missing } } # The Lich King goes down with the Scourge
+	}
+}
+# Delayed event
 narrative_event = {
 	id = WCUND.1010
 	title = EVTTITLE_WCUND_1010
@@ -2145,30 +2237,27 @@ narrative_event = {
 	border = GFX_event_narrative_frame_war
 
 	is_triggered_only = yes
-	
-	major = yes
-	major_trigger = {
-		ai = no
-	}
-	show_root = yes
-	hide_from = yes
+
 	hide_new = yes
-	
-	trigger = {
-		has_landed_title = e_scourge
-	}
 
-	immediate = {
-		e_scourge = { holder_scope = { save_event_target_as = target_lich_king } }
+	# Kael'thas: It's time to get home
+	option = {
+		trigger = {
+			kaelthas_can_return_to_quelthalas_trigger = yes
+		}
+		name = ITS_TIME_TO_GET_HOME
 		
-		activate_title = { title = e_scourge status = no }
-		e_scourge = { destroy_landed_title = THIS }
-		event_target:target_lich_king = { death = { death_reason = death_missing } } # The Lich King goes down with the Scourge
+		save_event_target_as = target_kaelthas
+		
+		# End of Thalassian Regency
+		73 = { province_event = { id = WCTFT.495 days = 30 random = 30 } }
 	}
-
 	# It's not over yet!
 	option = {
 		trigger = {
+			NOT = {
+				kaelthas_can_return_to_quelthalas_trigger = yes
+			}
 			OR = {
 				true_religion = death_god
 				true_religion = burning_legion_religion
@@ -2180,10 +2269,15 @@ narrative_event = {
 	option = {
 		trigger = {
 			NOT = {
+				kaelthas_can_return_to_quelthalas_trigger = yes
 				true_religion = death_god
 				true_religion = burning_legion_religion
 			}
-			is_aggressive_trigger = no
+			OR = {
+				is_aggressive_trigger = no
+				religion = scarlet_light	#Hates the undead
+				has_character_flag = interested_in_scourge_defeat_flag
+			}
 		}
 		name = WE_CAN_SLEEP_PEACEFULLY_NOW
 	}
@@ -2191,12 +2285,19 @@ narrative_event = {
 	option = {
 		trigger = {
 			NOT = {
+				kaelthas_can_return_to_quelthalas_trigger = yes
 				true_religion = death_god
 				true_religion = burning_legion_religion
 				is_aggressive_trigger = no
+				religion = scarlet_light	#Hates the undead
+				has_character_flag = interested_in_scourge_defeat_flag
 			}
 		}
 		name = WHO_CARES
+	}
+	
+	after = {
+		clr_character_flag = interested_in_scourge_defeat_flag
 	}
 }
 
@@ -2207,8 +2308,8 @@ narrative_event = {
 # This stages important only for Lich King
 # Stages:
 # 1) mind_control_1 - 100-75	- If the LK reach this stage, he has a 100% chance to make any undead in the realm his servant.
-# 2) mind_control_2 - 74-50 	- If the LK reach this stage, he has a 50% chance to make any undead in the realm his servant.
-# 3) mind_control_3 - 49-25 	- If the LK reach this stage, he has a 25% chance to make any undead in the realm his servant.
+# 2) mind_control_2 - 74-50 	- If the LK reach this stage, he has a 66% chance to make any undead in the realm his servant.
+# 3) mind_control_3 - 49-25 	- If the LK reach this stage, he has a 33% chance to make any undead in the realm his servant.
 # 4) mind_control_4 - 24-0
 character_event = {
 	id = WCUND.1106
@@ -2270,8 +2371,8 @@ character_event = {
 # Decreases power of mind control
 # Stages:
 # 1) mind_control_1 - 100-75
-# 2) mind_control_2 - 74-50 	- If you descend to this stage, you lose 25% of your servants.
-# 3) mind_control_3 - 49-25 	- If you descend to this stage, you lose 50% of your servants.
+# 2) mind_control_2 - 74-50 	- If you descend to this stage, you lose 33% of your servants.
+# 3) mind_control_3 - 49-25 	- If you descend to this stage, you lose 66% of your servants.
 # 4) mind_control_4 - 24-0 		- If you descend to this stage, you lose 100% of your servants.
 character_event = {
 	id = WCUND.1107
@@ -2421,9 +2522,8 @@ character_event = {
 								AND = {
 									event_target:target_religion = { dark_public_religion_trigger = yes }
 									OR = {
-										culture_group = high_elf_group
+										culture_group = elf_group
 										culture_group = human_group
-										culture_group = night_elf_group
 									}
 								}
 							}
@@ -2454,6 +2554,8 @@ character_event = {
 							independent = no
 							
 							higher_tier_than = BARON
+							
+							vassal_of = PREV
 						}
 						set_defacto_liege = THIS
 					}
@@ -2526,19 +2628,7 @@ character_event = {
 		}
 		
 		ai_chance = {
-			factor = 50
-			modifier = {
-				factor = 1.59
-				has_benevolent_trait_trigger = yes
-			}
-			modifier = {
-				factor = 1.59
-				has_pleasant_trait_trigger = yes
-			}
-			modifier = {
-				factor = 1.59
-				has_pious_trait_trigger = yes
-			}
+			factor = 80 # Not 50/50 because the most still prefers to leave the Lich King
 		}
 	}
 
@@ -2547,19 +2637,9 @@ character_event = {
 		name = EVTOPTB_WCCLS_1109
 		
 		ai_chance = {
-			factor = 50
-			modifier = {
-				factor = 1.59
-				has_evil_trait_trigger = yes
-			}
-			modifier = {
-				factor = 1.59
-				has_unpleasant_trait_trigger = yes
-			}
-			modifier = {
-				factor = 1.59
-				has_impious_trait_trigger = yes
-			}
+			factor = 20
+			
+			evil_ai_chance_score = yes
 		}
 	}
 }
@@ -2711,9 +2791,40 @@ character_event = {
 		else = { set_secret_religion = death_god }
 
 		ai_chance = {
-			factor = 50
+			factor = 25
 			
 			evil_ai_chance_score = yes
+			evil_ai_chance_religion_score = yes
+		}
+	}
+
+	# I shall draw my strength from the Blighted Lands!
+	option = {
+		trigger = {
+			OR = {
+				culture = drust
+				location = { region = world_eastern_kingdoms_kul_tiras }
+			}
+		}
+		name = EVTOPTC_WCUND_1301
+
+		if = {
+			limit = {
+				OR = {
+					is_dark_being_trigger = yes
+					liege = { religion = throsic }
+				}
+			}
+			if = { limit = { has_secret_religion = yes } clear_secret_religion = yes }
+			religion = throsic
+		}
+		else = { set_secret_religion = throsic }
+
+		ai_chance = {
+			factor = 25
+			
+			evil_ai_chance_score = yes
+			evil_ai_chance_religion_score = yes
 		}
 	}
 	
@@ -2820,6 +2931,7 @@ character_event = {
 			factor = 50
 			
 			evil_ai_chance_score = yes
+			evil_ai_chance_religion_score = yes
 		}
 	}
 	# No thanks

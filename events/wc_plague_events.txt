@@ -52,26 +52,13 @@ narrative_event = {
 								trait = creature_human
 								religion_group = light_group
 
+								NOT = { has_global_flag = arthas_chain_ongoing }
+								NOT = { has_global_flag = frostmourne_spawned_flag }
+
 								current_heir = {
-									is_untouchable_trigger = no
-
-									is_alive = yes
-									is_adult = yes
-									is_incapable = no
-									prisoner = no
 									is_inaccessible_trigger = no
-									is_consort = no
-
-									OR = {
-										is_ruler = no
-										is_feudal = yes
-										is_tribal = yes
-									}
-
-									can_be_undead_trigger = yes
-									trait = creature_human
-									religion_group = light_group
-									true_religion_group = light_group
+									
+									scourge_champion_event_trigger = yes
 									OR  = {
 										has_evil_trait_trigger = yes
 										has_unpleasant_trait_trigger = yes
@@ -81,9 +68,13 @@ narrative_event = {
 							}
 							primary_title = { save_event_target_as = target_realm }
 							current_heir = {
+								save_event_target_as = target_champion
+
+								set_global_flag = arthas_chain_ongoing
+								
 								add_trait = travelling
 
-								narrative_event = { id = WCTHW.2000 days = 15 }
+								73 = { province_event = { id = WCTHW.1999 days = 15 } }
 							}
 						}
 					}
@@ -176,6 +167,7 @@ character_event = {
 }
 # Plague of Undeath: cramps cough fatigue
 # Also works as the only event that turns a character into an undead
+# P.S. Except created forms (like abominations)
 character_event = {
 	id = WCPOD.5013
 	desc = {
@@ -215,6 +207,33 @@ character_event = {
 	desc = {
 		trigger = {
 			NOT = { has_character_flag = got_plague_of_undeath }
+			NOT = { event_target:target_necromancer = { character = ROOT } }
+			event_target:target_necromancer = { is_alive = yes }
+			has_character_flag = transition_into_wickerman_flag
+		}
+		text = EVTDESC_WCPOD_5013_wickerman
+	}
+	desc = {
+		trigger = {
+			NOT = { has_character_flag = got_plague_of_undeath }
+			NOT = { event_target:target_necromancer = { character = ROOT } }
+			event_target:target_necromancer = { is_alive = yes }
+			has_character_flag = transition_into_wicker_behemoth_flag
+		}
+		text = EVTDESC_WCPOD_5013_wicker_behemoth
+	}
+	desc = {
+		trigger = {
+			NOT = { has_character_flag = got_plague_of_undeath }
+			NOT = { event_target:target_necromancer = { character = ROOT } }
+			event_target:target_necromancer = { is_alive = yes }
+			has_character_flag = transition_into_wicker_golem_flag
+		}
+		text = EVTDESC_WCPOD_5013_wicker_golem
+	}
+	desc = {
+		trigger = {
+			NOT = { has_character_flag = got_plague_of_undeath }
 			OR = {
 				event_target:target_necromancer = { character = ROOT }
 				event_target:target_necromancer = { is_alive = no }
@@ -230,24 +249,30 @@ character_event = {
 
 	trigger = {
 		OR = {
-			NOT = { trait = being_undead }							# Mustn't be undead
+			NOT = { trait = being_undead }									# Mustn't be undead
 
 			# Exceptions
-			has_character_flag = transition_into_death_knight_flag	# Event changes your class...
-			has_character_flag = transition_into_wraith_flag		# Event changes your race...
-			has_character_flag = transition_into_abomination_flag	# Event changes your race...
-			has_character_flag = transition_into_lich_flag			# Event changes your race...
-			has_character_flag = transition_into_vampire_flag		# Event gives you vampire trait...
-		}															# ...so being_undead isn't important
+			has_character_flag = transition_into_death_knight_flag			# Event changes your class...
+			has_character_flag = transition_into_wraith_flag				# Event changes your race...
+			has_character_flag = transition_into_abomination_flag			# Event changes your race...
+			has_character_flag = transition_into_lich_flag					# Event changes your race...
+			has_character_flag = transition_into_wickerman_flag				# Event changes your race...
+			has_character_flag = transition_into_wicker_behemoth_flag		# Event changes your race...
+			has_character_flag = transition_into_wicker_golem_flag			# Event changes your race...
+			has_character_flag = transition_into_vampire_flag				# Event gives you vampire trait...
+		}																	# ...so being_undead isn't important
 		OR = {
-			can_be_undead_trigger = yes								# Only if can be undead
+			can_be_undead_trigger = yes										# Only if can be undead
 
 			# Exceptions
-			has_character_flag = transition_into_wraith_flag		# Event changes your race...
-			has_character_flag = transition_into_abomination_flag	# Event changes your race...
-			has_character_flag = transition_into_lich_flag			# Event changes your race...
-			has_undead_gfx_trigger = yes							# You already have undead portrait...
-		}															# ...so can_be_undead_trigger isn't important
+			has_character_flag = transition_into_wraith_flag				# Event changes your race...
+			has_character_flag = transition_into_abomination_flag			# Event changes your race...
+			has_character_flag = transition_into_lich_flag					# Event changes your race...
+			has_character_flag = transition_into_wickerman_flag				# Event changes your race...
+			has_character_flag = transition_into_wicker_behemoth_flag		# Event changes your race...
+			has_character_flag = transition_into_wicker_golem_flag			# Event changes your race...
+			has_undead_gfx_trigger = yes									# You already have undead portrait...
+		}																	# ...so can_be_undead_trigger isn't important
 	}
 
 	immediate = {
@@ -288,11 +313,21 @@ character_event = {
 
 	option = {
 		name = {
-			trigger = { NOT = { true_religion = death_god } }
+			trigger = {
+				NOT = {
+					true_religion_group = necromancy_group
+					character = event_target:target_necromancer
+				}
+			}
 			text = ALAS
 		}
 		name = {
-			trigger = { true_religion = death_god }
+			trigger = {
+				OR = {
+					true_religion_group = necromancy_group
+					character = event_target:target_necromancer
+				}
+			}
 			text = EXCELLENT
 		}
 
@@ -320,6 +355,24 @@ character_event = {
 				add_trait = creature_lich
 				hidden_effect = { set_graphical_culture = lich }
 				clr_character_flag = transition_into_lich_flag
+			}
+			transition_into_wickerman_flag = {
+				remove_racial_traits_effect = yes
+				add_trait = creature_wickerman
+				hidden_effect = { set_graphical_culture = wickerman }
+				clr_character_flag = transition_into_wickerman_flag
+			}
+			transition_into_wicker_behemoth_flag = {
+				remove_racial_traits_effect = yes
+				add_trait = creature_wicker_behemoth
+				hidden_effect = { set_graphical_culture = wicker_behemoth }
+				clr_character_flag = transition_into_wickerman_flag
+			}
+			transition_into_wicker_golem_flag = {
+				remove_racial_traits_effect = yes
+				add_trait = creature_wicker_golem
+				hidden_effect = { set_graphical_culture = wicker_golem }
+				clr_character_flag = transition_into_wicker_golem_flag
 			}
 			transition_into_vampire_flag = {
 				add_trait = vampire
@@ -377,7 +430,7 @@ character_event = {
 					}
 				}
 			}
-			character_event = { id = WCUND.1108 days = 1 }		# Check religion
+			character_event = { id = WCUND.1108 }		# Check religion #Must happen instantly 
 		}
 	}
 }

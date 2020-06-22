@@ -215,7 +215,7 @@ claim = {
 			}
 		}
 	}
-
+	
 	on_fail_title = {
 		ROOT = {
 			show_scope_change = no
@@ -501,8 +501,28 @@ other_claim = {
 			prestige = -100
 		}
 	}
+	
+	#Warcraft
+	on_success_posttitle = {
+		# Kills Balnazzar
+		this_kill_from_balnazzar_effect = yes
+		
+        if = {
+            limit = {
+                has_character_flag = is_garithos
+                ROOT = { has_character_flag = is_calia }
+                start_date = 605.6.6
+				has_global_flag = plaguelands_civil_war_ongoing
+            }
+            save_event_target_as = target_garithos
+            ROOT = { save_event_target_as = target_calia }
+        	
+			# Clears plaguelands_civil_war_ongoing
+            73 = { province_event = { id = WCTFT.109 } }
+        }
+	}
 
-	on_success_title = {
+	on_success_title = {	
 		hidden_tooltip = {
 			ROOT = {
 				if = {
@@ -536,13 +556,17 @@ other_claim = {
 	
 		if = {
 			limit = {
-				controls_religion = yes
-				holder_scope = { 
-					OR = {
-						religion = catholic
-						religion = fraticelli
-					}
-				}
+				# Warcraft
+				always = no
+				
+				# Warcraft
+				# controls_religion = yes
+				# holder_scope = { 
+					# OR = {
+						# religion = catholic
+						# religion = fraticelli
+					# }
+				# }
 			}
 			holder_scope = {
 				abdicate_to = ROOT
@@ -554,22 +578,16 @@ other_claim = {
 				ROOT = { set_defacto_liege = FROMFROM }
 			}
 		}
-		
-		if = {
+		# Warcraft
+		else_if = {
 			limit = {
-				OR = {
-					controls_religion = no
-					NOT = { 
-						holder_scope = {
-							OR = {
-								religion = catholic 
-								religion = fraticelli 
-							}
-						}
-					}
-				}
+				ROOT = { is_plaguelands_belligerent_trigger = yes }
+				FROM = { is_plaguelands_belligerent_trigger = yes }
 			}
-			
+			root_usurp_from_realm_titles_plus_this_title = yes
+		}
+		# Warcraft
+		else = {
 			if = {
 				limit = {
 					holder_scope = {
@@ -904,10 +922,8 @@ claim_on_liege = {
 			}
 		}
 		OR = {
-			has_law = succ_feudal_elective
-			
 			# Warcraft
-			# has_law = succ_hre_elective
+			elective_title_can_be_claimed_trigger = yes
 			
 			ROOT = { has_claim = PREV }
 		}
@@ -1668,10 +1684,8 @@ other_claim_on_liege = {
 		}
 		
 		OR = {
-			has_law = succ_feudal_elective
-			
 			# Warcraft
-			# has_law = succ_hre_elective
+			elective_title_can_be_claimed_trigger = yes
 			
 			ROOT = { has_claim = PREV }
 		}
@@ -2969,34 +2983,48 @@ invasion = {
 	}
 
 	on_success_title = {
-		custom_tooltip = {
-			text = invasion_succ_tip
-			hidden_tooltip = {
-				usurp_title_plus_barony_if_unlanded = { target = ROOT type = invasion }
-				FROM = { set_defacto_liege = ROOT }
-				if = {
-					limit = {
-						FROM = { is_liege_or_above = ROOT }
-					}
-					FROM = { imprison = ROOT }
-				}
-				if = {
-					limit = {
-						any_independent_ruler = {
-							has_character_flag = preserve_vassal_structure_@ROOT
-						}
-					}
-					any_independent_ruler = {
+		# Warcraft
+		if = {
+			limit = {
+				ROOT = { is_plaguelands_belligerent_trigger = yes }
+				FROM = { is_plaguelands_belligerent_trigger = yes }
+			}
+			root_usurp_from_realm_titles_plus_this_title = yes
+		}
+		else = {
+			custom_tooltip = {
+				text = invasion_succ_tip
+				hidden_tooltip = {
+					usurp_title_plus_barony_if_unlanded = { target = ROOT type = invasion }
+					FROM = { set_defacto_liege = ROOT }
+					if = {
 						limit = {
-							has_character_flag = preserve_vassal_structure_@ROOT
+							FROM = { is_liege_or_above = ROOT }
 						}
-						set_defacto_liege = ROOT
+						FROM = { imprison = ROOT }
 					}
 				}
-				ROOT = {
-					any_vassal = {
-						clr_character_flag = preserve_vassal_structure_@ROOT
+			}
+		}
+		
+		# Warcraft
+		hidden_tooltip = {
+			if = {
+				limit = {
+					any_independent_ruler = {
+						has_character_flag = preserve_vassal_structure_@ROOT
 					}
+				}
+				any_independent_ruler = {
+					limit = {
+						has_character_flag = preserve_vassal_structure_@ROOT
+					}
+					set_defacto_liege = ROOT
+				}
+			}
+			ROOT = {
+				any_vassal = {
+					clr_character_flag = preserve_vassal_structure_@ROOT
 				}
 			}
 		}
@@ -3009,135 +3037,7 @@ invasion = {
 			hidden_tooltip = { conquest_culture = ROOT }
 		}
 		
-		if = {
-			limit = { ROOT = { character = 140 } }
-			ROOT = {
-				if = {
-					limit = {
-						has_dlc = "Holy Fury"
-						NOT = {
-							any_owned_bloodline = {
-								has_bloodline_flag = william_the_conqueror_bloodline
-							}
-						}
-					}
-					create_bloodline = {
-						type = william_the_conqueror
-					}
-				}
-			}
-			hidden_tooltip = {
-				add_law = succ_primogeniture
-				ROOT = {
-					any_vassal = {
-						limit = {
-							culture = saxon
-						}
-						opinion = {
-							modifier = opinion_subjugated 
-							who = ROOT
-						}
-					}
-					if = {
-						limit = { # Help AI William by usurping extra land
-							ai = yes
-						}
-						d_bedford = {
-							usurp_title_plus_barony_if_unlanded = { target = ROOT type = invasion }
-							any_de_jure_vassal_title = {
-								limit = {
-									holder_scope = {
-										culture = saxon
-										ai = yes # But not from players
-										same_realm = ROOT
-									}
-								}
-								usurp_title_plus_barony_if_unlanded = { target = ROOT type = invasion }
-							}
-						}
-						d_canterbury = {
-							usurp_title_plus_barony_if_unlanded = { target = ROOT type = invasion }
-							any_de_jure_vassal_title = {
-								limit = {
-									holder_scope = {
-										culture = saxon
-										ai = yes # But not from players
-										same_realm = ROOT
-									}
-								}
-								usurp_title_plus_barony_if_unlanded = { target = ROOT type = invasion }
-							}
-						}
-						d_cornwall = {
-							usurp_title_plus_barony_if_unlanded = { target = ROOT type = invasion }
-							any_de_jure_vassal_title = {
-								limit = {
-									holder_scope = {
-										culture = saxon
-										ai = yes # But not from players
-										same_realm = ROOT
-									}
-								}
-								usurp_title_plus_barony_if_unlanded = { target = ROOT type = invasion }
-							}
-						}
-						d_somerset = {
-							usurp_title_plus_barony_if_unlanded = { target = ROOT type = invasion }
-							any_de_jure_vassal_title = {
-								limit = {
-									holder_scope = {
-										culture = saxon
-										ai = yes # But not from players
-										same_realm = ROOT
-									}
-								}
-								usurp_title_plus_barony_if_unlanded = { target = ROOT type = invasion }
-							}
-						}
-						d_gloucester = {
-							usurp_title_plus_barony_if_unlanded = { target = ROOT type = invasion }
-							any_de_jure_vassal_title = {
-								limit = {
-									holder_scope = {
-										culture = saxon
-										ai = yes # But not from players
-										same_realm = ROOT
-									}
-								}
-								usurp_title_plus_barony_if_unlanded = { target = ROOT type = invasion }
-							}
-						}
-						d_norfolk = {
-							usurp_title_plus_barony_if_unlanded = { target = ROOT type = invasion }
-							any_de_jure_vassal_title = {
-								limit = {
-									holder_scope = {
-										culture = saxon
-										ai = yes # But not from players
-										same_realm = ROOT
-									}
-								}
-								usurp_title_plus_barony_if_unlanded = { target = ROOT type = invasion }
-							}
-						}
-					}
-					if = {
-						limit = {
-							c_middlesex = {
-								holder_scope = {
-									character = ROOT
-								}
-							}
-						}
-						c_middlesex = {
-							capital_holding = {
-								ROOT = { capital = PREV }
-							}
-						}
-					}
-				}
-			}
-		}
+		# Warcraft
 
 		hidden_tooltip = {
 			check_if_reconquista_finished_effect = yes
@@ -3145,6 +3045,39 @@ invasion = {
 				landless_pope_effect = yes
 			}
 		}
+	}
+	
+	#Warcraft
+	on_success_posttitle = {
+		# Kills Balnazzar
+		ROOT = {
+			show_scope_change = no
+			
+			this_kill_from_balnazzar_effect = yes
+		}
+		
+		if = {
+			limit = {
+				ROOT = { has_character_flag = is_sylvanas }
+				start_date = 605.6.6
+				has_global_flag = plaguelands_civil_war_ongoing
+			}
+			ROOT = { save_event_target_as = target_sylvanas }
+
+			ROOT = { narrative_event = { id = WCTFT.130 } }
+        }
+		
+		if = {
+			limit = {
+				ROOT = { has_character_flag = is_garithos }
+				start_date = 605.6.6
+				has_global_flag = plaguelands_civil_war_ongoing
+			}
+			ROOT = { save_event_target_as = target_garithos }
+
+			# Clears plaguelands_civil_war_ongoing
+			ROOT = { narrative_event = { id = WCTFT.120 } }
+        }
 	}
 
 	on_fail = {
@@ -5821,20 +5754,9 @@ religious = {
 					FROM = { is_aggressive_religion_trigger = yes }
 				}
 			}
-			custom_tooltip = {
-				text = religious_cb_succ_tip
-				hidden_tooltip = {
-					ROOT = {
-						vassalize_or_take_under_title = {
-							title = PREV
-							enemy = FROM
-							same_religion = yes # Only vassalize rulers of my religion
-							is_religious = yes
-							type = holy_war
-						}
-					}
-				}
-			}
+			
+			# Warcraft
+			religious_cb_succ_effect = yes
 		}
 		else = { # Otherwise, preserve vassals
 			custom_tooltip = {
@@ -6877,8 +6799,16 @@ overthrow_ruler = {
 
 			# Warcraft
 			if = {
-				limit = { character_can_lose_title_trigger = no }
+				limit = { can_be_overthrown_trigger = no }
 				bid_for_independence_effect = yes
+			}
+			# Faction leader loses faction title, but not demesne, tries to leave faction or becomes imprisoned
+			else_if = {
+				limit = {
+					leads_centralized_faction_trigger = yes
+					any_vassal = { can_lead_faction_being_dependent_trigger = yes }
+				}
+				overthrow_faction_leader_effect = yes
 			}
 			else = { abdicate = yes }
 		}
@@ -7088,8 +7018,16 @@ overthrow_ruler_no_calls = {
 
 			# Warcraft
 			if = {
-				limit = { character_can_lose_title_trigger = no }
+				limit = { can_be_overthrown_trigger = no }
 				bid_for_independence_effect = yes
+			}
+			# Faction leader loses faction title, but not demesne, tries to leave faction or becomes imprisoned
+			else_if = {
+				limit = {
+					leads_centralized_faction_trigger = yes
+					any_vassal = { can_lead_faction_being_dependent_trigger = yes }
+				}
+				overthrow_faction_leader_effect = yes
 			}
 			else = { abdicate = yes }
 		}
@@ -11439,7 +11377,7 @@ pagan_county_conquest = {
 						religion_group = vrykul_religion_group
 						culture = pirate_culture
 						culture_group = murloc_group
-						culture_group = naga_group
+						culture = naga
 					}
 				}
 				
@@ -16676,49 +16614,41 @@ powerful_vassal_takeover_war = { # Started from faction
 		increase_council_power_effect = yes
 		increase_vassal_freedom_effect = yes
 		increase_vassal_freedom_effect = yes
+		
+		# Warcraft
 		if = {
-			limit = { has_law = succession_voting_power_0 }
-			add_law_w_cooldown = succession_voting_power_1
-		}
-		if = { 
-			limit = { #Should not be changed from Imperial Elective
-				# Warcraft
-				always = yes
+			limit = {
+				FROM = {
+					leads_centralized_faction_trigger = yes
+					any_vassal = { can_lead_faction_being_dependent_trigger = yes }
+				}
 			}
-			custom_tooltip = {
-				text = overthrow_text
-				hidden_tooltip = {
+			FROM = { overthrow_faction_leader_effect = yes }
+		}
+		else = {
+			if = {
+				limit = { has_law = succession_voting_power_0 }
+				add_law_w_cooldown = succession_voting_power_1
+			}
+			if = { 
+				limit = { #Should not be changed from Imperial Elective
 					# Warcraft
+					always = yes
+				}
+				custom_tooltip = {
+					text = overthrow_text
+					hidden_tooltip = {
+						# Warcraft
 					
-					if = {
-						limit = { 
-							# Warcraft
+						if = {
+							limit = { 
+								# Warcraft
 							
-							NOR = {
-								has_law = succ_feudal_elective
+								NOR = {
+									has_law = succ_feudal_elective
 								
-								# Warcraft
-							}
-							has_law = law_voting_power_1
-							has_law = banish_voting_power_1
-							has_law = execution_voting_power_1
-							has_law = revoke_title_voting_power_1
-							has_law = grant_title_voting_power_1
-							has_law = imprison_voting_power_1
-							has_law = war_voting_power_1						
-						}
-						add_law_w_cooldown = succ_feudal_elective
-					}
-					if = {
-						limit = {
-							NOT = { has_law = succ_gavelkind }
-							NOR = {
-								has_law = succ_feudal_elective
-								
-								# Warcraft
-							}
-							NAND = {
-								has_law = succ_feudal_elective
+									# Warcraft
+								}
 								has_law = law_voting_power_1
 								has_law = banish_voting_power_1
 								has_law = execution_voting_power_1
@@ -16727,46 +16657,67 @@ powerful_vassal_takeover_war = { # Started from faction
 								has_law = imprison_voting_power_1
 								has_law = war_voting_power_1						
 							}
+							add_law_w_cooldown = succ_feudal_elective
 						}
-						add_law_w_cooldown = succ_gavelkind
+						if = {
+							limit = {
+								NOT = { has_law = succ_gavelkind }
+								NOR = {
+									has_law = succ_feudal_elective
+								
+									# Warcraft
+								}
+								NAND = {
+									has_law = succ_feudal_elective
+									has_law = law_voting_power_1
+									has_law = banish_voting_power_1
+									has_law = execution_voting_power_1
+									has_law = revoke_title_voting_power_1
+									has_law = grant_title_voting_power_1
+									has_law = imprison_voting_power_1
+									has_law = war_voting_power_1						
+								}
+							}
+							add_law_w_cooldown = succ_gavelkind
+						}
 					}
 				}
 			}
-		}
-		holder_scope = {
-			clr_character_flag = powerful_vassal_takeover_target
-			most_popular_vassal = {
-				limit = {
-					higher_tier_than = BARON
-					is_feudal = yes
-					prisoner = no
-					NOR = {
-						is_inaccessible_trigger = yes
-						is_incapable = yes
-						trait = eunuch
-					}
-					age = 16
-					#can_hold_title = PREVPREV
-					OR = {
-						is_female = no
-						AND = {
-							is_female = yes
-							ROOT = { has_law = true_cognatic_succession }
+			holder_scope = {
+				clr_character_flag = powerful_vassal_takeover_target
+				most_popular_vassal = {
+					limit = {
+						higher_tier_than = BARON
+						is_feudal = yes
+						prisoner = no
+						NOR = {
+							is_inaccessible_trigger = yes
+							is_incapable = yes
+							trait = eunuch
+						}
+						age = 16
+						#can_hold_title = PREVPREV
+						OR = {
+							is_female = no
+							AND = {
+								is_female = yes
+								ROOT = { has_law = true_cognatic_succession }
+							}
 						}
 					}
-				}
-				usurp_title = {
-					target = PREVPREV
-					type = faction_demand
-				}
-				save_event_target_as = new_title_holder
-				hidden_tooltip = {
-					any_attacker = {
-						limit = { NOT = { character = PREV } }
-						set_character_flag = helped_win_war
+					usurp_title = {
+						target = PREVPREV
+						type = faction_demand
 					}
+					save_event_target_as = new_title_holder
+					hidden_tooltip = {
+						any_attacker = {
+							limit = { NOT = { character = PREV } }
+							set_character_flag = helped_win_war
+						}
+					}
+					character_event = { id = 8226 days = 1 }
 				}
-				character_event = { id = 8226 days = 1 }
 			}
 		}
 
