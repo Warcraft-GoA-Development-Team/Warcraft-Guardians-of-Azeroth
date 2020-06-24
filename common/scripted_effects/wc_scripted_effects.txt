@@ -493,7 +493,7 @@ show_close_people_what_this_become_effect = {
 				NOT = { character = event_target:target_sick_spouse }
 			}
 			set_notification_type_of_prev_effect = yes
-			character_event = { id = WCDAC.150 }
+			character_event = { id = WCDAC.150 days = 2 } #Must be delayed
 		}
 		any_friend = {
 			limit = {
@@ -504,7 +504,7 @@ show_close_people_what_this_become_effect = {
 				NOT = { is_married = PREV }
 			}
 			set_notification_type_of_prev_effect = yes
-			character_event = { id = WCDAC.150 }
+			character_event = { id = WCDAC.150 days = 2 } #Must be delayed
 		}
 		any_lover = {
 			limit = {
@@ -516,7 +516,7 @@ show_close_people_what_this_become_effect = {
 				NOT = { is_friend = PREV }
 			}
 			set_notification_type_of_prev_effect = yes
-			character_event = { id = WCDAC.150 }
+			character_event = { id = WCDAC.150 days = 2 } #Must be delayed
 		}
 		any_close_relative = {
 			limit = {
@@ -529,7 +529,7 @@ show_close_people_what_this_become_effect = {
 				NOT = { is_lover = PREV }
 			}
 			set_notification_type_of_prev_effect = yes
-			character_event = { id = WCDAC.150 }
+			character_event = { id = WCDAC.150 days = 2 } #Must be delayed
 		}
 		if = {		# ...liege is almost your family
 			limit = {
@@ -553,7 +553,7 @@ show_close_people_what_this_become_effect = {
 			}
 			liege = {
 				set_notification_type_of_prev_effect = yes
-				character_event = { id = WCDAC.150 }
+				character_event = { id = WCDAC.150 days = 2 } #Must be delayed
 			}
 		}
 	}
@@ -1222,17 +1222,69 @@ spawn_small_scourge_troops_effect = {
 }
 spawn_plague_troops_effect = {
 	# Must be 100 in total
+	spawn_small_plague_troops_effect = yes
+	if = {
+		limit = {
+			has_game_rule = {
+				name = scourge_invasion
+				value = x0_5
+			}
+		}
+		spawn_small_plague_troops_effect = yes
+	}
+	if = {
+		limit = {
+			has_game_rule = {
+				name = scourge_invasion
+				value = default
+			}
+		}
+		spawn_small_plague_troops_effect = yes
+		spawn_small_plague_troops_effect = yes
+		spawn_small_plague_troops_effect = yes
+	}
+	if = {
+		limit = {
+			has_game_rule = {
+				name = scourge_invasion
+				value = x1_5
+			}
+		}
+		spawn_small_plague_troops_effect = yes
+		spawn_small_plague_troops_effect = yes
+		spawn_small_plague_troops_effect = yes
+		spawn_small_plague_troops_effect = yes
+		spawn_small_plague_troops_effect = yes
+	}
+	if = {
+		limit = {
+			has_game_rule = {
+				name = scourge_invasion
+				value = x2
+			}
+		}
+		spawn_small_plague_troops_effect = yes
+		spawn_small_plague_troops_effect = yes
+		spawn_small_plague_troops_effect = yes
+		spawn_small_plague_troops_effect = yes
+		spawn_small_plague_troops_effect = yes
+		spawn_small_plague_troops_effect = yes
+		spawn_small_plague_troops_effect = yes
+	}
+}
+spawn_small_plague_troops_effect = {
 	spawn_unit = {
 		province = ROOT
 		home = ROOT
 		owner = THIS
-		scaled_by_biggest_garrison = 1
+		scaled_by_biggest_garrison = 0.25
 		troops = {
 			light_infantry = { 10 10 }
 			archers = { 12 12 }
 			undead = { 78 78 }
 		}
 		attrition = 0
+		merge = yes
 		maintenance = no
 	}
 }
@@ -1276,6 +1328,18 @@ set_legion_government_effect = {
 set_black_pact_government_effect = {
 	set_government_type = black_pact_government
 	set_evil_government_laws_effect = yes
+}
+set_roman_imperial_government_effect = {
+	any_demesne_title = {
+		limit = {
+			is_law_potential = succ_byzantine_elective
+			NOT = { has_law = succ_byzantine_elective }
+			is_imperial_title = yes
+		}
+		add_law = { law = succ_byzantine_elective cooldown = no opinion_effect = no }
+	}
+	set_government_type = roman_imperial_government
+	recalc_succession = yes
 }
 set_evil_government_laws_effect = {
 	any_demesne_title = {
@@ -3105,7 +3169,7 @@ spawn_heavy_sea_ravagers_effect = {
 		25 = {
 			modifier = {
 				factor = 5
-				realm_size = 100
+				realm_size = 150
 			}
 			# Must be 100 in total
 			spawn_unit = {
@@ -3126,7 +3190,7 @@ spawn_heavy_sea_ravagers_effect = {
 		10 = {
 			modifier = {
 				factor = 12.5
-				realm_size = 100
+				realm_size = 150
 			}
 			# Must be 100 in total
 			spawn_unit = {
@@ -3189,7 +3253,7 @@ spawn_light_sea_ravagers_effect = {
 		25 = {
 			modifier = {
 				factor = 5
-				realm_size = 100
+				realm_size = 150
 			}
 			# Must be 100 in total
 			spawn_unit = {
@@ -3208,7 +3272,7 @@ spawn_light_sea_ravagers_effect = {
 		10 = {
 			modifier = {
 				factor = 12.5
-				realm_size = 100
+				realm_size = 150
 			}
 			# Must be 100 in total
 			spawn_unit = {
@@ -4047,6 +4111,7 @@ add_artifact_frostmourne_effect = {
 			set_creation_date = 591.11.1
 			set_original_owner = event_target:target_lich_king
 		}
+		set_global_flag = frostmourne_spawned_flag
 	}
 }
 
@@ -4069,202 +4134,17 @@ change_undead_demesne_provinces_religion_to_root_effect = {
 	}
 }
 
-# Heal traits
-heal_one_handed_magic_effect = {
-	remove_trait = one_handed
-	if = {
-		limit = {
-			has_artifact = prosthetic_hand_gold
-		}
-		destroy_artifact = prosthetic_hand_gold
-		wealth = 10
-	}
-	if = {
-		limit = {
-			has_artifact = prosthetic_hand_metal
-		}
-		destroy_artifact = prosthetic_hand_metal
-	}
-	if = {
-		limit = {
-			has_character_modifier = phantom_pain
-			NOT = { trait = one_eyed }
-			NOT = { trait = one_legged }
-			NOT = { trait = disfigured }
-		}
-		remove_character_modifier = phantom_pain
-	}
-}
-heal_one_eyed_magic_effect = {
-	remove_trait = one_eyed
-	if = {
-		limit = {
-			has_character_modifier = glass_eye
-		}
-		remove_character_modifier = glass_eye
-	}
-	if = {
-		limit = {
-			has_character_modifier = phantom_pain
-			NOT = { trait = one_handed }
-			NOT = { trait = one_legged }
-			NOT = { trait = disfigured }
-		}
-		remove_character_modifier = phantom_pain
-	}
-}
-heal_one_legged_magic_effect = {
-	remove_trait = one_legged
-	if = {
-		limit = {
-			has_character_modifier = peg_leg
-		}
-		remove_character_modifier = peg_leg
-	}
-	if = {
-		limit = {
-			has_artifact = prosthetic_leg_artifact
-		}
-		destroy_artifact = prosthetic_leg_artifact
-	}
-	if = {
-		limit = {
-			has_character_modifier = phantom_pain
-			NOT = { trait = one_handed }
-			NOT = { trait = one_eyed }
-			NOT = { trait = disfigured }
-		}
-		remove_character_modifier = phantom_pain
-	}
-}
-heal_disfigured_magic_effect = {
-	remove_trait = disfigured
-	if = {
-		limit = {
-			has_character_modifier = golden_mask
-		}
-		remove_character_modifier = golden_mask
-		wealth = 10
-	}
-	if = {
-		limit = {
-			has_character_modifier = phantom_pain
-			NOT = { trait = one_handed }
-			NOT = { trait = one_legged }
-			NOT = { trait = one_eyed }
-		}
-		remove_character_modifier = phantom_pain
-	}
-}
-# Warcraft - heal disease
-heal_disease_magic_effect = {
-	#Warcraft
-	if = {
-		limit = { has_character_flag = removing_corrupted_blood }
-		remove_trait = corrupted_blood
-		set_character_flag = immune_corrupted_blood
-	}
-
-	if = {
-		limit = { has_character_flag = removing_flu }
-		remove_trait = flu
-	}
-	if = {
-		limit = { has_character_flag = removing_measles }
-		remove_trait = has_measles
-		set_character_flag = immune_measles
-	}
-	if = {
-		limit = { has_character_flag = removing_food_poisoning }
-		remove_trait = food_poisoning
-	}
-	if = {
-		limit = { has_character_flag = removing_gout }
-		remove_trait = gout
-	}
-	if = {
-		limit = { has_character_flag = removing_scurvy }
-		remove_trait = scurvy
-	}
-	if = {
-		limit = { has_character_flag = removing_lovers_pox }
-		remove_trait = lovers_pox
-	}
-	if = {
-		limit = { has_character_flag = removing_cancer }
-		remove_trait = cancer
-	}
-	if = {
-		limit = { has_character_flag = removing_pneumonic }
-		remove_trait = pneumonic
-	}
-	if = {
-		limit = { has_character_flag = removing_syphilitic }
-		remove_trait = syphilitic
-		set_character_flag = immune_syphilis
-	}
-	if = {
-		limit = { has_character_flag = removing_leper }
-		remove_trait = leper
-	}
-	if = {
-		limit = { has_character_flag = removing_has_tuberculosis }
-		remove_trait = has_tuberculosis
-		set_character_flag = immune_tuberculosis
-	}
-	if = {
-		limit = { has_character_flag = removing_has_aztec_disease }
-		remove_trait = has_aztec_disease
-		set_character_flag = immune_aztec_disease
-	}
-	if = {
-		limit = { has_character_flag = removing_has_small_pox }
-		remove_trait = has_small_pox
-		set_character_flag = immune_smallpox
-	}
-	if = {
-		limit = { has_character_flag = removing_has_bubonic_plague }
-		remove_trait = has_bubonic_plague
-		set_character_flag = immune_bubonic_plague
-	}
-	if = {
-		limit = { has_character_flag = removing_has_typhus }
-		remove_trait = has_typhus
-		set_character_flag = immune_typhus
-	}
-	if = {
-		limit = { has_character_flag = removing_has_typhoid_fever }
-		remove_trait = has_typhoid_fever
-		set_character_flag = immune_typhoid_fever
-	}
-
-	# Warcraft
-	clr_character_flag = removing_corrupted_blood
-
-	clr_character_flag = removing_flu
-	clr_character_flag = removing_measles
-	clr_character_flag = removing_food_poisoning
-	clr_character_flag = removing_gout
-	clr_character_flag = removing_scurvy
-	clr_character_flag = removing_lovers_pox
-	clr_character_flag = removing_cancer
-	clr_character_flag = removing_leper
-	clr_character_flag = removing_has_tuberculosis
-	clr_character_flag = removing_has_aztec_disease
-	clr_character_flag = removing_has_small_pox
-	clr_character_flag = removing_has_bubonic_plague
-	clr_character_flag = removing_has_typhus
-	clr_character_flag = removing_has_typhoid_fever
-}
-heal_wounds_magic_effect = {
+heal_wounds_effect = {
 	if = { limit = { has_character_flag = pending_infection } clr_character_flag = pending_infection }
 	if = {
 		limit = { trait = severely_injured }
 		remove_trait = severely_injured
+		add_scarred_tiered_effect = yes
 	}
 	if = {
 		limit = { trait = wounded }
 		remove_trait = wounded
+		add_scarred_tiered_effect = yes
 	}
 	if = {
 		limit = { trait = infection }
@@ -4452,5 +4332,66 @@ add_laid_eggs_effect = {
 	}
 	else = {
 		add_character_modifier = { name = laid_eggs stacking = yes duration = -1 }
+	}
+}
+
+prev_adopts_effect = {
+	hidden_effect = {
+		set_father = 0
+		set_mother = 0
+	}
+	if = {
+		limit = { PREV = { is_female = yes } }
+		set_mother = PREV
+	}
+	else = {
+		set_father = PREV
+	}
+	dynasty = PREV
+	add_trait = adopted
+}
+
+forge_runeblade_cost_effect = {
+	if = {
+		limit = { trait = creature_nathrezim }
+		wealth = -500
+	}
+	else = {
+		piety = -500
+	}
+}
+
+add_light_elune_branch_effect = {
+	add_trait = light_elune_branch
+	random_list = {
+		10 = {
+			trigger = { NOT = { trait = kind } }
+			add_trait = kind
+		}
+		10 = {
+			trigger = { NOT = { trait = charitable } }
+			add_trait = charitable
+		}
+		10 = {
+			trigger = { NOT = { trait = temperate } }
+			add_trait = temperate
+		}
+	}
+}
+add_dark_elune_branch_effect = {
+	add_trait = dark_elune_branch
+	random_list = {
+		10 = {
+			trigger = { NOT = { trait = wroth } }
+			add_trait = wroth
+		}
+		10 = {
+			trigger = { NOT = { trait = just } }
+			add_trait = just
+		}
+		10 = {
+			trigger = { NOT = { trait = brave } }
+			add_trait = brave
+		}
 	}
 }
