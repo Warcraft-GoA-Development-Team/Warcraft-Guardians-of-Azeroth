@@ -12,25 +12,6 @@ narrative_event = {
 	border = GFX_event_narrative_frame_war
 
 	is_triggered_only = yes
-	
-    immediate = {
-		log = "WCTRO.100 fired for [Root.GetBestName]"	
-	
-		if = {
-			limit = {
-                is_female = yes
-			}
-			create_bloodline = {
-				type = emperor_of_zul
-                inheritance = matrilineal
-			}
-		}
-        else = {
-            create_bloodline = {
-                type = emperor_of_zul
-            }
-        }	
-    }
 
     option = { # Disconcerting
         name = EVTOPTA_WCTRO_100
@@ -47,4 +28,74 @@ narrative_event = {
             culture_group = troll_group
         }
     }
+}
+
+#Regenerates body part
+character_event = {
+	id = WCTRO.500
+	desc = EVTDESC_WCTRO_500
+	picture = GFX_evt_bishop_loa_group
+	border = GFX_event_normal_frame_religion
+	
+	is_triggered_only = yes
+	
+	immediate = {
+		random_list = {
+			10 = {
+				modifier = {
+					is_maimed_trigger = no
+					factor = 0
+				}
+				modifier = {
+					trait = mangled
+					factor = 2
+				}
+				remove_random_maimed_effect = yes
+				set_character_flag = dark_healing_maimed_healed
+			}
+			10 = {
+				modifier = {
+					NOT = { trait = infirm }
+					factor = 0
+				}
+				set_character_flag = dark_healing_infirm
+			}
+			10 = {
+				modifier = {
+					NOT = { trait = incapable }
+					factor = 0
+				}
+				set_character_flag = dark_healing_incapable
+			}
+			10 = {
+				modifier = {
+					NOT = { trait = eunuch }
+					factor = 0
+				}
+				set_character_flag = dark_healing_eunuch
+			}
+			10 = {
+				modifier = {
+					NOT = { trait = blinded }
+					factor = 0
+				}
+				set_character_flag = dark_healing_blinded
+			}
+		}
+	}
+	
+	option = {
+		name = {
+			trigger = { NOT = { has_character_flag = dark_healing_eunuch } }
+			text = EXCELLENT
+		}
+		name = {
+			trigger = { has_character_flag = dark_healing_eunuch }
+			text = EVTOPTA_WCTRO_500_eunuch
+		}
+		
+		heal_wounds_effect = yes
+		
+		heal_flagged_maim_or_healable_disability_effect = yes
+	}
 }
