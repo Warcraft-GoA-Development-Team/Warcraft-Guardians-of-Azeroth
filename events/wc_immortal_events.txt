@@ -1,0 +1,113 @@
+namespace = WCIMM
+
+#on_startup
+# Starts ruled too long timer
+character_event = {
+	id = WCIMM.10
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	only_playable = yes
+	
+	trigger = {
+		must_have_ruled_too_long_penalty_trigger = yes
+	}
+	
+	immediate = {
+		set_character_flag = ruled_too_long_timer_flag
+		
+		character_event = { id = WCIMM.20 years = 50 }
+	}
+}
+#on_new_holder on_new_holder_inheritance on_new_holder_usurpation
+# Starts/clears ruled too long timer
+character_event = {
+	id = WCIMM.15
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	only_playable = yes
+	
+	trigger = {
+		OR = {
+			must_have_ruled_too_long_penalty_trigger = yes
+			FROMFROM = {
+				must_have_ruled_too_long_penalty_trigger = no
+			}
+		}
+	}
+	
+	immediate = {
+		if = {
+			limit = {
+				must_have_ruled_too_long_penalty_trigger = yes
+			}
+			set_character_flag = ruled_too_long_timer_flag
+			
+			character_event = { id = WCIMM.20 years = 50 }
+		}
+		if = {
+			limit = {
+				FROMFROM = {
+					must_have_ruled_too_long_penalty_trigger = no
+				}
+			}
+			FROMFROM = { character_event = { id = WCIMM.30 } }
+		}
+	}
+}
+#Ruled too long
+character_event = {
+	id = WCIMM.20
+	desc = EVTDESC_WCIMM_20
+	picture = GFX_evt_state_diplomacy
+	border = GFX_event_normal_frame_diplomacy
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		is_playable = yes
+		
+		has_character_flag = ruled_too_long_timer_flag
+	}
+	
+	fail_trigger_effect = {
+		clr_character_flag = ruled_too_long_timer_flag
+	}
+	
+	immediate = {
+		character_event = { id = WCIMM.20 years = 50 }
+	}
+	
+	option = {
+		name = EVTOPTA_WCIMM_20
+		
+		add_character_modifier = { name = ruled_too_long_modifier duration = -1 stacking = yes }
+	}
+}
+# Clears ruled too long modifier when becomes unplayable
+character_event = {
+	id = WCIMM.30
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	trigger = {
+		has_character_flag = ruled_too_long_timer_flag
+	}
+	
+	immediate = {
+		log = "WCIMM.30 fired for [Root.GetBestName]"
+		
+		clr_character_flag = ruled_too_long_timer_flag
+		
+		remove_character_modifiers = {
+			modifier = ruled_too_long_modifier
+			amount = 30
+		}
+		
+		clear_delayed_event = { id = WCIMM.20 }
+	}
+}
