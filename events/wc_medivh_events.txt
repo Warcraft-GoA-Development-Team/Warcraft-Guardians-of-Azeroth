@@ -378,12 +378,13 @@ narrative_event = {
 	
 	immediate = {
 		clr_character_flag = in_fight_with_sargeras
+		narrative_event = { id = WCMDV.112 days = 25 }
 	}
 	
 	option = {
 		name = EVTOPTA_WCMDV_111
 		piety = -5
-		add_35_fel_corruption_effect
+		add_35_fel_corruption_effect = yes
 	}
 }
 
@@ -399,15 +400,154 @@ narrative_event = {
 	is_triggered_only = yes
 	
 	immediate = {
-		c_60578 = {
-			death_reason = death_battle
+		#transfers Aluneth to Medivh(or should)
+		aluneth = {
+			save_event_target_as = aluneth_staff
 		}
-		atiesh = { transfer_artifact = { from = c_60578 to = ROOT } }
+		event_target:aluneth_staff = {
+			show_scope_change = no
+			owner = {
+				show_scope_change = no
+				event_target:aluneth_staff = {
+					show_scope_change = no
+					transfer_artifact = {
+						from = PREV
+						to = ROOT
+					}
+				}
+			}
+		}
 	}
 	
 	option = {
 		name = EVTOPTA_WCMDV_112
 		prestige = 100
-		add_15_fel_corruption_effect
+		add_35_fel_corruption_effect = yes
+		c_60578 = {
+			death = {
+				death_reason = death_battle
+				killer = 5000
+			}
+		}
+		character_event = { id = WCMDV.113 days = 5 }
+	}
+}
+
+#Time to take your rightful place
+character_event = {
+	id = WCMDV.113
+	
+	desc = EVTDESC_WCMDV_113
+	picture = GFX_evt_possessed_medivh
+	border = GFX_event_normal_frame_intrigue
+	
+	is_triggered_only = yes
+	
+	immediate = {
+		1858 = { save_event_target_as = target_summoning_location }		# Xonulzis
+	}
+	
+	option = {
+		name = EVTOPTA_WCMDV_113
+		piety = 1000
+		add_15_fel_corruption_effect = yes
+		narrative_event = { id = WCMDV.114 months = 1 }
+		give_nickname = nick_the_fallen_guardian
+	}
+}
+
+#Medivh summons Legion and invades night elfs
+narrative_event = {
+	id = WCMDV.114
+	title = EVTTITLE_WCMDV_114
+	desc = EVTDESC_WCMDV_114
+	picture = GFX_evt_burning_legion
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+
+	major = yes
+	major_trigger = {
+		ai = no
+	}
+	show_root = yes
+	hide_new = yes
+
+	immediate = {
+		# Used in scripted effects
+		save_event_target_as = target_settler
+		
+		73 = { province_event = { id = WCTHW.50 } } # When shit happens, Medivh tries to fix it
+		
+		wealth = 1000
+		prestige = 1000
+		piety = 250
+		
+		c_xonulzis = {
+			# event_target:target_settler and its people settle here
+			settle_as_target_settler_effect = yes
+		}
+		
+		d_haldarr = {
+			any_direct_de_jure_vassal_title = {
+				# event_target:target_settler and its people settle here
+				settle_as_target_settler_effect = yes
+			}
+		}
+
+		activate_title = { title = e_burning_legion status = yes }
+		e_burning_legion = { gain_title = ROOT }
+		
+		set_legion_government_effect = yes
+		
+		c_xonulzis = {
+			# Declares war against player
+			target_settler_declare_war_effect = yes
+		}
+		
+		clear_settler_flag_effect = yes
+
+		# Spawns troops
+		spawn_legion_troops_effect = yes
+		spawn_legion_troops_effect = yes
+		spawn_legion_troops_effect = yes
+		spawn_legion_troops_effect = yes
+		spawn_legion_troops_effect = yes
+		spawn_legion_troops_effect = yes
+		spawn_legion_troops_effect = yes
+		# Declares war against the night elves
+		1921 = {
+			holder_scope = {
+				top_liege = {
+					if = {
+						limit = {
+							is_untouchable_trigger = no
+
+							NOT = { religion = burning_legion_religion }
+							NOT = { true_religion = burning_legion_religion }
+						}
+						set_character_flag = event_war_exception_flag
+						ROOT = {
+							unsafe_war = {
+								target = PREV
+								casus_belli = total_invasion
+								thirdparty_title = PREV
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	option = {
+		name = {
+			trigger = { OR = { true_religion = burning_legion_religion true_religion = orcish_fel } }
+			text = EVTOPTA_WCFEL_1005_case_01
+		}
+		name = {
+			trigger = { NOR = { true_religion = burning_legion_religion true_religion = orcish_fel } }
+			text = EVTOPTA_WCFEL_1005_case_02
+		}
 	}
 }
