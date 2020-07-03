@@ -509,6 +509,9 @@ can_has_sexual_relation_with_prev = {
 			trait = creature_sayaadi
 		}
 	}
+	
+	is_not_isolated_from_prev_trigger = yes
+	
 	trigger_if = {
 		limit = {
 			has_game_rule = {
@@ -516,7 +519,6 @@ can_has_sexual_relation_with_prev = {
 				value = unrestricted
 			}
 		}
-		always = yes
 	}
 	trigger_else = {
 		OR = {
@@ -2299,6 +2301,8 @@ has_weak_character_trigger = {
 can_fight_prev_trigger = {
 	can_declare_wars_trigger = yes
 	PREV = { can_declare_wars_trigger = yes }
+	is_not_isolated_from_prev_trigger = yes
+	
 	trigger_if = {
 		limit = {
 			OR = {
@@ -2758,7 +2762,7 @@ ai_from_prefer_to_hurt_this_trigger = {
 	}
 }
 from_in_range_to_hurt_this_trigger = {
-	is_within_diplo_range = FROM
+	FROM = { is_within_prev_diplo_range_trigger = yes }
 	OR = {
 		same_realm = FROM
 		FROM = { is_foe = PREV }
@@ -4388,6 +4392,7 @@ can_create_merchant_republic_trigger = {
 }
 
 from_can_have_trade_post_trigger = {
+	FROM = { is_not_isolated_from_prev_trigger = yes }
 	trigger_if = {
 		limit = { FROM = { evil_public_religion_trigger = yes } }
 		religion = FROM
@@ -4397,6 +4402,7 @@ from_can_have_trade_post_trigger = {
 	}
 }
 owner_can_have_trade_post_trigger = {
+	trade_post_owner = { is_not_isolated_from_prev_trigger = yes }
 	trigger_if = {
 		limit = { trade_post_owner = { evil_public_religion_trigger = yes } }
 		religion = trade_post_owner
@@ -5015,7 +5021,7 @@ is_scale_race_trigger = {
 this_can_lend_prev_money_trigger = {
 	war = no
 	
-	is_within_diplo_range = PREV
+	is_within_prev_diplo_range_trigger = yes
 	
 	custom_tooltip = {
 		text = borrowing_bothering_tooltip
@@ -5237,6 +5243,44 @@ has_magical_addiction_trigger = {
 	# Doesn't have immunity
 	NOT = {
 		has_character_flag = immune_magical_addiction
+	}
+}
+
+is_not_isolated_from_prev_trigger = {
+	trigger_if = {
+		limit = { character = yes }
+		is_untouchable_trigger = no
+	}
+	PREV = {
+		trigger_if = {
+			limit = { character = yes }
+			is_untouchable_trigger = no
+		}
+	}
+	
+	trigger_if = {
+		limit = {
+			NOT = { has_global_flag = mists_of_pandaria_parted_flag }
+			NOT = { has_game_rule = { name = mists_of_pandaria value = off } }
+			OR = {
+				is_in_pandaria_trigger = yes
+				PREV = { is_in_pandaria_trigger = yes }
+			}
+		}
+		custom_tooltip = {
+			text = mists_of_pandaria_dont_block_interactions_tooltip
+			is_in_pandaria_trigger = yes
+			PREV = { is_in_pandaria_trigger = yes }
+		}
+	}
+}
+is_in_pandaria_trigger = {
+	trigger_if = {
+		limit = { character = yes }
+		liege = { capital_scope = { region = world_pandaria } }
+	}
+	trigger_else = {
+		region = world_pandaria
 	}
 }
 
