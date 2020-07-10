@@ -698,43 +698,41 @@ narrative_event = {
 ### CRISIS: AWAKENING OF THE AMATHET ###
 # this crisis mostly serves as a counterbalance to the invading qiraji, and generally should fire not long after Uldum's isolation ends and it gets stomped but can happen anytime
 # Opening event: The Tombs Are Stirring
-# this serves as a notification for local rulers that the threat to Uldum is severe and the slumbering guardians are stirring in response
-#character_event = {
-#	id = WCCRS.200
-#
-#	is_triggered_only = yes
-#	hide_window = yes
-#
-#	only_playable = yes
-#
-#	trigger = {
-#		NOT = {	has_global_flag = amathet_awakening_happened }
-#		
-#		# should trigger when at least 2 de-jure kingdom titles of e_uldum are under control of evil religion, this naturally happens when the qiraji invade
-#	}
-#
-#	immediate = {
-#		set_global_flag = amathet_awakening_happened	# temp
-#	}
-#}
+# this serves as a notification that the defenses of Uldum have been breached and the slumbering guardians are stirring in response
+character_event = {
+	id = WCCRS.200
 
-# Desperate Measures
-# A character goes to the tomb of the Sun-King in order to find a weapon or something to fight back against the encroaching menace
-#character_event = {
-#	id = WCCRS.210
-#
-#	# The event should pick a Titanic Tol'vir holder of c_tolnariv as first priority
-#	# The event should pick a Titanic Tol'vir ruler from within de-jure e_uldum as second priority in case c_tolnariv isn't held by a Titanic Tol'vir
-#	# In a case of no valid Titanic Tol'vir holder in any of e_uldum's provinces, it picks the highest liege that holds most of the territory instead
-#}
+	is_triggered_only = yes
+	hide_window = yes
 
-# Nahkotep Awakens
-# This event spawns the Sun King and Prince Abari
-#character_event = {
-#	id = WCCRS.220
-#	
-#	# This event has 3 potential solutions
-#	# Two first solutions present a choice for the tol'vir ruler that unearths the tomb of Nakhotep - join him in his fanatical crusade (become his vassal) or die with the corrupted (get invaded)
-#	# Third solution is for the highest occupier liege, and he's always first to be invaded with a purge CB
-#   # Nahkotep should always spawn with a comparable force to the greatest threat around, but not outright doomstacks
-#}
+	only_playable = yes
+
+	trigger = {
+		NOT = {	has_global_flag = amathet_awakening_happened }
+
+		# Needs to control any of these important Tol'vir counties
+		OR = {
+			has_landed_title = c_orsis
+			has_landed_title = c_ramkahen
+			has_landed_title = c_neferset
+			has_landed_title = c_uldum
+			has_landed_title = c_tolnariv
+		}
+		
+		# Must be a public follower of an evil religion
+		evil_public_religion_trigger = yes
+	}
+
+	immediate = {
+		set_global_flag = amathet_awakening_happened	# Blocks the event from firing twice during one playthrough
+
+		# Check if c_tolnariv is held by a Titanic tol'vir
+
+		# If no valid holder, check if there are any county-tier titles in de-jure e_uldum held by a Titanic tol'vir
+
+		# If no valid tol'vir holder of the above, pick an evil ruler anywhere in de-jure e_uldum
+		
+		# The following event is sent to a valid recipient that can go and explore the tombs
+		# event_target:target_tomb_explorer = { narrative_event = { id = WCCRS.210 } }
+	}
+}
