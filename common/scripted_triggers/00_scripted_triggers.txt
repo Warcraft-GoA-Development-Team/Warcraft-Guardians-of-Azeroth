@@ -1807,7 +1807,10 @@ is_unimportant_trigger = {
 }
 
 sad_example_trigger = {
-	age = 30
+	# Warcraft
+	is_completely_immortal_trigger = no
+	
+	is_60_physical_age_trigger = yes
 	is_married = no
 	NOT = { num_of_children = 1 }
 }
@@ -6874,7 +6877,6 @@ silk_road_trade_post_trigger = {
 				province_id = 641
 				province_id = 630
 				province_id = 1180
-				province_id = 1297
 				province_id = 1127
 				province_id = 1220
 				province_id = 1114
@@ -6902,7 +6904,6 @@ silk_road_trade_post_trigger = {
 				province_id = 774
 				province_id = 620
 				province_id = 1794
-				province_id = 775
 				province_id = 775
 				province_id = 633
 				province_id = 664
@@ -8102,6 +8103,11 @@ this_is_warrior_culture_trigger = { #Not really about culture - Used in AI votin
 		religion_group = vrykul_religion_group
 		
 		culture_group = orc_group
+		culture = titanforged
+		culture = frozen_giant
+		culture = titan
+		culture = storm_giant
+		culture_group = vrykul_group
 		
 		# Warcraft
 		# religion_group = muslim
@@ -8140,6 +8146,8 @@ this_is_diplomatic_culture_trigger = { #Not really about culture - Used in AI vo
 		kind_public_religion_trigger = yes
 		secular_public_religion_trigger = yes
 		
+		culture = human_group
+		
 		# Warcraft
 		# religion_group = christian
 		# religion_group = jewish_group
@@ -8155,11 +8163,26 @@ this_is_diplomatic_culture_trigger = { #Not really about culture - Used in AI vo
 		# }
 	}
 }
+
+# Warcraft
+this_is_stewardship_culture_trigger = {
+	OR = {
+		culture_group = dwarf_group
+		culture = tolvir
+		culture = earthen
+		culture = irondwarf
+		culture_group = trogg_group
+	}
+}
+
 this_is_spiritual_culture_trigger = { #Not really about culture - Used in AI voting logic.
 	OR = { 
 		# Warcraft
 		religion_group = loa_group
 		religion_group = pandaren_religion_group
+		
+		culture = gnome_group
+		culture = mechagnome
 		
 		# Warcraft
 		# religion_group = indian_group
@@ -9473,180 +9496,179 @@ ere_elective_politician_titles_trigger = { #Used in Imperial Elective to determi
 }
 
 can_still_be_commander_byzantine_trigger = { 
-	# Warcraft
-	always = no
+	NOT = { 
+		primary_title = { temporary = yes } 
+	}
+	liege = { 
+		character = FROMFROM 
+		has_law = succ_byzantine_elective
+	}
+	OR = {
+		AND = {
+			OR = {
+				male_can_hold_minor_title_trigger = yes
+				female_can_hold_minor_commander_title_trigger = yes
+			}
+			OR = {
+				NOT = { religion = hindu }
+				trait = kshatriya
+			}
+			is_adult = yes
+		}
+		has_character_flag = special_marshal
+	}
 	
-	# Warcraft
-	# NOT = { 
-		# primary_title = { temporary = yes } 
-	# }
-	# liege = { 
-		# character = FROMFROM 
-		# has_law = succ_byzantine_elective
-	# }
-	# OR = {
-		# AND = {
-			# OR = {
-				# male_can_hold_minor_title_trigger = yes
-				# female_can_hold_minor_commander_title_trigger = yes
-			# }
-			# OR = {
-				# NOT = { religion = hindu }
-				# trait = kshatriya
-			# }
-			# is_adult = yes
-		# }
-		# has_character_flag = special_marshal
-	# }
-	
-	# prisoner = no
-	# NOT = { is_incapable = yes }
- 	# NOT = { trait = sick_incapable }
-	# NOT = { is_inaccessible_trigger = yes }
-	# NOT = { has_character_flag = guru }
-	# NOT = { has_character_modifier = refusing_to_lead }
-	# NOR = { 
-		# war_with = FROMFROM
-		# any_liege = {  
-			# war_with = FROMFROM
-		# }
-	# }
-	# OR = { 
-		# higher_real_tier_than = BARON #Either potential commander is vassal...
-		# NOT = { #...Or there are no valid vassal candidates that can be commanders.
-			# custom_tooltip = { 
-				# text = tooltip_byzantine_empire_can_appoint_commanders
-				# liege = { 
-					# any_vassal = { 
-						# higher_real_tier_than = BARON
-						# NOT = { 
-							# primary_title = { temporary = yes } 
-						# }
-						# OR = {
-							# AND = {
-								# OR = {
-									# male_can_hold_minor_title_trigger = yes
-									# female_can_hold_minor_commander_title_trigger = yes
-								# }
-								# OR = {
-									# NOT = { religion = hindu }
-									# trait = kshatriya
-								# }
-								# is_adult = yes
-							# }
-							# has_character_flag = special_marshal
-						# }
+	prisoner = no
+	NOT = { trait = incapable }
+ 	NOT = { trait = sick_incapable }
+	NOT = { is_inaccessible_trigger = yes }
+	NOT = { has_character_flag = guru }
+	NOT = { has_character_modifier = refusing_to_lead }
+	NOR = { 
+		war_with = FROMFROM
+		any_liege = {  
+			war_with = FROMFROM
+		}
+	}
+	OR = { 
+		higher_real_tier_than = BARON #Either potential commander is vassal...
+		NOT = { #...Or there are no valid vassal candidates that can be commanders.
+			custom_tooltip = { 
+				text = tooltip_byzantine_empire_can_appoint_commanders
+				liege = { 
+					any_vassal = { 
+						higher_real_tier_than = BARON
+						NOT = { 
+							primary_title = { temporary = yes } 
+						}
+						OR = {
+							AND = {
+								OR = {
+									male_can_hold_minor_title_trigger = yes
+									female_can_hold_minor_commander_title_trigger = yes
+								}
+								OR = {
+									NOT = { religion = hindu }
+									trait = kshatriya
+								}
+								is_adult = yes
+							}
+							has_character_flag = special_marshal
+						}
 						
-						# prisoner = no
-						# NOT = { is_incapable = yes }
-						# NOT = { is_inaccessible_trigger = yes }
-						# NOT = { has_character_flag = guru }
-						# NOT = { has_character_modifier = refusing_to_lead }
-						# NOR = {
-							# has_job_title = job_chancellor
-							# has_job_title = job_marshal
-							# has_job_title = job_treasurer
-							# has_job_title = job_spymaster
-							# has_job_title = job_spiritual
-							# has_minor_title = title_commander
-						# }
-					# } 
-				# } 
-			# } 
-		# }
-	# }
+						prisoner = no
+						NOT = { trait = incapable }
+						NOT = { is_inaccessible_trigger = yes }
+						NOT = { has_character_flag = guru }
+						NOT = { has_character_modifier = refusing_to_lead }
+						NOR = {
+							has_job_title = job_chancellor
+							has_job_title = job_marshal
+							has_job_title = job_treasurer
+							has_job_title = job_spymaster
+							has_job_title = job_spiritual
+							has_minor_title = title_commander
+						}
+					} 
+				} 
+			} 
+		}
+	}
 }
 
 can_still_be_marshal_byzantine_trigger = {
-	# Warcraft
-	always = no
-	
-	# Warcraft
-	# liege = { 
-		# character = FROMFROM
-		# has_law = succ_byzantine_elective
-	# }
-	# NOR = { 
-		# war_with = FROMFROM
-		# any_liege = {  
-			# war_with = FROMFROM
-		# }
-	# }
-	# OR = {
-		# AND = {
-			# OR = {
-				# AND = { #Patriarchal religions can only hire males. Matriarchal religions can only hire females.
-					# is_female = no 
-					# NOT = { liege = { has_religion_feature = religion_matriarchal } } 
-				# }
-				# AND = {
-					# is_female = yes 
-					# OR = { 
-						# liege = { has_religion_feature = religion_matriarchal } 
-						# liege = { has_religion_feature = religion_equal } 
-						# liege = { has_religion_feature = religion_feature_bon } 
-					# } 
-				# }
-				# trait = horse # So we can have female glitterhoofs! :D
-				
-				# # Warcraft
-				
-				# AND = {
-					# liege = {
-						# primary_title = {
-							# OR = {
-								# has_law = status_of_women_3
-							# }
-						# }
-					# }
-					# OR = {
-						# liege = {
-							# OR = {
-								# dynasty = ROOT
-								# is_close_relative = ROOT
-								# any_spouse = { character = ROOT }
-								# any_consort = { character = ROOT }
-							# }
-						# }
-						# is_landed = yes
+	liege = { 
+		character = FROMFROM
+		has_law = succ_byzantine_elective
+	}
+	NOR = { 
+		war_with = FROMFROM
+		any_liege = {  
+			war_with = FROMFROM
+		}
+	}
+	OR = {
+		AND = {
+			OR = {
+				AND = { #Patriarchal religions can only hire males. Matriarchal religions can only hire females.
+					is_female = no 
+					NOT = { liege = { has_religion_feature = religion_matriarchal } } 
+				}
+				AND = {
+					is_female = yes 
+					OR = { 
+						liege = { has_religion_feature = religion_matriarchal } 
+						liege = { has_religion_feature = religion_equal } 
+						liege = { has_religion_feature = religion_feature_bon } 
+					} 
+				}
+				trait = horse # So we can have female glitterhoofs! :D
+				OR = {
+					AND = {
+						religion = cathar
+						liege = { religion = cathar }
+					}
+					AND = {
+						religion = messalian
+						liege = { religion = messalian }
+					}
+				}
+				AND = {
+					liege = {
+						primary_title = {
+							OR = {
+								has_law = status_of_women_3
+							}
+						}
+					}
+					OR = {
+						liege = {
+							OR = {
+								dynasty = ROOT
+								is_close_relative = ROOT
+								any_spouse = { character = ROOT }
+								any_consort = { character = ROOT }
+							}
+						}
+						is_landed = yes
 						
-					# }
-				# }
-				# OR = {
-					# AND = { 
-						# is_female = yes
-						# liege = { primary_title = { has_law = status_of_women_4 } } 
-					# }
-					# has_game_rule = {
-						# name = gender
-						# value = all
-					# }
-				# }
-			# }
-			# OR = {
-				# NOT = { religion = hindu }
-				# trait = kshatriya
-			# }
-			# is_adult = yes
-		# }
-		# has_character_flag = special_marshal
-	# }
+					}
+				}
+				OR = {
+					AND = { 
+						is_female = yes
+						liege = { primary_title = { has_law = status_of_women_4 } } 
+					}
+					has_game_rule = {
+						name = gender
+						value = all
+					}
+				}
+			}
+			OR = {
+				NOT = { religion = hindu }
+				trait = kshatriya
+			}
+			is_adult = yes
+		}
+		has_character_flag = special_marshal
+	}
 	
-	# independent = no
-	# prisoner = no
-	# NOT = { is_incapable = yes }
- 	# NOT = { trait = sick_incapable }
-	# NOT = { trait = in_hiding }
-	# NOT = { has_character_flag = guru }
-	# NOT = { has_character_modifier = resigned_in_anger }
-	# NOT = { 
-		# liege = { 
-			# has_opinion_modifier = {
-				# who = ROOT	
-				# modifier = opinion_resigned_from_council 
-			# } 
-		# } 
-	# }
+	independent = no
+	prisoner = no
+	NOT = { trait = incapable }
+ 	NOT = { trait = sick_incapable }
+	NOT = { trait = in_hiding }
+	NOT = { has_character_flag = guru }
+	NOT = { has_character_modifier = resigned_in_anger }
+	NOT = { 
+		liege = { 
+			has_opinion_modifier = {
+				who = ROOT	
+				modifier = opinion_resigned_from_council 
+			} 
+		} 
+	}
 }
 
 
@@ -9664,5 +9686,10 @@ is_mongol_empire_leader_trigger = {
 	}
 }
 
-
+is_single_player_observer_mode = {
+	AND = {
+		multiplayer = no
+		is_local_human_observer = yes
+	}
+}
 
