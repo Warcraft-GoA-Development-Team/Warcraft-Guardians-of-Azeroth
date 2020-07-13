@@ -1065,7 +1065,9 @@ narrative_event = {
 		save_event_target_as = target_settler
 
 		religion = old_gods_worship
-		clear_event_target = yes
+
+		remove_traveling_immunity_effect = yes
+
 		any_courtier = {
 			limit = {
 				culture = twilights_hammer
@@ -1073,8 +1075,6 @@ narrative_event = {
 			}
 			religion = old_gods_worship
 		}
-
-		remove_traveling_immunity_effect = yes
 
 		if = {
 			limit = { has_global_flag = twilights_hammer_kalimdor }
@@ -1105,7 +1105,11 @@ narrative_event = {
 				target_settler_declare_war_effect = yes
 			}
 		}
+
 		clear_settler_flag_effect = yes
+		
+		# Spawns army for start
+		spawn_colonial_troops_effect = yes
 	}
 
 	# I'll spread its will across Kalimdor/Northrend!
@@ -1125,10 +1129,8 @@ narrative_event = {
 		}
 		if = { limit = { NOT = { trait = zealous } add_trait = zealous } }
 
-		add_35_void_corruption_effect = yes
-
-		activate_title = { title = d_twilights_hammer status = no }
-		d_twilights_hammer = { destroy_landed_title = THIS }
+		add_artifact = hammer_of_the_twilight
+		leave_society = yes
 		set_global_flag = twilights_hammer_cult_active_flag
 		join_society_twilights_hammer_cult_effect = yes
 		hidden_effect = {
@@ -1136,7 +1138,11 @@ narrative_event = {
 			add_society_currency_massive_effect = yes # Give the Grand Master a start-up capital to induct members
 		}
 
+		add_35_void_corruption_effect = yes
+
 		hidden_effect = {
+			activate_title = { title = d_twilights_hammer status = no }
+			d_twilights_hammer = { destroy_landed_title = THIS }
 			any_playable_ruler = {
 				limit = {
 					ai = yes
@@ -1195,16 +1201,16 @@ character_event = {
 		trigger = { NOT = { has_character_flag = hunted_by_garona } }
 
 		set_character_flag = hunted_by_garona
-		hidden_effect = { set_variable = { which = garona_kills value = 1 } }
+		hidden_effect = { set_variable = { which = local_garona_kills value = 1 } }
 	}
 	option = {
 		name = EVTOPTB_WCDAC_5041
 		trigger = { has_character_flag = hunted_by_garona }
 	}
 	after = {
-		hidden_effect = { change_variable = { which = garona_kills value = 1 } }
+		hidden_effect = { change_variable = { which = local_garona_kills value = 1 } }
 		if = {
-			limit = { check_variable = { which = garona_kills value = 5 } }
+			limit = { check_variable = { which = local_garona_kills value = 5 } }
 			character_event = { id = WCDAC.5042 months = 6 }
 		}
 		else = {
@@ -1327,7 +1333,6 @@ narrative_event = {
 		# Used in scripted effects
 		save_event_target_as = target_settler
 		
-		clear_event_target = yes
 		remove_traveling_immunity_effect = no
 
 		if = {
@@ -1393,6 +1398,7 @@ narrative_event = {
 				target_settler_declare_war_effect = yes
 			}
 		}
+
 		clear_settler_flag_effect = yes
 	}
 
