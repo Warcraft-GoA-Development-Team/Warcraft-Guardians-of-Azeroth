@@ -915,3 +915,147 @@ character_event = {
 		}
 	}
 }
+
+### Spiritbinding
+# Starts building new vessel, picks rock
+character_event = {
+	id = WCRAC.500
+	desc = EVTDESC_WCRAC_500
+	picture = GFX_evt_jade_mogu_golem
+	border = GFX_event_normal_frame_religion
+	
+	is_triggered_only = yes
+	
+	#Soft
+	option = {
+		name = EVTOPTA_WCRAC_500
+		
+		random_list = {
+			10 = {
+				custom_tooltip = {
+					text = spiritbinding_deformed_body_tooltip
+					set_character_flag = spiritbinding_deformed_body_flag
+				}
+			}
+			10 = {
+				custom_tooltip = {
+					text = spiritbinding_excellent_body_tooltip
+					set_character_flag = spiritbinding_excellent_body_flag
+				}
+			}
+			80 = {
+			}
+		}
+	}
+	#Hard
+	option = {
+		name = EVTOPTB_WCRAC_500
+		
+		random_list = {
+			30 = {
+				custom_tooltip = {
+					text = spiritbinding_deformed_body_tooltip
+					set_character_flag = spiritbinding_deformed_body_flag
+				}
+			}
+			30 = {
+				custom_tooltip = {
+					text = spiritbinding_excellent_body_tooltip
+					set_character_flag = spiritbinding_excellent_body_flag
+				}
+			}
+			40 = {
+			}
+		}
+	}
+	after = {
+		character_event = { id = WCRAC.505 months = 6 random = 180 }
+	}
+}
+#Body is ready
+character_event = {
+	id = WCRAC.505
+	desc = EVTDESC_WCRAC_505
+	picture = GFX_evt_jade_mogu_golem
+	border = GFX_event_normal_frame_religion
+	
+	is_triggered_only = yes
+	
+	#Begin the ritual
+	option = {
+		name = {
+			trigger = { NOT = { has_character_flag = spiritbinding_deformed_body_flag } }
+			text = EVTOPTA_WCRAC_505_normal
+		}
+		name = {
+			trigger = { has_character_flag = spiritbinding_deformed_body_flag }
+			text = EVTOPTA_WCRAC_505_fail
+		}
+		
+		random_list = {
+			90 = {
+				custom_tooltip = {
+					text = spiritbinding_soul_transferred_tooltip
+				}
+			}
+			10 = {
+				custom_tooltip = {
+					text = spiritbinding_soul_trapped_tooltip
+					set_character_flag = spiritbinding_soul_trapped_flag
+				}
+			}
+		}
+		
+		character_event = { id = WCRAC.510 days = 3 }
+	}
+	#Stop it
+	option = {
+		name = {
+			trigger = { NOT = { has_character_flag = spiritbinding_deformed_body_flag } }
+			text = EVTOPTB_WCRAC_505_normal
+		}
+		name = {
+			trigger = { has_character_flag = spiritbinding_deformed_body_flag }
+			text = EVTOPTB_WCRAC_505_fail
+		}
+		
+		clear_flags_with_prefix = spiritbinding_
+	}
+}
+#Ritual begins
+character_event = {
+	id = WCRAC.510
+	desc = EVTDESC_WCRAC_510
+	picture = GFX_evt_jade_mogu_golem
+	border = GFX_event_normal_frame_religion
+	
+	is_triggered_only = yes
+	
+	#You died
+	option = {
+		trigger = { has_character_flag = spiritbinding_soul_trapped_flag }
+		name = EVTOPTA_WCRAC_510
+		
+		death = { death_reason = death_accident }
+	}
+	#Got new body
+	option = {
+		trigger = { NOT = { has_character_flag = spiritbinding_soul_trapped_flag } }
+		name = EXCELLENT
+		
+		get_new_body_effect = yes
+		
+		if = {
+			limit = { has_character_flag = spiritbinding_deformed_body_flag }
+			add_trait = weak
+		}
+		if = {
+			limit = { has_character_flag = spiritbinding_excellent_body_flag }
+			add_trait = strong
+		}
+	}
+	
+	after = {
+		clear_flags_with_prefix = spiritbinding_
+	}
+}
