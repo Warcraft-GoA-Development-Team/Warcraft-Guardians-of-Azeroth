@@ -2943,6 +2943,12 @@ add_age_back_effect = {
 		}
 	}
 }
+clear_rejuvenate_effect = {
+	clr_character_flag = rejuvenated_flag
+	
+	set_variable = { which = "myAge" value = 0 }
+	set_variable = { which = "myNegativeAge" value = 0 }
+}
 
 ruler_sell_land_to_holy_order_effect = {
 	event_target:target_ruler = {
@@ -3512,19 +3518,19 @@ court_share_cannibal_trait_effect = {
 # Clear mortal traits because you became immortal
 clr_mortal_traits_effect = {
 	if = {
+		limit = {
+			trait = infertile
+			need_infertile_trait_trigger = no
+		}
+		remove_trait = infertile
+	}
+	if = {
 		limit = { trait = infirm }
 		remove_trait = infirm
 	}
 	if = {
-		limit = {
-			trait = infertile
-			
-			OR = {
-				immortal_need_infertile_trait_trigger = no
-				is_completely_infertile_race_and_being_trigger = yes
-			}
-		}
-		remove_trait = infertile
+		limit = { trait = incapable }
+		remove_trait = incapable
 	}
 }
 
@@ -4411,4 +4417,44 @@ heal_magical_withdrawal_effect = {
 			remove_has_magical_withdrawal_trait_effect = yes
 		}
 	}
+}
+
+#Imitates getting new body thus clears traits associated with it
+get_new_body_effect = {
+	# Rejuvenate
+	hidden_effect = {
+		rejuvenate_effect = yes
+		clear_rejuvenate_effect = yes
+	}
+	
+	# Remove maims and disabilities
+	heal_all_maims_and_healable_disabilities_effect = yes
+	
+	# Remove wounds
+	heal_wounds_effect = yes
+	# Remove diseases
+	heal_all_diseases = yes
+
+	# Removed genetic
+	remove_all_positive_congenital_traits_effect = yes
+	remove_all_negative_congenital_traits_effect = yes
+	remone_all_non_inheritable_positive_congenital_traits_effect = yes
+	remone_all_non_inheritable_negative_congenital_traits_effect = yes
+
+	# Remove weight
+	remove_weight_effect = yes
+}
+
+remove_weight_effect = {
+	if = {
+		limit = { trait = is_fat }
+		remove_trait = is_fat
+	}
+	if = {
+		limit = { trait = is_malnourished }
+		remove_trait = is_malnourished
+	}
+	remove_weight_modifier_effect = yes
+	clear_fat_flags_effect = yes
+	clear_malnourished_flags_effect = yes
 }
