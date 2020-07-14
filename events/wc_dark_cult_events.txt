@@ -821,10 +821,7 @@ province_event = {
 			limit = {
 				d_twilights_hammer = {
 					has_holder = yes
-					holder_scope = {
-						prisoner = no
-						true_religion = old_gods_worship
-					}
+					holder_scope = { old_gods_chosen_event_trigger = yes }
 				}
 			}
 			d_twilights_hammer = { holder_scope = { narrative_event = { id = WCDAC.5030 } } }
@@ -832,34 +829,18 @@ province_event = {
 		else_if = {
 			limit = {
 				any_player = {
-					is_adult = yes
 					is_incapable = no
-					prisoner = no
 					is_inaccessible_trigger = no
 
-					independent = no
-
-					is_dark_being_trigger = no
-					is_humanoid_trigger = yes
-					true_religion = old_gods_worship
-
-					has_invader_title_trigger = no
+					old_gods_chosen_event_trigger = yes
 				}
 			}
 			random_player = {
 				limit = {
-					is_adult = yes
 					is_incapable = no
-					prisoner = no
 					is_inaccessible_trigger = no
 
-					independent = no
-
-					is_dark_being_trigger = no
-					is_humanoid_trigger = yes
-					true_religion = old_gods_worship
-
-					has_invader_title_trigger = no
+					old_gods_chosen_event_trigger = yes
 				}
 				narrative_event = { id = WCDAC.5030 }
 			}
@@ -911,26 +892,14 @@ province_event = {
 
 	immediate = {
 		if = {
-			limit = {
-				FROM = {
-					is_alive = yes
-				
-					prisoner = no
-				
-					true_religion = old_gods_worship
-				}
-			}
+			limit = { FROM = { old_gods_chosen_event_trigger = yes } }
 			FROM = { narrative_event = { id = WCDAC.5035 } }
 		}
 		else_if = {
 			limit = {
 				d_twilights_hammer = {
 					has_holder = yes
-					holder_scope = {
-						prisoner = no
-						
-						true_religion = old_gods_worship
-					}
+					holder_scope = { old_gods_chosen_event_trigger = yes }
 				}
 			}
 			FROM = { remove_traveling_immunity_effect = yes }
@@ -984,25 +953,14 @@ province_event = {
 
 	immediate = {
 		if = {
-			limit = {
-				FROM = {
-					is_alive = yes
-
-					prisoner = no
-
-					true_religion = old_gods_worship
-				}
-			}
+			limit = { FROM = { old_gods_chosen_event_trigger = yes } }
 			FROM = { narrative_event = { id = WCDAC.5040 } }
 		}
 		else_if = {
 			limit = {
 				d_twilights_hammer = {
 					has_holder = yes
-					holder_scope = {
-						prisoner = no
-						true_religion = old_gods_worship
-					}
+					holder_scope = { old_gods_chosen_event_trigger = yes }
 				}
 			}
 			FROM = { remove_traveling_immunity_effect = yes }
@@ -1127,7 +1085,10 @@ narrative_event = {
 				narrative_event = { id = WCCLS.1300 }
 			}
 		}
-		if = { limit = { NOT = { trait = zealous } add_trait = zealous } }
+		if = {
+			limit = { NOT = { trait = zealous } }
+			add_trait = zealous
+		}
 
 		add_artifact = hammer_of_the_twilight
 		set_global_flag = twilights_hammer_cult_active_flag
@@ -1154,9 +1115,17 @@ narrative_event = {
 			# Sets targets before event chain
 			c_52000 = { save_event_target_as = target_chogall }
 			c_10620 = { save_event_target_as = target_garona }
-			character_event = { id = WCDAC.5041 days = 7 }
+			if = {
+				limit = {
+					garona_hunt_chain_trigger = yes
+					event_target:target_garona = { is_inaccessible_trigger = no }
+				}
+				event_target:target_garona = { add_traveling_immunity_effect = yes }
+				
+				character_event = { id = WCDAC.5041 days = 7 }
+			}
 			
-			character_event = { id = WCDAC.5045 years = 5 }
+			73 = { province_event = { id = WCDAC.5075 years = 5 } }
 		}
 	}
 }
@@ -1169,12 +1138,13 @@ character_event = {
 	}
 	desc = {
 		trigger = {
-			trigger = { has_character_flag = hunted_by_garona }
+			has_character_flag = hunted_by_garona 
 		}
 		text = EVTDESC_WCDAC_5041_later_kills
 	}
 	picture = GFX_evt_shadow
 	border = GFX_event_normal_frame_intrigue
+	portrait = event_target:target_killed
 
 	is_triggered_only = yes
 	
@@ -1191,10 +1161,13 @@ character_event = {
 	}
 	
 	immediate = {
-		event_target:target_garona = { add_traveling_immunity_effect = yes }
-		random_courtier = {
-			limit = { is_possible_garona_target_trigger = yes }
-			death = { death_reason = death_murder killer = event_target:target_garona }
+		hidden_effect = {
+			event_target:target_garona = { add_traveling_immunity_effect = yes }
+			random_courtier = {
+				limit = { is_possible_garona_target_trigger = yes }
+				save_event_target_as = target_killed
+				death = { death_reason = death_battle killer = event_target:target_garona }
+			}
 		}
 	}
 
@@ -1238,11 +1211,14 @@ character_event = {
 		# Skip event
 		garona_hunt_chain_skip_effect = yes
 	}
+	
+	immediate = {
+		add_traveling_immunity_effect = yes
+	}
 
 	option = {
 		name = EVTOPTA_WCDAC_5042
 		
-		add_traveling_immunity_effect = yes
 		character_event = { id = WCDAC.5043 months = 14 }
 	}
 }
@@ -1294,7 +1270,26 @@ character_event = {
 		event_target:target_garona = { imprison = no }
 	}
 }
-# Travels closer to the Old God
+### Travels closer to the Old God
+#Delayer event
+province_event = {
+	id = WCDAC.5075
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
+		if = {
+			limit = { FROM = { old_gods_chosen_event_trigger = yes } }
+			FROM = { narrative_event = { id = WCDAC.5045 } }
+		}
+		else = {
+			FROM = { remove_traveling_immunity_effect = yes }
+			province_event = { id = WCDAC.5076 days = 90 }
+		}
+	}
+}
+#Delayed event
 character_event = {
 	id = WCDAC.5045
 	desc = EVTDESC_WCDAC_5045
@@ -1310,18 +1305,60 @@ character_event = {
 
 	is_triggered_only = yes
 	
-	trigger = {
-		religion = old_gods_worship
+	immediate = {
+		add_traveling_immunity_effect = yes
 	}
 
 	option = {
 		name = EVTOPTA_WCDAC_5045
 		
-		narrative_event = { id = WCDAC.5046 years = 2 }
-		add_traveling_immunity_effect = yes
+		73 = { province_event = { id = WCDAC.5076 years = 2 } }
 	}
 }
-# The Ruins of Ahn'Qiraj and Darkness in Uldaur
+### The Ruins of Ahn'Qiraj and Darkness in Uldaur
+#Delayer event
+province_event = {
+	id = WCDAC.5076
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
+		if = {
+			limit = { FROM = { old_gods_chosen_event_trigger = yes } }
+			FROM = { narrative_event = { id = WCDAC.5046 } }
+		}
+		else = {
+			FROM = { remove_traveling_immunity_effect = yes }
+			create_character = {
+				dynasty = none
+				religion = old_gods_worship
+				culture = azerothian
+				female = no
+				age = 45
+				random_traits = yes
+				trait = creature_human
+				trait = elusive_shadow
+				trait = cruel
+				trait = zealous
+				trait = ambitious
+			}
+			new_character = {
+				ai_add_shadow_priest_class_effect = yes
+				#Makes him follow old god that's on the continent he's travelling to
+				if = {
+					limit = { has_global_flag = twilights_hammer_kalimdor }
+					add_character_modifier = { name = follower_of_cthun duration = -1 }
+				}
+				else = {
+					add_character_modifier = { name = follower_of_yogg_saron duration = -1 }
+				}
+				narrative_event = { id = WCDAC.5046 }
+			}
+		}
+	}
+}
+#Delayed event
 narrative_event = {
 	id = WCDAC.5046
 	title = EVTTITLE_WCDAC_5030
@@ -1346,6 +1383,8 @@ narrative_event = {
 	immediate = {
 		# Used in scripted effects
 		save_event_target_as = target_settler
+		
+		religion = old_gods_worship
 		
 		remove_traveling_immunity_effect = no
 
