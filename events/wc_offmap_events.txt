@@ -1278,8 +1278,6 @@ narrative_event = {
 				spawn_cthun_invasion_troops_effect = yes
 				spawn_cthun_invasion_troops_effect = yes
 			}
-			
-			narrative_event = { id = WCOME.370 days = 360 random = 720 }
 			clr_character_flag = reawakening_of_cthun_flag 
 		}
 		else_if = {
@@ -1297,7 +1295,6 @@ narrative_event = {
 			spawn_nzoth_invasion_troops_effect = yes
 			spawn_nzoth_invasion_troops_effect = yes
 			spawn_nzoth_invasion_troops_effect = yes
-			narrative_event = { id = WCOME.370 days = 360 random = 720 }
 			clr_character_flag = reawakening_of_nzoth_flag 
 		}
 		else_if = {
@@ -1315,10 +1312,12 @@ narrative_event = {
 			spawn_yogg_saron_invasion_troops_effect = yes
 			spawn_yogg_saron_invasion_troops_effect = yes
 			spawn_yogg_saron_invasion_troops_effect = yes
-			narrative_event = { id = WCOME.370 days = 360 random = 720 }
 			clr_global_flag = reawakening_of_yogg_saron_flag 
 		}
 		clr_character_flag = freeing_old_god_flag
+		event_target:target_province = {
+			province_event = { id = WCOME.365 days = 360 random = 720 }
+		}
 	}
 
 	option = {
@@ -1363,7 +1362,6 @@ narrative_event = {
 					spawn_qiraji_troops_effect = yes
 				}
 				
-				narrative_event = { id = WCOME.370 days = 360 random = 720 }
 				clr_character_flag = reawakening_of_cthun_flag 
 			}
 			else_if = {
@@ -1381,7 +1379,6 @@ narrative_event = {
 				spawn_nzoth_follower_troops_effect = yes
 				spawn_nzoth_follower_troops_effect = yes
 				spawn_nzoth_follower_troops_effect = yes
-				narrative_event = { id = WCOME.370 days = 360 random = 720 }
 				clr_character_flag = reawakening_of_nzoth_flag 
 			}
 			else_if = {
@@ -1399,7 +1396,6 @@ narrative_event = {
 				spawn_yogg_saron_follower_troops_effect = yes
 				spawn_yogg_saron_follower_troops_effect = yes
 				spawn_yogg_saron_follower_troops_effect = yes
-				narrative_event = { id = WCOME.370 days = 360 random = 720 }
 				clr_character_flag = reawakening_of_yogg_saron_flag 
 			}
 			clr_character_flag = freeing_old_god_flag
@@ -1410,21 +1406,37 @@ narrative_event = {
 		name = EVTOPTB_WCOME.360
 	}
 }
+#Ping event
+province_event = {
+	id = WCOME.365
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	trigger = {
+	}
+
+	immediate = {
+		event_target:target_province = {
+			holder_scope = { narrative_event = { id = WCOME.370 } }
+		}
+	}
+}
 narrative_event = {
 	id = WCOME.370
 	title = EVTTITLE_WCOME.370
 	desc = {
-       trigger = { ROOT = { has_character_modifier = follower_of_cthun } }
+       trigger = { event_target:target_province = { province = 1613 } }
        text = EVTDESC_WCOME.370_cthun
        picture = GFX_evt_cthun
     }
 	desc = {
-       trigger = { ROOT = { has_character_modifier = follower_of_yogg_saron } }
+       trigger = { event_target:target_province = { province = 858 } }
        text = EVTDESC_WCOME.370_yoggsaron
        picture = GFX_evt_yogg_saron
     }
 	desc = {
-       trigger = { ROOT = { has_character_modifier = follower_of_nzoth } }
+       trigger = { event_target:target_province = { province = 2201 } }
        text = EVTDESC_WCOME.370_nzoth
        picture = GFX_evt_nzoth
     }
@@ -1440,21 +1452,15 @@ narrative_event = {
 	
 	trigger = {
 		trigger_if = {
-			limit = {
-				character = ROOT
-				cthun_offmap_decisions_enabled_trigger = yes
-			}
-			NOT  ={ offmap_cthun = { has_status = old_god_dead } }
+			limit = { event_target:target_province = { province = 1613 } }
+			NOT  = { offmap_cthun = { has_status = old_god_dead } }
 		}
 		trigger_if = {
-			limit = {
-				character = ROOT
-				nzoth_offmap_decisions_enabled_trigger = yes
-			}
-			NOT  ={ offmap_nzoth = { has_status = old_god_dead } }
+			limit = { event_target:target_province = { province = 2201 } }
+			NOT  = { offmap_nzoth = { has_status = old_god_dead } }
 		}
 		trigger_else = {
-			NOT  ={ offmap_yoggsaron = { has_status = old_god_dead } }
+			NOT  = { offmap_yoggsaron = { has_status = old_god_dead } }
 		}
 	}
 	option = {
@@ -1464,14 +1470,14 @@ narrative_event = {
 		if = {
 			limit = {
 				character = ROOT
-				cthun_offmap_decisions_enabled_trigger = yes
+				event_target:target_province = { province = 1613 }
 			}
 			offmap_cthun = { set_policy = old_god_working }
 		}
 		else_if = {
 			limit = {
 				character = ROOT
-				nzoth_offmap_decisions_enabled_trigger = yes
+				event_target:target_province = { province = 2201 }
 			}
 			offmap_nzoth = { set_policy = old_god_working }
 		}
