@@ -1061,29 +1061,34 @@ character_event = {
 }
 
 ### Mantid Paragons ###
+### The Klaxxi pick paragons
 character_event = {
 	id = WCRAC.1000
 	
 	is_triggered_only = yes
 	hide_window = yes
 	
+	only_playable = yes
+	religion = old_gods_worship
+	
+	trigger = {
+		is_adult = yes
+		is_incapable = no
+		prisoner = no
+		is_inaccessible_trigger = no
+		
+		is_playable = yes
+		
+		has_landed_title = d_klaxxi
+	}
+	
 	immediate = {
 		any_playable_ruler = {
 			limit = {
-				NOT = { tier = EMPEROR }	# They have other things to do
-				
 				NOT = { character = ROOT } # Can't pick themselves
+				NOT = { has_character_flag = mantid_paragon_happend_flag }
 				
-				religion = ROOT
-				culture = mantid
-				OR = {
-					diplomacy = 15
-					martial = 15
-					stewardship = 15
-					intrigue = 15
-					learning = 15
-					combat_rating = 75
-				}
+				is_worth_to_be_mantid_paragon_trigger = yes
 			}
 			count = 3
 			score_value = {
@@ -1096,7 +1101,73 @@ character_event = {
 				has_combat_rating_10_per_5_positive_score = yes
 			}
 			
-			log = "[This.GetBestName] is picked to be paragon"
+			log = "(MANTID) [This.GetBestName] is picked to be paragon"
+			
+			set_character_flag = mantid_paragon_happend_flag #Once in life
+			
+			character_event = { id = WCRAC.1005 days = 3 random = 27 }
+		}
+	}
+}
+### The Klaxxi want you to be a paragon
+character_event = {
+	id = WCRAC.1005
+	title = EVTTITLE_WCRAC_1005
+	desc = EVTDESC_WCRAC_1005
+	picture = GFX_evt_emissary
+	border = GFX_event_normal_frame_religion
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		is_worth_to_be_mantid_paragon_trigger = yes
+	}
+	
+	#The honour is mine.
+	option = {
+		name = EVTOPTA_WCRAC_1005
+		
+		character_event = { id = WCRAC.1010 days = 3 }
+	}
+	#I'm sorry, but my people need me here.
+	option = {
+		name = EVTOPTB_WCRAC_1005
+	}
+}
+
+### The ritual begins, your ambersmith is killed
+long_character_event = {
+	id = WCRAC.1010
+	title = EVTTITLE_WCRAC_1005
+	desc = EVTDESC_WCRAC_1010
+	picture = GFX_evt_emissary
+	border = GFX_event_long_frame_religion
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		is_worth_to_be_mantid_paragon_trigger = yes
+	}
+	
+	#So wake me up when it's all over...
+	option = {
+		name = EVTOPTA_WCRAC_1010
+		
+		add_trait = mantid_paragon
+		add_sleeping_immunity_effect = yes
+		if = {
+			limit = { has_nickname = no }
+			assign_random_mantid_paragon_nickname_effect = yes
+		}
+		
+		current_heir = {
+			show_scope_change = no
+			
+			ROOT = {
+				show_scope_change = no
+				
+				this_abdicate_transfer_wealth_to_prev_effect = yes
+			}
 		}
 	}
 }
