@@ -695,17 +695,117 @@ narrative_event = {
 	}
 }
 
-### WCCRS.200-299 is reserved ###
+### WCCRS.200-298 is reserved ###
 
 ### CRISIS: RESURRECTION OF THE THUNDER KING ###
 
-# Visions of Great Tragedy
+# on_five_year_pulse
+# Visions of Great Tragedy - Opening Event
+character_event = {
+	id = WCCRS.299
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	only_playable = yes
+
+	trigger = {
+		OR = { 
+			has_global_flag = mists_of_pandaria_parted_flag
+			AND = {
+				year = 600	# Don't want this to fire immediately at pre-Third War starts
+				has_game_rule = {
+					name = mists_of_pandaria
+					value = off
+				}
+			}
+		}
+		
+		NOT = {	
+			has_global_flag = dark_prophet_has_risen	# Blocks the event from firing twice
+			has_global_flag = the_prophet_was_refused_flag	# The liege of Dazar'alor refused the Prophet's plea
+		}
+		
+		AND = {
+			independent = no
+			has_landed_title = c_zanchul
+			culture = zandalari
+			top_liege = { has_landed_title = c_dazaralor }
+		}
+	}
+
+	immediate = {
+		save_event_target_as = target_dark_prophet
+		set_global_flag = dark_prophet_has_risen
+		
+		event_target:target_dark_prophet = { narrative_event = { id = WCCRS.300 } }
+	}
+}
+
+# Visions of Great Tragedy - Followup
+narrative_event = {
+	id = WCCRS.300
+	title = EVTTITLE_WCCRS_300
+	desc = EVTDESC_WCCRS_300
+	picture = GFX_evt_rise_of_the_zandalari
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	immediate = {
+		log = "WCCRS.300 fired for [Root.GetBestName]"
+	}
+	
+	# WIP
+
+	# I must convince my liege!
+	option = {
+		name = EVTOPTA_WCCRS_300
+		ai_chance = {
+			factor = 1
+		}
+	}
+}
 
 # Convincing the Zanchul
+narrative_event = {
+	id = WCCRS.301
+	title = EVTTITLE_WCCRS_301
+	desc = EVTDESC_WCCRS_301
+	picture = GFX_evt_rise_of_the_zandalari
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	immediate = {
+		log = "WCCRS.301 fired for [Root.GetBestName]"
+	}
+
+	# Give him the Golden Fleet
+	option = {
+		name = EVTOPTA_WCCRS_301
+	}
+	
+	# Dismiss the prophet
+	option = {
+		name = EVTOPTB_WCCRS_301
+
+		set_global_flag = the_prophet_was_refused_flag	# Crisis is averted permanently
+
+		custom_tooltip = {
+			text = stops_the_event_chain
+			clr_global_flag = dark_prophet_has_risen
+		}
+
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
 
 # The Golden Fleet
 
-# The Ancient Pact
+# Promises of an Empire
 
 # By Zandalari Hands...
 
