@@ -409,25 +409,16 @@ character_event = {
 
 ### WANDERING ISLE PANDAREN ###
 
-## TODO: Dynamic description for Pandarian and non-Pandarian races, different flavor ##
-# This event unlocks the possibility for random Wandering Isle Pandaren courtiers to spawn in the world
-# A Giant Seafaring Turtle Sighted!
-narrative_event = {
-	id = WCPND.200
-	title = EVTTITLE_WCPND_200
-	desc = EVTDESC_WCPND_200_AZEROTH
-	picture = "GFX_evt_wandering_isle"
-	
+# on_bi_yearly_pulse
+# A Giant Seafaring Turtle Sighted! - initial
+character_event = {
+	id = WCPND.199
+
 	is_triggered_only = yes
-	
-	major = yes
-	major_trigger = {
-		ai = no
-	}
-	
-	hide_from = yes
-	only_playable = yes	
-	
+	hide_window = yes
+
+	ai = no
+
 	trigger = {
 		OR = {
 			multiplayer = no
@@ -442,14 +433,38 @@ narrative_event = {
 		}
 		year = 610	# Roughly 3 years before Mists of Pandaria disappear
 	}
-	
+
 	immediate = {
 		set_global_flag = wandering_isle_sighted
+
+		any_player = {
+			narrative_event = { id = WCPND.200 }
+		}
 	}
+}
+
+# This event unlocks the possibility for random Wandering Isle Pandaren courtiers to spawn in the world
+# A Giant Seafaring Turtle Sighted! - pinger
+narrative_event = {
+	id = WCPND.200
+	title = EVTTITLE_WCPND_200
+	desc = {
+		trigger = { capital_scope = { region = world_pandaria } }
+		text = EVTDESC_WCPND_200_PANDARIA
+	}
+	desc = {
+		trigger = { NOT = { capital_scope = { region = world_pandaria } } }
+		text = EVTDESC_WCPND_200_AZEROTH
+	}
+	picture = GFX_evt_wandering_isle
+	border = GFX_event_narrative_frame_diplomacy
+	
+	is_triggered_only = yes
+	hide_from = yes
 	
 	# Non-Pandarian
 	option = {
-		trigger = { 
+		trigger = {
 			NOT = { 
 				culture_group = pandaren_group
 				culture_group = hozen_group
@@ -467,10 +482,11 @@ narrative_event = {
 	# Pandarian - Friendly
 	option = {
 		trigger = {
-			culture_group = pandaren_group
-			culture_group = hozen_group
-			culture = jinyu
-			culture = grummle
+			OR = {
+				culture_group = pandaren_group
+				culture = jinyu
+				culture = grummle
+			}
 		}
 		name = EVTOPTB_WCPND_200
 	}
@@ -478,12 +494,19 @@ narrative_event = {
 	# Pandarian - Hostile
 	option = {
 		trigger = {
-			culture = mogu
-			culture = mantid
-			culture = yaungol
-			culture = saurok
+			OR = {
+				culture = mogu
+				culture = mantid
+				culture = yaungol
+				culture = saurok
+			}
 		}
 		name = EVTOPTC_WCPND_200
+	}
+	# Hozen
+	option = {
+		trigger = { culture_group = hozen_group }
+		name = EVTOPTD_WCPND_200
 	}
 }
 
