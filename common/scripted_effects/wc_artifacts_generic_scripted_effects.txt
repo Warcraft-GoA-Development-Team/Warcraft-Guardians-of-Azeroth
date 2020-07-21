@@ -735,22 +735,90 @@ give_new_artifact_random_name_and_origin_effect = {
 ###   Spawn Effects   ###
 #########################
 
-# You need to put these things in immediate block for good tooltips
+# Use this before effects when character supposed to get only these artifacts they can use
+# set_variable = { which = local_new_generic_artifact_receiving_character_matter_variable value = 1 }
 
-set_local_option_a_variable_for_new_received_generic_artifact_effect = {
-	random_list = { # The same rarity for all items
-		1 = { set_variable = { which = local_new_received_generic_artifact_rarity_variable value = 5 } }
-		2 = { set_variable = { which = local_new_received_generic_artifact_rarity_variable value = 4 } }
-		3 = { set_variable = { which = local_new_received_generic_artifact_rarity_variable value = 3 } }
-		4 = { set_variable = { which = local_new_received_generic_artifact_rarity_variable value = 2 } }
-		5 = { set_variable = { which = local_new_received_generic_artifact_rarity_variable value = 1 } }
+# This is used in gamestart effect ONLY
+# set_variable = { which = local_new_generic_artifact_gamestart_variable value = 1 }
+
+# You need to put these things in immediate block in event if you want to get good tooltips in options
+
+set_local_option_a_variables_for_new_received_generic_artifact_effect = { # First, base and gamestart effect
+	random_list = { # All items in 4 options will have the same rarity
+		1 = {
+			generic_artifact_rarity_legendary_score = yes
+			set_variable = { which = local_new_received_generic_artifact_rarity_variable value = 5 }
+		}
+		1 = {
+			generic_artifact_rarity_epic_score = yes
+			set_variable = { which = local_new_received_generic_artifact_rarity_variable value = 4 }
+		}
+		1 = {
+			generic_artifact_rarity_rare_score = yes
+			set_variable = { which = local_new_received_generic_artifact_rarity_variable value = 3 }
+		}
+		1 = {
+			generic_artifact_rarity_uncommon_score = yes
+			set_variable = { which = local_new_received_generic_artifact_rarity_variable value = 2 }
+		}
+		1 = {
+			generic_artifact_rarity_common_score = yes
+			set_variable = { which = local_new_received_generic_artifact_rarity_variable value = 1 }
+		}
 	}
 	random_list = {
 		3 = { # Jewelry
+			trigger = {
+				#trigger_if = {
+					#limit = { check_variable = { which = local_new_generic_artifact_receiving_character_matter_variable value = 1 } }
+					trigger_if = {
+						limit = { check_variable = { which = local_new_generic_artifact_gamestart_variable value = 1 } }
+						can_get_amulet_at_gamestart_distribution_trigger = yes
+						can_get_ring_at_gamestart_distribution_trigger = yes
+						can_get_bracelet_at_gamestart_distribution_trigger = yes
+					}
+				#}
+			}
+
+			set_variable = { which = local_new_received_generic_artifact_type_jewelry_amount_variable value = 1 } # Because 3 is max - 1/3
 			random_list = { # Jewelry Type
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_a_slot_neck_variable value = 1 } }
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_a_slot_ring_variable value = 1 } }
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_a_slot_wrist_variable value = 1 } }
+				1 = { # Neck
+					trigger = {
+						#trigger_if = {
+							#limit = { check_variable = { which = local_new_generic_artifact_receiving_character_matter_variable value = 1 } }
+							trigger_if = {
+								limit = { check_variable = { which = local_new_generic_artifact_gamestart_variable value = 1 } }
+								can_get_amulet_at_gamestart_distribution_trigger = yes
+							}
+						#}
+					}
+
+					set_variable = { which = local_new_received_generic_artifact_option_a_slot_neck_variable value = 1 }
+				}
+				1 = { # Ring
+					trigger = {
+						#trigger_if = {
+							#limit = { check_variable = { which = local_new_generic_artifact_receiving_character_matter_variable value = 1 } }
+							trigger_if = {
+								limit = { check_variable = { which = local_new_generic_artifact_gamestart_variable value = 1 } }
+								can_get_ring_at_gamestart_distribution_trigger = yes
+							}
+						#}
+					}
+					set_variable = { which = local_new_received_generic_artifact_option_a_slot_ring_variable value = 1 }
+				}
+				1 = { # Wrist
+					trigger = {
+						#trigger_if = {
+							#limit = { check_variable = { which = local_new_generic_artifact_receiving_character_matter_variable value = 1 } }
+							trigger_if = {
+								limit = { check_variable = { which = local_new_generic_artifact_gamestart_variable value = 1 } }
+								can_get_bracelet_at_gamestart_distribution_trigger = yes
+							}
+						#}
+					}
+					set_variable = { which = local_new_received_generic_artifact_option_a_slot_wrist_variable value = 1 }
+				}
 			}
 			random_list = { # Jewelry Stat
 				1 = { set_variable = { which = local_new_received_generic_artifact_option_a_stat_diplomacy_variable value = 1 } }
@@ -760,28 +828,87 @@ set_local_option_a_variable_for_new_received_generic_artifact_effect = {
 				1 = { set_variable = { which = local_new_received_generic_artifact_option_a_stat_learning_variable value = 1 } }
 			}
 		}
-		1 = { # Weapon
+		1 = { # Weapon Slot
+			trigger = {
+				#trigger_if = {
+					#limit = { check_variable = { which = local_new_generic_artifact_receiving_character_matter_variable value = 1 } }
+					trigger_if = {
+						limit = { check_variable = { which = local_new_generic_artifact_gamestart_variable value = 1 } }
+						OR = {
+							can_get_melee_weapon_at_gamestart_distribution_trigger = yes
+							can_get_ranged_weapon_at_gamestart_distribution_trigger = yes
+						}
+					}
+				# }
+			}
 			set_variable = { which = local_new_received_generic_artifact_option_a_slot_weapon_variable value = 1 }
 			random_list = {
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_a_weapon_sword_twohanded_variable value = 1 } }
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_a_weapon_sword_onehanded_variable value = 1 } }
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_a_weapon_axe_twohanded_variable value = 1 } }
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_a_weapon_axe_onehanded_variable value = 1 } }
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_a_weapon_mace_twohanded_variable value = 1 } }
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_a_weapon_mace_onehanded_variable value = 1 } }
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_a_weapon_halberd_variable value = 1 } }
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_a_weapon_spear_variable value = 1 } }
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_a_weapon_bow_variable value = 1 } }
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_a_weapon_crossbow_variable value = 1 } }
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_a_weapon_rifle_variable value = 1 } }
+				1 = { # Melee Weapons
+					trigger = {
+						#trigger_if = {
+							#limit = { check_variable = { which = local_new_generic_artifact_receiving_character_matter_variable value = 1 } }
+							trigger_if = {
+								limit = { check_variable = { which = local_new_generic_artifact_gamestart_variable value = 1 } }
+								can_get_melee_weapon_at_gamestart_distribution_trigger = yes
+							}
+						# }
+					}
+
+					random_list = {
+						1 = { set_variable = { which = local_new_received_generic_artifact_option_a_weapon_sword_twohanded_variable value = 1 } }
+						1 = { set_variable = { which = local_new_received_generic_artifact_option_a_weapon_axe_twohanded_variable value = 1 } }
+						1 = { set_variable = { which = local_new_received_generic_artifact_option_a_weapon_mace_twohanded_variable value = 1 } }
+
+						1 = { set_variable = { which = local_new_received_generic_artifact_option_a_weapon_sword_onehanded_variable value = 1 } }
+						1 = { set_variable = { which = local_new_received_generic_artifact_option_a_weapon_axe_onehanded_variable value = 1 } }
+						1 = { set_variable = { which = local_new_received_generic_artifact_option_a_weapon_mace_onehanded_variable value = 1 } }
+
+						1 = { set_variable = { which = local_new_received_generic_artifact_option_a_weapon_halberd_variable value = 1 } }
+						1 = { set_variable = { which = local_new_received_generic_artifact_option_a_weapon_spear_variable value = 1 } }
+					}
+				}
+				1 = { # Ranged Weapons
+					trigger = {
+						#trigger_if = {
+							#limit = { check_variable = { which = local_new_generic_artifact_receiving_character_matter_variable value = 1 } }
+							trigger_if = {
+								limit = { check_variable = { which = local_new_generic_artifact_gamestart_variable value = 1 } }
+								can_get_ranged_weapon_at_gamestart_distribution_trigger = yes
+							}
+						# }
+					}
+
+					random_list = {
+						1 = { set_variable = { which = local_new_received_generic_artifact_option_a_weapon_bow_variable value = 1 } }
+						1 = { # Crossbows
+							trigger = {
+								trigger_if = {
+									limit = { check_variable = { which = local_new_generic_artifact_receiving_character_matter_variable value = 1 } }
+									crossbow_artifact_active_trigger = yes
+								}
+							}
+							set_variable = { which = local_new_received_generic_artifact_option_a_weapon_crossbow_variable value = 1 }
+						}
+						1 = { # Rifles
+							trigger = {
+								trigger_if = {
+									limit = { check_variable = { which = local_new_generic_artifact_receiving_character_matter_variable value = 1 } }
+									rifle_artifact_active_trigger = yes
+								}
+							}
+							set_variable = { which = local_new_received_generic_artifact_option_a_weapon_rifle_variable value = 1 }
+						}
+					}
+				}
 			}
 		}
 	}
 }
 
-set_local_option_b_variable_for_new_received_generic_artifact_effect = {
+set_local_option_b_variables_for_new_received_generic_artifact_effect = {
 	random_list = {
 		3 = { # Jewelry
+			change_variable = { which = local_new_received_generic_artifact_type_jewelry_amount_variable value = 1 } # Because 3 is max - 2/3
 			random_list = { # Jewelry Type
 				1 = {
 					trigger = { check_variable = { which = local_new_received_generic_artifact_option_a_slot_neck_variable value < 1 } }
@@ -821,27 +948,55 @@ set_local_option_b_variable_for_new_received_generic_artifact_effect = {
 		}
 		1 = { # Weapon
 			trigger = { check_variable = { which = local_new_received_generic_artifact_option_a_slot_weapon_variable value < 1 } }
+
 			set_variable = { which = local_new_received_generic_artifact_option_b_slot_weapon_variable value = 1 }
 			random_list = {
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_b_weapon_sword_twohanded_variable value = 1 } }
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_b_weapon_sword_onehanded_variable value = 1 } }
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_b_weapon_axe_twohanded_variable value = 1 } }
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_b_weapon_axe_onehanded_variable value = 1 } }
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_b_weapon_mace_twohanded_variable value = 1 } }
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_b_weapon_mace_onehanded_variable value = 1 } }
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_b_weapon_halberd_variable value = 1 } }
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_b_weapon_spear_variable value = 1 } }
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_b_weapon_bow_variable value = 1 } }
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_b_weapon_crossbow_variable value = 1 } }
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_b_weapon_rifle_variable value = 1 } }
+				1 = { # Melee Weapons
+					random_list = {
+						1 = { set_variable = { which = local_new_received_generic_artifact_option_b_weapon_sword_twohanded_variable value = 1 } }
+						1 = { set_variable = { which = local_new_received_generic_artifact_option_b_weapon_axe_twohanded_variable value = 1 } }
+						1 = { set_variable = { which = local_new_received_generic_artifact_option_b_weapon_mace_twohanded_variable value = 1 } }
+
+						1 = { set_variable = { which = local_new_received_generic_artifact_option_b_weapon_sword_onehanded_variable value = 1 } }
+						1 = { set_variable = { which = local_new_received_generic_artifact_option_b_weapon_axe_onehanded_variable value = 1 } }
+						1 = { set_variable = { which = local_new_received_generic_artifact_option_b_weapon_mace_onehanded_variable value = 1 } }
+
+						1 = { set_variable = { which = local_new_received_generic_artifact_option_b_weapon_halberd_variable value = 1 } }
+						1 = { set_variable = { which = local_new_received_generic_artifact_option_b_weapon_spear_variable value = 1 } }
+					}
+				}
+				1 = { # Ranged Weapons
+					random_list = {
+						1 = { set_variable = { which = local_new_received_generic_artifact_option_b_weapon_bow_variable value = 1 } }
+						1 = { # Crossbows
+							trigger = {
+								trigger_if = {
+									limit = { check_variable = { which = local_new_generic_artifact_receiving_character_matter_variable value = 1 } }
+									crossbow_artifact_active_trigger = yes
+								}
+							}
+							set_variable = { which = local_new_received_generic_artifact_option_b_weapon_crossbow_variable value = 1 }
+						}
+						1 = { # Rifles
+							trigger = {
+								trigger_if = {
+									limit = { check_variable = { which = local_new_generic_artifact_receiving_character_matter_variable value = 1 } }
+									rifle_artifact_active_trigger = yes
+								}
+							}
+							set_variable = { which = local_new_received_generic_artifact_option_b_weapon_rifle_variable value = 1 }
+						}
+					}
+				}
 			}
 		}
 	}
 }
 
-set_local_option_c_variable_for_new_received_generic_artifact_effect = {
+set_local_option_c_variables_for_new_received_generic_artifact_effect = {
 	random_list = {
 		3 = { # Jewelry
+			change_variable = { which = local_new_received_generic_artifact_type_jewelry_amount_variable value = 1 } # Because 3 is max - 3/3
 			random_list = { # Jewelry Type
 				1 = {
 					trigger = {
@@ -908,27 +1063,56 @@ set_local_option_c_variable_for_new_received_generic_artifact_effect = {
 				check_variable = { which = local_new_received_generic_artifact_option_a_slot_weapon_variable value < 1 }
 				check_variable = { which = local_new_received_generic_artifact_option_b_slot_weapon_variable value < 1 }
 			}
+
 			set_variable = { which = local_new_received_generic_artifact_option_c_slot_weapon_variable value = 1 }
 			random_list = {
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_c_weapon_sword_twohanded_variable value = 1 } }
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_c_weapon_sword_onehanded_variable value = 1 } }
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_c_weapon_axe_twohanded_variable value = 1 } }
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_c_weapon_axe_onehanded_variable value = 1 } }
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_c_weapon_mace_twohanded_variable value = 1 } }
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_c_weapon_mace_onehanded_variable value = 1 } }
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_c_weapon_halberd_variable value = 1 } }
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_c_weapon_spear_variable value = 1 } }
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_c_weapon_bow_variable value = 1 } }
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_c_weapon_crossbow_variable value = 1 } }
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_c_weapon_rifle_variable value = 1 } }
+				1 = { # Melee Weapons
+					random_list = {
+						1 = { set_variable = { which = local_new_received_generic_artifact_option_c_weapon_sword_twohanded_variable value = 1 } }
+						1 = { set_variable = { which = local_new_received_generic_artifact_option_c_weapon_axe_twohanded_variable value = 1 } }
+						1 = { set_variable = { which = local_new_received_generic_artifact_option_c_weapon_mace_twohanded_variable value = 1 } }
+
+						1 = { set_variable = { which = local_new_received_generic_artifact_option_c_weapon_sword_onehanded_variable value = 1 } }
+						1 = { set_variable = { which = local_new_received_generic_artifact_option_c_weapon_axe_onehanded_variable value = 1 } }
+						1 = { set_variable = { which = local_new_received_generic_artifact_option_c_weapon_mace_onehanded_variable value = 1 } }
+
+						1 = { set_variable = { which = local_new_received_generic_artifact_option_c_weapon_halberd_variable value = 1 } }
+						1 = { set_variable = { which = local_new_received_generic_artifact_option_c_weapon_spear_variable value = 1 } }
+					}
+				}
+				1 = { # Ranged Weapons
+					random_list = {
+						1 = { set_variable = { which = local_new_received_generic_artifact_option_c_weapon_bow_variable value = 1 } }
+						1 = { # Crossbows
+							trigger = {
+								trigger_if = {
+									limit = { check_variable = { which = local_new_generic_artifact_receiving_character_matter_variable value = 1 } }
+									crossbow_artifact_active_trigger = yes
+								}
+							}
+							set_variable = { which = local_new_received_generic_artifact_option_c_weapon_crossbow_variable value = 1 }
+						}
+						1 = { # Rifles
+							trigger = {
+								trigger_if = {
+									limit = { check_variable = { which = local_new_generic_artifact_receiving_character_matter_variable value = 1 } }
+									rifle_artifact_active_trigger = yes
+								}
+							}
+							set_variable = { which = local_new_received_generic_artifact_option_c_weapon_rifle_variable value = 1 }
+						}
+					}
+				}
 			}
 		}
 	}
 }
 
-set_local_option_d_variable_for_new_received_generic_artifact_effect = {
+set_local_option_d_variables_for_new_received_generic_artifact_effect = {
 	random_list = {
 		3 = { # Jewelry
+			trigger = { check_variable = { which = local_new_received_generic_artifact_type_jewelry_amount_variable value < 3 } } # Because 3 is max
+
 			random_list = { # Jewelry Type
 				1 = {
 					trigger = {
@@ -1004,25 +1188,52 @@ set_local_option_d_variable_for_new_received_generic_artifact_effect = {
 				check_variable = { which = local_new_received_generic_artifact_option_b_slot_weapon_variable value < 1 }
 				check_variable = { which = local_new_received_generic_artifact_option_c_slot_weapon_variable value < 1 }
 			}
+
 			set_variable = { which = local_new_received_generic_artifact_option_d_slot_weapon_variable value = 1 }
 			random_list = {
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_d_weapon_sword_twohanded_variable value = 1 } }
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_d_weapon_sword_onehanded_variable value = 1 } }
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_d_weapon_axe_twohanded_variable value = 1 } }
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_d_weapon_axe_onehanded_variable value = 1 } }
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_d_weapon_mace_twohanded_variable value = 1 } }
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_d_weapon_mace_onehanded_variable value = 1 } }
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_d_weapon_halberd_variable value = 1 } }
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_d_weapon_spear_variable value = 1 } }
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_d_weapon_bow_variable value = 1 } }
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_d_weapon_crossbow_variable value = 1 } }
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_d_weapon_rifle_variable value = 1 } }
+				1 = { # Melee Weapons
+					random_list = {
+						1 = { set_variable = { which = local_new_received_generic_artifact_option_d_weapon_sword_twohanded_variable value = 1 } }
+						1 = { set_variable = { which = local_new_received_generic_artifact_option_d_weapon_axe_twohanded_variable value = 1 } }
+						1 = { set_variable = { which = local_new_received_generic_artifact_option_d_weapon_mace_twohanded_variable value = 1 } }
+
+						1 = { set_variable = { which = local_new_received_generic_artifact_option_d_weapon_sword_onehanded_variable value = 1 } }
+						1 = { set_variable = { which = local_new_received_generic_artifact_option_d_weapon_axe_onehanded_variable value = 1 } }
+						1 = { set_variable = { which = local_new_received_generic_artifact_option_d_weapon_mace_onehanded_variable value = 1 } }
+
+						1 = { set_variable = { which = local_new_received_generic_artifact_option_d_weapon_halberd_variable value = 1 } }
+						1 = { set_variable = { which = local_new_received_generic_artifact_option_d_weapon_spear_variable value = 1 } }
+					}
+				}
+				1 = { # Ranged Weapons
+					random_list = {
+						1 = { set_variable = { which = local_new_received_generic_artifact_option_d_weapon_bow_variable value = 1 } }
+						1 = { # Crossbows
+							trigger = {
+								trigger_if = {
+									limit = { check_variable = { which = local_new_generic_artifact_receiving_character_matter_variable value = 1 } }
+									crossbow_artifact_active_trigger = yes
+								}
+							}
+							set_variable = { which = local_new_received_generic_artifact_option_d_weapon_crossbow_variable value = 1 }
+						}
+						1 = { # Rifles
+							trigger = {
+								trigger_if = {
+									limit = { check_variable = { which = local_new_generic_artifact_receiving_character_matter_variable value = 1 } }
+									rifle_artifact_active_trigger = yes
+								}
+							}
+							set_variable = { which = local_new_received_generic_artifact_option_d_weapon_rifle_variable value = 1 }
+						}
+					}
+				}
 			}
 		}
 	}
 }
 
-# There things spawn generic artifact based on random variables
+# These things spawn generic artifact based on random variables, put them inside options
 
 spawn_generic_artifact_based_on_option_a_variables_effect = {
 	# Slots -> Types
@@ -3364,249 +3575,10 @@ spawn_generic_artifact_based_on_option_d_variables_effect = {
 	give_new_artifact_random_name_and_origin_effect = yes
 }
 
-#########################
-### Gamestart Effects ###
-#########################
+# Use these effects if you don't know how anything of the above works
+# Or in order to use less space in code
 
-game_start_spawn_artifacts_random_effect = { # Slots -> Types
-	random_list = {
-		1 = { # Neck slot
-			trigger = { can_get_amulet_at_gamestart_distribution_trigger = yes }
-			random_list = {
-				10 = {
-					random_list = {
-						1 = { add_artifact = amulet_5_diplomacy }
-						2 = { add_artifact = amulet_4_diplomacy }
-						4 = { add_artifact = amulet_3_diplomacy }
-						8 = { add_artifact = amulet_2_diplomacy }
-					}
-				}
-				10 = {
-					random_list = {
-						1 = { add_artifact = amulet_5_martial }
-						2 = { add_artifact = amulet_4_martial }
-						4 = { add_artifact = amulet_3_martial }
-						8 = { add_artifact = amulet_2_martial }
-					}
-				}
-				10 = {
-					random_list = {
-						1 = { add_artifact = amulet_5_stewardship }
-						2 = { add_artifact = amulet_4_stewardship }
-						4 = { add_artifact = amulet_3_stewardship }
-						8 = { add_artifact = amulet_2_stewardship }
-					}
-				}
-				10 = {
-					random_list = {
-						1 = { add_artifact = amulet_5_intrigue }
-						2 = { add_artifact = amulet_4_intrigue }
-						4 = { add_artifact = amulet_3_intrigue }
-						8 = { add_artifact = amulet_2_intrigue }
-					}
-				}
-				10 = {
-					random_list = {
-						1 = { add_artifact = amulet_5_learning }
-						2 = { add_artifact = amulet_4_learning }
-						4 = { add_artifact = amulet_3_learning }
-						8 = { add_artifact = amulet_2_learning }
-					}
-				}
-				25 = { add_artifact = amulet_1 }
-			}
-		}
-		1 = { # Ring slot
-			trigger = { can_get_ring_at_gamestart_distribution_trigger = yes }
-			random_list = {
-				10 = {
-					random_list = {
-						1 = { add_artifact = ring_5_diplomacy }
-						2 = { add_artifact = ring_4_diplomacy }
-						4 = { add_artifact = ring_3_diplomacy }
-						8 = { add_artifact = ring_2_diplomacy }
-					}
-				}
-				10 = {
-					random_list = {
-						1 = { add_artifact = ring_5_martial }
-						2 = { add_artifact = ring_4_martial }
-						4 = { add_artifact = ring_3_martial }
-						8 = { add_artifact = ring_2_martial }
-					}
-				}
-				10 = {
-					random_list = {
-						1 = { add_artifact = ring_5_stewardship }
-						2 = { add_artifact = ring_4_stewardship }
-						4 = { add_artifact = ring_3_stewardship }
-						8 = { add_artifact = ring_2_stewardship }
-					}
-				}
-				10 = {
-					random_list = {
-						1 = { add_artifact = ring_5_intrigue }
-						2 = { add_artifact = ring_4_intrigue }
-						4 = { add_artifact = ring_3_intrigue }
-						8 = { add_artifact = ring_2_intrigue }
-					}
-				}
-				10 = {
-					random_list = {
-						1 = { add_artifact = ring_5_learning }
-						2 = { add_artifact = ring_4_learning }
-						4 = { add_artifact = ring_3_learning }
-						8 = { add_artifact = ring_2_learning }
-					}
-				}
-				25 = { add_artifact = ring_1 }
-			}
-		}
-		1 = { # Wrist slot
-			trigger = { can_get_bracelet_at_gamestart_distribution_trigger = yes }
-			random_list = {
-				10 = {
-					random_list = {
-						1 = { add_artifact = bracelet_5_diplomacy }
-						2 = { add_artifact = bracelet_4_diplomacy }
-						4 = { add_artifact = bracelet_3_diplomacy }
-						8 = { add_artifact = bracelet_2_diplomacy }
-					}
-				}
-				10 = {
-					random_list = {
-						1 = { add_artifact = bracelet_5_martial }
-						2 = { add_artifact = bracelet_4_martial }
-						4 = { add_artifact = bracelet_3_martial }
-						8 = { add_artifact = bracelet_2_martial }
-					}
-				}
-				10 = {
-					random_list = {
-						1 = { add_artifact = bracelet_5_stewardship }
-						2 = { add_artifact = bracelet_4_stewardship }
-						4 = { add_artifact = bracelet_3_stewardship }
-						8 = { add_artifact = bracelet_2_stewardship }
-					}
-				}
-				10 = {
-					random_list = {
-						1 = { add_artifact = bracelet_5_intrigue }
-						2 = { add_artifact = bracelet_4_intrigue }
-						4 = { add_artifact = bracelet_3_intrigue }
-						8 = { add_artifact = bracelet_2_intrigue }
-					}
-				}
-				10 = {
-					random_list = {
-						1 = { add_artifact = bracelet_5_learning }
-						2 = { add_artifact = bracelet_4_learning }
-						4 = { add_artifact = bracelet_3_learning }
-						8 = { add_artifact = bracelet_2_learning }
-					}
-				}
-				25 = { add_artifact = bracelet_1 }
-			}
-		}
-		1 = { # Weapon slot
-			trigger = {
-				OR = {
-					can_get_melee_weapon_at_gamestart_distribution_trigger = yes
-					can_get_ranged_weapon_at_gamestart_distribution_trigger = yes
-				}
-			}
-			random_list = {
-				1 = { # Melee Weapons
-					trigger = { can_get_melee_weapon_at_gamestart_distribution_trigger = yes }
-					random_list = {
-						# Two-handed Swords
-						1 = { add_artifact = sword_twohanded_5 }
-						2 = { add_artifact = sword_twohanded_4 }
-						3 = { add_artifact = sword_twohanded_3 }
-						4 = { add_artifact = sword_twohanded_2 }
-						5 = { add_artifact = sword_twohanded_1 }
-						# One-handed Swords
-						1 = { add_artifact = sword_onehanded_5 }
-						2 = { add_artifact = sword_onehanded_4 }
-						3 = { add_artifact = sword_onehanded_3 }
-						4 = { add_artifact = sword_onehanded_2 }
-						5 = { add_artifact = sword_onehanded_1 }
-						# Two-handed Axes
-						1 = { add_artifact = axe_twohanded_5 }
-						2 = { add_artifact = axe_twohanded_4 }
-						3 = { add_artifact = axe_twohanded_3 }
-						4 = { add_artifact = axe_twohanded_2 }
-						5 = { add_artifact = axe_twohanded_1 }
-						# One-handed Axes
-						1 = { add_artifact = axe_onehanded_5 }
-						2 = { add_artifact = axe_onehanded_4 }
-						3 = { add_artifact = axe_onehanded_3 }
-						4 = { add_artifact = axe_onehanded_2 }
-						5 = { add_artifact = axe_onehanded_1 }
-						# Two-handed Maces
-						1 = { add_artifact = mace_twohanded_5 }
-						2 = { add_artifact = mace_twohanded_4 }
-						3 = { add_artifact = mace_twohanded_3 }
-						4 = { add_artifact = mace_twohanded_2 }
-						5 = { add_artifact = mace_twohanded_1 }
-						# One-handed Maces
-						1 = { add_artifact = mace_onehanded_5 }
-						2 = { add_artifact = mace_onehanded_4 }
-						3 = { add_artifact = mace_onehanded_3 }
-						4 = { add_artifact = mace_onehanded_2 }
-						5 = { add_artifact = mace_onehanded_1 }
-						# Halberds
-						1 = { add_artifact = halberd_5 }
-						2 = { add_artifact = halberd_4 }
-						3 = { add_artifact = halberd_3 }
-						4 = { add_artifact = halberd_2 }
-						5 = { add_artifact = halberd_1 }
-						# Spears
-						1 = { add_artifact = spear_5 }
-						2 = { add_artifact = spear_4 }
-						3 = { add_artifact = spear_3 }
-						4 = { add_artifact = spear_2 }
-						5 = { add_artifact = spear_1 }
-					}
-				}
-				3 = { # Ranged Weapons
-					trigger = { can_get_ranged_weapon_at_gamestart_distribution_trigger = yes }
-					random_list = {
-						1 = { # Bows
-							random_list = {
-								1 = { add_artifact = bow_5 }
-								2 = { add_artifact = bow_4 }
-								3 = { add_artifact = bow_3 }
-								4 = { add_artifact = bow_2 }
-								5 = { add_artifact = bow_1 }
-							}
-						}
-						1 = { # Crossbows
-							trigger = { crossbow_artifact_active_trigger = yes }
-
-							random_list = {
-								1 = { add_artifact = crossbow_5 }
-								2 = { add_artifact = crossbow_4 }
-								3 = { add_artifact = crossbow_3 }
-								4 = { add_artifact = crossbow_2 }
-								5 = { add_artifact = crossbow_1 }
-							}
-						}
-						1 = { # Rifles
-							trigger = { rifle_artifact_active_trigger = yes }
-
-							random_list = {
-								1 = { add_artifact = rifle_5 }
-								2 = { add_artifact = rifle_4 }
-								3 = { add_artifact = rifle_3 }
-								4 = { add_artifact = rifle_2 }
-								5 = { add_artifact = rifle_1 }
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-	give_new_artifact_random_name_and_origin_effect = yes
+spawn_random_generic_artifact_effect = {
+	set_local_option_a_variables_for_new_received_generic_artifact_effect = yes
+	spawn_generic_artifact_based_on_option_a_variables_effect = yes
 }
