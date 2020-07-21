@@ -1090,7 +1090,7 @@ character_event = {
 				
 				is_worth_to_be_mantid_paragon_trigger = yes
 			}
-			count = 3
+			count = 1
 			score_value = {
 				value = 0
 				has_diplomacy_5_per_5_positive_score = yes
@@ -1156,8 +1156,11 @@ long_character_event = {
 	option = {
 		name = EVTOPTA_WCRAC_1010
 		
+		add_character_modifier = { name = recently_became_paragon_cooldown years = 50 hidden = yes }
+		
 		add_trait = mantid_paragon
 		add_sleeping_immunity_effect = yes
+		set_character_flag = paragon_sleeping_flag
 		if = {
 			limit = { NOT = { any_owned_bloodline = { has_character_flag = weak_earned_bloodline } } }
 			if = { 
@@ -1187,7 +1190,7 @@ long_character_event = {
 	}
 }
 ### The Klaxxi reawakes the paragon
-#Pinger event
+#Delayer event
 character_event = {
 	id = WCRAC.1015
 	
@@ -1195,13 +1198,41 @@ character_event = {
 	hide_window = yes
 	
 	trigger = {
-		liege = {
-			culture = mantid
-			religion = old_gods_worship
-		}
+		NOT = { has_character_flag = awaken_paragon_ongoing_flag }
 	}
 	
 	immediate = {
+		set_character_flag = awaken_paragon_ongoing_flag
+		
+		character_event = { id = WCRAC.1019 }
+	}
+}
+#Delayed event
+character_event = {
+	id = WCRAC.1019
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	trigger = {
+		is_ruler = no
+		
+		trait = sleeping_trait
+		has_character_flag = paragon_sleeping_flag
+		
+		liege = {
+			religion = old_gods_worship
+			culture = mantid
+		}
+	}
+	
+	fail_trigger_effect = {
+		death = { death_reason = death_accident }
+	}
+	
+	immediate = {
+		save_event_target_as = target_paragon
+		
 		liege = { character_event = { id = WCRAC.1020 } }
 	}
 }
@@ -1211,13 +1242,25 @@ character_event = {
 	title = EVTTITLE_WCRAC_1005
 	desc = EVTDESC_WCRAC_1020
 	picture = GFX_evt_emissary
-	border = GFX_event_long_frame_religion
+	border = GFX_event_normal_frame_religion
+	
+	is_triggered_only = yes
 	
 	option = {
 		name = EVTOPTA_WCRAC_1020
 		
-		FROM = {
+		event_target:target_paragon = {
+			show_scope_change = no
+			
+			if = {
+				limit = { prisoner = yes }
+				imprison = no
+			}
+			
 			remove_sleeping_immunity_effect = yes
+			clr_character_flag = paragon_sleeping_flag
+			
+			move_character = ROOT
 		}
 		
 		ai_chance = {
@@ -1225,13 +1268,22 @@ character_event = {
 		}
 	}
 	option = {
-		trigger = { dynasty = FROM }
+		trigger = { dynasty = event_target:target_paragon }
 		name = EVTOPTB_WCRAC_1020
 		
-		FROM = {
+		event_target:target_paragon = {
 			show_scope_change = no
 			
+			if = {
+				limit = { prisoner = yes }
+				imprison = no
+			}
+			
 			remove_sleeping_immunity_effect = yes
+			clr_character_flag = paragon_sleeping_flag
+			
+			move_character = ROOT
+			
 			ROOT = {
 				show_scope_change = no
 				
@@ -1246,5 +1298,9 @@ character_event = {
 				trait = mantid_paragon
 			}
 		}
+	}
+	
+	after = {
+		FROM = { clr_character_flag = awaken_paragon_ongoing_flag }
 	}
 }
