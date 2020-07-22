@@ -1,0 +1,539 @@
+namespace = WCADD
+
+### Magical addiction ###
+#
+# Ways to satisfy the addiction:
+# - Be a worshiper of fel_group or consuming_fel_magic_flag
+# - Be a worshiper of void_group or consuming_void_magic_flag
+# - Mana crystals
+# P.S. If character is consuming_<fel/void>_magic_flag, it's also receiving fel/void corruption
+# (check events WCFEL.95 and WCVOD.95)
+#
+# Satisfy magical addiction of others (if you're a Fel/Void worshiper)
+# character_event = {
+	# id = WCADD.1045
+	# picture = GFX_evt_vorna_the_wretched
+	# desc = EVTDESC_WCTHW_1045
+	# border = GFX_event_normal_frame_religion
+
+	# is_triggered_only = yes
+
+	# # The Fel will help them!
+	# option = {
+		# trigger = { true_religion_group = fel_group }
+		# name = EVTOPTA_WCTHW_1045
+
+		# if = {
+			# limit = { has_secret_religion = yes }
+			# convert_to_secret_religion = yes
+		# }
+		# drain_fel_source_effect = yes
+	# }
+	# # Look into the Void!
+	# option = {
+		# trigger = { true_religion_group = void_group }
+		# name = EVTOPTB_WCTHW_1045
+
+		# if = {
+			# limit = { has_secret_religion = yes }
+			# convert_to_secret_religion = yes
+		# }
+		# drain_void_source_effect = yes
+	# }
+	# # They're not prepared!
+	# option = {
+		# name = EVTOPTC_WCTHW_1045
+
+		# ai_chance = {
+			# factor = 0
+		# }
+	# }
+# }
+
+# Magical addiction mechanics
+character_event = {
+	id = WCADD.1049
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	only_playable = yes
+	
+	trigger = {
+		is_playable = yes
+		
+		is_alive = yes
+		is_dying = no
+
+		OR = {
+			has_magical_addiction_trigger = yes
+			trait = has_magical_withdrawal
+		}
+	}
+	
+	immediate = {
+		# Feels magical addiction
+		if = {
+			limit = { has_magical_addiction_trigger = yes }
+			character_event = { id = WCADD.1050 }
+		}
+		# Clears withdrawal if doesn't have magical addiction
+		else = {
+			character_event = { id = WCADD.2000 }
+		}
+	}
+}
+# Feels magical addiction
+character_event = {
+	id = WCADD.1050
+	picture = GFX_evt_vorna_the_wretched
+	desc = EVTDESC_WCADD_1050
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	# Try to get a mana crystal
+	option = {
+		name = EVTOPTA_WCTHW_1050
+
+		heal_magical_withdrawal_effect = yes
+		add_character_modifier = { name = buying_mana_crystals years = 5 }
+
+		ai_chance = {
+			factor = 40
+		}
+	}
+	# Find another way
+	option = {
+		trigger = {
+			is_adult = yes
+			is_playable = yes
+
+			NOT = { has_character_flag = tried_to_find_way_to_satisfy_hunger_flag }
+
+			learning = 15
+		}
+		name = EVTOPTB_WCTHW_1050
+
+		set_character_flag = tried_to_find_way_to_satisfy_hunger_flag
+
+		character_event = { id = WCADD.1055 days = 30 random = 30 }
+
+		ai_chance = {
+			factor = 10
+			modifier = {
+				factor = 2
+				independent = yes
+			}
+			modifier = {
+				factor = 1.5
+				trait = diligent
+			}
+			modifier = {
+				factor = 1.5
+				trait = ambitious
+			}
+			modifier = {
+				factor = 1.5
+				trait = stubborn
+			}
+			modifier = {
+				factor = 0
+				NOT = { trait = cynical }
+			}
+		}
+	}
+	# If your liege are consuming Fel/Void magic
+	option = {
+		trigger = {
+			OR = {
+				ai = no
+				NOT = { has_character_flag = ai_refused_dark_magic_flag }
+			}
+			liege = {
+				OR = {
+					religion_group = fel_group
+					religion_group = void_group
+					has_character_flag = consuming_fel_magic_flag
+					has_character_flag = consuming_void_magic_flag
+				}
+			}
+		}
+		name = EVTOPTC_WCTHW_1050
+
+		if = {
+			limit = {
+				liege = {
+					OR = {
+						religion_group = fel_group
+						has_character_flag = consuming_fel_magic_flag
+					}
+				}
+			}
+			drain_fel_source_effect = yes
+		}
+		else = {
+			drain_void_source_effect = yes
+		}
+
+		ai_chance = {
+			factor = 50
+		}
+	}
+	# I can't...
+	option = {
+		name = EVTOPTD_WCTHW_1050
+
+		if = { limit = { NOT = { trait = has_magical_withdrawal } } add_trait = has_magical_withdrawal }
+		hidden_effect = {
+			any_courtier_or_vassal = {
+				limit = {
+					is_playable = no
+					
+					NOT = { trait = has_magical_withdrawal }
+					
+					has_magical_addiction_trigger = yes
+				}
+				add_trait = has_magical_withdrawal
+			}
+		}
+
+		ai_chance = {
+			factor = 0
+		}
+	}
+	
+	after = {
+		### Random events
+		# You feel hungry! Kill character and steal their mana crystals?
+		random = {
+			chance = 25
+			character_event = { id = WCADD.1100 years = 1 random = 1095 }
+		}
+		# Gets magical addiction immunity
+		random = {
+			chance = 10
+			character_event = { id = WCADD.1150 years = 1 random = 1095 }
+			###Positive
+			#Traits
+			modifier = {
+				factor = 2
+				trait = temperate
+			}
+			modifier = {
+				factor = 2
+				trait = patient
+			}
+			
+			###Negative
+			#Classes
+			modifier = {
+				factor = 0.5
+				is_magic_class_trigger = yes
+			}
+			#Religions
+			modifier = {
+				factor = 0.5
+				arcane_true_religion_trigger = yes
+			}
+			#Traits
+			modifier = {
+				factor = 0.5
+				trait = gluttonous
+			}
+			modifier = {
+				factor = 0.5
+				trait = wroth
+			}
+		}
+	}
+}
+# Another ways
+character_event = {
+	id = WCADD.1055
+	picture = GFX_evt_vorna_the_wretched
+	desc = EVTDESC_WCTHW_1055
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	trigger = {
+		NOR = {
+			true_religion_group = fel_group
+			true_religion_group = void_group
+			has_character_flag = consuming_fel_magic_flag
+			has_character_flag = consuming_void_magic_flag
+		}
+	}
+
+	# Use Fel magic
+	option = {
+		name = EVTOPTA_WCTHW_1055
+
+		set_character_flag = chose_fel_magic_flag
+		long_character_event = { id = WCADD.1060 days = 15 random = 15 }
+
+		ai_chance = {
+			factor = 75
+		}
+	}
+	# Use Void magic
+	option = {
+		name = EVTOPTB_WCTHW_1055
+
+		set_character_flag = chose_void_magic_flag
+		long_character_event = { id = WCADD.1060 days = 15 random = 15 }
+
+		ai_chance = {
+			factor = 25
+		}
+	}
+	# Refuse this idea
+	option = {
+		name = EVTOPTC_WCTHW_1055
+
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+long_character_event = {
+	id = WCADD.1060
+	desc = {
+		trigger = { has_character_flag = chose_fel_magic_flag }
+		text = EVTDESC_WCTHW_1060_fel
+		picture = GFX_evt_fel_storm
+	}
+	desc = {
+		trigger = { has_character_flag = chose_void_magic_flag }
+		text = EVTDESC_WCTHW_1060_void
+		picture = GFX_evt_voidwalker
+	}
+	border = GFX_event_long_frame_religion
+
+	is_triggered_only = yes
+
+	trigger = {
+		NOR = {
+			true_religion_group = fel_group
+			true_religion_group = void_group
+			has_character_flag = consuming_fel_magic_flag
+			has_character_flag = consuming_void_magic_flag
+		}
+	}
+	
+	fail_trigger_effect = {
+		clr_character_flag = chose_fel_magic_flag
+		clr_character_flag = chose_void_magic_flag
+	}
+
+	# This is a necessary measure!
+	option = {
+		name = EVTOPTA_WCTHW_1060
+
+		if = {
+			limit = { has_character_flag = chose_fel_magic_flag }
+			drain_fel_source_effect = yes
+		}
+		else_if = {
+			limit = { has_character_flag = chose_void_magic_flag }
+			drain_void_source_effect = yes
+		}
+	}
+	# We will never sink so low!
+	option = {
+		name = EVTOPTB_WCTHW_1060
+
+		ai_chance = {
+			factor = 0
+		}
+	}
+	
+	after = {
+		clr_character_flag = chose_fel_magic_flag
+		clr_character_flag = chose_void_magic_flag
+	}
+}
+# FROM has found way to satisfy hunger
+letter_event = {
+	id = WCADD.1065
+	desc = EVTDESC_WCTHW_1065
+	border = GFX_event_letter_frame_religion
+
+	is_triggered_only = yes
+
+	# This is a necessary measure!
+	option = {
+		name = EVTOPTA_WCTHW_1060
+
+		if = {
+			limit = {
+				liege = {
+					OR = {
+						religion_group = fel_group
+						has_character_flag = consuming_fel_magic_flag
+					}
+				}
+			}
+			drain_fel_source_effect = yes
+		}
+		else_if = {
+			limit = {
+				liege = {
+					OR = {
+						religion_group = void_group
+						has_character_flag = consuming_void_magic_flag
+					}
+				}
+			}
+			drain_void_source_effect = yes
+		}
+
+		ai_chance = {
+			factor = 50
+			
+			evil_ai_chance_score = yes
+			evil_ai_chance_religion_score = yes
+		}
+	}
+	# We will never sink so low!
+	option = {
+		name = EVTOPTB_WCTHW_1060
+
+		set_character_flag = ai_refused_dark_magic_flag
+		
+		reverse_opinion = { modifier = opinion_very_disappointed who = FROM years = 5 }
+		FROM = { letter_event = { id = WCADD.1066 days = 15 random = 15 } }
+
+		ai_chance = {
+			factor = 50
+		}
+	}
+}
+# FROM has refused to use Fel/Void magic
+letter_event = {
+	id = WCADD.1066
+	desc = EVTDESC_WCTHW_1066
+	border = GFX_event_letter_frame_religion
+
+	is_triggered_only = yes
+
+	option = {
+		name = ALAS
+	}
+}
+
+#####################
+### Random events
+#####################
+# You feel hungry! Kill character and steal their mana crystals?
+character_event = {
+	id = WCADD.1100
+	picture = GFX_evt_vorna_the_wretched
+	desc = EVTDESC_WCADD_1100
+	border = GFX_event_normal_frame_intrigue
+	portrait = event_target:target_crystal_owner
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		has_magical_addiction_trigger = yes
+		
+		any_courtier_or_vassal = {
+			is_playable = no
+			
+			NOT = { character = ROOT }
+			
+			has_magical_addiction_trigger = yes
+		}
+	}
+	
+	immediate = {
+		random_courtier_or_vassal = {
+			limit = {
+				is_playable = no
+				
+				NOT = { character = ROOT }
+				
+				has_magical_addiction_trigger = yes
+			}
+			preferred_limit = {
+				is_unimportant_trigger = yes
+			}
+			save_event_target_as = target_crystal_owner
+			
+			remove_has_magical_withdrawal_trait_effect = yes
+		}
+	}
+	
+	#Resist!
+	option = {
+		name = EVTOPTA_WCADD_1100
+		
+		add_trait_silently_stressed_effect = yes
+
+		ai_chance = {
+			factor = 50
+		}
+	}
+	# Kill them!
+	option = {
+		name = EVTOPTB_WCADD_1100
+		
+		if = {
+			limit = { NOT = { trait = lunatic } }
+			random = { chance = 25 add_trait = lunatic }
+		}
+		heal_magical_withdrawal_effect = yes
+		
+		event_target:target_crystal_owner = {
+			show_scope_change = no
+			death = { death_reason = death_murder_unknown_strangle killer = ROOT }
+		}
+		
+		ai_chance = {
+			factor = 50
+			
+			evil_ai_chance_score = yes
+			evil_ai_chance_religion_score = yes
+		}
+	}
+}
+# Gets magical addiction immunity
+character_event = {
+	id = WCADD.1150
+	picture = GFX_evt_vorna_the_wretched
+	desc = EVTDESC_WCADD_1150
+	border = GFX_event_normal_frame_religion
+	
+	is_triggered_only = yes
+	
+	immediate = {
+		set_character_flag = immune_magical_addiction
+	}
+	
+	option = {
+		name = EXCELLENT
+		
+		heal_magical_withdrawal_effect = yes
+	}
+}
+
+################
+### Cleanups
+################
+# Clear withdrawal if doesn't have magical addiction
+character_event = {
+	id = WCADD.2000
+	picture = GFX_evt_vorna_the_wretched
+	desc = EVTDESC_WCADD_2000
+	border = GFX_event_normal_frame_religion
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = EXCELLENT
+		
+		heal_magical_withdrawal_effect = yes
+	}
+}
