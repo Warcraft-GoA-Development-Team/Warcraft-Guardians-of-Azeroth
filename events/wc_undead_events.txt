@@ -2645,7 +2645,7 @@ character_event = {
 }
 
 # Removes mind control power (TODO)
-# on_yearly_pulse
+# on_bi_yearly_pulse
 character_event = {
 	id = WCUND.1110
 
@@ -2669,66 +2669,79 @@ character_event = {
 	}
 
 	immediate = {
-		remove_3_mind_control_power_effect = yes
+		remove_15_mind_control_power_effect = yes
 	}
 }
 
 # Adds mind control power
-# on_battle_won_owner
+# on_battle_won_leader on_major_battle_won_leader
 character_event = {
 	id = WCUND.1111
 
 	is_triggered_only = yes
 	hide_window = yes
-	
-	only_playable = yes
-	only_independent = yes
 
 	trigger = {
 		is_alive = yes
 		is_dying = no
 		
-		OR = {
-			has_character_modifier = mind_control_1
-			has_character_modifier = mind_control_2
-			has_character_modifier = mind_control_3
-			has_character_modifier = mind_control_4
+		top_liege = {
+			NOT = { at_location = ROOT }
+			war_with = FROM
+			
+			OR = {
+				has_character_modifier = mind_control_1
+				has_character_modifier = mind_control_2
+				has_character_modifier = mind_control_3
+				has_character_modifier = mind_control_4
+			}
+			NOT = { check_variable = { which = mind_control_power value = 100 } }
 		}
-		NOT = { check_variable = { which = mind_control_power value = 100 } }
 	}
 
 	immediate = {
-		add_5_mind_control_power_effect = yes
+		log = "(MIND CONTROL) [Root.TopLiege.GetBestName] won battle and got mind power"
+		
+		top_liege = {
+			add_3_mind_control_power_effect = yes
+		}
 	}
 }
 # Removes mind control power
-# on_battle_lost_owner
+# on_battle_lost_owner on_major_battle_lost_leader
 character_event = {
 	id = WCUND.1112
 
 	is_triggered_only = yes
 	hide_window = yes
-	
-	only_playable = yes
-	only_independent = yes
 
 	trigger = {
 		is_alive = yes
 		is_dying = no
 		
-		OR = {
-			has_character_modifier = mind_control_1
-			has_character_modifier = mind_control_2
-			has_character_modifier = mind_control_3
-			has_character_modifier = mind_control_4
+		top_liege = {
+			NOT = { at_location = ROOT }
+			war_with = FROM
+			
+			OR = {
+				has_character_modifier = mind_control_1
+				has_character_modifier = mind_control_2
+				has_character_modifier = mind_control_3
+				has_character_modifier = mind_control_4
+			}
+			check_variable = { which = mind_control_power value = 1 }
 		}
-		check_variable = { which = mind_control_power value = 1 }
 	}
 
 	immediate = {
-		remove_5_mind_control_power_effect = yes
+		log = "(MIND CONTROL) [Root.TopLiege.GetBestName] lost battle and mind power"
+		
+		top_liege = {
+			remove_3_mind_control_power_effect = yes
+		}
 	}
 }
+
 #############################################
 
 # If character isn't a dark worshipper, converts to the necromantic religions
