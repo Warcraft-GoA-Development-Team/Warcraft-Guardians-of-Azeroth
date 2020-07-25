@@ -14,7 +14,6 @@ decisions = {
 
 			is_maimed_trigger = yes
 
-			is_humanoid_trigger = yes
 			trait = being_undead
 			NOR = {
 				trait = creature_wraith
@@ -82,9 +81,17 @@ decisions = {
 
 			can_be_undead_trigger = yes
 			NOT = { trait = being_undead }
-			
+
 			is_necromancer_class_trigger = yes
-			age = 45
+		}
+
+		allow = {
+			prisoner = no
+			is_inaccessible_trigger = no
+
+			not_raising_undead_flag_trigger = yes
+
+			has_2_mana_trigger = yes
 			OR = {
 				dark_public_religion_trigger = yes
 				trait = cynical
@@ -95,19 +102,12 @@ decisions = {
 				trait = craven		# ...is afraid of death
 				age = 60
 			}
-		}
-
-		allow = {
-			prisoner = no
-			is_inaccessible_trigger = no
-
-			is_necromancer_class_trigger = yes
 			NOT = { trait = depressed }
-			has_2_mana_trigger = yes
 		}
 
 		effect = {
-			hidden_effect = { set_character_flag = being_raised_flag }
+			set_character_flag = being_raised_flag
+			set_character_flag = raising_undead_flag
 
 			save_event_target_as = target_necromancer
 			save_event_target_as = target_undead
@@ -135,7 +135,7 @@ decisions = {
 			is_adult = yes
 			is_incapable = no
 
-			NOT = { has_character_flag = ongoing_turning_into_monstrous_undead_flag }
+			NOT = { has_character_flag = being_raised_flag }
 
 			is_humanoid_trigger = yes
 			trait = being_undead
@@ -145,16 +145,17 @@ decisions = {
 				trait = creature_plague_eruptor
 				trait = creature_abomination
 				trait = creature_lich
+				trait = creature_wicker_golem
 			}
-			OR = {
-				is_death_knight_class_trigger = yes
-				is_necromancer_class_trigger = yes
-			}
+			# is_death_knight_class_trigger = yes		# Death knights can't prisoner_disembowel
+			is_necromancer_class_trigger = yes
 		}
 
 		allow = {
 			prisoner = no
 			is_inaccessible_trigger = no
+
+			not_raising_undead_flag_trigger = yes
 			
 			has_5_6_magic_class_or_higher_trigger = yes
 			check_variable = { which = useful_flesh value = 20 }
@@ -162,14 +163,18 @@ decisions = {
 			OR = {
 				trait = lunatic
 				AND = {
-					true_religion = death_god
+					OR = {
+						true_religion = death_god
+						true_religion = throsic
+					}
 					trait = zealous
 				}
 			}
 		}
 
 		effect = {
-			set_character_flag = ongoing_turning_into_monstrous_undead_flag
+			set_character_flag = being_raised_flag
+			set_character_flag = raising_undead_flag
 			
 			change_variable = { which = useful_flesh value = -20 }
 			hidden_effect = { character_event = { id = WCUND.370 } }
@@ -197,28 +202,28 @@ decisions = {
 		allow = {
 			war = no
 			
-			realm_size = 10
+			realm_size = 25
 			ruled_years = 5
 		}
 		effect = {
 			if = {
 				limit = { ai = no }
 				change_infamy = {
-					value = 40
+					value = 25
 					localisation = "Started Plague"
 				}
 			}
 			else_if = {
-				limit = { NOT = { infamy = 40 } }
+				limit = { NOT = { infamy = 25 } }
 				change_infamy = {
-					value = 40
+					value = 25
 					localisation = "Started Plague"
 				}
 			}
 			else_if = {
-				limit = { NOT = { infamy = 50 } }
+				limit = { NOT = { infamy = 35 } }
 				change_infamy = {
-					value = 30
+					value = 15
 					localisation = "Started Plague"
 				}
 			}
@@ -267,21 +272,21 @@ decisions = {
 			if = {
 				limit = { ai = no }
 				change_infamy = {
-					value = 40
+					value = 25
 					localisation = "Started Plague"
 				}
 			}
 			else_if = {
-				limit = { NOT = { infamy = 40 } }
+				limit = { NOT = { infamy = 25 } }
 				change_infamy = {
-					value = 40
+					value = 25
 					localisation = "Started Plague"
 				}
 			}
 			else_if = {
-				limit = { NOT = { infamy = 50 } }
+				limit = { NOT = { infamy = 35 } }
 				change_infamy = {
-					value = 30
+					value = 15
 					localisation = "Started Plague"
 				}
 			}
@@ -295,61 +300,52 @@ decisions = {
 			}
 		}
 	}
-}
-targetted_decisions = {
-	choose_champion_of_the_lich_king = {
+	
+	# If Lich King is in_ice_prison, she/he can merge with holder of Frostmourne
+	merge_with_champion = {
 		is_high_prio = yes
 		
-		filter = realm
-		ai_target_filter = vassals
-		ai_check_interval = 6
+		ai_check_interval = 12
 
 		only_playable = yes
+		only_independent = yes
 
-		from_potential = {
-			always = no	# TODO
+		potential = {
+			NOT = { has_character_flag = merge_with_champion_ongoing_flag }
 			
-			NOT = { champion_of_the_lich_king = { always = yes } }
+			trait = in_ice_prison
 			
 			has_landed_title = e_scourge
 		}
-		potential = {
-			always = no	# TODO
-			
-			is_adult = yes
-			is_incapable = no
-			prisoner = no
-
-			NOT = { character = FROM }
-			
-			religion = death_god
-			can_be_undead_trigger = yes
-
-			NOT = { has_global_flag = scourge_is_under_legion_control_flag }
-		}
 		allow = {
-			prisoner = no
-
-			OR = {
-				is_death_knight_class_trigger = yes
-				is_necromancer_class_trigger = yes
+			merging_lich_king_trigger = yes
+			
+			trigger_if = {
+				limit = { NOT = { event_target:target_frostmourne_holder = { always = yes } } }
+				custom_tooltip = {
+					text = someone_found_frostmourne_tooltip
+					always = no
+				}
 			}
-			OR = {
-				FROM = { ai = no }
-				reverse_opinion = { who = FROM value = 25 }
+			trigger_else = {
+				event_target:target_frostmourne_holder = {
+					is_untouchable_trigger = no
+					
+					merging_champion_trigger = yes
+				}
 			}
 		}
 		effect = {
-			tooltip = { add_trait = champion_of_the_lich_king }
-			hidden_tooltip = { narrative_event = { id = WCUND.560 } }
-		}
-		revoke_allowed = {
-			always = no
+			event_target:target_frostmourne_holder = {
+				narrative_event = { id = WCUND.400 }
+			}
 		}
 		ai_will_do = {
-			factor = 0.1
+			factor = 1
 		}
 	}
+}
+targetted_decisions = {
 	prisoner_drink_blood = {
 		filter = court
 		ai_target_filter = none

@@ -22,7 +22,7 @@ character_event = {
 	}
 
 	immediate = {
-		log = "WCGOV.1000 fired for [Root.GetBestName]"
+		log = "(GOVERNMENT) WCGOV.1000 fired for [Root.GetBestName]"
 
 		any_demesne_title = {
 			limit = { prevs_title_can_has_laws_trigger = yes }
@@ -86,7 +86,7 @@ character_event = {
 	}
 	
 	immediate = {
-		log = "WCGOV.1010 fired for [Root.GetBestName]"
+		log = "(GOVERNMENT) WCGOV.1010 fired for [Root.GetBestName]"
 		
 		any_demesne_title = {
 			limit = {
@@ -101,7 +101,44 @@ character_event = {
 		recalc_succession = yes
 	}
 }
-
+### on_new_holder
+# New rulers get evil government if it's possible
+character_event = {
+	id = WCGOV.5000
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	ai = yes
+	only_playable = yes
+	
+	trigger = {
+		evil_public_religion_trigger = yes
+		num_of_count_titles = 1
+		NOT = { num_of_count_titles = 2 }
+	}
+	
+	immediate = {
+		log = "(GOVERNMENT) WCGOV.5000 fired for [Root.GetBestName]"
+		
+		if = {
+			limit = { evil_government_trigger = yes }
+			set_evil_government_laws_effect = yes
+		}
+		else_if = {
+			limit = { is_government_potential = scourge_government }
+			set_scourge_government_effect = yes
+		}
+		else_if = {
+			limit = { is_government_potential = legion_government }
+			set_legion_government_effect = yes
+		}
+		else_if = {
+			limit = { is_government_potential = black_pact_government }
+			set_black_pact_government_effect = yes
+		}
+	}
+}
 ### on_new_holder on_new_holder_inheritance on_new_holder_usurpation ###
 # Adds status_of_magic_3
 character_event = {
@@ -123,7 +160,7 @@ character_event = {
 	}
 
 	immediate = {
-		log = "WCGOV.6000 fired for [Root.GetBestName]"
+		log = "(GOVERNMENT) WCGOV.6000 fired for [Root.GetBestName]"
 
 		FROM = { add_law = { law = status_of_magic_3 cooldown = no opinion_effect = no } }
 	}
@@ -150,10 +187,40 @@ character_event = {
 	}
 	
 	immediate = {
-		log = "WCGOV.6010 fired for [Root.GetBestName]"
+		log = "(GOVERNMENT) WCGOV.6010 fired for [Root.GetBestName]"
 		
 		FROM = { clear_evil_laws_effect = yes }
 		recalc_succession = yes
+	}
+}
+
+### Government flavor
+#Hive government gets levy size bonus and dynasty opinion malus per every born child
+character_event = {
+	id = WCGOV.6500
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
+		father = {
+			if = {
+				limit = {
+					is_ruler = yes
+					government = hive_government
+				}
+				add_laid_eggs_effect = yes
+			}
+		}
+		mother = {
+			if = {
+				limit = {
+					is_ruler = yes
+					government = hive_government
+				}
+				add_laid_eggs_effect = yes
+			}
+		}
 	}
 }
 
@@ -195,7 +262,7 @@ province_event = {
 					is_merchant_republic = yes
 					NOT = { has_character_flag = upcoming_elections_flag }
 				}
-				log = "WCGOV.7985 fired for [Root.GetBestName]"
+				log = "(GOVERNMENT) WCGOV.7985 fired for [This.GetBestName]"
 				
 				set_character_flag = upcoming_elections_flag
 				character_event = { id = WCGOV.7990 years = 11 }
@@ -222,7 +289,7 @@ character_event = {
 	}
 	
 	immediate = {
-		log = "WCGOV.7986 fired for [Root.GetBestName]"
+		log = "(GOVERNMENT) WCGOV.7986 fired for [Root.GetBestName]"
 		
 		set_character_flag = upcoming_elections_flag
 		character_event = { id = WCGOV.7990 years = 11 }
@@ -290,7 +357,7 @@ character_event = {
 	}
 
 	immediate = {
-		log = "WCGOV.8000 fired for [Root.GetBestName]"
+		log = "(GOVERNMENT) WCGOV.8000 fired for [Root.GetBestName]"
 		primary_title = { save_event_target_as = target_republic }
 		capital_scope = { county = { save_event_target_as = target_city } }
 		
@@ -316,13 +383,7 @@ character_event = {
 		
 		if = {
 			limit = { dynasty = event_target:target_new_doge }
-			event_target:target_new_doge = { wealth = ROOT }
-			clear_wealth = yes
-			any_artifact = {
-				transfer_artifact = { from = ROOT to = event_target:target_new_doge }
-			}
-			abdicate_to = event_target:target_new_doge
-			move_character = event_target:target_new_doge
+			event_target:target_new_doge = { ROOT = { this_abdicate_transfer_wealth_to_prev_effect = yes } }
 		}
 
 		event_target:target_new_doge = {

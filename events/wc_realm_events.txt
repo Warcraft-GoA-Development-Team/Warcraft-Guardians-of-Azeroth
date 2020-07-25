@@ -41,7 +41,7 @@ province_event = {
 		OR = {
 			has_province_modifier = ongoing_genocide
 			has_province_modifier = ongoing_culling
-			has_province_modifier = spreading_of_death
+			has_province_modifier = ongoing_raising
 		}
 	}
 
@@ -69,8 +69,10 @@ character_event = {
 	option = {
 		name = EXCELLENT
 		event_target:target_populated_province = {
+			show_scope_change = no
+
 			if = {
-				limit = { NOT = { has_province_modifier = spreading_of_death } }
+				limit = { NOT = { has_province_modifier = ongoing_raising } }
 				culture = ROOT
 				religion = ROOT
 				add_max_depopulation_effect = yes
@@ -84,11 +86,13 @@ character_event = {
 			}
 			if = {
 				limit = {
-					has_province_modifier = spreading_of_death
+					has_province_modifier = ongoing_raising
 					NOT = { has_province_modifier = undead_province }
 				}
 				convert_to_target_undead_province_effect = yes
 			}
+			
+			# Clear ongoing modifiers
 			if = {
 				limit = { has_province_modifier = ongoing_genocide }
 				remove_province_modifier = ongoing_genocide
@@ -98,8 +102,8 @@ character_event = {
 				remove_province_modifier = ongoing_culling
 			}
 			if = {
-				limit = { has_province_modifier = spreading_of_death }
-				remove_province_modifier = spreading_of_death
+				limit = { has_province_modifier = ongoing_raising }
+				remove_province_modifier = ongoing_raising
 			}
 
 			# Clears many vanilla modifiers that give local_revolt_risk
@@ -227,7 +231,7 @@ character_event = {
 				OR = {
 					has_province_modifier = ongoing_genocide
 					has_province_modifier = ongoing_culling
-					has_province_modifier = spreading_of_death
+					has_province_modifier = ongoing_raising
 				}
 			}
 			holder_scope = { top_liege = { any_current_enemy = { character = ROOT } } }
@@ -257,7 +261,7 @@ character_event = {
 				OR = {
 					has_province_modifier = ongoing_genocide
 					has_province_modifier = ongoing_culling
-					has_province_modifier = spreading_of_death
+					has_province_modifier = ongoing_raising
 				}
 			}
 		}
@@ -283,7 +287,7 @@ character_event = {
 		event_target:target_province = {
 			remove_province_modifier = ongoing_genocide
 			remove_province_modifier = ongoing_culling
-			remove_province_modifier = spreading_of_death
+			remove_province_modifier = ongoing_raising
 			clear_delayed_event = { id = WCRLM.200 }
 		}
 	}
@@ -544,5 +548,172 @@ character_event = {
 	immediate = {
 		# Clear flags and other stuff
 		clear_settler_flag_effect = yes
+	}
+}
+
+### Ymiron Awakened ###
+character_event = {
+	id = WCRLM.799
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
+		# Saves ROOT's liege for future use
+		if = {
+			limit = { independent = no }
+			liege = { save_event_target_as = target_liege }
+		}
+		
+		# Creates Ymiron
+		create_character = {
+			name=Ymiron
+			dynasty=70000
+			dna="anolmcpmehb"
+			culture=vrykul religion=ROOT
+			attributes = { martial=6 diplomacy=6 stewardship=4 intrigue=7 learning=7 }
+			trait=skilled_tactician
+			trait=class_warrior_7
+			trait=wroth trait=proud trait=ambitious trait=arbitrary trait=paranoid
+			trait=creature_vrykul
+			trait=ymiron_trait
+			random_traits = yes
+			age = 300
+		}
+		new_character = {
+			save_event_target_as = target_ymiron
+		}
+		event_target:target_ymiron = {
+			# Wealth, prestige
+			wealth = 300
+			prestige = 1000
+		
+			# Gives bloodline
+			create_bloodline = {
+				type = ymiron
+			}
+			
+			# Ymiron gets ROOT titles, k_howling_fjord or claim on k_howling_fjord
+			event_target:target_ymiron = { ROOT = { this_abdicate_transfer_wealth_to_play_prev_effect = yes } }
+			if = {
+				limit = { k_howling_fjord = { is_title_active = THIS } }
+				if = {
+					limit = { k_howling_fjord = { has_holder = no } }
+					primary_title = {
+						k_howling_fjord = {
+							grant_title_no_opinion = event_target:target_ymiron
+							copy_title_laws = PREV
+						}
+					}
+				}
+				else = {
+					add_pressed_claim = k_howling_fjord
+				}
+			}
+			if = {
+				limit = { event_target:target_liege = { character = yes } }
+				set_defacto_liege = event_target:target_liege
+			}
+			
+			# Ymiron gets army and commanders
+			spawn_fantastic_commander_effect = yes
+			spawn_great_commander_effect = yes
+			spawn_great_commander_effect = yes
+			# Well-balanced troops + fleet
+			spawn_colonial_troops_effect = yes
+			
+			# Angerboda becomes your spouse
+			set_character_flag = recieved_royal_marriage_aid_duty	# Not first marriage
+			c_100001 = {
+				if = {
+					limit = {
+						can_has_sexual_relation_with_prev = yes
+						
+						OR = {
+							character = ROOT
+							AND = {
+								is_married = no
+								is_betrothed = no
+							}
+						}
+					}
+					if = {
+						limit = { is_married = yes }
+						any_spouse = { remove_spouse = PREV }
+					}
+					if = {
+						limit = { is_betrothed = yes }
+						betrothed = { break_betrothal = PREV }
+					}
+					add_spouse = event_target:target_ymiron
+					add_lover = event_target:target_ymiron
+				}
+			}
+		}
+		
+		# Notification
+		any_player = {
+			limit = { any_realm_province = { region = world_northrend } }
+			repeat_event = { id = WCRLM.800 }
+		}
+	}
+}
+narrative_event = {
+	id = WCRLM.800
+	title = EVTTITLE_WCRLM_800
+	desc = EVTDESC_WCRLM_800
+	picture = GFX_evt_utgarde
+	border = GFX_event_narrative_frame_war
+	portrait = event_target:target_ymiron
+
+	is_triggered_only = yes
+	
+	hide_new = yes
+	
+	# King returned!
+	option = {
+		trigger = {
+			OR = {
+				character = FROM
+				character = event_target:target_ymiron
+			}
+		}
+		name = KING_RETURNED
+	}
+	# King returned!
+	option = {
+		trigger = {
+			NOT = {
+				character = FROM
+				character = event_target:target_ymiron
+				has_landed_title = k_howling_fjord				# Current king of k_howling_fjord, if he's not target_ymiron, is upset
+			}
+			culture_group = vrykul_group
+			capital_scope = { region = world_northrend_howling_fjord }
+		}
+		name = KING_RETURNED
+	}
+	# Ymiron? Many legends of him have been told...
+	option = {
+		trigger = {
+			NOT = {
+				character = FROM
+				character = event_target:target_ymiron
+				has_landed_title = k_howling_fjord			# Current king of k_howling_fjord, if he's not target_ymiron, is upset
+				capital_scope = { region = world_northrend_howling_fjord }
+			}
+			culture_group = vrykul_group
+		}
+		name = EVTOPTB_WCRLM_800
+	}
+	# Who cares?
+	option = {
+		trigger = {
+			NOT = {
+				character = FROM
+				character = event_target:target_ymiron
+			}
+		}
+		name = WHO_CARES
 	}
 }

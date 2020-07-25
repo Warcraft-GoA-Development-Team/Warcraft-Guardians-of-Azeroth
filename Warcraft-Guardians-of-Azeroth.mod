@@ -2,7 +2,7 @@ name = "Warcraft:_GoA_(Early)"
 path = "mod/Warcraft-Guardians-of-Azeroth"
 picture="GoAPreview.jpg"
 tags = {
-	Warcraft Fantasy WoW Azeroth Total Conversion
+	"Warcraft" "Fantasy" "WoW" "World of Wacraft" "Azeroth" "Total Conversion"
 }
 
 user_dir = "Guardians of Azeroth"

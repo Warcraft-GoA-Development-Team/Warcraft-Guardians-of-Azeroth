@@ -1,16 +1,21 @@
 ---
 name: Re-Origination Request
 about: Bug Report
-title: "[BUG] | Issue Title"
-labels: ":beetle: bug :beetle:"
+title: Issue Title
+labels: ":beetle: bug :beetle:, :grey_exclamation: priority low"
+assignees: ''
 
 ---
 
+<!--
 **DO NOT REMOVE PRE-EXISTING LINES**
 ------------------------------------------------------------------------------------------------------------
-**Mod Version**
+-->
+**Your mod version is:**
 
 **What expansions do you have installed?**
+
+**Are you using any submods/mods? If so, which?**
 
 **Please explain your issue in as much detail as possible:**
 
