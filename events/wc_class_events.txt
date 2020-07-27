@@ -1006,7 +1006,6 @@ narrative_event = {
 #########################
 # Paladin
 #########################
-
 # Notification of the beginning of self-training
 narrative_event = {
 	id = WCCLS.301
@@ -2938,6 +2937,72 @@ narrative_event = {
 }
 
 #########################
+# Monk
+#########################
+# Notification of the beginning of self-training
+character_event = {
+	id = WCCLS.1600
+	title = EVTTITLE_WCCLS_1
+	desc = EVTDESC_WCCLS_1600
+	picture = GFX_evt_monk_pandaren_religion_group
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+		add_character_modifier = {
+			name = training_self_monk
+			duration = -1
+		}
+		character_event = { id = WCCLS.2152 }
+		character_event = {
+			id = WCCLS.1700
+			years = 5
+		}
+	}
+
+	option = {
+		name = EXCELLENT
+	}
+}
+
+# Notification of the end of the training
+character_event = {
+	id = WCCLS.1700
+	title = EVTTITLE_WCCLS_100
+	desc = EVTDESC_WCCLS_1700
+	picture = GFX_evt_monk_pandaren_religion_group
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	trigger = {
+		is_incapable = no
+		OR = {
+			has_character_modifier = training_self_monk
+			has_character_modifier = training_mentor_monk
+		}
+	}
+
+	fail_trigger_effect = {
+		if = {
+			limit = { is_incapable = yes }
+			character_event = { id = WCCLS.1450 }
+		}
+	}
+
+	option = {
+		name = EXCELLENT
+
+		add_class_trait_effect = yes
+	}
+	
+	after = {
+		notifies_class_training_initiator_effect = yes
+	}
+}
+
+#########################
 
 # Notifies target_initiator about the end of the training
 character_event = {
@@ -3517,6 +3582,46 @@ character_event = {
 			factor = 99
 		}
 	}
+	
+	# Monk
+	option = {
+		trigger = {
+			event_target:student = {
+				OR = {
+					AND = {
+						potential_monk_wo_training_trigger = yes
+						allow_monk_trigger = yes
+					}
+					is_weak_monk_class_trigger = yes
+				}
+			}
+			event_target:mentor = { potential_mentor_monk_trigger = yes }
+		}
+		name = A_MONK
+
+		event_target:student = {
+			show_scope_change = no
+
+			set_character_flag = training_mentor_monk_flag
+			if = {
+				limit = {
+					NOT = { guardian = { character = event_target:mentor } }
+					NOT = { educator = { character = event_target:mentor } }
+				}
+				event_target:mentor = { letter_event = { id = WCCLS.2100 days = 14 } }
+			}
+			else = {
+				custom_tooltip = {
+					text = starts_training_tooltip
+					hidden_effect = { character_event = { id = WCCLS.2150 } }
+				}
+			}
+		}
+		
+		ai_chance = {
+			factor = 99
+		}
+	}
 
 	# Cancel
 	option = {
@@ -3808,6 +3913,17 @@ character_event = {
 			clr_character_flag = training_mentor_shadow_priest_flag
 			narrative_event = { id = WCCLS.1300 years = 5 }
 		}
+		if = {
+			limit = {
+				has_character_flag = training_mentor_monk_flag
+			}
+			add_character_modifier = {
+				name = training_mentor_monk
+				duration = -1
+			}
+			clr_character_flag = training_mentor_monk_flag
+			narrative_event = { id = WCCLS.1700 years = 5 }
+		}
 		
 		clr_character_flag = ask_to_be_mentor_ongoing_flag
 		
@@ -3877,6 +3993,7 @@ character_event = {
 						training_self_death_knight 		= { change_variable = { which = wc_experience_death_knight 		value = 1 } }
 						training_self_necromancer 		= { change_variable = { which = wc_experience_necromancer 		value = 1 } }
 						training_self_shadow_priest 	= { change_variable = { which = wc_experience_shadow_priest 	value = 1 } }
+						training_self_monk 			= { change_variable = { which = wc_experience_monk 			value = 1 } }
 					}
 				}
 				10 = {
@@ -3899,6 +4016,7 @@ character_event = {
 						training_self_death_knight 		= { change_variable = { which = wc_experience_death_knight 		value = 2 } }
 						training_self_necromancer 		= { change_variable = { which = wc_experience_necromancer 		value = 2 } }
 						training_self_shadow_priest 	= { change_variable = { which = wc_experience_shadow_priest 	value = 2 } }
+						training_self_monk 			= { change_variable = { which = wc_experience_monk 			value = 2 } }
 					}
 				}
 			}
@@ -3959,6 +4077,10 @@ character_event = {
 					event_target:mentor = { ROOT = { set_variable = { which = wc_experience_difference which = wc_experience_shadow_priest which = PREV } } }
 					subtract_variable = { which = wc_experience_difference which = wc_experience_shadow_priest }
 				}
+				training_mentor_monk = {
+					event_target:mentor = { ROOT = { set_variable = { which = wc_experience_difference which = wc_experience_monk which = PREV } } }
+					subtract_variable = { which = wc_experience_difference which = wc_experience_monk }
+				}
 			}
 			if = {
 				limit = {
@@ -3981,6 +4103,7 @@ character_event = {
 					training_mentor_death_knight 	= { change_variable = { which = wc_experience_death_knight 		value = 1 } }
 					training_mentor_necromancer 	= { change_variable = { which = wc_experience_necromancer 		value = 1 } }
 					training_mentor_shadow_priest 	= { change_variable = { which = wc_experience_shadow_priest 	value = 1 } }
+					training_mentor_monk 		= { change_variable = { which = wc_experience_monk 			value = 1 } }
 				}
 				random_list = {
 					10 = {
@@ -4004,6 +4127,7 @@ character_event = {
 							training_mentor_death_knight 	= { change_variable = { which = wc_experience_death_knight 		value = 1 } }
 							training_mentor_necromancer 	= { change_variable = { which = wc_experience_necromancer 		value = 1 } }
 							training_mentor_shadow_priest 	= { change_variable = { which = wc_experience_shadow_priest 	value = 1 } }
+							training_mentor_monk 		= { change_variable = { which = wc_experience_monk 			value = 1 } }
 						}
 						modifier = {
 							factor = 2
@@ -4046,6 +4170,7 @@ character_event = {
 							training_mentor_death_knight 	= { change_variable = { which = wc_experience_death_knight 		value = 2 } }
 							training_mentor_necromancer 	= { change_variable = { which = wc_experience_necromancer 		value = 2 } }
 							training_mentor_shadow_priest 	= { change_variable = { which = wc_experience_shadow_priest 	value = 2 } }
+							training_mentor_monk 		= { change_variable = { which = wc_experience_monk 			value = 2 } }
 						}
 						modifier = {
 							factor = 2
@@ -4088,6 +4213,7 @@ character_event = {
 							training_mentor_death_knight 	= { change_variable = { which = wc_experience_death_knight 		value = 3 } }
 							training_mentor_necromancer 	= { change_variable = { which = wc_experience_necromancer 		value = 3 } }
 							training_mentor_shadow_priest 	= { change_variable = { which = wc_experience_shadow_priest 	value = 3 } }
+							training_mentor_monk 		= { change_variable = { which = wc_experience_monk 			value = 3 } }
 						}
 						modifier = {
 							factor = 1.5
@@ -4122,6 +4248,7 @@ character_event = {
 							training_mentor_death_knight 	= { change_variable = { which = wc_experience_death_knight 		value = 4 } }
 							training_mentor_necromancer 	= { change_variable = { which = wc_experience_necromancer 		value = 4 } }
 							training_mentor_shadow_priest 	= { change_variable = { which = wc_experience_shadow_priest 	value = 4 } }
+							training_mentor_monk 		= { change_variable = { which = wc_experience_monk 			value = 4 } }
 						}
 						modifier = {
 							factor = 1.5
@@ -4156,6 +4283,7 @@ character_event = {
 							training_mentor_death_knight 	= { change_variable = { which = wc_experience_death_knight 		value = 5 } }
 							training_mentor_necromancer 	= { change_variable = { which = wc_experience_necromancer 		value = 5 } }
 							training_mentor_shadow_priest 	= { change_variable = { which = wc_experience_shadow_priest 	value = 5 } }
+							training_mentor_monk 		= { change_variable = { which = wc_experience_monk 			value = 5 } }
 						}
 						modifier = {
 							factor = 1.5
@@ -4193,6 +4321,7 @@ character_event = {
 							training_mentor_death_knight 	= { change_variable = { which = wc_experience_death_knight 		value = 6 } }
 							training_mentor_necromancer 	= { change_variable = { which = wc_experience_necromancer 		value = 6 } }
 							training_mentor_shadow_priest 	= { change_variable = { which = wc_experience_shadow_priest 	value = 6 } }
+							training_mentor_monk 		= { change_variable = { which = wc_experience_monk 			value = 6 } }
 						}
 						modifier = {
 							factor = 1.5
@@ -4230,6 +4359,7 @@ character_event = {
 							training_mentor_death_knight 	= { change_variable = { which = wc_experience_death_knight 		value = 7 } }
 							training_mentor_necromancer 	= { change_variable = { which = wc_experience_necromancer 		value = 7 } }
 							training_mentor_shadow_priest 	= { change_variable = { which = wc_experience_shadow_priest 	value = 7 } }
+							training_mentor_monk 		= { change_variable = { which = wc_experience_monk 			value = 7 } }
 						}
 						modifier = {
 							factor = 1.5
@@ -4267,6 +4397,7 @@ character_event = {
 							training_mentor_death_knight 	= { change_variable = { which = wc_experience_death_knight 		value = 8 } }
 							training_mentor_necromancer 	= { change_variable = { which = wc_experience_necromancer 		value = 8 } }
 							training_mentor_shadow_priest 	= { change_variable = { which = wc_experience_shadow_priest 	value = 8 } }
+							training_mentor_monk 		= { change_variable = { which = wc_experience_monk 			value = 8 } }
 						}
 						modifier = {
 							factor = 2
@@ -4312,6 +4443,7 @@ character_event = {
 							training_mentor_death_knight 	= { change_variable = { which = wc_experience_death_knight 		value = 9 } }
 							training_mentor_necromancer 	= { change_variable = { which = wc_experience_necromancer 		value = 9 } }
 							training_mentor_shadow_priest 	= { change_variable = { which = wc_experience_shadow_priest 	value = 9 } }
+							training_mentor_monk 		= { change_variable = { which = wc_experience_monk 			value = 9 } }
 						}
 						modifier = {
 							factor = 2
