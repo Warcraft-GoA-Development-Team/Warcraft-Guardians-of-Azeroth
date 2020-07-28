@@ -813,90 +813,34 @@ character_event = {
 
 	is_triggered_only = yes
 
-	min_age = 16
-	only_capable = yes
-	prisoner = no
+	# Forward!
+	option = {
+		name = EVTOPTA_WCCLS_105
 
-	trigger = {
-		is_alive = yes
-		is_dying = no
-
-		OR = {
-			war = yes
-			liege = { war = yes }
-		}
-
-		OR = {
-			is_hunter_class_trigger = yes
-			is_warrior_class_trigger = yes
-		}
-		NOT = { trait = craven }
-	}
-
-	immediate = {
-		log = "WCCLS.105 fired for [Root.GetBestName]"
-
-		location = { save_event_target_as = target_province }
-	}
-
-	weight_multiplier = {
-		days = 1
-		modifier = {
-			factor = 1.5
-			trait = brave
+		class_inspire_army_effect = yes
+		if = {
+			limit = { liege = { any_army = { location = { province = event_target:target_province } } } }
+			liege = {
+				tooltip = { class_inspire_army_effect = yes }
+				character_event = { id = WCCLS.106 }
+			}
 		}
 	}
+}
+# Notification event
+character_event = {
+	id = WCCLS.106
+	desc = EVTDESC_WCCLS_105
+	picture = GFX_evt_warrior_human
+	border = GFX_event_normal_frame_war
+
+	is_triggered_only = yes
 
 	# Forward!
 	option = {
 		name = EVTOPTA_WCCLS_105
 
-		random_army = {
-			limit = { location = { province = event_target:target_province } }
-			if = {
-				limit = { ROOT = { is_9_10_physical_class_trigger = yes } }
-				morale = 0.5
-			}
-			else_if = {
-				limit = { ROOT = { is_7_8_physical_class_trigger = yes } }
-				morale = 0.4
-			}
-			else_if = {
-				limit = { ROOT = { is_5_6_physical_class_trigger = yes } }
-				morale = 0.3
-			}
-			else_if = {
-				limit = { ROOT = { is_3_4_physical_class_trigger = yes } }
-				morale = 0.2
-			}
-			else = {
-				morale = 0.1
-			}
-		}
-		liege = {
-			random_army = {
-				limit = { location = { province = event_target:target_province } }
-				if = {
-					limit = { ROOT = { is_9_10_physical_class_trigger = yes } }
-					morale = 0.5
-				}
-				else_if = {
-					limit = { ROOT = { is_7_8_physical_class_trigger = yes } }
-					morale = 0.4
-				}
-				else_if = {
-					limit = { ROOT = { is_5_6_physical_class_trigger = yes } }
-					morale = 0.3
-				}
-				else_if = {
-					limit = { ROOT = { is_3_4_physical_class_trigger = yes } }
-					morale = 0.2
-				}
-				else = {
-					morale = 0.1
-				}
-			}
-		}
+		class_inspire_army_effect = yes
 	}
 }
 
@@ -2987,6 +2931,51 @@ letter_event = {
 		ai_chance = {
 			factor = 0
 		}
+	}
+}
+#on_combat_pulse
+# Storm, Earth, and Fire
+character_event = {
+	id = WCCLS.1610
+	desc = EVTDESC_WCCLS_1610
+	picture = GFX_evt_bishop_pandaren_religion_group
+	border = GFX_event_normal_frame_war
+
+	is_triggered_only = yes
+
+	# Forward!
+	option = {
+		name = EVTOPTA_WCCLS_105
+
+		class_storm_earth_and_fire_positive_effect = yes
+		if = {
+			limit = { liege = { any_army = { location = { province = event_target:target_province } } } }
+			liege = {
+				tooltip = { class_storm_earth_and_fire_positive_effect = yes }
+				character_event = { id = WCCLS.1611 }
+			}
+		}
+		class_storm_earth_and_fire_negative_effect = yes
+	}
+}
+# Notification event
+character_event = {
+	id = WCCLS.1611
+	desc = EVTDESC_WCCLS_1610
+	picture = GFX_evt_bishop_pandaren_religion_group
+	border = GFX_event_normal_frame_war
+
+	is_triggered_only = yes
+
+	# Forward!
+	option = {
+		name = EVTOPTA_WCCLS_105
+
+		random_army = {
+			limit = { location = { province = event_target:target_province } }
+			class_storm_earth_and_fire_positive_effect = yes
+		}
+		tooltip = { class_storm_earth_and_fire_negative_effect = yes }
 	}
 }
 
@@ -5904,6 +5893,65 @@ character_event = {
 				warlock_score = yes
 				shadow_priest_score = yes
 				necromancer_score = yes
+			}
+		}
+	}
+}
+
+#########################
+### Combat class event tombola
+#########################
+character_event = {
+	id = WCCLS.10500
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	min_age = 16
+	only_capable = yes
+	prisoner = no
+	
+	trigger = {
+		is_alive = yes
+		is_dying = no
+
+		OR = {
+			war = yes
+			liege = { war = yes }
+		}
+		
+		OR = {
+			is_hunter_class_trigger = yes
+			is_warrior_class_trigger = yes
+			AND = {
+				is_monk_class_trigger = yes
+				has_7_8_magic_class_or_higher_trigger = yes
+			}
+		}
+		NOT = { trait = craven }
+	}
+
+	immediate = {
+		log = "WCCLS.10500 fired for [Root.GetBestName]"
+		save_event_target_as = target_class
+		location = { save_event_target_as = target_province }
+		
+		random_list = {
+			10 = {
+				trigger = {
+					OR = {
+						is_hunter_class_trigger = yes
+						is_warrior_class_trigger = yes
+					}
+				}
+				character_event = { id = WCCLS.105 }
+			}
+			10 = {
+				trigger = {
+					is_monk_class_trigger = yes
+					has_7_8_magic_class_or_higher_trigger = yes
+				}
+				character_event = {	id = WCCLS.1610 }
 			}
 		}
 	}
