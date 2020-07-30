@@ -2644,7 +2644,7 @@ character_event = {
 	}
 }
 
-# Removes mind control power (TODO)
+# Removes mind control power
 # on_bi_yearly_pulse
 character_event = {
 	id = WCUND.1110
@@ -2673,7 +2673,7 @@ character_event = {
 	}
 }
 
-# Adds mind control power
+# Adds/removes mind control power on battle
 # on_battle_won_leader on_major_battle_won_leader
 character_event = {
 	id = WCUND.1111
@@ -2682,62 +2682,60 @@ character_event = {
 	hide_window = yes
 
 	trigger = {
-		is_alive = yes
-		is_dying = no
-		
-		top_liege = {
-			NOT = { at_location = ROOT }
-			war_with = FROM
-			
-			OR = {
-				has_character_modifier = mind_control_1
-				has_character_modifier = mind_control_2
-				has_character_modifier = mind_control_3
-				has_character_modifier = mind_control_4
+		OR = {
+			top_liege = {
+				war_with = FROM
+				
+				OR = {
+					has_character_modifier = mind_control_1
+					has_character_modifier = mind_control_2
+					has_character_modifier = mind_control_3
+					has_character_modifier = mind_control_4
+				}
 			}
-			NOT = { check_variable = { which = mind_control_power value = 100 } }
+			FROM = {
+				top_liege = {
+					war_with = ROOT
+					
+					OR = {
+						has_character_modifier = mind_control_1
+						has_character_modifier = mind_control_2
+						has_character_modifier = mind_control_3
+						has_character_modifier = mind_control_4
+					}
+				}
+			}
 		}
 	}
 
 	immediate = {
-		log = "(MIND CONTROL) [Root.TopLiege.GetBestName] won battle and got mind power"
-		
-		top_liege = {
-			add_3_mind_control_power_effect = yes
-		}
-	}
-}
-# Removes mind control power
-# on_battle_lost_owner on_major_battle_lost_leader
-character_event = {
-	id = WCUND.1112
-
-	is_triggered_only = yes
-	hide_window = yes
-
-	trigger = {
-		is_alive = yes
-		is_dying = no
-		
-		top_liege = {
-			NOT = { at_location = ROOT }
-			war_with = FROM
-			
-			OR = {
-				has_character_modifier = mind_control_1
-				has_character_modifier = mind_control_2
-				has_character_modifier = mind_control_3
-				has_character_modifier = mind_control_4
+		if = {
+			limit = {
+				top_liege = {
+					war_with = FROM
+					
+					OR = {
+						has_character_modifier = mind_control_1
+						has_character_modifier = mind_control_2
+						has_character_modifier = mind_control_3
+						has_character_modifier = mind_control_4
+					}
+				}
 			}
-			check_variable = { which = mind_control_power value = 1 }
+			top_liege = {
+				log = "(MIND CONTROL) [This.GetBestName]'s army led by [Root.GetBestName] won [From.GetBestName]'s army"
+				
+				add_3_mind_control_power_effect = yes
+			}
 		}
-	}
-
-	immediate = {
-		log = "(MIND CONTROL) [Root.TopLiege.GetBestName] lost battle and mind power"
-		
-		top_liege = {
-			remove_3_mind_control_power_effect = yes
+		else = {
+			FROM = {
+				top_liege = {
+					log = "(MIND CONTROL) [This.GetBestName]'s army led by [From.GetBestName] lost to [Root.GetBestName]'s army"
+					
+					remove_3_mind_control_power_effect = yes
+				}
+			}
 		}
 	}
 }
