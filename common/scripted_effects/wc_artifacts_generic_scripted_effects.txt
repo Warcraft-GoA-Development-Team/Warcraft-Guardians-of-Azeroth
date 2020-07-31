@@ -741,9 +741,10 @@ give_new_artifact_random_name_and_origin_effect = {
 # This is used in gamestart effect ONLY
 # set_variable = { which = local_new_generic_artifact_gamestart_variable value = 1 }
 
-# You need to put these things in immediate block in event if you want to get good tooltips in options
+# You need to use this thing before spawning effects, X is amount of artifacts.
+# while = { count = X set_local_variables_for_new_received_generic_artifact_effect = yes }
 
-set_local_option_a_variables_for_new_received_generic_artifact_effect = { # First, base and gamestart effect
+set_local_variables_for_new_received_generic_artifact_effect = {
 	if = { # Set rarity if not already set
 		limit = { check_variable = { which = local_new_received_generic_artifact_rarity_variable value == 0 } }
 		random_list = { # All items in 4 options will have the same rarity
@@ -769,9 +770,15 @@ set_local_option_a_variables_for_new_received_generic_artifact_effect = { # Firs
 			}
 		}
 	}
+
+	change_variable = { which = local_new_received_generic_artifact_amount_variable value = 1 } # Count times you used this effect
+
 	random_list = {
 		3 = { # Jewelry
 			trigger = {
+
+				check_variable = { which = local_new_received_generic_artifact_type_jewelry_amount_variable value < 3 } # Because 3 is max, since there is only 3 jewelry types
+
 				#trigger_if = {
 					#limit = { check_variable = { which = local_new_generic_artifact_receiving_character_matter_variable value = 1 } }
 					trigger_if = {
@@ -783,7 +790,8 @@ set_local_option_a_variables_for_new_received_generic_artifact_effect = { # Firs
 				#}
 			}
 
-			set_variable = { which = local_new_received_generic_artifact_type_jewelry_amount_variable value = 1 } # Because 3 is max - 1/3
+			change_variable = { which = local_new_received_generic_artifact_type_jewelry_amount_variable value = 1 } # Because 3 is max, since there is only 3 jewelry types
+
 			random_list = { # Jewelry Type
 				1 = { # Neck
 					trigger = {
@@ -794,9 +802,29 @@ set_local_option_a_variables_for_new_received_generic_artifact_effect = { # Firs
 								can_get_amulet_at_gamestart_distribution_trigger = yes
 							}
 						#}
+						# All 4 variants have different artifact slots
+						check_variable = { which = local_new_received_generic_artifact_option_a_slot_neck_variable value < 1 }
+						check_variable = { which = local_new_received_generic_artifact_option_b_slot_neck_variable value < 1 }
+						check_variable = { which = local_new_received_generic_artifact_option_c_slot_neck_variable value < 1 }
 					}
 
-					set_variable = { which = local_new_received_generic_artifact_option_a_slot_neck_variable value = 1 }
+					if = {
+						limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 1 } }
+						set_variable = { which = local_new_received_generic_artifact_option_a_slot_neck_variable value = 1 }
+					}
+					else_if = {
+						limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 2 } }
+						set_variable = { which = local_new_received_generic_artifact_option_b_slot_neck_variable value = 1 }					
+					}
+					else_if = {
+						limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 3 } }
+						set_variable = { which = local_new_received_generic_artifact_option_c_slot_neck_variable value = 1 }					
+					}
+					else_if = {
+						limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 4 } }
+						set_variable = { which = local_new_received_generic_artifact_option_d_slot_neck_variable value = 1 }					
+					}
+
 				}
 				1 = { # Ring
 					trigger = {
@@ -807,8 +835,28 @@ set_local_option_a_variables_for_new_received_generic_artifact_effect = { # Firs
 								can_get_ring_at_gamestart_distribution_trigger = yes
 							}
 						#}
+						# All 4 variants have different artifact slots
+						check_variable = { which = local_new_received_generic_artifact_option_a_slot_ring_variable value < 1 }
+						check_variable = { which = local_new_received_generic_artifact_option_b_slot_ring_variable value < 1 }
+						check_variable = { which = local_new_received_generic_artifact_option_c_slot_ring_variable value < 1 }
 					}
-					set_variable = { which = local_new_received_generic_artifact_option_a_slot_ring_variable value = 1 }
+
+					if = {
+						limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 1 } }
+						set_variable = { which = local_new_received_generic_artifact_option_a_slot_ring_variable value = 1 }
+					}
+					else_if = {
+						limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 2 } }
+						set_variable = { which = local_new_received_generic_artifact_option_b_slot_ring_variable value = 1 }					
+					}
+					else_if = {
+						limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 3 } }
+						set_variable = { which = local_new_received_generic_artifact_option_c_slot_ring_variable value = 1 }					
+					}
+					else_if = {
+						limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 4 } }
+						set_variable = { which = local_new_received_generic_artifact_option_d_slot_ring_variable value = 1 }					
+					}
 				}
 				1 = { # Wrist
 					trigger = {
@@ -819,16 +867,151 @@ set_local_option_a_variables_for_new_received_generic_artifact_effect = { # Firs
 								can_get_bracelet_at_gamestart_distribution_trigger = yes
 							}
 						#}
+						# All 4 variants have different artifact slots
+						check_variable = { which = local_new_received_generic_artifact_option_a_slot_wrist_variable value < 1 }
+						check_variable = { which = local_new_received_generic_artifact_option_b_slot_wrist_variable value < 1 }
+						check_variable = { which = local_new_received_generic_artifact_option_c_slot_wrist_variable value < 1 }
 					}
-					set_variable = { which = local_new_received_generic_artifact_option_a_slot_wrist_variable value = 1 }
+
+					if = {
+						limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 1 } }
+						set_variable = { which = local_new_received_generic_artifact_option_a_slot_wrist_variable value = 1 }
+					}
+					else_if = {
+						limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 2 } }
+						set_variable = { which = local_new_received_generic_artifact_option_b_slot_wrist_variable value = 1 }					
+					}
+					else_if = {
+						limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 3 } }
+						set_variable = { which = local_new_received_generic_artifact_option_c_slot_wrist_variable value = 1 }					
+					}
+					else_if = {
+						limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 4 } }
+						set_variable = { which = local_new_received_generic_artifact_option_d_slot_wrist_variable value = 1 }					
+					}
 				}
 			}
 			random_list = { # Jewelry Stat
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_a_stat_diplomacy_variable value = 1 } }
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_a_stat_martial_variable value = 1 } }
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_a_stat_stewardship_variable value = 1 } }
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_a_stat_intrigue_variable value = 1 } }
-				1 = { set_variable = { which = local_new_received_generic_artifact_option_a_stat_learning_variable value = 1 } }
+				1 = {
+					trigger = {
+						check_variable = { which = local_new_received_generic_artifact_option_a_stat_diplomacy_variable value < 1 }
+						check_variable = { which = local_new_received_generic_artifact_option_b_stat_diplomacy_variable value < 1 }
+						check_variable = { which = local_new_received_generic_artifact_option_c_stat_diplomacy_variable value < 1 }
+					}
+
+					if = {
+						limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 1 } }
+						set_variable = { which = local_new_received_generic_artifact_option_a_stat_diplomacy_variable value = 1 }
+					}
+					else_if = {
+						limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 2 } }
+						set_variable = { which = local_new_received_generic_artifact_option_b_stat_diplomacy_variable value = 1 }					
+					}
+					else_if = {
+						limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 3 } }
+						set_variable = { which = local_new_received_generic_artifact_option_c_stat_diplomacy_variable value = 1 }					
+					}
+					else_if = {
+						limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 4 } }
+						set_variable = { which = local_new_received_generic_artifact_option_d_stat_diplomacy_variable value = 1 }					
+					}
+				}
+				1 = {
+					trigger = {
+						check_variable = { which = local_new_received_generic_artifact_option_a_stat_martial_variable value < 1 }
+						check_variable = { which = local_new_received_generic_artifact_option_b_stat_martial_variable value < 1 }
+						check_variable = { which = local_new_received_generic_artifact_option_c_stat_martial_variable value < 1 }
+					}
+
+					if = {
+						limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 1 } }
+						set_variable = { which = local_new_received_generic_artifact_option_a_stat_martial_variable value = 1 }
+					}
+					else_if = {
+						limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 2 } }
+						set_variable = { which = local_new_received_generic_artifact_option_b_stat_martial_variable value = 1 }					
+					}
+					else_if = {
+						limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 3 } }
+						set_variable = { which = local_new_received_generic_artifact_option_c_stat_martial_variable value = 1 }					
+					}
+					else_if = {
+						limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 4 } }
+						set_variable = { which = local_new_received_generic_artifact_option_d_stat_martial_variable value = 1 }					
+					}
+				}
+				1 = {
+					trigger = {
+						check_variable = { which = local_new_received_generic_artifact_option_a_stat_stewardship_variable value < 1 }
+						check_variable = { which = local_new_received_generic_artifact_option_b_stat_stewardship_variable value < 1 }
+						check_variable = { which = local_new_received_generic_artifact_option_c_stat_stewardship_variable value < 1 }
+					}
+
+					if = {
+						limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 1 } }
+						set_variable = { which = local_new_received_generic_artifact_option_a_stat_stewardship_variable value = 1 }
+					}
+					else_if = {
+						limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 2 } }
+						set_variable = { which = local_new_received_generic_artifact_option_b_stat_stewardship_variable value = 1 }					
+					}
+					else_if = {
+						limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 3 } }
+						set_variable = { which = local_new_received_generic_artifact_option_c_stat_stewardship_variable value = 1 }					
+					}
+					else_if = {
+						limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 4 } }
+						set_variable = { which = local_new_received_generic_artifact_option_d_stat_stewardship_variable value = 1 }					
+					}
+				}
+				1 = {
+					trigger = {
+						check_variable = { which = local_new_received_generic_artifact_option_a_stat_intrigue_variable value < 1 }
+						check_variable = { which = local_new_received_generic_artifact_option_b_stat_intrigue_variable value < 1 }
+						check_variable = { which = local_new_received_generic_artifact_option_c_stat_intrigue_variable value < 1 }
+					}
+
+					if = {
+						limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 1 } }
+						set_variable = { which = local_new_received_generic_artifact_option_a_stat_intrigue_variable value = 1 }
+					}
+					else_if = {
+						limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 2 } }
+						set_variable = { which = local_new_received_generic_artifact_option_b_stat_intrigue_variable value = 1 }					
+					}
+					else_if = {
+						limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 3 } }
+						set_variable = { which = local_new_received_generic_artifact_option_c_stat_intrigue_variable value = 1 }					
+					}
+					else_if = {
+						limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 4 } }
+						set_variable = { which = local_new_received_generic_artifact_option_d_stat_intrigue_variable value = 1 }					
+					}
+				}
+				1 = {
+					trigger = {
+						check_variable = { which = local_new_received_generic_artifact_option_a_stat_learning_variable value < 1 }
+						check_variable = { which = local_new_received_generic_artifact_option_b_stat_learning_variable value < 1 }
+						check_variable = { which = local_new_received_generic_artifact_option_c_stat_learning_variable value < 1 }
+					}
+
+					if = {
+						limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 1 } }
+						set_variable = { which = local_new_received_generic_artifact_option_a_stat_learning_variable value = 1 }
+					}
+					else_if = {
+						limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 2 } }
+						set_variable = { which = local_new_received_generic_artifact_option_b_stat_learning_variable value = 1 }					
+					}
+					else_if = {
+						limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 3 } }
+						set_variable = { which = local_new_received_generic_artifact_option_c_stat_learning_variable value = 1 }					
+					}
+					else_if = {
+						limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 4 } }
+						set_variable = { which = local_new_received_generic_artifact_option_d_stat_learning_variable value = 1 }					
+					}
+				}
 			}
 		}
 		1 = { # Weapon Slot
@@ -843,8 +1026,31 @@ set_local_option_a_variables_for_new_received_generic_artifact_effect = { # Firs
 						}
 					}
 				# }
+				# All 4 variants have different artifact slots
+				check_variable = { which = local_new_received_generic_artifact_option_a_slot_weapon_variable value < 1 }
+				check_variable = { which = local_new_received_generic_artifact_option_b_slot_weapon_variable value < 1 }
+				check_variable = { which = local_new_received_generic_artifact_option_c_slot_weapon_variable value < 1 }
 			}
+
 			set_variable = { which = local_new_received_generic_artifact_option_a_slot_weapon_variable value = 1 }
+
+			if = {
+				limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 1 } }
+				set_variable = { which = local_new_received_generic_artifact_option_a_slot_weapon_variable value = 1 }
+			}
+			else_if = {
+				limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 2 } }
+				set_variable = { which = local_new_received_generic_artifact_option_b_slot_weapon_variable value = 1 }					
+			}
+			else_if = {
+				limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 3 } }
+				set_variable = { which = local_new_received_generic_artifact_option_c_slot_weapon_variable value = 1 }					
+			}
+			else_if = {
+				limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 4 } }
+				set_variable = { which = local_new_received_generic_artifact_option_d_slot_weapon_variable value = 1 }					
+			}
+
 			random_list = {
 				1 = { # Melee Weapons
 					trigger = {
@@ -862,51 +1068,171 @@ set_local_option_a_variables_for_new_received_generic_artifact_effect = { # Firs
 							prefers_twohanded_score = yes
 							prefers_swords_score = yes
 
-							set_variable = { which = local_new_received_generic_artifact_option_a_weapon_sword_twohanded_variable value = 1 }
+							if = {
+								limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 1 } }
+								set_variable = { which = local_new_received_generic_artifact_option_a_weapon_sword_twohanded_variable value = 1 }
+							}
+							else_if = {
+								limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 2 } }
+								set_variable = { which = local_new_received_generic_artifact_option_b_weapon_sword_twohanded_variable value = 1 }					
+							}
+							else_if = {
+								limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 3 } }
+								set_variable = { which = local_new_received_generic_artifact_option_c_weapon_sword_twohanded_variable value = 1 }					
+							}
+							else_if = {
+								limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 4 } }
+								set_variable = { which = local_new_received_generic_artifact_option_d_weapon_sword_twohanded_variable value = 1 }					
+							}
 						}
 						1 = {
 							prefers_twohanded_score = yes
 							prefers_axes_score = yes
 
-							set_variable = { which = local_new_received_generic_artifact_option_a_weapon_axe_twohanded_variable value = 1 }
+							if = {
+								limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 1 } }
+								set_variable = { which = local_new_received_generic_artifact_option_a_weapon_axe_twohanded_variable value = 1 }
+							}
+							else_if = {
+								limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 2 } }
+								set_variable = { which = local_new_received_generic_artifact_option_b_weapon_axe_twohanded_variable value = 1 }					
+							}
+							else_if = {
+								limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 3 } }
+								set_variable = { which = local_new_received_generic_artifact_option_c_weapon_axe_twohanded_variable value = 1 }					
+							}
+							else_if = {
+								limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 4 } }
+								set_variable = { which = local_new_received_generic_artifact_option_d_weapon_axe_twohanded_variable value = 1 }					
+							}
 						}
 						1 = {
 							prefers_twohanded_score = yes
 							prefers_maces_score = yes
 
-							set_variable = { which = local_new_received_generic_artifact_option_a_weapon_mace_twohanded_variable value = 1 }
+							if = {
+								limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 1 } }
+								set_variable = { which = local_new_received_generic_artifact_option_a_weapon_mace_twohanded_variable value = 1 }
+							}
+							else_if = {
+								limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 2 } }
+								set_variable = { which = local_new_received_generic_artifact_option_b_weapon_mace_twohanded_variable value = 1 }					
+							}
+							else_if = {
+								limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 3 } }
+								set_variable = { which = local_new_received_generic_artifact_option_c_weapon_mace_twohanded_variable value = 1 }					
+							}
+							else_if = {
+								limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 4 } }
+								set_variable = { which = local_new_received_generic_artifact_option_d_weapon_mace_twohanded_variable value = 1 }					
+							}
 						}
 
 						1 = {
 							prefers_onehanded_score = yes
 							prefers_swords_score = yes
 
-							set_variable = { which = local_new_received_generic_artifact_option_a_weapon_sword_onehanded_variable value = 1 }
+							if = {
+								limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 1 } }
+								set_variable = { which = local_new_received_generic_artifact_option_a_weapon_sword_onehanded_variable value = 1 }
+							}
+							else_if = {
+								limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 2 } }
+								set_variable = { which = local_new_received_generic_artifact_option_b_weapon_sword_onehanded_variable value = 1 }					
+							}
+							else_if = {
+								limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 3 } }
+								set_variable = { which = local_new_received_generic_artifact_option_c_weapon_sword_onehanded_variable value = 1 }					
+							}
+							else_if = {
+								limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 4 } }
+								set_variable = { which = local_new_received_generic_artifact_option_d_weapon_sword_onehanded_variable value = 1 }					
+							}
 						}
 						1 = {
 							prefers_onehanded_score = yes
 							prefers_axes_score = yes
 
-							set_variable = { which = local_new_received_generic_artifact_option_a_weapon_axe_onehanded_variable value = 1 }
+							if = {
+								limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 1 } }
+								set_variable = { which = local_new_received_generic_artifact_option_a_weapon_axe_onehanded_variable value = 1 }
+							}
+							else_if = {
+								limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 2 } }
+								set_variable = { which = local_new_received_generic_artifact_option_b_weapon_axe_onehanded_variable value = 1 }					
+							}
+							else_if = {
+								limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 3 } }
+								set_variable = { which = local_new_received_generic_artifact_option_c_weapon_axe_onehanded_variable value = 1 }					
+							}
+							else_if = {
+								limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 4 } }
+								set_variable = { which = local_new_received_generic_artifact_option_d_weapon_axe_onehanded_variable value = 1 }					
+							}
 						}
 						1 = {
 							prefers_onehanded_score = yes
 							prefers_maces_score = yes
 
-							set_variable = { which = local_new_received_generic_artifact_option_a_weapon_mace_onehanded_variable value = 1 }
+							if = {
+								limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 1 } }
+								set_variable = { which = local_new_received_generic_artifact_option_a_weapon_mace_onehanded_variable value = 1 }
+							}
+							else_if = {
+								limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 2 } }
+								set_variable = { which = local_new_received_generic_artifact_option_b_weapon_mace_onehanded_variable value = 1 }					
+							}
+							else_if = {
+								limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 3 } }
+								set_variable = { which = local_new_received_generic_artifact_option_c_weapon_mace_onehanded_variable value = 1 }					
+							}
+							else_if = {
+								limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 4 } }
+								set_variable = { which = local_new_received_generic_artifact_option_d_weapon_mace_onehanded_variable value = 1 }					
+							}
 						}
 
 						1 = {
 							prefers_twohanded_score = yes
 							prefers_spears_score = yes
 
-							set_variable = { which = local_new_received_generic_artifact_option_a_weapon_spear_variable value = 1 }
+							if = {
+								limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 1 } }
+								set_variable = { which = local_new_received_generic_artifact_option_a_weapon_spear_variable value = 1 }
+							}
+							else_if = {
+								limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 2 } }
+								set_variable = { which = local_new_received_generic_artifact_option_b_weapon_spear_variable value = 1 }					
+							}
+							else_if = {
+								limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 3 } }
+								set_variable = { which = local_new_received_generic_artifact_option_c_weapon_spear_variable value = 1 }					
+							}
+							else_if = {
+								limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 4 } }
+								set_variable = { which = local_new_received_generic_artifact_option_d_weapon_spear_variable value = 1 }					
+							}
 						}
 						1 = {
 							prefers_twohanded_score = yes
 							prefers_halberds_score = yes
 
-							set_variable = { which = local_new_received_generic_artifact_option_a_weapon_halberd_variable value = 1 }
+							if = {
+								limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 1 } }
+								set_variable = { which = local_new_received_generic_artifact_option_a_weapon_halberd_variable value = 1 }
+							}
+							else_if = {
+								limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 2 } }
+								set_variable = { which = local_new_received_generic_artifact_option_b_weapon_halberd_variable value = 1 }					
+							}
+							else_if = {
+								limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 3 } }
+								set_variable = { which = local_new_received_generic_artifact_option_c_weapon_halberd_variable value = 1 }					
+							}
+							else_if = {
+								limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 4 } }
+								set_variable = { which = local_new_received_generic_artifact_option_d_weapon_halberd_variable value = 1 }					
+							}
 						}
 					}
 				}
@@ -925,7 +1251,22 @@ set_local_option_a_variables_for_new_received_generic_artifact_effect = { # Firs
 						1 = {
 							prefers_bow_score = yes
 
-							set_variable = { which = local_new_received_generic_artifact_option_a_weapon_bow_variable value = 1 }
+							if = {
+								limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 1 } }
+								set_variable = { which = local_new_received_generic_artifact_option_a_weapon_bow_variable value = 1 }
+							}
+							else_if = {
+								limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 2 } }
+								set_variable = { which = local_new_received_generic_artifact_option_b_weapon_bow_variable value = 1 }					
+							}
+							else_if = {
+								limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 3 } }
+								set_variable = { which = local_new_received_generic_artifact_option_c_weapon_bow_variable value = 1 }					
+							}
+							else_if = {
+								limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 4 } }
+								set_variable = { which = local_new_received_generic_artifact_option_d_weapon_bow_variable value = 1 }					
+							}
 						}
 						1 = { # Crossbows
 							prefers_crossbow_score = yes
@@ -936,7 +1277,23 @@ set_local_option_a_variables_for_new_received_generic_artifact_effect = { # Firs
 									crossbow_artifact_active_trigger = yes
 								}
 							}
-							set_variable = { which = local_new_received_generic_artifact_option_a_weapon_crossbow_variable value = 1 }
+
+							if = {
+								limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 1 } }
+								set_variable = { which = local_new_received_generic_artifact_option_a_weapon_crossbow_variable value = 1 }
+							}
+							else_if = {
+								limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 2 } }
+								set_variable = { which = local_new_received_generic_artifact_option_b_weapon_crossbow_variable value = 1 }					
+							}
+							else_if = {
+								limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 3 } }
+								set_variable = { which = local_new_received_generic_artifact_option_c_weapon_crossbow_variable value = 1 }					
+							}
+							else_if = {
+								limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 4 } }
+								set_variable = { which = local_new_received_generic_artifact_option_d_weapon_crossbow_variable value = 1 }					
+							}
 						}
 						1 = { # Rifles
 							prefers_rifle_score = yes
@@ -947,479 +1304,23 @@ set_local_option_a_variables_for_new_received_generic_artifact_effect = { # Firs
 									rifle_artifact_active_trigger = yes
 								}
 							}
-							set_variable = { which = local_new_received_generic_artifact_option_a_weapon_rifle_variable value = 1 }
-						}
-					}
-				}
-			}
-		}
-	}
-}
 
-set_local_option_b_variables_for_new_received_generic_artifact_effect = {
-	random_list = {
-		3 = { # Jewelry
-			change_variable = { which = local_new_received_generic_artifact_type_jewelry_amount_variable value = 1 } # Because 3 is max - 2/3
-			random_list = { # Jewelry Type
-				1 = {
-					trigger = { check_variable = { which = local_new_received_generic_artifact_option_a_slot_neck_variable value < 1 } }
-					set_variable = { which = local_new_received_generic_artifact_option_b_slot_neck_variable value = 1 }
-				}
-				1 = {
-					trigger = { check_variable = { which = local_new_received_generic_artifact_option_a_slot_ring_variable value < 1 } }
-					set_variable = { which = local_new_received_generic_artifact_option_b_slot_ring_variable value = 1 }
-				}
-				1 = {
-					trigger = { check_variable = { which = local_new_received_generic_artifact_option_a_slot_wrist_variable value < 1 } }
-					set_variable = { which = local_new_received_generic_artifact_option_b_slot_wrist_variable value = 1 }
-				}
-			}
-			random_list = { # Jewelry Stat
-				1 = {
-					trigger = { check_variable = { which = local_new_received_generic_artifact_option_a_stat_diplomacy_variable value < 1 } }
-					set_variable = { which = local_new_received_generic_artifact_option_b_stat_diplomacy_variable value = 1 }
-				}
-				1 = {
-					trigger = { check_variable = { which = local_new_received_generic_artifact_option_a_stat_martial_variable value < 1 } }
-					set_variable = { which = local_new_received_generic_artifact_option_b_stat_martial_variable value = 1 }
-				}
-				1 = {
-					trigger = { check_variable = { which = local_new_received_generic_artifact_option_a_stat_stewardship_variable value < 1 } }
-					set_variable = { which = local_new_received_generic_artifact_option_b_stat_stewardship_variable value = 1 }
-				}
-				1 = {
-					trigger = { check_variable = { which = local_new_received_generic_artifact_option_a_stat_intrigue_variable value < 1 } }
-					set_variable = { which = local_new_received_generic_artifact_option_b_stat_intrigue_variable value = 1 }
-				}
-				1 = {
-					trigger = { check_variable = { which = local_new_received_generic_artifact_option_a_stat_learning_variable value < 1 } }
-					set_variable = { which = local_new_received_generic_artifact_option_b_stat_learning_variable value = 1 }
-				}
-			}
-		}
-		1 = { # Weapon
-			trigger = { check_variable = { which = local_new_received_generic_artifact_option_a_slot_weapon_variable value < 1 } }
-
-			set_variable = { which = local_new_received_generic_artifact_option_b_slot_weapon_variable value = 1 }
-			random_list = {
-				1 = { # Melee Weapons
-					random_list = {
-						1 = {
-							prefers_twohanded_score = yes
-							prefers_swords_score = yes
-
-							set_variable = { which = local_new_received_generic_artifact_option_b_weapon_sword_twohanded_variable value = 1 }
-						}
-						1 = {
-							prefers_twohanded_score = yes
-							prefers_axes_score = yes
-
-							set_variable = { which = local_new_received_generic_artifact_option_b_weapon_axe_twohanded_variable value = 1 }
-						}
-						1 = {
-							prefers_twohanded_score = yes
-							prefers_maces_score = yes
-
-							set_variable = { which = local_new_received_generic_artifact_option_b_weapon_mace_twohanded_variable value = 1 }
-						}
-
-						1 = {
-							prefers_onehanded_score = yes
-							prefers_swords_score = yes
-
-							set_variable = { which = local_new_received_generic_artifact_option_b_weapon_sword_onehanded_variable value = 1 }
-						}
-						1 = {
-							prefers_onehanded_score = yes
-							prefers_axes_score = yes
-
-							set_variable = { which = local_new_received_generic_artifact_option_b_weapon_axe_onehanded_variable value = 1 }
-						}
-						1 = {
-							prefers_onehanded_score = yes
-							prefers_maces_score = yes
-
-							set_variable = { which = local_new_received_generic_artifact_option_b_weapon_mace_onehanded_variable value = 1 }
-						}
-
-						1 = {
-							prefers_twohanded_score = yes
-							prefers_spears_score = yes
-
-							set_variable = { which = local_new_received_generic_artifact_option_b_weapon_spear_variable value = 1 }
-						}
-						1 = {
-							prefers_twohanded_score = yes
-							prefers_halberds_score = yes
-
-							set_variable = { which = local_new_received_generic_artifact_option_b_weapon_halberd_variable value = 1 }
-						}
-					}
-				}
-				1 = { # Ranged Weapons
-					random_list = {
-						1 = {
-							prefers_bow_score = yes
-
-							set_variable = { which = local_new_received_generic_artifact_option_b_weapon_bow_variable value = 1 }
-						}
-						1 = { # Crossbows
-							prefers_crossbow_score = yes
-
-							trigger = {
-								trigger_if = {
-									limit = { check_variable = { which = local_new_generic_artifact_receiving_character_matter_variable value = 1 } }
-									crossbow_artifact_active_trigger = yes
-								}
+							if = {
+								limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 1 } }
+								set_variable = { which = local_new_received_generic_artifact_option_a_weapon_rifle_variable value = 1 }
 							}
-							set_variable = { which = local_new_received_generic_artifact_option_b_weapon_crossbow_variable value = 1 }
-						}
-						1 = { # Rifles
-							prefers_rifle_score = yes
-
-							trigger = {
-								trigger_if = {
-									limit = { check_variable = { which = local_new_generic_artifact_receiving_character_matter_variable value = 1 } }
-									rifle_artifact_active_trigger = yes
-								}
+							else_if = {
+								limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 2 } }
+								set_variable = { which = local_new_received_generic_artifact_option_b_weapon_rifle_variable value = 1 }					
 							}
-							set_variable = { which = local_new_received_generic_artifact_option_b_weapon_rifle_variable value = 1 }
-						}
-					}
-				}
-			}
-		}
-	}
-}
-
-set_local_option_c_variables_for_new_received_generic_artifact_effect = {
-	random_list = {
-		3 = { # Jewelry
-			change_variable = { which = local_new_received_generic_artifact_type_jewelry_amount_variable value = 1 } # Because 3 is max - 3/3
-			random_list = { # Jewelry Type
-				1 = {
-					trigger = {
-						check_variable = { which = local_new_received_generic_artifact_option_a_slot_neck_variable value < 1 }
-						check_variable = { which = local_new_received_generic_artifact_option_b_slot_neck_variable value < 1 }
-					}
-					set_variable = { which = local_new_received_generic_artifact_option_c_slot_neck_variable value = 1 }
-				}
-				1 = {
-					trigger = {
-						check_variable = { which = local_new_received_generic_artifact_option_a_slot_ring_variable value < 1 }
-						check_variable = { which = local_new_received_generic_artifact_option_b_slot_ring_variable value < 1 }
-					}
-					set_variable = { which = local_new_received_generic_artifact_option_c_slot_ring_variable value = 1 }
-				}
-				1 = {
-					trigger = {
-						check_variable = { which = local_new_received_generic_artifact_option_a_slot_wrist_variable value < 1 }
-						check_variable = { which = local_new_received_generic_artifact_option_b_slot_wrist_variable value < 1 }
-					}
-					set_variable = { which = local_new_received_generic_artifact_option_c_slot_wrist_variable value = 1 }
-				}
-			}
-			random_list = { # Jewelry Stat
-				1 = {
-					trigger = {
-						check_variable = { which = local_new_received_generic_artifact_option_a_stat_diplomacy_variable value < 1 }
-						check_variable = { which = local_new_received_generic_artifact_option_b_stat_diplomacy_variable value < 1 }
-					}
-					set_variable = { which = local_new_received_generic_artifact_option_c_stat_diplomacy_variable value = 1 }
-				}
-				1 = {
-					trigger = {
-						check_variable = { which = local_new_received_generic_artifact_option_a_stat_martial_variable value < 1 }
-						check_variable = { which = local_new_received_generic_artifact_option_b_stat_martial_variable value < 1 }
-					}
-					set_variable = { which = local_new_received_generic_artifact_option_c_stat_martial_variable value = 1 }
-				}
-				1 = {
-					trigger = {
-						check_variable = { which = local_new_received_generic_artifact_option_a_stat_stewardship_variable value < 1 }
-						check_variable = { which = local_new_received_generic_artifact_option_b_stat_stewardship_variable value < 1 }
-					}
-					set_variable = { which = local_new_received_generic_artifact_option_c_stat_stewardship_variable value = 1 }
-				}
-				1 = {
-					trigger = {
-						check_variable = { which = local_new_received_generic_artifact_option_a_stat_intrigue_variable value < 1 }
-						check_variable = { which = local_new_received_generic_artifact_option_b_stat_intrigue_variable value < 1 }
-					}
-					set_variable = { which = local_new_received_generic_artifact_option_c_stat_intrigue_variable value = 1 }
-				}
-				1 = {
-					trigger = {
-						check_variable = { which = local_new_received_generic_artifact_option_a_stat_learning_variable value < 1 }
-						check_variable = { which = local_new_received_generic_artifact_option_b_stat_learning_variable value < 1 }
-					}
-					set_variable = { which = local_new_received_generic_artifact_option_c_stat_learning_variable value = 1 }
-				}
-			}
-		}
-		1 = { # Weapon
-			trigger = {
-				check_variable = { which = local_new_received_generic_artifact_option_a_slot_weapon_variable value < 1 }
-				check_variable = { which = local_new_received_generic_artifact_option_b_slot_weapon_variable value < 1 }
-			}
-
-			set_variable = { which = local_new_received_generic_artifact_option_c_slot_weapon_variable value = 1 }
-			random_list = {
-				1 = { # Melee Weapons
-					random_list = {
-						1 = {
-							prefers_twohanded_score = yes
-							prefers_swords_score = yes
-
-							set_variable = { which = local_new_received_generic_artifact_option_c_weapon_sword_twohanded_variable value = 1 }
-						}
-						1 = {
-							prefers_twohanded_score = yes
-							prefers_axes_score = yes
-
-							set_variable = { which = local_new_received_generic_artifact_option_c_weapon_axe_twohanded_variable value = 1 }
-						}
-						1 = {
-							prefers_twohanded_score = yes
-							prefers_maces_score = yes
-
-							set_variable = { which = local_new_received_generic_artifact_option_c_weapon_mace_twohanded_variable value = 1 }
-						}
-
-						1 = {
-							prefers_onehanded_score = yes
-							prefers_swords_score = yes
-
-							set_variable = { which = local_new_received_generic_artifact_option_c_weapon_sword_onehanded_variable value = 1 }
-						}
-						1 = {
-							prefers_onehanded_score = yes
-							prefers_axes_score = yes
-
-							set_variable = { which = local_new_received_generic_artifact_option_c_weapon_axe_onehanded_variable value = 1 }
-						}
-						1 = {
-							prefers_onehanded_score = yes
-							prefers_maces_score = yes
-
-							set_variable = { which = local_new_received_generic_artifact_option_c_weapon_mace_onehanded_variable value = 1 }
-						}
-
-						1 = {
-							prefers_twohanded_score = yes
-							prefers_spears_score = yes
-
-							set_variable = { which = local_new_received_generic_artifact_option_c_weapon_spear_variable value = 1 }
-						}
-						1 = {
-							prefers_twohanded_score = yes
-							prefers_halberds_score = yes
-
-							set_variable = { which = local_new_received_generic_artifact_option_c_weapon_halberd_variable value = 1 }
-						}
-					}
-				}
-				1 = { # Ranged Weapons
-					random_list = {
-						1 = {
-							prefers_bow_score = yes
-
-							set_variable = { which = local_new_received_generic_artifact_option_c_weapon_bow_variable value = 1 }
-						}
-						1 = { # Crossbows
-							prefers_crossbow_score = yes
-
-							trigger = {
-								trigger_if = {
-									limit = { check_variable = { which = local_new_generic_artifact_receiving_character_matter_variable value = 1 } }
-									crossbow_artifact_active_trigger = yes
-								}
+							else_if = {
+								limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 3 } }
+								set_variable = { which = local_new_received_generic_artifact_option_c_weapon_rifle_variable value = 1 }					
 							}
-							set_variable = { which = local_new_received_generic_artifact_option_c_weapon_crossbow_variable value = 1 }
-						}
-						1 = { # Rifles
-							prefers_rifle_score = yes
-
-							trigger = {
-								trigger_if = {
-									limit = { check_variable = { which = local_new_generic_artifact_receiving_character_matter_variable value = 1 } }
-									rifle_artifact_active_trigger = yes
-								}
+							else_if = {
+								limit = { check_variable = { which = local_new_received_generic_artifact_amount_variable value == 4 } }
+								set_variable = { which = local_new_received_generic_artifact_option_d_weapon_rifle_variable value = 1 }					
 							}
-							set_variable = { which = local_new_received_generic_artifact_option_c_weapon_rifle_variable value = 1 }
-						}
-					}
-				}
-			}
-		}
-	}
-}
-
-set_local_option_d_variables_for_new_received_generic_artifact_effect = {
-	random_list = {
-		3 = { # Jewelry
-			trigger = { check_variable = { which = local_new_received_generic_artifact_type_jewelry_amount_variable value < 3 } } # Because 3 is max
-
-			random_list = { # Jewelry Type
-				1 = {
-					trigger = {
-						check_variable = { which = local_new_received_generic_artifact_option_a_slot_neck_variable value < 1 }
-						check_variable = { which = local_new_received_generic_artifact_option_b_slot_neck_variable value < 1 }
-						check_variable = { which = local_new_received_generic_artifact_option_c_slot_neck_variable value < 1 }
-					}
-					set_variable = { which = local_new_received_generic_artifact_option_d_slot_neck_variable value = 1 }
-				}
-				1 = {
-					trigger = {
-						check_variable = { which = local_new_received_generic_artifact_option_a_slot_ring_variable value < 1 }
-						check_variable = { which = local_new_received_generic_artifact_option_b_slot_ring_variable value < 1 }
-						check_variable = { which = local_new_received_generic_artifact_option_c_slot_ring_variable value < 1 }
-					}
-					set_variable = { which = local_new_received_generic_artifact_option_d_slot_ring_variable value = 1 }
-				}
-				1 = {
-					trigger = {
-						check_variable = { which = local_new_received_generic_artifact_option_a_slot_wrist_variable value < 1 }
-						check_variable = { which = local_new_received_generic_artifact_option_b_slot_wrist_variable value < 1 }
-						check_variable = { which = local_new_received_generic_artifact_option_c_slot_wrist_variable value < 1 }
-					}
-					set_variable = { which = local_new_received_generic_artifact_option_d_slot_wrist_variable value = 1 }
-				}
-			}
-			random_list = { # Jewelry Stat
-				1 = {
-					trigger = {
-						check_variable = { which = local_new_received_generic_artifact_option_a_stat_diplomacy_variable value < 1 }
-						check_variable = { which = local_new_received_generic_artifact_option_b_stat_diplomacy_variable value < 1 }
-						check_variable = { which = local_new_received_generic_artifact_option_c_stat_diplomacy_variable value < 1 }
-					}
-					set_variable = { which = local_new_received_generic_artifact_option_d_stat_diplomacy_variable value = 1 }
-				}
-				1 = {
-					trigger = {
-						check_variable = { which = local_new_received_generic_artifact_option_a_stat_martial_variable value < 1 }
-						check_variable = { which = local_new_received_generic_artifact_option_b_stat_martial_variable value < 1 }
-						check_variable = { which = local_new_received_generic_artifact_option_c_stat_martial_variable value < 1 }
-					}
-					set_variable = { which = local_new_received_generic_artifact_option_d_stat_martial_variable value = 1 }
-				}
-				1 = {
-					trigger = {
-						check_variable = { which = local_new_received_generic_artifact_option_a_stat_stewardship_variable value < 1 }
-						check_variable = { which = local_new_received_generic_artifact_option_b_stat_stewardship_variable value < 1 }
-						check_variable = { which = local_new_received_generic_artifact_option_c_stat_stewardship_variable value < 1 }
-					}
-					set_variable = { which = local_new_received_generic_artifact_option_d_stat_stewardship_variable value = 1 }
-				}
-				1 = {
-					trigger = {
-						check_variable = { which = local_new_received_generic_artifact_option_a_stat_intrigue_variable value < 1 }
-						check_variable = { which = local_new_received_generic_artifact_option_b_stat_intrigue_variable value < 1 }
-						check_variable = { which = local_new_received_generic_artifact_option_c_stat_intrigue_variable value < 1 }
-					}
-					set_variable = { which = local_new_received_generic_artifact_option_d_stat_intrigue_variable value = 1 }
-				}
-				1 = {
-					trigger = {
-						check_variable = { which = local_new_received_generic_artifact_option_a_stat_learning_variable value < 1 }
-						check_variable = { which = local_new_received_generic_artifact_option_b_stat_learning_variable value < 1 }
-						check_variable = { which = local_new_received_generic_artifact_option_c_stat_learning_variable value < 1 }
-					}
-					set_variable = { which = local_new_received_generic_artifact_option_d_stat_learning_variable value = 1 }
-				}
-			}
-		}
-		1 = { # Weapon
-			trigger = {
-				check_variable = { which = local_new_received_generic_artifact_option_a_slot_weapon_variable value < 1 }
-				check_variable = { which = local_new_received_generic_artifact_option_b_slot_weapon_variable value < 1 }
-				check_variable = { which = local_new_received_generic_artifact_option_c_slot_weapon_variable value < 1 }
-			}
-
-			set_variable = { which = local_new_received_generic_artifact_option_d_slot_weapon_variable value = 1 }
-			random_list = {
-				1 = { # Melee Weapons
-					random_list = {
-						1 = {
-							prefers_twohanded_score = yes
-							prefers_swords_score = yes
-
-							set_variable = { which = local_new_received_generic_artifact_option_d_weapon_sword_twohanded_variable value = 1 }
-						}
-						1 = {
-							prefers_twohanded_score = yes
-							prefers_axes_score = yes
-
-							set_variable = { which = local_new_received_generic_artifact_option_d_weapon_axe_twohanded_variable value = 1 }
-						}
-						1 = {
-							prefers_twohanded_score = yes
-							prefers_maces_score = yes
-
-							set_variable = { which = local_new_received_generic_artifact_option_d_weapon_mace_twohanded_variable value = 1 }
-						}
-
-						1 = {
-							prefers_onehanded_score = yes
-							prefers_swords_score = yes
-
-							set_variable = { which = local_new_received_generic_artifact_option_d_weapon_sword_onehanded_variable value = 1 }
-						}
-						1 = {
-							prefers_onehanded_score = yes
-							prefers_axes_score = yes
-
-							set_variable = { which = local_new_received_generic_artifact_option_d_weapon_axe_onehanded_variable value = 1 }
-						}
-						1 = {
-							prefers_onehanded_score = yes
-							prefers_maces_score = yes
-
-							set_variable = { which = local_new_received_generic_artifact_option_d_weapon_mace_onehanded_variable value = 1 }
-						}
-
-						1 = {
-							prefers_twohanded_score = yes
-							prefers_spears_score = yes
-
-							set_variable = { which = local_new_received_generic_artifact_option_d_weapon_spear_variable value = 1 }
-						}
-						1 = {
-							prefers_twohanded_score = yes
-							prefers_halberds_score = yes
-
-							set_variable = { which = local_new_received_generic_artifact_option_d_weapon_halberd_variable value = 1 }
-						}
-					}
-				}
-				1 = { # Ranged Weapons
-					random_list = {
-						1 = {
-							prefers_bow_score = yes
-
-							set_variable = { which = local_new_received_generic_artifact_option_d_weapon_bow_variable value = 1 }
-						}
-						1 = { # Crossbows
-							prefers_crossbow_score = yes
-
-							trigger = {
-								trigger_if = {
-									limit = { check_variable = { which = local_new_generic_artifact_receiving_character_matter_variable value = 1 } }
-									crossbow_artifact_active_trigger = yes
-								}
-							}
-							set_variable = { which = local_new_received_generic_artifact_option_d_weapon_crossbow_variable value = 1 }
-						}
-						1 = { # Rifles
-							prefers_rifle_score = yes
-
-							trigger = {
-								trigger_if = {
-									limit = { check_variable = { which = local_new_generic_artifact_receiving_character_matter_variable value = 1 } }
-									rifle_artifact_active_trigger = yes
-								}
-							}
-							set_variable = { which = local_new_received_generic_artifact_option_d_weapon_rifle_variable value = 1 }
 						}
 					}
 				}
@@ -3774,7 +3675,7 @@ spawn_generic_artifact_based_on_option_d_variables_effect = {
 # Or in order to use less space in code
 
 spawn_random_generic_artifact_effect = {
-	set_local_option_a_variables_for_new_received_generic_artifact_effect = yes
+	set_local_variables_for_new_received_generic_artifact_effect = yes
 	spawn_generic_artifact_based_on_option_a_variables_effect = yes
 }
 
