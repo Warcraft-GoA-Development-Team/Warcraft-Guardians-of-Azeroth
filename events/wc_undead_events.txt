@@ -2740,6 +2740,77 @@ character_event = {
 	}
 }
 
+# Adds/removes mind control power on siege
+# on_siege_won_leader
+character_event = {
+	id = WCUND.1120
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	trigger = {
+		OR = {
+			top_liege = {
+				FROM = { holder_scope = { war_with = PREVPREV } }
+				
+				OR = {
+					has_character_modifier = mind_control_1
+					has_character_modifier = mind_control_2
+					has_character_modifier = mind_control_3
+					has_character_modifier = mind_control_4
+				}
+			}
+			FROM = {
+				holder_scope = {
+					top_liege = {
+						war_with = ROOT
+						
+						OR = {
+							has_character_modifier = mind_control_1
+							has_character_modifier = mind_control_2
+							has_character_modifier = mind_control_3
+							has_character_modifier = mind_control_4
+						}
+					}
+				}
+			}
+		}
+	}
+
+	immediate = {
+		if = {
+			limit = {
+				top_liege = {
+					FROM = { holder_scope = { war_with = PREVPREV } }
+					
+					OR = {
+						has_character_modifier = mind_control_1
+						has_character_modifier = mind_control_2
+						has_character_modifier = mind_control_3
+						has_character_modifier = mind_control_4
+					}
+				}
+			}
+			top_liege = {
+				log = "(MIND CONTROL) [This.GetBestName]'s army led by [Root.GetBestName] sieged [From.GetName]"
+				
+				add_1_mind_control_power_effect = yes
+			}
+		}
+		else = {
+			FROM = {
+				holder_scope = {
+					top_liege = {
+						log = "(MIND CONTROL) [This.GetBestName] lost [From.GetName] to [Root.GetBestName]"
+						
+						remove_1_mind_control_power_effect = yes
+					}
+				}
+			}
+		}
+	}
+}
+
 #############################################
 
 # If character isn't a dark worshipper, converts to the necromantic religions
