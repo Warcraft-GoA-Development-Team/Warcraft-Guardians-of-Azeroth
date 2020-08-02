@@ -32,7 +32,7 @@ character_event = {
 	mean_time_to_happen = {
 		years = 100
 		# Race modifiers
-		# Note: don't forget to change average_lifespan, text_effect_average_lifespan_immortality, is_old_immortal_physical_age_trigger everywhere when you touch these modifiers
+		# Note: don't forget to change average_lifespan, text_effect_average_lifespan_immortality everywhere when you touch these modifiers
 		modifier = {
 			factor = 1.5
 			trait = creature_dwarf
@@ -64,6 +64,19 @@ character_event = {
 		modifier = {
 			factor = 14
 			trait = creature_highborne
+		}
+		# Class modifiers
+		modifier = {
+			factor = 1.71
+			has_5_6_magic_class_or_higher_trigger = yes
+		}
+		modifier = {
+			factor = 1.71
+			has_7_8_magic_class_or_higher_trigger = yes
+		}
+		modifier = {
+			factor = 1.71
+			has_9_10_magic_class_trigger = yes
 		}
 		# Health modifiers
 		modifier = {
@@ -697,16 +710,8 @@ character_event = {
 			add_trait_demon_effect = yes
 		}
 		
-		# Adds tattoos
-		add_random_tattoo_effect = yes
-		
 		# Adds default traits when new character spawns
 		add_default_traits = yes
-		# Adds religious branch
-		if = {
-			limit = { religion_has_branches_trigger = yes }
-			liege = { ROOT = { add_prev_religious_branch_or_random_effect = yes } }
-		}
 		
 		# Fixes immortal age
 		add_age_back_effect = yes
@@ -741,20 +746,45 @@ character_event = {
 	}
 }
 
+#Adds Ancients seed
+character_event = {
+	id = WCRAC.300
+	desc = EVTDESC_WCRAC.300
+	
+	is_triggered_only = yes
+	
+	only_playable = yes
+	min_age = 16
+	
+	trigger = {
+		is_plant_race_trigger = yes
+	}
+	
+	weight_multiplier = {
+		days = 1
+		modifier = {
+			factor = 3
+			NOT = { has_artifact = ancient_kernel }
+		}
+	}
+	
+	option = {
+		name = EVTOPTA_WCRAC.300
+		add_artifact = ancient_kernel
+	}
+}
 # New ancient born
 character_event = {
 	id = WCRAC.310
 	desc = EVTDESC_WCRAC.310
-	picture = GFX_evt_emerald_dream
-	border = GFX_event_normal_frame_diplomacy
 	
 	is_triggered_only = yes
 	
+	only_playable = yes
+	min_age = 16
+	
 	trigger = {
-		is_playable = yes
-		
 		is_plant_race_trigger = yes
-		
 		has_artifact = ancient_kernel
 	}
 	
@@ -769,14 +799,6 @@ character_event = {
 			flag = race_delay_flag
 		}
 		new_character = {
-			random_list = {
-				10 = { set_graphical_culture = protector }
-				10 = { set_graphical_culture = ancient_war }
-				10 = { set_graphical_culture = ancient_lore }
-				10 = { set_graphical_culture = ancient_wind }
-			}
-			character_event = { id = WCRAC.10 } 	# Adds race trait
-			
 			if = {
 				limit = { ROOT = { is_female = yes } }
 				set_mother = ROOT
@@ -784,6 +806,27 @@ character_event = {
 			else = {
 				set_father = ROOT
 			}
+			if = {
+				limit = {
+					ROOT = {
+						graphical_culture = ancientwargfx
+					}
+				}
+				set_graphical_culture = ancient_war
+			}
+			else_if = {
+				limit = {
+					ROOT = {
+						graphical_culture = ancientloregfx
+					}
+				}
+				set_graphical_culture = ancient_lore
+			}
+			else = {
+				set_graphical_culture = ancient_wind
+			}
+			
+			character_event = { id = WCRAC.10 } 	# Adds race trait
 		}
 	}
 	
@@ -800,6 +843,7 @@ character_event = {
 
 	trigger = {
 		has_artifact = ancient_kernel
+		is_plant_race_trigger = yes
 	}
 
 	immediate = {
@@ -820,7 +864,7 @@ character_event = {
 	}
 	
 	immediate = {
-		FROM = { character_event = { id = WCRAC.400 months = 1 random = 60 } }
+		FROM = { character_event = { id = WCRAC.400 } }
 	}
 }
 # on_birth
@@ -837,7 +881,7 @@ character_event = {
 				limit = {
 					need_infertile_trait_trigger = yes
 				}
-				character_event = { id = WCRAC.400 months = 1 random = 60 }
+				character_event = { id = WCRAC.400 }
 			}
 		}
 		mother = {
@@ -845,7 +889,7 @@ character_event = {
 				limit = {
 					need_infertile_trait_trigger = yes
 				}
-				character_event = { id = WCRAC.400 months = 1 random = 60 }
+				character_event = { id = WCRAC.400 }
 			}
 		}
 	}
@@ -860,10 +904,6 @@ character_event = {
 	is_triggered_only = yes
 	
 	hide_from = yes
-	
-	trigger = {
-		need_infertile_trait_trigger = yes
-	}
 	
 	immediate = {
 		add_trait = infertile

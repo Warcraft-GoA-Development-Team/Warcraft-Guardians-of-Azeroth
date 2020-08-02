@@ -354,6 +354,8 @@ decisions = {
 				is_incapable = no
 				trait = lich_king
 			}
+			prisoner = no
+			is_inaccessible_trigger = no
 
 			year = 603											# Let's say the Legion needs time to prepare
 			NOT = { e_burning_legion = { has_holder = yes } }
@@ -369,12 +371,6 @@ decisions = {
 		}
 
 		allow = {
-			prisoner = no
-			OR = {
-				is_inaccessible_trigger = no
-				trait = lich_king
-			}
-			
 			custom_tooltip = {
 				text = legion_is_destroyed_tooltip
 				NOT = { has_global_flag = biggest_legion_invasion_flag }
@@ -433,8 +429,6 @@ decisions = {
 	}
 	choose_main_old_god = {
 		is_high_prio = yes
-		
-		ai_check_interval = 12
 
 		only_playable = yes
 
@@ -453,13 +447,6 @@ decisions = {
 				NOT = { has_character_modifier = picked_main_deity_timer }
 			}
 
-			trigger_if = {
-				limit = { has_old_gods_follower_modifier_trigger = yes }
-				custom_tooltip = {
-					text = important_old_god_task_tooltip
-					NOT = { has_character_flag = important_old_god_task_flag }
-				}
-			}
 		}
 		effect = {
 			custom_tooltip = {
@@ -471,7 +458,13 @@ decisions = {
 				}
 			}
 
-			remove_old_gods_follower_modifier_effect = yes
+			trigger_switch = {
+				on_trigger = has_character_modifier
+				follower_of_cthun = { remove_character_modifier = follower_of_cthun }
+				follower_of_yogg_saron = { remove_character_modifier = follower_of_yogg_saron }
+				follower_of_yshaarj = { remove_character_modifier = follower_of_yshaarj }
+				follower_of_nzoth = { remove_character_modifier = follower_of_nzoth }
+			}
 
 			character_event = { id = WCDAC.5110 }
 		}
@@ -482,7 +475,12 @@ decisions = {
 			factor = 1
 			modifier = {
 				factor = 0
-				has_old_gods_follower_modifier_trigger = yes
+				ai = yes
+				OR = {
+					has_character_modifier = follower_of_cthun
+					has_character_modifier = follower_of_nzoth
+					has_character_modifier = follower_of_yogg_saron
+				}
 			}
 		}
 	}
@@ -581,10 +579,7 @@ decisions = {
 			is_inaccessible_trigger = no
 			independent = yes
 			
-			OR = {
-				government = black_pact_government
-				government = hive_government
-			}
+			government = black_pact_government
 			
 			religion_authority = 0.75
 			num_of_holy_sites = 4
@@ -916,9 +911,14 @@ targetted_decisions = {
 		}
 
 		potential = {
-			NOT = { has_character_flag = void_mutation_ongoing_flag } # Prevents multiple firing
+			is_untouchable_trigger = no
+
+			is_adult = yes
 			
-			potential_mutation_trigger = yes
+			NOT = { has_character_flag = void_mutation_ongoing_flag } # Prevents multiple firing
+
+			NOT = { trait = being_void }
+			is_susceptible_to_void_corruption_trigger = yes
 		}
 
 		allow = {
@@ -927,7 +927,8 @@ targetted_decisions = {
 				is_inaccessible_trigger = no
 			}
 			
-			allow_mutation_trigger = yes
+			religion = old_gods_worship
+			true_religion = old_gods_worship
 			
 			FROM = {
 				is_inaccessible_trigger = no

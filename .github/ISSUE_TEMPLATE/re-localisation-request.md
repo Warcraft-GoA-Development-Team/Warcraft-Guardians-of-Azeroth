@@ -1,17 +1,15 @@
 ---
 name: Re-Localization Request
 about: Report about localization problems
-title: Issue Title
-labels: ":beetle: bug - localisation :scroll:, :grey_exclamation: priority low"
-assignees: ''
+title: "Issue Title"
+labels: ":beetle: bug - localisation :scroll:" 
 
 ---
-
 <!--
 **DO NOT REMOVE PRE-EXISTING LINES**
 ------------------------------------------------------------------------------------------------------------
 -->
-**Mod version:**
+**Mod Version**
 
 **Are you using any submods/mods? If so, which?**
 

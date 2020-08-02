@@ -1507,11 +1507,11 @@ decisions = {
 			is_incapable = no
 
 			is_paladin_class_trigger = yes
+			NOT = { is_weak_paladin_class_trigger = yes }
 
-			trigger_if = {
-				limit = { ai = yes }
+			OR = {
+				ai = no
 				NOT = { has_character_flag = wrote_libram }		# Otherwise, AI create a ton of librams
-				NOT = { any_artifact = { has_artifact_flag = libram } }
 			}
 
 			can_write_libram = yes
@@ -1532,8 +1532,7 @@ decisions = {
 			set_character_flag = do_not_disturb			# Otherwise, you can fire decision twice
 			set_character_flag = wrote_libram
 
-			tooltip = { piety = -750 }
-			
+			piety = -750
 			character_event = { id = WCCLS.10200 }
 		}
 		revoke_allowed = {
@@ -1890,14 +1889,16 @@ decisions = {
 			is_incapable = no
 
 			OR = {
-				is_death_knight_class_trigger = yes
+				AND = {
+					is_death_knight_class_trigger = yes
+					NOT = { is_weak_death_knight_class_trigger = yes }
+				}
 				trait = creature_nathrezim
 			}
 
-			trigger_if = {
-				limit = { ai = yes }
-				NOT = { has_character_flag = forged_runeblade }		# Otherwise, AI create a ton of librams
-				NOT = { any_artifact = { has_artifact_flag = combat_weapon } }
+			OR = {
+				ai = no
+				NOT = { has_character_flag = forged_runeblade }		# Otherwise, AI create a ton of runeblades
 			}
 		}
 		allow = {
@@ -1922,10 +1923,15 @@ decisions = {
 			set_character_flag = do_not_disturb				# Otherwise, you can fire decision twice
 			set_character_flag = forged_runeblade
 
-			tooltip = {
-				forge_runeblade_cost_effect = yes
+			if = {
+				limit = {
+					trait = creature_nathrezim
+				}
+				wealth = -500
 			}
-			
+			else = {
+				piety = -500
+			}
 			character_event = { id = WCCLS.10300 }
 		}
 		revoke_allowed = {
@@ -2176,7 +2182,10 @@ targetted_decisions = {
 				}
 				if = {
 					limit = { character = FROM }
-					heal_wounds_effect = yes
+					if = { limit = { has_character_flag = pending_infection } clr_character_flag = pending_infection }
+
+					if = { limit = { trait = severely_injured } character_event = { id = RIP.11000 } }
+					if = { limit = { trait = wounded } character_event = { id = 6081 } }
 				}
 				else = {
 					letter_event = { id = WCCLS.805 }
@@ -2816,10 +2825,9 @@ targetted_decisions = {
 			prisoner = no
 
 			is_warlock_class_trigger = yes
-			NOT = {
+			NOR = {
 				trait = being_demon
 				check_variable = { which = fel_corruption value = 100 }
-				is_susceptible_to_fel_corruption_trigger = no
 			}
 		}
 
@@ -3407,10 +3415,7 @@ targetted_decisions = {
 
 			NOT = { diplomatic_immunity = yes }
 			FROM = {
-				OR = {
-					is_inaccessible_trigger = no
-					trait = lich_king
-				}
+				is_inaccessible_trigger = no
 			}
 		}
 
@@ -3539,10 +3544,7 @@ targetted_decisions = {
 			FROM = {
 				show_scope_change = no
 
-				OR = {
-					is_inaccessible_trigger = no
-					trait = lich_king	# Ner'zhul is incapable
-				}
+				is_inaccessible_trigger = no
 
 				not_raising_undead_flag_trigger = yes
 
@@ -3690,10 +3692,7 @@ targetted_decisions = {
 
 			FROM = {
 				show_scope_change = no
-				OR = {
-					is_inaccessible_trigger = no
-					trait = lich_king	# Ner'zhul is incapable
-				}
+				is_inaccessible_trigger = no
 
 				not_raising_undead_flag_trigger = yes
 
