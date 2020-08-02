@@ -1,6 +1,6 @@
 # For all war-related effects
 total_invasion_cb_rev_effect = {
-	# Wealth, piety and prestige
+	# Wealth, piety, prestige and bloodlines
 	prestige = -1500
 	piety = -750
 	transfer_scaled_wealth = {
@@ -15,7 +15,6 @@ total_invasion_cb_rev_effect = {
 		}
 	}
 	PREV = {
-		show_scope_change = no
 		prestige = 1500
 		piety = 750
 		hidden_tooltip = {
@@ -40,6 +39,67 @@ total_invasion_cb_rev_effect = {
 			}
 		}
 		participation_scaled_prestige = 1500
+	}
+	#Bloodlines
+	if = {
+		limit = {
+			has_landed_title = e_scourge
+			PREV = { NOT = { any_owned_bloodline = { has_bloodline_flag = end_of_scourge_bloodline_flag } } }
+		}
+		PREV = {
+			if = {
+				limit = { is_female = yes }
+				create_bloodline = {
+					type = end_of_scourge
+					inheritance = matrilineal
+				}
+			}
+			else = {
+				create_bloodline = {
+					type = end_of_scourge
+				}
+			}
+		}
+	}
+	else_if = {
+		limit = {
+			has_landed_title = e_burning_legion
+			PREV = { NOT = { any_owned_bloodline = { has_bloodline_flag = end_of_legion_bloodline_flag } } }
+		}
+		PREV = {
+			if = {
+				limit = { is_female = yes }
+				create_bloodline = {
+					type = end_of_legion
+					inheritance = matrilineal
+				}
+			}
+			else = {
+				create_bloodline = {
+					type = end_of_legion
+				}
+			}
+		}
+	}
+	else_if = {
+		limit = {
+			has_landed_title = e_black_empire
+			PREV = { NOT = { any_owned_bloodline = { has_bloodline_flag = end_of_black_empire_bloodline_flag } } }
+		}
+		PREV = {
+			if = {
+				limit = { is_female = yes }
+				create_bloodline = {
+					type = end_of_black_empire
+					inheritance = matrilineal
+				}
+			}
+			else = {
+				create_bloodline = {
+					type = end_of_black_empire
+				}
+			}
+		}
 	}
 
 	custom_tooltip = {
@@ -322,18 +382,7 @@ give_to_spawned_claimant_effect = {
 				random = {
 					chance = 66
 					
-					if = {
-						limit = { religion = burning_legion_religion }
-						religion = illidari
-					}
-					else = {
-						limit = { evil_public_religion_trigger = yes }
-						random_list = {
-							10 = { religion = shadowlander }
-							10 = { religion = voidfarer }
-							10 = { religion = forsaken_cult }
-						}
-					}
+					switch_to_random_non_evil_religion_effect = yes
 				}
 			}
 			

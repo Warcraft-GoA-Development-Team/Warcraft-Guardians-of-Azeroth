@@ -365,22 +365,37 @@ evil_elective = {
 		}
 		
 		FROM = { #Either the candidate is in the realm, or is landless, or the title is independent, or the realm of the title does NOT have protected inheritance.
-			OR = {
-				any_liege = {
+			OR = { 
+				any_liege = { 
 					character = ROOT
-				}
+				} 
 				is_ruler = no
 				ROOT_FROMFROM = { holder_scope = { independent = yes } }
-				NOR = {
-					ROOT_FROMFROM = { has_law = out_of_realm_inheritance_law_1 }
-					ROOT_FROMFROM = { has_law = crown_authority_3 }
-					ROOT_FROMFROM = { has_law = crown_authority_4 }
+				NOR = { 
+					ROOT_FROMFROM = { has_law = out_of_realm_inheritance_law_1 } 
+					ROOT_FROMFROM = { has_law = crown_authority_3 } 
+					ROOT_FROMFROM = { has_law = crown_authority_4 } 
+				} 
+			} 
+		} 
+		OR = {
+			FROM = { any_claim = { title = ROOT_FROMFROM } }
+			ROOT = { 
+				is_close_relative = FROM
+				OR = { 
+					dynasty = FROM
+					FROM = { is_landed = yes higher_real_tier_than = BARON }
 				}
 			}
-		}
-		OR = {
-			ROOT = { is_close_relative = FROM }
-			FROM = { vassal_of = ROOT_FROMFROM }
+			FROM = { 
+				OR = { #Either defacto direct vassal, or independent ruler who is dejure vassal.
+					vassal_of = ROOT 
+					AND = { 
+					 	any_dejure_liege = { title = ROOT } 
+						independent = yes
+					}
+				}
+			} 
 		}
 		FROM = {
 			OR = { #Candidate should not be a landless Courtier that is about to inherit a Theocracy or Republic
@@ -404,30 +419,30 @@ evil_elective = {
 				}
 			}
 			OR = { #If the title controls the religion, candidates must be of the same religion.
-				ROOT = {
-					NOT = {
+				ROOT = { 
+					NOT = { 
 						controls_religion = yes
 					}
 				}
 				religion = ROOT
 			}
 			NOR = {
-				mother = {
-					is_alive = yes
-					is_married = ROOT
-					parent_for_elective_succession_trigger = yes
-				}
-				father = {
-					is_alive = yes
-					is_married = ROOT
-					parent_for_elective_succession_trigger = yes
-				}
+				#mother = {         # Uncommenting this condition provokes that a ruler's son is not a valid candidate if the mother is married to the ruler and a candidate
+				#	is_alive = yes
+				#	is_married = ROOT
+				#	parent_for_elective_succession_trigger = yes
+				#}
+				#father = {			# Same as above, for the father
+				#	is_alive = yes
+				#	is_married = ROOT
+				#	parent_for_elective_succession_trigger = yes
+				#}
 				trait = cat
 				trait = disinherited
 				trait = horse
 				trait = eunuch
-				AND = {
-					trait = bastard
+				AND = { 
+					trait = bastard 
 					is_ruler = no
 				}
 				is_ascetic_trigger = yes
