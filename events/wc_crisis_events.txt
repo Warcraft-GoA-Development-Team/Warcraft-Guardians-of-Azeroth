@@ -397,7 +397,6 @@ narrative_event = {
 			activate_title = { title = k_drustvar status = yes }
 			k_drustvar = { grant_title = event_target:target_gorak_tul }
 			
-			wealth = 1000
 			set_government_type = tribal_monarchy_government
 			
 			create_character = {
@@ -689,5 +688,179 @@ narrative_event = {
 			true_religion = throsic
 		}
 		name = EVTOPTB_WCCRS_150
+	}
+}
+
+### CRISIS: THUNDER KING EVENTS ###
+character_event = {
+	id = WCCRS.300
+
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
+		save_event_target_as = target_resurrector
+		
+		set_global_flag = resurrect_lei_shen_happened_flag
+		
+		create_character = {
+			name = Lei
+			dynasty = 172018
+			culture = mogu
+			religion = thunder_king
+			trait = brilliant_strategist
+			trait = holy_warrior
+			trait = siege_leader
+			trait = creature_mogu
+			trait = class_shaman_10
+			trait = genius
+			trait = cruel trait = wroth trait = zealous trait = ambitious trait = proud
+			age = 300
+		}
+		new_character = {
+			save_event_target_as = target_lei_shen
+			save_event_target_as = target_settler
+			
+			# Titles
+			c_lei_shen = {
+				# event_target:target_settler and its people settle here
+				settle_as_target_settler_effect = yes
+			}
+			d_lei_shen = {
+				any_direct_de_jure_vassal_title = {
+					# event_target:target_settler and its people settle here
+					settle_as_target_settler_effect = yes
+				}
+			}
+			c_lei_shen = {
+				# Declares war against player
+				target_settler_declare_war_effect = yes
+			}
+			set_defacto_liege = THIS
+			clear_settler_flag_effect = yes
+			
+			# Gold, commanders
+			for_war_start_pack_effect = yes
+			give_nickname = nick_the_thunder_king
+			
+			# Army
+			# Well-balanced troops + fleet
+			spawn_colonial_troops_effect = yes
+			spawn_colonial_troops_effect = yes
+			spawn_colonial_troops_effect = yes
+			spawn_colonial_troops_effect = yes
+			
+			# Claims
+			if = {
+				limit = { e_kun_lai = { is_title_active = THIS } }
+				if = {
+					limit = { e_kun_lai = { has_holder = no } }
+					primary_title = {
+						e_kun_lai = {
+							grant_title_no_opinion = event_target:target_lei_shen
+							copy_title_laws = PREV
+						}
+					}
+				}
+				else = {
+					add_pressed_claim = e_kun_lai
+				}
+			}
+		}
+		
+		narrative_event = { id = WCCRS.305 }
+		any_playable_ruler = {
+			limit = {
+				OR = {
+					ai = no
+					AND = {
+						religion = thunder_king
+						culture = mogu
+					}
+				}
+			}
+			narrative_event = { id = WCCRS.305 }
+		}
+	}
+}
+### Ping event
+narrative_event = {
+	id = WCCRS.305
+	title = EVTTITLE_WCCRS_305
+	desc = EVTDESC_WCCRS_305
+	picture = GFX_evt_thunder_king
+	border = GFX_event_narrative_frame_war
+	
+	is_triggered_only = yes
+
+	# I'm Lei Shen, slayer of kings and gods.
+	option = {
+		trigger = {
+			character = event_target:target_lei_shen
+		}
+		name = EVTOPTA_WCCRS_305
+	}
+	# If I were the Thunder King...
+	option = {
+		trigger = {
+			NOT = {
+				character = event_target:target_lei_shen
+			}
+			character = event_target:target_resurrector
+		}
+		name = EVTOPTB_WCCRS_305
+		
+		set_player_character = event_target:target_lei_shen
+	}
+	# Bow to the Thunder King!
+	option = {
+		trigger = {
+			NOT = {
+				character = event_target:target_lei_shen
+			}
+			religion = thunder_king
+			culture = mogu
+		}
+		name = EVTOPTC_WCCRS_305
+		
+		if = {
+			limit = {
+				event_target:target_lei_shen = { higher_tier_than = ROOT }
+			}
+			set_defacto_liege = event_target:target_lei_shen
+		}
+		
+		ai_chance = {
+			factor = 50
+		}
+	}
+	# Now let's talk about our deal.
+	option = {
+		trigger = {
+			NOT = {
+				character = event_target:target_lei_shen
+				AND = {
+					religion = thunder_king
+					culture = mogu
+				}
+			}
+			character = event_target:target_resurrector
+		}
+		name = EVTOPTD_WCCRS_305
+		
+		#Allies Lei Shen
+		opinion = { modifier = in_non_aggression_pact who = event_target:target_lei_shen }
+		reverse_opinion = { modifier = in_non_aggression_pact who = event_target:target_lei_shen }
+		add_alliance = { who = event_target:target_lei_shen years = 20 }
+	}
+	# He better stay in his grave.
+	option = {
+		trigger = {
+			NOT = {
+				character = event_target:target_lei_shen
+				character = event_target:target_resurrector
+			}
+		}
+		name = EVTOPTE_WCCRS_305
 	}
 }
