@@ -10,7 +10,7 @@ namespace = WCSHA
 # Sha of Pride - proud
 # Sha of Violence - cruel
 
-### Sha tombola
+### Character is infested by sha
 character_event = {
 	id = WCSHA.100
 	
@@ -20,26 +20,9 @@ character_event = {
 	only_playable = yes
 	
 	trigger = {
-		is_alive = yes
-		is_dying = no
-		
 		is_playable = yes
-		is_adult = yes
 		
-		NOT = { has_character_flag = sha_immunity_flag }
-		is_infested_by_sha_trigger = no
-
-		OR = {
-			trait = wroth
-			trait = depressed
-			trait = paranoid
-			trait = craven
-			trait = zealous
-			trait = proud
-			trait = cruel
-		}
-		
-		is_susceptible_to_void_corruption_trigger = yes
+		is_susceptible_to_sha_trigger = yes
 		capital_scope = { region = world_pandaria }
 	}
 	
@@ -81,6 +64,17 @@ character_event = {
 			true_religion = old_gods_worship
 		}
 	}
+	
+	immediate = {
+		character_event = { id = WCSHA.101 }
+	}
+}
+### Sha tombola
+character_event = {
+	id = WCSHA.101
+	
+	is_triggered_only = yes
+	hide_window = yes
 	
 	immediate = {
 		change_variable = { which = global_rulers_infested_by_sha value = 1 }
@@ -223,5 +217,173 @@ character_event = {
 				remove_trait_silently_cruel_effect = yes
 			}
 		}
+	}
+}
+
+### Heart of Y'Shaarj ###
+### A group of archaeologists may start excavations in the Vale
+narrative_event = {
+	id = WCSHA.500
+	title = EVTTITLE_WCDAC_500
+	desc = EVTDESC_WCSHA_500
+	picture = GFX_evt_pandaria_twin_monoliths
+	border = GFX_event_narrative_frame_intrigue
+	
+	is_triggered_only = yes
+	
+	only_playable = yes
+	only_independent = yes
+	
+	trigger = {
+		NOT = { has_global_flag = yshaarj_heart_excavation_happened_flag }
+		
+		is_able_to_excavate_yshaarj_vault_trigger = yes
+	}
+	
+	immediate = {
+		primary_title = { save_event_target_as = target_primary_title }
+		
+		set_global_flag = yshaarj_heart_excavation_happened_flag
+	}
+	
+	# Fine, I'll sponsor them.
+	option = {
+		name = EVTOPTA_WCSHA_500
+		
+		if = { limit = { ai = no } wealth = -500 }
+		
+		73 = { province_event = { id = WCSHA.509 years = 1 random = 365 } }
+		
+		ai_chance = {
+			factor = 1
+		}
+	}
+	# Go away.
+	option = {
+		name = EVTOPTB_WCSHA_500
+		
+		custom_tooltip = {
+			text = stops_the_event_chain
+			clr_global_flag = yshaarj_heart_excavation_happened_flag
+		}
+		
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+### Archaeologists unearthed the vault
+#Delayer event
+province_event = {
+	id = WCSHA.509
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
+		if = {
+			limit = { FROM = { is_able_to_excavate_yshaarj_vault_trigger = yes } }
+			FROM = { narrative_event = { id = WCSHA.510 } }
+		}
+		else_if = {
+			limit = { event_target:target_primary_title = { holder_scope = { is_able_to_excavate_yshaarj_vault_trigger = yes } } }
+			event_target:target_primary_title = { holder_scope = { narrative_event = { id = WCSHA.510 } } }
+		}
+		else = {
+			clr_global_flag = yshaarj_heart_excavation_happened_flag
+			
+			FROM = { character_event = { id = WCSHA.550 } }
+		}
+	}
+}
+#Delayed event
+narrative_event = {
+	id = WCSHA.510
+	title = EVTTITLE_WCDAC_500
+	desc = EVTDESC_WCSHA_510
+	picture = GFX_evt_pandaria_twin_monoliths
+	border = GFX_event_narrative_frame_intrigue
+	
+	is_triggered_only = yes
+	
+	# Fine, I'll invest more.
+	option = {
+		name = EVTOPTA_WCSHA_510
+		
+		if = { limit = { ai = no } wealth = -500 }
+		
+		73 = { province_event = { id = WCSHA.519 years = 1 random = 365 } }
+		
+		ai_chance = {
+			factor = 1
+		}
+	}
+	# Call prospectors back.
+	option = {
+		name = EVTOPTB_WCSHA_510
+		
+		custom_tooltip = {
+			text = stops_the_event_chain
+			clr_global_flag = yshaarj_heart_excavation_happened_flag
+		}
+		
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+### The lead archaeologists brings you the heart
+#Delayer event
+province_event = {
+	id = WCSHA.519
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
+		if = {
+			limit = { FROM = { is_able_to_excavate_yshaarj_vault_trigger = yes } }
+			FROM = { narrative_event = { id = WCSHA.520 } }
+		}
+		else_if = {
+			limit = { event_target:target_primary_title = { holder_scope = { is_able_to_excavate_yshaarj_vault_trigger = yes } } }
+			event_target:target_primary_title = { holder_scope = { narrative_event = { id = WCSHA.520 } } }
+		}
+		else = {
+			clr_global_flag = yshaarj_heart_excavation_happened_flag
+			
+			FROM = { character_event = { id = WCSHA.550 } }
+		}
+	}
+}
+#Delayed event
+narrative_event = {
+	id = WCSHA.520
+	title = EVTTITLE_WCDAC_500
+	desc = EVTDESC_WCSHA_520
+	picture = GFX_evt_yshaarj
+	border = GFX_event_narrative_frame_intrigue
+	
+	is_triggered_only = yes
+	
+	# The heart is mine!
+	option = {
+		name = EVTOPTA_WCSHA_520
+		
+		add_artifact = heart_of_yshaarj
+	}
+}
+#Fallback: stops excavations
+character_event = {
+	id = WCSHA.550
+	title = EVTTITLE_WCDAC_500
+	desc = EVTDESC_WCSHA_550
+	picture = GFX_evt_pandaria_twin_monoliths
+	border = GFX_event_normal_frame_intrigue
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = ALAS
 	}
 }
