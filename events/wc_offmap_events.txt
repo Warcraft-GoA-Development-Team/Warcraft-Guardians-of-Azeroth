@@ -640,7 +640,9 @@ character_event = {
 		clr_character_flag = requested_offmap_power
 	}
 }
-#Killing of an Old God event chain
+
+### Killing of Old God event chain
+# Enters Old God's prison
 character_event = {
 	id = WCOME.200
 	desc = {
@@ -697,7 +699,7 @@ character_event = {
 						offmap_cthun = {
 							set_status = old_god_dead
 						}
-						ROOT = { set_character_flag = killed_cthun }
+						ROOT = { set_character_flag = killed_cthun_flag }
 					}
 					if = {
 						limit = {
@@ -707,7 +709,7 @@ character_event = {
 						offmap_cthun = {
 							set_status = old_god_dead
 						}
-						ROOT = { set_character_flag = killed_cthun }
+						ROOT = { set_character_flag = killed_cthun_flag }
 					}
 					if = {
 						limit = {
@@ -717,7 +719,7 @@ character_event = {
 						offmap_nzoth = {
 							set_status = old_god_dead
 						}
-						ROOT = { set_character_flag = killed_nzoth }
+						ROOT = { set_character_flag = killed_nzoth_flag }
 					}
 					if = {
 						limit = {
@@ -727,7 +729,7 @@ character_event = {
 						offmap_nzoth = {
 							set_status = old_god_dead
 						}
-						ROOT = { set_character_flag = killed_nzoth }
+						ROOT = { set_character_flag = killed_nzoth_flag }
 					}
 					if = {
 						limit = {
@@ -737,7 +739,7 @@ character_event = {
 						offmap_yoggsaron = {
 							set_status = old_god_dead
 						}
-						ROOT = { set_character_flag = killed_yoggsaron }
+						ROOT = { set_character_flag = killed_yogg_saron_flag }
 					}
 					if = {
 						limit = {
@@ -747,7 +749,7 @@ character_event = {
 						offmap_yoggsaron = {
 							set_status = old_god_dead
 						}
-						ROOT = { set_character_flag = killed_yoggsaron }
+						ROOT = { set_character_flag = killed_yogg_saron_flag }
 					}
 				}
 			}
@@ -756,98 +758,82 @@ character_event = {
 
 	option = {
 		name = EVTOPTA_WCOME.200
+		
 		prestige = 1000
+		
 		if = {
 			limit = { NOT = { has_nickname = nick_the_godslayer } }
 			give_nickname = nick_the_godslayer
 		}
+		# Gives nick_twilight_of_the_gods if you personally killed all the Gods
 		if = {
 			limit = {
-				has_character_flag = killed_cthun
-				has_character_flag = killed_nzoth
-				has_character_flag = killed_yoggsaron
+				has_character_flag = killed_cthun_flag
+				has_character_flag = killed_nzoth_flag
+				has_character_flag = killed_yogg_saron_flag
 			}
 			remove_nickname = yes
 			give_nickname = nick_twilight_of_the_gods
 		}
+		
 		if = {
-            limit = {
-                has_character_flag = killed_cthun
-				NOT = { has_character_flag = killed_cthun_block }
-            }
-			if = {
-				limit = {
-					is_female = yes
-				}
-				create_bloodline = {
-					type = godslayer_bloodliner
-					inheritance = matrilineal
-				}
-			}
-			else = {
-				create_bloodline = {
-					type = godslayer_bloodline
-				}
-			}
-			new_bloodline = {
-				set_description = godslayer_cthun_desc
-			}
-			set_character_flag = killed_cthun_block
-        }
-		else_if = {
-            limit = {
-                has_character_flag = killed_nzoth
-				NOT = { has_character_flag = killed_nzoth_block }
-            }
-			if = {
-				limit = {
-					is_female = yes
-				}
-				create_bloodline = {
-					type = godslayer_bloodline
-					inheritance = matrilineal
-				}
-			}
-			else = {
-				create_bloodline = {
-					type = godslayer_bloodline
-				}
-			}
-			new_bloodline = {
-				set_description = godslayer_nzoth_desc
-			}
-			set_character_flag = killed_nzoth_block
-        }
-        else_if = {
 			limit = {
-                has_character_flag = killed_yoggsaron
-				NOT = { has_character_flag = killed_yoggsaron_block }
-            }
-			if = {
-				limit = {
-					is_female = yes
+				OR = {
+					# Killed C'Thun and doesn't have bloodline
+					AND = {
+						event_target:target_wonder = { has_wonder = wonder_ahnqiraj }
+						NOT = { any_owned_bloodline = { has_bloodline_flag = godslayer_cthun_flag } }
+					}
+					# Killed N'Zoth and doesn't have bloodline
+					AND = {
+						event_target:target_wonder = { has_wonder = wonder_shrine_storm }
+						NOT = { any_owned_bloodline = { has_bloodline_flag = godslayer_nzoth_flag } }
+					}
+					# Killed Yogg-Saron and doesn't have bloodline
+					AND = {
+						event_target:target_wonder = { has_wonder = wonder_ulduar }
+						NOT = { any_owned_bloodline = { has_bloodline_flag = godslayer_yogg_saron_flag } }
+					}
 				}
+			}
+			if = {
+				limit = { is_female = yes }
 				create_bloodline = {
 					type = godslayer_bloodline
 					inheritance = matrilineal
 				}
+				new_bloodline = { save_event_target_as = target_bloodline }
 			}
 			else = {
 				create_bloodline = {
 					type = godslayer_bloodline
 				}
+				new_bloodline = { save_event_target_as = target_bloodline }
 			}
-			new_bloodline = {
-				set_description = godslayer_yogg_saron_desc
+			event_target:target_bloodline = {
+				if = {
+					limit = { event_target:target_wonder = { has_wonder = wonder_ahnqiraj } }
+					set_bloodline_flag = godslayer_cthun_flag
+					set_description = godslayer_cthun_desc
+				}
+				else_if = {
+					limit = { event_target:target_wonder = { has_wonder = wonder_shrine_storm } }
+					set_bloodline_flag = godslayer_nzoth_flag
+					set_description = godslayer_nzoth_desc
+				}
+				else = {
+					set_bloodline_flag = godslayer_yogg_saron_flag
+					set_description = godslayer_yogg_saron_desc
+				}
 			}
-			set_character_flag = killed_yoggsaron_block
-        }
+		}
 		
 		any_player = {
 			narrative_event = { id = WCOME.201 }
 		}
 	}
 }
+# Notification
 narrative_event = {
 	id = WCOME.201
 	title = {
@@ -894,6 +880,7 @@ narrative_event = {
 		}
 	}
 }
+
 #Losing Old God province if following wrong religion
 character_event = {
 	id = WCOME.250
