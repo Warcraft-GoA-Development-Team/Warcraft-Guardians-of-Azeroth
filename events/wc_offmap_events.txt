@@ -1008,21 +1008,22 @@ character_event = {
 character_event = {
 	id = WCOME.300
 	desc = {
-		trigger = { ROOT = { has_character_modifier = follower_of_cthun } }
-		text = EVTDESC_WCOME.300_cthun
+		trigger = { event_target:target_wonder = { has_cthun_wonder_trigger = yes } }
+		text = EVTDESC_WCOME_300
 		picture = GFX_evt_cthun
 	}
 	desc = {
-		trigger = { ROOT = { has_character_modifier = follower_of_yogg_saron } }
-		text = EVTDESC_WCOME.300_yoggsaron
+		trigger = { event_target:target_wonder = { has_nzoth_wonder_trigger = yes } }
+		text = EVTDESC_WCOME_300
 		picture = GFX_evt_yogg_saron
 	}
 	desc = {
-		trigger = { ROOT = { has_character_modifier = follower_of_nzoth } }
-		text = EVTDESC_WCOME.300_nzoth
+		trigger = { event_target:target_wonder = { has_yogg_saron_wonder_trigger = yes } }
+		text = EVTDESC_WCOME_300
 		picture = GFX_evt_nzoth
 	}
 	border = GFX_event_normal_frame_religion
+	portrait = event_target:target_old_god
 	
 	is_triggered_only = yes
 	
@@ -1032,6 +1033,10 @@ character_event = {
 			random_realm_wonder = {
 				limit = { has_cthun_wonder_trigger = yes }
 				save_event_target_as = target_wonder
+				offmap_cthun = {
+					save_event_target_as = target_offmap
+					offmap_ruler = { save_event_target_as = target_old_god }
+				}
 			}
 		}
 		else_if = {
@@ -1039,145 +1044,83 @@ character_event = {
 			random_realm_wonder = {
 				limit = { has_nzoth_wonder_trigger = yes }
 				save_event_target_as = target_wonder
+				offmap_nzoth = {
+					save_event_target_as = target_offmap
+					offmap_ruler = { save_event_target_as = target_old_god }
+				}
 			}
 		}
 		else = {
 			random_realm_wonder = {
 				limit = { has_yogg_saron_wonder_trigger = yes }
 				save_event_target_as = target_wonder
+				offmap_yoggsaron = {
+					save_event_target_as = target_offmap
+					offmap_ruler = { save_event_target_as = target_old_god }
+				}
 			}
 		}
+		event_target:target_wonder = { location = { save_event_target_as = target_province } }
 	}
 	
 	option = {
 		name = EVTOPTA_WCOME.300
+		
 		if = {
-			limit = { cthun_offmap_decisions_enabled_trigger = yes }
+			limit = { event_target:target_offmap = { has_status = old_god_imprisoned } }
+			event_target:target_offmap = { set_status = old_god_partly_imprisoned }
 			if = {
-				limit = { offmap_cthun = { has_status = old_god_imprisoned } }
-				offmap_cthun = { set_status = old_god_partly_imprisoned }
-				clr_character_flag = freeing_old_god_flag
-			}
-			else_if = {
-				limit = { offmap_cthun = { has_status = old_god_partly_imprisoned } }
-				offmap_cthun = { set_status = old_god_partly_free }
-				event_target:target_wonder = {
-					add_upgrade_slots = 1
-					add_wonder_upgrade = upgrade_old_god_cthun_1
-				}
-				narrative_event = { id = WCOME.360 }
-			}
-			else_if = {
-				limit = { offmap_cthun = { has_status = old_god_partly_free } }
-				offmap_cthun = { set_status = old_god_free }
-				event_target:target_wonder = {
-					destroy_wonder_upgrade = upgrade_old_god_cthun_1
-					add_wonder_upgrade = upgrade_old_god_cthun_2
-				}
-				clr_character_flag = freeing_old_god_flag
-			}
-		}
-		else_if = {
-			limit = { nzoth_offmap_decisions_enabled_trigger = yes }
-			if = {
-				limit = { offmap_nzoth = { has_status = old_god_imprisoned } }
-				offmap_nzoth = { set_status = old_god_partly_imprisoned }
-				clr_character_flag = freeing_old_god_flag
-			}
-			else_if = {
-				limit = { offmap_nzoth = { has_status = old_god_partly_imprisoned } }
-				offmap_nzoth = { set_status = old_god_partly_free }
-				event_target:target_wonder = {
-					add_upgrade_slots = 1
-					add_wonder_upgrade = upgrade_old_god_nzoth_1
-				}
-				narrative_event = { id = WCOME.360 }
-			}
-			else_if = {
-				limit = { offmap_nzoth = { has_status = old_god_partly_free } }
-				offmap_nzoth = { set_status = old_god_free }
-				event_target:target_wonder = {
-					destroy_wonder_upgrade = upgrade_old_god_nzoth_1
-					add_wonder_upgrade = upgrade_old_god_nzoth_2
-				}
-				clr_character_flag = freeing_old_god_flag
-			}
-		}
-		else_if = {
-			limit = { yogg_saron_offmap_decisions_enabled_trigger = yes }
-			if = {
-				limit = { offmap_yoggsaron = { has_status = old_god_imprisoned } }
-				offmap_yoggsaron = { set_status = old_god_partly_imprisoned }
-				# d_ulduar = {
-					# holder_scope = {
-						# any_realm_character = {
-							# religion = old_gods_worship
-							# set_government_type = black_pact_government
-						# }
-						# religion = old_gods_worship
-						# set_government_type = black_pact_government
-						# any_realm_province = {
-							# remove_province_modifier = ulduar_closed_down
-							# religion = old_gods_worship
-						# }
-					# }
-				# }
+				limit = { event_target:target_wonder = { has_yogg_saron_wonder_trigger = yes } }
 				set_global_flag = ulduar_opened_flag
-				clr_character_flag = freeing_old_god_flag
 			}
-			else_if = {
-				limit = { offmap_yoggsaron = { has_status = old_god_partly_imprisoned } }
-				offmap_yoggsaron = { set_status = old_god_partly_free }
-				event_target:target_wonder = {
-					add_upgrade_slots = 1
-					add_wonder_upgrade = upgrade_old_god_yogg_saron_1
-				}
-				narrative_event = { id = WCOME.360 }
+			clr_character_flag = freeing_old_god_flag
+		}
+		else_if = {
+			limit = { event_target:target_offmap = { has_status = old_god_partly_imprisoned } }
+			event_target:target_offmap = { set_status = old_god_partly_free }
+			event_target:target_wonder = {
+				add_upgrade_slots = 1
+				add_wonder_upgrade = upgrade_old_god_cthun_1
 			}
-			else_if = {
-				limit = { offmap_yoggsaron = { has_status = old_god_partly_free } }
-				offmap_yoggsaron = { set_status = old_god_free }
-				event_target:target_wonder = {
-					destroy_wonder_upgrade = upgrade_old_god_yogg_saron_1
-					add_wonder_upgrade = upgrade_old_god_yogg_saron_2
-				}
-				clr_character_flag = freeing_old_god_flag
+			
+			unleash_old_god_effect = yes
+			
+			any_player = { narrative_event = { id = WCOME.360 } }
+		}
+		else_if = {
+			limit = { event_target:target_offmap = { has_status = old_god_partly_free } }
+			event_target:target_offmap = { set_status = old_god_free }
+			event_target:target_wonder = {
+				destroy_wonder_upgrade = upgrade_old_god_cthun_1
+				add_wonder_upgrade = upgrade_old_god_cthun_2
 			}
+			clr_character_flag = freeing_old_god_flag
 		}
 	}
 }
-# Old God is free
+# Notifies Old God is free
 narrative_event = {
 	id = WCOME.360
 	title = EVTTITLE_WCOME.360
 	desc = {
-		trigger = { ROOT = { has_character_modifier = follower_of_cthun } }
-		text = EVTDESC_WCOME.360_cthun
+		trigger = { event_target:target_wonder = { has_cthun_wonder_trigger = yes } }
+		text = EVTDESC_WCOME_360
 		picture = GFX_evt_cthun
 	}
 	desc = {
-		trigger = { ROOT = { has_character_modifier = follower_of_yogg_saron } }
-		text = EVTDESC_WCOME.360_yoggsaron
+		trigger = { event_target:target_wonder = { has_nzoth_wonder_trigger = yes } }
+		text = EVTDESC_WCOME_360
 		picture = GFX_evt_yogg_saron
 	}
 	desc = {
-		trigger = { ROOT = { has_character_modifier = follower_of_nzoth } }
-		text = EVTDESC_WCOME.360_nzoth
+		trigger = { event_target:target_wonder = { has_yogg_saron_wonder_trigger = yes } }
+		text = EVTDESC_WCOME_360
 		picture = GFX_evt_nzoth
 	}
 	border = GFX_event_narrative_frame_war
+	portrait = event_target:target_old_god
 	
 	is_triggered_only = yes
-	
-	major = yes
-	major_trigger = {
-		ai = no
-	}
-	show_root = yes
-	
-	immediate = {
-		unleash_old_god_effect = yes
-	}
 	
 	option = {
 		trigger = { true_religion = old_gods_worship }
@@ -1195,79 +1138,50 @@ narrative_event = {
 	}
 }
 ### Old God forces start their work
-#Delayer event
+#Effect event
 province_event = {
 	id = WCOME.365
 	
 	is_triggered_only = yes
 	hide_window = yes
 	
+	trigger = {
+		NOT = { event_target:target_offmap = { has_status = old_god_dead } }
+	}
+	
 	immediate = {
-		event_target:target_province = {
-			holder_scope = { narrative_event = { id = WCOME.370 } }
-		}
+		event_target:target_offmap = { set_policy = old_god_working }
+		
+		any_player = { narrative_event = { id = WCOME.370 } }
 	}
 }
-#Delayed event
+#Notification event
 narrative_event = {
 	id = WCOME.370
 	title = EVTTITLE_WCOME.370
 	desc = {
 		trigger = { event_target:target_wonder = { has_cthun_wonder_trigger = yes } }
-		text = EVTDESC_WCOME.370_cthun
+		text = EVTDESC_WCOME_370
 		picture = GFX_evt_cthun
 	}
 	desc = {
 		trigger = { event_target:target_wonder = { has_nzoth_wonder_trigger = yes } }
-		text = EVTDESC_WCOME.370_nzoth
+		text = EVTDESC_WCOME_370
 		picture = GFX_evt_nzoth
 	}
 	desc = {
 		trigger = { event_target:target_wonder = { has_yogg_saron_wonder_trigger = yes } }
-		text = EVTDESC_WCOME.370_yoggsaron
+		text = EVTDESC_WCOME_370
 		picture = GFX_evt_yogg_saron
 	}
 	border = GFX_event_narrative_frame_war
+	portrait = event_target:target_old_god
 	
 	is_triggered_only = yes
 	
-	major = yes
-	major_trigger = {
-		ai = no
-	}
-	show_root = yes
-	
-	trigger = {
-		trigger_if = {
-			limit = { event_target:target_wonder = { has_cthun_wonder_trigger = yes } }
-			NOT = { offmap_cthun = { has_status = old_god_dead } }
-		}
-		trigger_else_if = {
-			limit = { event_target:target_wonder = { has_nzoth_wonder_trigger = yes } }
-			NOT = { offmap_nzoth = { has_status = old_god_dead } }
-		}
-		trigger_else = {
-			NOT = { offmap_yoggsaron = { has_status = old_god_dead } }
-		}
-	}
 	option = {
 		trigger = { true_religion = old_gods_worship }
 		name = EVTOPTA_WCOME.360
-		
-		if = {
-			limit = { character = ROOT }
-			if = {
-				limit = { event_target:target_wonder = { has_cthun_wonder_trigger = yes } }
-				offmap_cthun = { set_policy = old_god_working }
-			}
-			else_if = {
-				limit = { event_target:target_wonder = { has_nzoth_wonder_trigger = yes } }
-				offmap_nzoth = { set_policy = old_god_working }
-			}
-			else = {
-				offmap_yoggsaron = { set_policy = old_god_working }
-			}
-		}
 	}
 	option = {
 		trigger = { NOT = { true_religion = old_gods_worship } }
