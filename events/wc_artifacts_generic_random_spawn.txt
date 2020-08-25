@@ -3,10 +3,10 @@ namespace = WCARTSPWN
 character_event = { # Spawn artifacts at gamestart
 	id = WCARTSPWN.1
 
+	only_rulers = yes
+
 	is_triggered_only = yes
 	hide_window = yes
-
-	only_rulers = yes
 
 	trigger = {
 		is_save_game = no
@@ -101,20 +101,155 @@ letter_event = { # Spawn artifacts as quest reward
 		name = EVTOPT_WCARTSPWN_2_A
 
 		spawn_generic_artifact_based_on_option_a_variables_effect = yes
+		give_new_artifact_random_name_and_origin_effect = yes
 	}
 	option = {
 		name = EVTOPT_WCARTSPWN_2_B
 
 		spawn_generic_artifact_based_on_option_b_variables_effect = yes
+		give_new_artifact_random_name_and_origin_effect = yes
 	}
 	option = {
 		name = EVTOPT_WCARTSPWN_2_C
 
 		spawn_generic_artifact_based_on_option_c_variables_effect = yes
+		give_new_artifact_random_name_and_origin_effect = yes
 	}
 #	option = {
 #		name = EVTOPT_WCARTSPWN_2_D
 #
 #		spawn_generic_artifact_based_on_option_d_variables_effect = yes
+#		give_new_artifact_random_name_and_origin_effect = yes
 #	}
+}
+
+character_event = { # Event to spawn artifact on_loot_settlement
+	id = WCARTSPWN.3
+	desc = EVTDESC_WCARTSPWN_3
+	picture = GFX_evt_vikings_arriving_oldgods
+	border = GFX_event_normal_frame_war
+
+	is_triggered_only = yes
+
+	weight_multiplier = {
+		factor = 1
+
+		on_loot_settlement_chance_to_get_artifact_score = yes
+		modifier = {
+			factor = 2
+			any_owned_bloodline = { has_bloodline_flag = bloodline_reaver }
+		}
+		modifier = {
+			factor = 9999
+			has_character_flag = debug_mode_flag
+		}
+	}
+
+	immediate = {
+		save_event_target_as = target_raiding_ruler
+		FROM = { save_event_target_as = target_looted_holding }
+		set_local_variables_for_new_received_generic_artifact_effect = yes
+	}
+
+	option = {
+		name = EVTOPT_WCARTSPWN_3_A
+
+		spawn_generic_artifact_based_on_option_a_variables_effect = yes
+		give_new_artifact_random_name_and_looted_origin_effect = yes
+	}
+	option = {
+		trigger = { ai = no }
+
+		name = EVTOPT_WCARTSPWN_3_B
+
+		if = { # Give prestige if you don't want artifact
+			limit = { check_variable = { which = local_new_received_generic_artifact_rarity_variable value == 1 } }
+
+			prestige = 25
+			if = {
+				limit = { NOT = { trait = charitable trait = greedy } }
+				random = {
+					chance = 5
+					add_trait = charitable
+				}
+			}
+			else_if = {
+				limit = { trait = greedy }
+				random = {
+					chance = 5
+					remove_trait = greedy
+				}
+			}
+		}
+		else_if = {
+			limit = { check_variable = { which = local_new_received_generic_artifact_rarity_variable value == 2 } }
+
+			prestige = 75
+			if = {
+				limit = { NOT = { trait = charitable trait = greedy } }
+				random = {
+					chance = 10
+					add_trait = charitable
+				}
+			}
+			else_if = {
+				limit = { trait = greedy }
+				random = {
+					chance = 10
+					remove_trait = greedy
+				}
+			}
+		}
+		else_if = {
+			limit = { check_variable = { which = local_new_received_generic_artifact_rarity_variable value == 3 } }
+
+			prestige = 250
+			if = {
+				limit = { NOT = { trait = charitable trait = greedy } }
+				random = {
+					chance = 25
+					add_trait = charitable
+				}
+			}
+			else_if = {
+				limit = { trait = greedy }
+				random = {
+					chance = 25
+					remove_trait = greedy
+				}
+			}
+		}
+		else_if = {
+			limit = { check_variable = { which = local_new_received_generic_artifact_rarity_variable value == 4 } }
+
+			prestige = 750
+			if = {
+				limit = { NOT = { trait = charitable trait = greedy } }
+				random = {
+					chance = 50
+					add_trait = charitable
+				}
+			}
+			else_if = {
+				limit = { trait = greedy }
+				random = {
+					chance = 50
+					remove_trait = greedy
+				}
+			}
+		}
+		else = {
+			limit = { check_variable = { which = local_new_received_generic_artifact_rarity_variable value == 5 } }
+
+			prestige = 2500
+			if = {
+				limit = { NOT = { trait = charitable trait = greedy } }
+				add_trait = charitable
+			}
+			else_if = {
+				limit = { trait = greedy }
+				remove_trait = greedy
+			}
+		}
+	}
 }
