@@ -1133,14 +1133,7 @@ potential_race_ogre_trigger = {
 	NOT = { trait = creature_ogre }
 }
 potential_race_troll_trigger = {
-	OR = {
-		graphical_culture = jungletrollgfx
-		graphical_culture = icetrollgfx
-		graphical_culture = foresttrollgfx
-		graphical_culture = zandalarigfx
-		graphical_culture = trolldarkgfx
-		graphical_culture = trollsandgfx
-	}
+	has_troll_gfx_trigger = yes
 	NOT = { trait = creature_troll }
 }
 potential_race_murloc_trigger = {
@@ -2078,7 +2071,7 @@ is_landless_type_title_trigger = {
 		title = e_black_empire
 		title = e_burning_legion
 		title = e_scourge
-		title = e_twilight
+		# title = e_twilight
 		title = k_bilgewater_cartel
 		title = k_dampwick_cartel
 		title = k_greasyshatter_cartel
@@ -2361,6 +2354,7 @@ has_undead_gfx_trigger = {
 		graphical_culture = highelfundeadgfx
 		graphical_culture = nightelfundeadgfx
 		graphical_culture = highborneundeadgfx
+		graphical_culture = trollundeadgfx
 	}
 }
 has_demon_gfx_trigger = {
@@ -2378,6 +2372,7 @@ has_demon_gfx_trigger = {
 		graphical_culture = humandemongfx
 		graphical_culture = nightelfdemongfx	#Should be here to block double-picking demonic portraits
 		graphical_culture = highelfdemongfx
+		graphical_culture = trollfelgfx
 	}
 }
 has_fel_gfx_trigger = {
@@ -2496,6 +2491,18 @@ has_eredar_gfx_trigger = {
 	OR = {
 		graphical_culture = eredargfx
 		graphical_culture = draeneigfx
+	}
+}
+has_troll_gfx_trigger = {
+	OR = {
+		graphical_culture = jungletrollgfx
+		graphical_culture = icetrollgfx
+		graphical_culture = foresttrollgfx
+		graphical_culture = zandalarigfx
+		graphical_culture = trolldarkgfx
+		graphical_culture = trollsandgfx
+		graphical_culture = trollundeadgfx
+		graphical_culture = trollfelgfx
 	}
 }
 
@@ -3573,7 +3580,7 @@ is_60_physical_age_trigger = {
 		limit = { immortal = yes }
 		is_old_immortal_physical_age_trigger = yes
 	}
-	else = {
+	trigger_else = {
 		age = 60
 	}
 }
@@ -3583,7 +3590,7 @@ is_70_physical_age_trigger = {
 		limit = { immortal = yes }
 		is_old_immortal_physical_age_trigger = yes
 	}
-	else = {
+	trigger_else = {
 		age = 70
 	}
 }
@@ -3593,7 +3600,7 @@ is_80_physical_age_trigger = {
 		limit = { immortal = yes }
 		is_old_immortal_physical_age_trigger = yes
 	}
-	else = {
+	trigger_else = {
 		age = 80
 	}
 }
@@ -3603,7 +3610,7 @@ is_90_physical_age_trigger = {
 		limit = { immortal = yes }
 		is_old_immortal_physical_age_trigger = yes
 	}
-	else = {
+	trigger_else = {
 		age = 90
 	}
 }
@@ -5354,6 +5361,18 @@ is_not_isolated_from_prev_trigger = {
 		}
 	}
 }
+is_isolated_in_pandaria_trigger = {
+	NOT = { has_global_flag = mists_of_pandaria_parted_flag }
+	NOT = { has_game_rule = { name = mists_of_pandaria value = off } }
+	is_in_pandaria_trigger = yes
+}
+is_in_pandaria_or_no_mists = {
+	OR = {
+		has_global_flag = mists_of_pandaria_parted_flag
+		has_game_rule = { name = mists_of_pandaria value = off }
+		is_in_pandaria_trigger = yes
+	}
+}
 is_in_pandaria_trigger = {
 	trigger_if = {
 		limit = { character = yes }
@@ -5361,7 +5380,13 @@ is_in_pandaria_trigger = {
 			limit = {
 				is_ruler = yes
 			}
-			capital_scope = { region = world_pandaria }
+			trigger_if = {
+				limit = { capital_scope = { always = yes } }
+				capital_scope = { region = world_pandaria }
+			}
+			trigger_else = {
+				location = { region = world_pandaria }
+			}
 		}
 		trigger_else = {
 			liege = { capital_scope = { region = world_pandaria } }
@@ -5393,6 +5418,34 @@ pandaria_culture_trigger = {
 		culture = grummle
 		culture = yaungol
 	}
+}
+
+is_susceptible_to_sha_trigger = {
+	is_alive = yes
+	is_dying = no
+	
+	is_adult = yes
+	is_incapable = no
+	custom_tooltip = {
+		text = sha_immunity_NO_tooltip
+		NOT = { has_character_flag = sha_immunity_flag }
+	}
+	custom_tooltip = {
+		text = is_infested_by_sha_NO_tooltip
+		is_infested_by_sha_trigger = no
+	}
+	
+	OR = {
+		trait = wroth
+		trait = depressed
+		trait = paranoid
+		trait = craven
+		trait = zealous
+		trait = proud
+		trait = cruel
+	}
+	
+	is_susceptible_to_void_corruption_trigger = yes
 }
 
 is_worth_to_be_mantid_paragon_trigger = {
