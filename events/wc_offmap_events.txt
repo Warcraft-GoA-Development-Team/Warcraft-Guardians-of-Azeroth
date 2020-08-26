@@ -995,38 +995,53 @@ character_event = {
 	is_triggered_only = yes
 	
 	immediate = {
+		#Picks wonder
 		if = {
-			limit = { cthun_offmap_decisions_enabled_trigger = yes }
-			random_realm_wonder = {
-				limit = { has_cthun_wonder_trigger = yes }
-				save_event_target_as = target_wonder
-				offmap_cthun = {
-					save_event_target_as = target_offmap
-					offmap_ruler = { save_event_target_as = target_old_god }
+			limit = { NOT = { event_target:target_wonder = { always = yes } } }
+			if = {
+				limit = { cthun_offmap_decisions_enabled_trigger = yes }
+				random_wonder = {
+					limit = { has_cthun_wonder_trigger = yes }
+					save_event_target_as = target_wonder
 				}
+			}
+			else_if = {
+				limit = { nzoth_offmap_decisions_enabled_trigger = yes }
+				random_wonder = {
+					limit = { has_nzoth_wonder_trigger = yes }
+					save_event_target_as = target_wonder
+				}
+			}
+			else = {
+				random_wonder = {
+					limit = { has_yogg_saron_wonder_trigger = yes }
+					save_event_target_as = target_wonder
+				}
+			}
+		}
+		
+		# Saves Old God's target depending on picked wonder
+		if = {
+			limit = { event_target:target_wonder = { has_cthun_wonder_trigger = yes } }
+			offmap_cthun = {
+				save_event_target_as = target_offmap
+				offmap_ruler = { save_event_target_as = target_old_god }
 			}
 		}
 		else_if = {
-			limit = { nzoth_offmap_decisions_enabled_trigger = yes }
-			random_realm_wonder = {
-				limit = { has_nzoth_wonder_trigger = yes }
-				save_event_target_as = target_wonder
-				offmap_nzoth = {
-					save_event_target_as = target_offmap
-					offmap_ruler = { save_event_target_as = target_old_god }
-				}
+			limit = { event_target:target_wonder = { has_nzoth_wonder_trigger = yes } }
+			offmap_nzoth = {
+				save_event_target_as = target_offmap
+				offmap_ruler = { save_event_target_as = target_old_god }
 			}
 		}
 		else = {
-			random_realm_wonder = {
-				limit = { has_yogg_saron_wonder_trigger = yes }
-				save_event_target_as = target_wonder
-				offmap_yoggsaron = {
-					save_event_target_as = target_offmap
-					offmap_ruler = { save_event_target_as = target_old_god }
-				}
+			offmap_yoggsaron = {
+				save_event_target_as = target_offmap
+				offmap_ruler = { save_event_target_as = target_old_god }
 			}
 		}
+		
 		event_target:target_wonder = { location = { save_event_target_as = target_province } }
 	}
 	
