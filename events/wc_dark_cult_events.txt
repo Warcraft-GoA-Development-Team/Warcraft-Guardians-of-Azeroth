@@ -1488,11 +1488,59 @@ narrative_event = {
 					}
 				}
 			}
-			character_event = { id = WCDAC.5047 days = 7 }
+			73 = { province_event = { id = WCDAC.5077 } }
 		}
 	}
 }
-
+### Comes close enough to awaken an Old God
+#Delayer event
+province_event = {
+	id = WCDAC.5077
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
+		if = {
+			limit = { FROM = { old_gods_chosen_event_trigger = yes } }
+			FROM = { narrative_event = { id = WCDAC.5047 } }
+		}
+		else = {
+			FROM = {
+				remove_traveling_immunity_effect = yes
+				clr_character_flag = important_old_god_task_flag
+			}
+			create_character = {
+				dynasty = none
+				religion = old_gods_worship
+				culture = azerothian
+				female = no
+				age = 45
+				random_traits = yes
+				trait = creature_human
+				trait = elusive_shadow
+				trait = cruel
+				trait = zealous
+				trait = ambitious
+			}
+			new_character = {
+				set_character_flag = important_old_god_task_flag
+				
+				ai_add_shadow_priest_class_effect = yes
+				#Makes him follow old god that's on the continent he's travelling to
+				if = {
+					limit = { has_global_flag = twilights_hammer_kalimdor }
+					add_character_modifier = { name = follower_of_cthun duration = -1 }
+				}
+				else = {
+					add_character_modifier = { name = follower_of_yogg_saron duration = -1 }
+				}
+				character_event = { id = WCDAC.5047 }
+			}
+		}
+	}
+}
+#Delayed event
 character_event = {
 	id = WCDAC.5047
 	desc = {
