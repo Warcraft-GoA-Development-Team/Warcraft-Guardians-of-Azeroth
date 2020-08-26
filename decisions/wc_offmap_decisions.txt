@@ -877,33 +877,15 @@ offmap_decisions = {
 			OR = {
 				AND = {
 					is_offmap_tag = offmap_cthun
-					offmap_cthun = { 
-						NOR = {
-							has_status = old_god_free
-							has_status = old_god_full_power
-							has_status = old_god_dead
-						} 
-					}
+					offmap_cthun = { offmap_old_god_can_be_awaken = yes }
 				}
 				AND = {
 					is_offmap_tag = offmap_nzoth
-					offmap_nzoth = { 
-						NOR = {
-							has_status = old_god_free
-							has_status = old_god_full_power
-							has_status = old_god_dead
-						} 
-					}
+					offmap_nzoth = { offmap_old_god_can_be_awaken = yes }
 				}
 				AND = {
 					is_offmap_tag = offmap_yoggsaron
-					offmap_yoggsaron = { 
-						NOR = {
-							has_status = old_god_free
-							has_status = old_god_full_power
-							has_status = old_god_dead
-						} 
-					}
+					offmap_yoggsaron = { offmap_old_god_can_be_awaken = yes }
 				}
 			}
 		}
@@ -916,7 +898,14 @@ offmap_decisions = {
 			trigger_if = {
 				limit = { is_offmap_tag = offmap_cthun }
 				FROM = {
-					has_offmap_currency = { offmap = offmap_cthun value = 8000 }
+					trigger_if = {
+						limit = { ai = no }
+						has_offmap_currency = { offmap = offmap_cthun value = 8000 }
+					}
+					trigger_else = {
+						total_years_played = 25
+						NOT = { has_character_modifier = wake_old_god_offmap_cooldown }
+					}
 					cthun_offmap_decisions_enabled_trigger = yes
 					OR = {
 						has_cthun_wonder_trigger = yes
@@ -927,7 +916,14 @@ offmap_decisions = {
 			trigger_else_if = {
 				limit = { is_offmap_tag = offmap_nzoth }
 				FROM = {
-					has_offmap_currency = { offmap = offmap_nzoth value = 8000 }
+					trigger_if = {
+						limit = { ai = no }
+						has_offmap_currency = { offmap = offmap_nzoth value = 8000 }
+					}
+					trigger_else = {
+						total_years_played = 25
+						NOT = { has_character_modifier = wake_old_god_offmap_cooldown }
+					}
 					nzoth_offmap_decisions_enabled_trigger = yes
 					OR = {
 						has_nzoth_wonder_trigger = yes
@@ -937,7 +933,14 @@ offmap_decisions = {
 			}
 			trigger_else = {
 				FROM = {
-					has_offmap_currency = { offmap = offmap_yoggsaron value = 8000 }
+					trigger_if = {
+						limit = { ai = no }
+						has_offmap_currency = { offmap = offmap_yoggsaron value = 8000 }
+					}
+					trigger_else = {
+						total_years_played = 25
+						NOT = { has_character_modifier = wake_old_god_offmap_cooldown }
+					}
 					yogg_saron_offmap_decisions_enabled_trigger = yes
 					OR = {
 						has_yogg_saron_wonder_trigger = yes
@@ -949,36 +952,41 @@ offmap_decisions = {
 		}
 		effect = {
 			if = {
-				limit = {
-					is_offmap_tag = offmap_cthun
-				}
-				FROM = {
-					add_offmap_currency = {
-						offmap = offmap_cthun
-						value = -8000
+				limit = { FROM = { ai = no } }
+				if = {
+					limit = {
+						is_offmap_tag = offmap_cthun
+					}
+					FROM = {
+						add_offmap_currency = {
+							offmap = offmap_cthun
+							value = -8000
+						}
 					}
 				}
-			}
-			else_if = {
-				limit = {
-					is_offmap_tag = offmap_nzoth
-				}
-				FROM = {
-					add_offmap_currency = {
-						offmap = offmap_nzoth
-						value = -8000
+				else_if = {
+					limit = {
+						is_offmap_tag = offmap_nzoth
+					}
+					FROM = {
+						add_offmap_currency = {
+							offmap = offmap_nzoth
+							value = -8000
+						}
 					}
 				}
-			}
-			else = {
-				FROM = {
-					add_offmap_currency = {
-						offmap = offmap_yoggsaron
-						value = -8000
+				else = {
+					FROM = {
+						add_offmap_currency = {
+							offmap = offmap_yoggsaron
+							value = -8000
+						}
 					}
 				}
 			}
 			FROM = {
+				add_character_modifier = { name = wake_old_god_offmap_cooldown years = 25 hidden = yes }
+				
 				set_character_flag = freeing_old_god_flag
 				character_event = { id = WCOME.300 }
 			}
