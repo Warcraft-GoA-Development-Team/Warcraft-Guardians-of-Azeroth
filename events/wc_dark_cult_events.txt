@@ -1488,6 +1488,8 @@ narrative_event = {
 					}
 				}
 			}
+			save_event_target_as = target_chosen
+			
 			73 = { province_event = { id = WCDAC.5077 } }
 		}
 	}
@@ -1502,11 +1504,11 @@ province_event = {
 	
 	immediate = {
 		if = {
-			limit = { FROM = { old_gods_chosen_event_trigger = yes } }
-			FROM = { narrative_event = { id = WCDAC.5047 } }
+			limit = { event_target:target_chosen = { old_gods_chosen_event_trigger = yes } }
+			event_target:target_chosen = { narrative_event = { id = WCDAC.5047 } }
 		}
 		else = {
-			FROM = {
+			event_target:target_chosen = {
 				remove_traveling_immunity_effect = yes
 				clr_character_flag = important_old_god_task_flag
 			}
@@ -1568,43 +1570,97 @@ narrative_event = {
 		
 		if = {
 			limit = { NOT = { has_global_flag = twilights_hammer_kalimdor } }
-			c_ulduar = {
-				# event_target:target_settler and its people settle here
-				settle_as_target_settler_effect = yes
-				location = { culture = titanforged }
-			}
-			# If you're not independent ruler, gives old titles to liege
-			give_old_titles_to_heir_effect = yes
-			d_ulduar = {
-				any_direct_de_jure_vassal_title = {
+			if = {
+				limit = {
+					ai = no
+					c_ulduar = {
+						holder_scope = {
+							ai = yes
+							NOT = { any_liege = { ai = no } }
+						}
+					}
+				}
+				c_ulduar = {
 					# event_target:target_settler and its people settle here
 					settle_as_target_settler_effect = yes
 					location = { culture = titanforged }
 				}
+				# If you're not independent ruler, gives old titles to liege
+				give_old_titles_to_heir_effect = yes
+				d_ulduar = {
+					any_direct_de_jure_vassal_title = {
+						# event_target:target_settler and its people settle here
+						settle_as_target_settler_effect = yes
+						location = { culture = titanforged }
+					}
+				}
+				c_ulduar = {
+					# Declares war against player
+					target_settler_declare_war_effect = yes
+				}
 			}
-			c_ulduar = {
-				# Declares war against player
-				target_settler_declare_war_effect = yes
+			else_if = {
+				limit = {
+					c_ulduar = {
+						holder_scope = {
+							top_liege = { religion = old_gods_worship }
+						}
+					}
+				}
+				c_ulduar = {
+					holder_scope = {
+						top_liege = {
+							set_defacto_vassal = ROOT
+						}
+					}
+				}
 			}
 		}
 		else = {
-			c_ahnqiraj = {
-				# event_target:target_settler and its people settle here
-				settle_as_target_settler_effect = yes
-				location = { culture = qiraji }
-			}
-			# If you're not independent ruler, gives old titles to liege
-			give_old_titles_to_heir_effect = yes
-			d_ahnqiraj = {
-				any_direct_de_jure_vassal_title = {
+			if = {
+				limit = {
+					ai = no
+					c_ahnqiraj = {
+						holder_scope = {
+							ai = yes
+							NOT = { any_liege = { ai = no } }
+						}
+					}
+				}
+				c_ahnqiraj = {
 					# event_target:target_settler and its people settle here
 					settle_as_target_settler_effect = yes
 					location = { culture = qiraji }
 				}
+				# If you're not independent ruler, gives old titles to liege
+				give_old_titles_to_heir_effect = yes
+				d_ahnqiraj = {
+					any_direct_de_jure_vassal_title = {
+						# event_target:target_settler and its people settle here
+						settle_as_target_settler_effect = yes
+						location = { culture = qiraji }
+					}
+				}
+				c_ahnqiraj = {
+					# Declares war against player
+					target_settler_declare_war_effect = yes
+				}
 			}
-			c_ahnqiraj = {
-				# Declares war against player
-				target_settler_declare_war_effect = yes
+			else_if = {
+				limit = {
+					c_ahnqiraj = {
+						holder_scope = {
+							top_liege = { religion = old_gods_worship }
+						}
+					}
+				}
+				c_ahnqiraj = {
+					holder_scope = {
+						top_liege = {
+							set_defacto_vassal = ROOT
+						}
+					}
+				}
 			}
 		}
 		
