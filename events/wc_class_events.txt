@@ -772,6 +772,685 @@ narrative_event = {
 	}
 }
 
+# Employ a jeweler
+character_event = {
+	id = WCCLS.9130
+	desc = EVT_DESC_WCCLS_9130
+    picture = GFX_evt_treasure_chamber
+    border = GFX_event_normal_frame_economy
+
+	is_triggered_only = yes
+
+	trigger = {
+		OR = {
+			has_dlc = "Mystics"
+			has_dlc = "Jade Dragon"
+		}
+	}
+
+	option = { # Health
+		name = EVT_OPTA_WCCLS_9310
+	    custom_tooltip = {
+	    	text = employ_a_jeweler_diamond_search_tt
+	    	hidden_effect = {
+	    		set_character_flag = jeweler
+	    	}
+	   	}
+	}
+	option = { # Wisdom
+		name = EVT_OPTB_WCCLS_9310
+	    trigger = {
+	    	job_steward = { always = yes }
+	    }
+	    custom_tooltip = {
+	    	text = employ_a_jeweler_emerald_search_tt
+	    	hidden_effect = {
+	    		set_character_flag = jeweler
+	    	}
+	   	}
+	}
+	option = { # Power
+		name = EVT_OPTC_WCCLS_9310
+		trigger = {
+	    	job_marshal = { always = yes }
+	    }
+	    custom_tooltip = {
+	    	text = employ_a_jeweler_ruby_search_tt
+	    	hidden_effect = {
+	    		set_character_flag = jeweler
+	    	}
+	   	}	
+	}
+	option = { # Abort
+		name = EVT_OPTD_WCCLS_9310
+		custom_tooltip = {
+			text = employ_jeweler_cd_reset_tt
+			hidden_effect = {
+				remove_character_modifier = employ_a_jeweler_cd
+			}
+		}
+		ai_chance = {
+            factor = 0
+			have_gem_artifact_trigger = yes
+        }
+	}
+}
+
+# Jeweler steals item and decides who to give it to
+character_event = {
+	id = WCCLS.9131
+	is_triggered_only = yes
+	hide_window = yes
+
+	trigger = {
+		OR = {
+			has_dlc = "Mystics"
+			has_dlc = "Jade Dragon"
+		}
+	}
+
+	immediate = {
+		if = {
+			limit = { NOT = { event_target:jeweler_employer = { is_alive = yes } } }
+    		liege = { save_event_target_as = jeweler_employer }
+		}
+		trigger_switch = {
+			on_trigger = has_character_flag
+			expensive_jewels = { 
+		        if = {
+		        	limit = { 
+		        		FROM = {
+			        		OR = {
+			        			religion_group = christian 
+			        			religion_group = jewish_group
+							}
+						}
+		        	}
+		        	add_artifact = crown_of_majesty
+		        	new_artifact = { set_artifact_flag = stolen_by_smith }
+		        	add_artifact = emerald_scepter
+		        	new_artifact = { set_artifact_flag = stolen_by_smith }
+		        	add_artifact = sword_of_heroes
+		        	new_artifact = { set_artifact_flag = stolen_by_smith }
+		        	new_artifact = { set_artifact_flag = stolen_by_smith }
+		        }
+		        else_if = {
+		        	limit = { 
+		        		FROM = {
+			        		OR = {
+			        			religion_group = muslim 
+			        			religion = west_african_pagan
+			        			religion = west_african_pagan_reformed
+			        		}
+			        	}
+		        	}
+		        	add_artifact = dagger_of_glory
+		        	new_artifact = { set_artifact_flag = stolen_by_smith }
+		        	add_artifact = ruby_bracelets
+		        	new_artifact = { set_artifact_flag = stolen_by_smith }
+		        }
+		        else_if = {
+		        	limit = { 
+		        		FROM = {
+			        		OR = {
+			        			religion_group = indian_group
+			        			religion = bon
+        						religion = bon_reformed
+			        		}
+			        	}
+		        	}
+		        	add_artifact = dagger_of_glory
+		        	new_artifact = { set_artifact_flag = stolen_by_smith }
+		        	add_artifact = celestial_necklace
+		        	new_artifact = { set_artifact_flag = stolen_by_smith }
+		        }
+		        else_if = {
+		        	limit = { 
+		        		FROM = {
+			        		OR = {
+			        			religion_group = zoroastrian_group
+			        			religion = zun_pagan
+			        			religion = zun_pagan_reformed
+							}
+						}
+					}
+		        	add_artifact = circlet_of_the_heavens
+		        	new_artifact = { set_artifact_flag = stolen_by_smith }
+		        	add_artifact = staff_of_majesty
+		        	new_artifact = { set_artifact_flag = stolen_by_smith }
+		        }
+		        else_if = {
+		        	limit = {
+		        		FROM = {
+			        		OR = {
+			        			# Warcraft
+								religion_group = vrykul_religion_group
+								# religion = norse_pagan
+								# religion = norse_pagan_reformed
+			        		}
+			        	}
+		        	}
+		        	add_artifact = crown_of_crows
+		        	new_artifact = { set_artifact_flag = stolen_by_smith }
+		        	add_artifact = sword_of_heroes
+		        	new_artifact = { set_artifact_flag = stolen_by_smith }
+		        }
+		        else = {
+		        	add_artifact = heros_crown
+		        	new_artifact = { set_artifact_flag = stolen_by_smith }
+		        	add_artifact = axe_of_the_ancestors
+		        	new_artifact = { set_artifact_flag = stolen_by_smith }
+		        }
+			}
+			good_jewels = {  
+				if = {
+		        	limit = { 
+		        		FROM = {
+			        		OR = {
+			        			religion_group = christian 
+			        			religion_group = jewish_group
+							}
+						}
+		        	}
+		        	add_artifact = crown_of_pearls
+		        	new_artifact = { set_artifact_flag = stolen_by_smith }
+		        	add_artifact = ruby_scepter
+		        	new_artifact = { set_artifact_flag = stolen_by_smith }
+		        	add_artifact = golden_sword
+		        	new_artifact = { set_artifact_flag = stolen_by_smith }
+		        }
+		        else_if = {
+		        	limit = { 
+		        		FROM = {
+			        		OR = {
+			        			religion_group = muslim 
+			        			religion = west_african_pagan
+			        			religion = west_african_pagan_reformed
+			        		}
+			        	}
+		        	}
+		        	add_artifact = bejeweled_dagger
+		        	new_artifact = { set_artifact_flag = stolen_by_smith }
+		        	add_artifact = golden_bracelets
+		        	new_artifact = { set_artifact_flag = stolen_by_smith }
+		        }
+		        else_if = {
+		        	limit = { 
+		        		FROM = {
+			        		OR = {
+			        			religion_group = indian_group
+			        			religion = bon
+        						religion = bon_reformed
+			        		}
+			        	}
+		        	}
+		        	add_artifact = bejeweled_dagger
+		        	new_artifact = { set_artifact_flag = stolen_by_smith }
+		        	add_artifact = necklace_of_radiance
+		        	new_artifact = { set_artifact_flag = stolen_by_smith }
+		        }
+		        else_if = {
+		        	limit = { 
+		        		FROM = {
+			        		OR = {
+			        			religion_group = zoroastrian_group
+			        			religion = zun_pagan
+			        			religion = zun_pagan_reformed
+							}
+						}
+					}
+		        	add_artifact = circlet_of_the_heavens
+		        	new_artifact = { set_artifact_flag = stolen_by_smith }
+		        	add_artifact = golden_staff
+		        	new_artifact = { set_artifact_flag = stolen_by_smith }
+		        }
+		        else_if = {
+		        	limit = { 
+		        		FROM = {
+			        		OR = {
+			        			# Warcraft
+								religion_group = vrykul_religion_group
+								# religion = norse_pagan
+								# religion = norse_pagan_reformed
+			        		}
+			        	}
+		        	}
+		        	add_artifact = crown_of_the_sea
+		        	new_artifact = { set_artifact_flag = stolen_by_smith }
+		        	add_artifact = golden_sword
+		        	new_artifact = { set_artifact_flag = stolen_by_smith }
+		        }
+		        else = {
+		        	add_artifact = amber_crown
+		        	new_artifact = { set_artifact_flag = stolen_by_smith }
+		        	add_artifact = obsidian_axe
+		        	new_artifact = { set_artifact_flag = stolen_by_smith }
+		        }
+			}
+			cheap_jewels = { 
+		        if = {
+		        	limit = {
+		        		FROM = {
+			        		OR = {
+			        			religion_group = christian 
+			        			religion_group = jewish_group
+							}
+						}
+		        	}
+		        	add_artifact = the_lily_crown
+		        	new_artifact = { set_artifact_flag = stolen_by_smith }
+		        	add_artifact = noble_scepter
+		        	new_artifact = { set_artifact_flag = stolen_by_smith }
+		        	add_artifact = engraved_sword
+		        	new_artifact = { set_artifact_flag = stolen_by_smith }
+		        }
+		        else_if = {
+		        	limit = {
+		        		FROM = {
+			        		OR = {
+			        			religion_group = muslim 
+			        			religion = west_african_pagan
+			        			religion = west_african_pagan_reformed
+			        		}
+			        	}
+		        	}
+		        	add_artifact = engraved_dagger
+		        	new_artifact = { set_artifact_flag = stolen_by_smith }
+		        	add_artifact = silver_bracelets
+		        	new_artifact = { set_artifact_flag = stolen_by_smith }
+		        }
+		        else_if = {
+		        	limit = { 
+		        		FROM = {
+			        		OR = {
+			        			religion_group = indian_group
+			        			religion = bon
+        						religion = bon_reformed
+			        		}
+			        	}
+		        	}
+		        	add_artifact = engraved_dagger
+		        	new_artifact = { set_artifact_flag = stolen_by_smith }
+		        	add_artifact = collar_of_pearls
+		        	new_artifact = { set_artifact_flag = stolen_by_smith }
+		        }
+		        else_if = {
+		        	limit = { 
+		        		FROM = {
+			        		OR = {
+			        			religion_group = zoroastrian_group
+			        			religion = zun_pagan
+			        			religion = zun_pagan_reformed
+							}
+						}
+					}
+		        	add_artifact = circlet_of_twilight
+		        	new_artifact = { set_artifact_flag = stolen_by_smith }
+		        	add_artifact = silver_staff
+		        	new_artifact = { set_artifact_flag = stolen_by_smith }
+		        }
+		        else_if = {
+		        	limit = {
+		        		FROM = {
+			        		OR = {
+			        			# Warcraft
+								religion_group = vrykul_religion_group
+								# religion = norse_pagan
+								# religion = norse_pagan_reformed
+			        		}
+			        	}
+		        	}
+		        	add_artifact = iron_crown
+		        	new_artifact = { set_artifact_flag = stolen_by_smith }
+		        	add_artifact = engraved_sword
+		        	new_artifact = { set_artifact_flag = stolen_by_smith }
+		        }
+		        else = {
+		        	add_artifact = engraved_crown
+		        	new_artifact = { set_artifact_flag = stolen_by_smith }
+		        	add_artifact = ceremonial_axe
+		        	new_artifact = { set_artifact_flag = stolen_by_smith }
+		        }
+			}
+			amazing_weapons = {
+				trigger_switch = {
+					on_trigger = has_character_flag
+					weapon_sword = {
+						random_list = {
+							1 = { add_artifact = sword_tier_4_heartseeker }
+			        		1 = { add_artifact = sword_tier_4_vengeance }
+			        		1 = { add_artifact = sword_tier_4_fury }
+						}
+						new_artifact = { set_artifact_flag = stolen_by_smith }
+					}
+			        weapon_scimitar = { 
+			        	random_list = {
+			        		1 = { add_artifact = scimitar_tier_4_golden }
+			        		1 = { add_artifact = scimitar_tier_4_fortune }
+			        		1 = { add_artifact = scimitar_tier_4_conquest }
+			        	}
+		        		new_artifact = { set_artifact_flag = stolen_by_smith }
+			        }
+			        weapon_lance = { 
+			        	random_list = {
+			        		1 = { add_artifact = lance_tier_4_impaler }
+			        		1 = { add_artifact = lance_tier_4_trident }
+			        		1 = { add_artifact = lance_tier_4_piercer }
+			        	}
+		        		new_artifact = { set_artifact_flag = stolen_by_smith }
+			        }
+			        weapon_axe = { 
+			        	random_list = {
+			        		1 = { add_artifact = axe_tier_4_cleaver }
+			        		1 = { add_artifact = axe_tier_4_ravager }
+			        		1 = { add_artifact = axe_tier_4_marauder }
+			        	}
+		        		new_artifact = { set_artifact_flag = stolen_by_smith }
+			        }
+			        weapon_mace = { 
+			        	random_list = {
+			        		1 = { add_artifact = mace_tier_4_foe_hammer }
+			        		1 = { add_artifact = mace_tier_4_bone_breaker }
+			        		1 = { add_artifact = mace_tier_4_shatterer }
+			        	}
+		        		new_artifact = { set_artifact_flag = stolen_by_smith }
+			        }
+			        weapon_bow = { 
+			        	random_list = {
+			        		1 = { add_artifact = bow_tier_4_silent_wind }
+			        		1 = { add_artifact = bow_tier_4_lightning }
+			        		1 = { add_artifact = bow_tier_4_eagle }
+			        	}
+		        		new_artifact = { set_artifact_flag = stolen_by_smith }
+			        }
+			        armor_set = { 
+			        	random_list = {
+			        		1 = { add_artifact = armor_tier_4_guardian }
+			        		1 = { add_artifact = armor_tier_4_champion }
+			        		1 = { add_artifact = armor_tier_4_warden }
+			        	}
+		        		new_artifact = { set_artifact_flag = stolen_by_smith }
+			        }
+				}
+			}
+			expensive_weapons = { 
+				trigger_switch = {
+					on_trigger = has_character_flag
+			        weapon_sword = { 
+			        	random_list = {
+			        		1 = { add_artifact = sword_tier_3_heartseeker }
+			        		1 = { add_artifact = sword_tier_3_vengeance }
+			        		1 = { add_artifact = sword_tier_3_fury }
+			        	}
+		        		new_artifact = { set_artifact_flag = stolen_by_smith }
+			        }
+			        weapon_scimitar = { 
+			        	random_list = {
+			        		1 = { add_artifact = scimitar_tier_3_golden }
+			        		1 = { add_artifact = scimitar_tier_3_fortune }
+			        		1 = { add_artifact = scimitar_tier_3_conquest }
+			        	}
+		        		new_artifact = { set_artifact_flag = stolen_by_smith }
+			        }
+			        weapon_lance = { 
+			        	random_list = {
+			        		1 = { add_artifact = lance_tier_3_impaler }
+			        		1 = { add_artifact = lance_tier_3_trident }
+			        		1 = { add_artifact = lance_tier_3_piercer }
+			        	}
+		        		new_artifact = { set_artifact_flag = stolen_by_smith }
+			        }
+			        weapon_axe = { 
+			        	random_list = {
+			        		1 = { add_artifact = axe_tier_3_cleaver }
+			        		1 = { add_artifact = axe_tier_3_ravager }
+			        		1 = { add_artifact = axe_tier_3_marauder }
+			        	}
+		        		new_artifact = { set_artifact_flag = stolen_by_smith }
+			        }
+			        weapon_mace = { 
+			        	random_list = {
+			        		1 = { add_artifact = mace_tier_3_foe_hammer }
+			        		1 = { add_artifact = mace_tier_3_bone_breaker }
+			        		1 = { add_artifact = mace_tier_3_shatterer }
+			        	}
+		        		new_artifact = { set_artifact_flag = stolen_by_smith }
+			        }
+			        weapon_bow = { 
+			        	random_list = {
+			        		1 = { add_artifact = bow_tier_3_silent_wind }
+			        		1 = { add_artifact = bow_tier_3_lightning }
+			        		1 = { add_artifact = bow_tier_3_eagle }
+			        	}
+		        		new_artifact = { set_artifact_flag = stolen_by_smith }
+			        }
+			        armor_set = { 
+			        	random_list = {
+			        		1 = { add_artifact = armor_tier_3_guardian }
+			        		1 = { add_artifact = armor_tier_3_champion }
+			        		1 = { add_artifact = armor_tier_3_warden }
+			        	}
+		        		new_artifact = { set_artifact_flag = stolen_by_smith }
+			        }
+			    }
+			}
+			good_weapons = { 
+				trigger_switch = {
+					on_trigger = has_character_flag
+			        weapon_sword = { add_artifact = sword_tier_2_new new_artifact = { set_artifact_flag = stolen_by_smith } }
+			        weapon_scimitar = { add_artifact = scimitar_tier_2_new new_artifact = { set_artifact_flag = stolen_by_smith } }
+			        weapon_lance = { add_artifact = lance_tier_2_new new_artifact = { set_artifact_flag = stolen_by_smith } }
+			        weapon_axe = { add_artifact = axe_tier_2_new new_artifact = { set_artifact_flag = stolen_by_smith } }
+			        weapon_mace = { add_artifact = mace_tier_2_new new_artifact = { set_artifact_flag = stolen_by_smith } }
+			        weapon_bow = { add_artifact = bow_tier_2_new new_artifact = { set_artifact_flag = stolen_by_smith } }
+			        armor_set = { add_artifact = armor_tier_2 new_artifact = { set_artifact_flag = stolen_by_smith } }
+			    }
+			}
+			cheap_weapons = { 
+				trigger_switch = {
+					on_trigger = has_character_flag
+			        weapon_sword = { add_artifact = sword_tier_1_new new_artifact = { set_artifact_flag = stolen_by_smith } }
+			        weapon_scimitar = { add_artifact = scimitar_tier_1_new new_artifact = { set_artifact_flag = stolen_by_smith } }
+			        weapon_lance = { add_artifact = lance_tier_1_new new_artifact = { set_artifact_flag = stolen_by_smith } }
+			        weapon_axe = { add_artifact = axe_tier_1_new new_artifact = { set_artifact_flag = stolen_by_smith } }
+			        weapon_mace = { add_artifact = mace_tier_1_new new_artifact = { set_artifact_flag = stolen_by_smith } }
+			        weapon_bow = { add_artifact = bow_tier_1_new new_artifact = { set_artifact_flag = stolen_by_smith } }
+			        armor_set = { add_artifact = armor_tier_1 new_artifact = { set_artifact_flag = stolen_by_smith } }
+			    }
+			}
+		}
+		#Give to landed rivals first, then nearby rulers who dislike the employer, else keep for self and run away.
+		if = {
+			limit = { 
+				event_target:smith_employer = { 
+					any_rival = {
+						is_landed = yes
+						is_within_diplo_range = ROOT
+					}
+				}
+			}
+			event_target:smith_employer = { 
+				random_rival = {
+					limit = { 
+						is_landed = yes
+						is_within_diplo_range = ROOT
+					}
+					save_event_target_as = smith_steal_target
+				}
+			}
+		}
+		else_if = {
+			limit = { 
+				event_target:smith_employer = { 
+					any_neighbor_independent_ruler = {
+						is_landed = yes
+						NOT = {
+							opinion = {
+								who = PREV
+								value = -30
+							}
+						}
+					}
+				}
+			}
+			event_target:smith_employer = { 
+				any_neighbor_independent_ruler = {
+					limit = {
+						is_landed = yes
+						NOT = {
+							opinion = {
+								who = PREV
+								value = -30
+							}
+						}
+					}
+					save_event_target_as = smith_steal_target
+				}
+			}
+		}
+		else_if = {
+			limit = { 
+				event_target:smith_employer = { 
+					any_neighbor_independent_ruler = {
+						is_landed = yes
+						NOT = {
+							opinion = {
+								who = PREV
+								value = 0
+							}
+						}
+					}
+				}
+			}
+			event_target:smith_employer = { 
+				any_neighbor_independent_ruler = {
+					limit = {
+						is_landed = yes
+						NOT = {
+							opinion = {
+								who = PREV
+								value = 0
+							}
+						}
+					}
+					save_event_target_as = smith_steal_target
+				}
+			}
+		}
+		else = { save_event_target_as = smith_steal_target }
+		any_artifact = {
+			limit = { has_artifact_flag = stolen_by_smith }
+			set_original_owner = event_target:smith_employer
+			transfer_artifact = {
+				to = event_target:smith_steal_target
+				from = ROOT
+			}
+		}
+		if = {
+			limit = { 
+				event_target:smith_steal_target = { is_landed = yes }
+				is_landed = no
+			}
+			move_character = event_target:smith_steal_target
+			opinion = {
+				who = event_target:smith_steal_target
+				modifier = opinion_grateful
+				years = 10
+			}
+			reverse_opinion = {
+				who = event_target:smith_steal_target
+				modifier = opinion_grateful
+				years = 10
+			}
+		}
+		else = { banish = yes }
+		event_target:smith_employer = { character_event = { id = MNM.9132 } }
+		#clear_event_target = smith_employer
+		clr_character_flag = amazing_weapons
+    	clr_character_flag = expensive_weapons
+		clr_character_flag = good_weapons
+		clr_character_flag = cheap_weapons
+		clr_character_flag = amazing_jewels
+		clr_character_flag = expensive_jewels
+		clr_character_flag = good_jewels
+		clr_character_flag = cheap_jewels
+	}
+}
+
+# Jeweler stole item and fled
+character_event = {
+	id = MNM.9132
+	desc = EVT_DESC_MNM_9132
+    picture = GFX_evt_merchant_caravan
+    border = GFX_event_normal_frame_economy
+
+    is_triggered_only = yes
+    
+    trigger = {
+    	OR = {
+    		has_dlc = "Mystics"
+    		has_dlc = "Jade Dragon"
+    	}
+    }
+
+    option = {
+    	name = EVT_OPTA_MNM_9132
+    	event_target:smith_steal_target = {
+    		show_scope_change = no
+    		any_artifact = {
+    			limit = { has_artifact_flag = stolen_by_smith }
+    			clr_artifact_flag = stolen_by_smith
+    		}
+			reverse_opinion = {
+				who = ROOT
+				modifier = opinion_thief
+				years = 10
+			}
+    	}
+    	FROM = {
+    		show_scope_change = no
+			reverse_opinion = {
+				who = ROOT
+				modifier = opinion_thief
+				years = 10
+			}
+			hidden_effect = { remove_nickname = yes }
+		}
+    }
+	
+	option = {
+		name = EVT_OPTB_MNM_9132
+		tooltip_info = intrigue
+		custom_tooltip = { text = EVT_OPTB_MNM_9132_TT}
+		trigger = {
+			intrigue = 15
+		}
+		hidden_effect = {
+			event_target:smith_steal_target = {
+				any_artifact = {
+					show_scope_change = no
+					limit = { has_artifact_flag = stolen_by_smith }
+					transfer_artifact = {
+						from = event_target:smith_steal_target
+						to = ROOT
+					}
+					clr_artifact_flag = stolen_by_smith
+				}
+			}
+		}
+		
+		FROM = {
+			show_scope_change = no
+			death = {
+				death_reason = death_execution
+				killer = ROOT
+			}
+		}
+		
+	}
+}
+
+
 #########################
 # Hunter
 #########################
