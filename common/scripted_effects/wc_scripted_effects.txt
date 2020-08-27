@@ -4084,6 +4084,7 @@ this_abdicate_transfer_wealth_to_play_prev_effect = {
 		limit = { NOT = { has_character_flag = ongoing_abdication_flag } }
 		save_event_target_as = target_ruler
 		PREV = { save_event_target_as = target_heir }
+		liege = { save_event_target_as = target_liege }
 		
 		set_character_flag = ongoing_abdication_flag
 		
@@ -4109,13 +4110,17 @@ this_abdicate_transfer_wealth_to_play_prev_effect = {
 				remove_claim = event_target:target_ruler
 			}
 			move_character = event_target:target_heir
-			event_target:target_heir = { destroy_temporary_landless_title_effect = yes }	# Destroys title created in create_temporary_landless_title_effect
+			event_target:target_heir = {
+				destroy_temporary_landless_title_effect = yes	# Destroys title created in create_temporary_landless_title_effect
+				set_defacto_liege = event_target:target_liege
+			}
 		}
 		
 		clr_character_flag = ongoing_abdication_flag
 		
-		clear_event_target =  target_ruler
-		clear_event_target =  target_heir
+		clear_event_target = target_ruler
+		clear_event_target = target_heir
+		clear_event_target = target_liege
 	}
 }
 
@@ -4536,4 +4541,85 @@ remove_weight_effect = {
 	remove_weight_modifier_effect = yes
 	clear_fat_flags_effect = yes
 	clear_malnourished_flags_effect = yes
+}
+
+assign_random_mantid_paragon_nickname_effect = {
+	random_list = {
+		10 = {
+			trigger = {
+				OR = {
+					stewardship = 15
+					diplomacy = 15
+				}
+			}
+			give_nickname = nick_the_swarmkeeper
+		}
+		10 = {
+			trigger = { learning = 15 }
+			give_nickname = nick_the_lucid
+		}
+		#Generic
+		5 = {
+			give_nickname = nick_the_locust
+		}
+		10 = {
+			trigger = { intrigue = 15 }
+			give_nickname = nick_the_manipulator
+		}
+		10 = {
+			trigger = { combat_rating = 75 }
+			give_nickname = nick_the_wind_reaver
+		}
+		#Very rare
+		1 = {
+			give_nickname = nick_the_prime
+		}
+		10 = {
+			trigger = { combat_rating = 75 }
+			give_nickname = nick_the_unscathed
+		}
+		10 = {
+			trigger = { martial = 15 }
+			give_nickname = nick_the_bloodcaller
+		}
+		10 = {
+			trigger = { martial = 15 }
+			give_nickname = nick_the_deathcaller
+		}
+		10 = {
+			trigger = { combat_rating = 75 }
+			give_nickname = nick_the_dissector
+		}
+		10 = {
+			trigger = { combat_rating = 75 }
+			give_nickname = nick_the_bloodseeker
+		}
+		10 = {
+			trigger = {
+				OR = {
+					intrigue = 15
+					learning = 15
+				}
+			}
+			give_nickname = nick_the_poisoned_mind
+		}
+	}
+}
+
+add_sleeping_immunity_effect = {
+	add_trait = sleeping_trait
+	diplomatic_immunity = yes
+}
+remove_sleeping_immunity_effect = {
+	remove_trait = sleeping_trait
+	diplomatic_immunity = no
+}
+put_to_sleep_paragon_effect = {
+	add_sleeping_immunity_effect = yes
+	set_character_flag = paragon_sleeping_flag
+	character_event = { id = WCRAC.1015 years = 100 }
+}
+awaken_paragon_effect = {
+	remove_sleeping_immunity_effect = yes
+	clr_character_flag = paragon_sleeping_flag
 }
