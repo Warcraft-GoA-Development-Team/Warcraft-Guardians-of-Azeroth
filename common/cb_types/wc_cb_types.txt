@@ -1,7 +1,7 @@
 # CB to conquer the whole realm
 total_invasion = {
 	name = total_invasion
-	war_name = WAR_NAME_TOTAL_INVASION
+	war_name = WAR_NAME_TOTAL_INVASION_OF
 	sprite = 27
 	truce_days = 3650
 	hostile_against_others = yes
@@ -9,12 +9,13 @@ total_invasion = {
 	is_holy_war = yes
 	can_ask_to_join_war = yes
 	allow_whitepeace = no
+	check_de_jure_tier = KING # this scans all de jure kingdoms for the counties which are held by or vassals(or below) of selected character. Only valid if is_permanent = yes
 
 	allowed_to_target_tributaries = no
 
 	battle_warscore_mult = 0.5
-	max_defender_occupation_score = 60
-	max_attacker_occupation_score = 60
+	max_defender_occupation_score = 85
+	max_attacker_occupation_score = 85
 	capturing_attacker_is_complete_victory = no
 	capturing_defender_is_complete_victory = no
 	defender_unoccupied_warscore = yes
@@ -27,8 +28,8 @@ total_invasion = {
 			
 			OR = {
 				AND = {
-					prestige = 2000
-					piety = 1000
+					prestige = 500
+					piety = 250
 				}
 
 				# Exception
@@ -57,13 +58,8 @@ total_invasion = {
 	}
 
 	can_use = {
-		ROOT = {
-			can_declare_wars_trigger = yes
-			FROM = {
-				can_declare_wars_trigger = yes
-				can_fight_prev_trigger = yes
-			}
-		}
+		# Warcraft
+		ROOT = { FROM = { can_fight_prev_trigger = yes } }
 
 		# Other conditions
 		ROOT = {
@@ -128,8 +124,8 @@ total_invasion = {
 		if = {
 			limit = { FROM = { NOT = { has_character_flag = event_war_exception_flag } } }
 			ROOT = {
-				prestige = -2000
-				piety = -1000
+				prestige = -500
+				piety = -250
 			}
 		}
 		
@@ -145,8 +141,8 @@ total_invasion = {
 	
 	on_invalidation = {
 		ROOT = {
-			prestige = 2000
-			piety = 1000
+			prestige = 500
+			piety = 250
 		}
 	}
 
@@ -166,6 +162,8 @@ total_invasion = {
 		
 		# Wealth, piety and prestige
 		ROOT = {
+			show_scope_change = no
+
 			hidden_tooltip = {
 				if = {
 					limit = { has_nickname = no }
@@ -187,6 +185,8 @@ total_invasion = {
 			}
 		}
 		FROM = {
+			show_scope_change = no
+
 			prestige = -200
 			if = {
 				limit = { NOT = { religion = ROOT } }
@@ -200,85 +200,32 @@ total_invasion = {
 			limit = { NOT = { character = ROOT } }
 			hidden_tooltip = { participation_scaled_prestige = 200 }
 		}
-
+		
+		# Titles
+		hidden_tooltip = {
+			ROOT = {
+				occupy_minors_of_occupied_settlements = FROM
+				gain_all_occupied_titles = { who = FROM type = invasion }
+			}
+		}
+	}
+	on_success_title = {
+		#Titles
 		custom_tooltip = {
-			text = total_invasion_cb_suc_tooltip_01
+			text = tribal_invasion_succ_tip
 			hidden_tooltip = {
-				FROM = {
-					any_vassal = {
-						limit = {
-							OR = {
-								religion = ROOT
-								true_religion = { target = ROOT target_type = public }
-								AND = {
-									OR = {
-										religion = orcish_fel
-										religion = burning_legion_religion
-										true_religion = orcish_fel
-										true_religion = burning_legion_religion
-									}
-									ROOT = {
-										OR = {
-											religion = orcish_fel
-											religion = burning_legion_religion
-										}
-									}
-								}
-							}
-						}
-						convert_to_secret_religion = yes
-						set_defacto_liege = ROOT
-					}
-					any_realm_lord = {
-						limit = { ai = no }
-						set_defacto_liege = THIS	# Gives players a chance
-					}
-					any_realm_province = {
-						limit = {
-							county = {
-								title_can_be_lost_trigger = yes
-								holder_scope = {
-									OR = {
-										character = PREVPREVPREV
-										is_liege_or_above = PREVPREVPREV
-									}
-								}
-							}
-						}
-						county = {
-							ROOT = {
-								gain_settlements_under_title = {
-									title = PREV
-									enemy = FROM
-									is_crusade = yes # Even if the title holder is not participating in the war, gain holdings occupied by all Crusade participants
-									type = invasion
-								}
-								grant_title_no_opinion = { target = PREV type = invasion }
-							}
-						}
+				ROOT = {
+					vassalize_or_take_under_title_destroy_duchies = {
+						title = PREV
+						enemy = FROM
+						same_religion = yes # Only vassalize rulers of my religion
+						is_religious = yes
+						type = invasion
 					}
 				}
 			}
 		}
 	}
-
-	# on_success_posttitle = {
-		# if = {
-			# limit = {
-				# FROM = { is_member_of_alliance_faction_trigger = yes }
-			# }
-			# # Declares wars against other members of the Alliance
-			# custom_tooltip = {
-				# text = total_invasion_cb_suc_tooltip_02
-				# hidden_tooltip = {
-					# any_defender = {
-						# limit = { is_member_of_alliance_faction_trigger = yes }
-						# character_event = { id = WCWAR.250 days = 1 }
-					# }
-				# }
-			# }
-		# }
-	# }
 
 	on_reverse_demand = {
 		FROM = {
@@ -289,6 +236,10 @@ total_invasion = {
 				save_event_target_as = target_attacker
 				total_invasion_cb_rev_effect = yes
 			}
+		}
+		any_defender = {
+			limit = { NOT = { character = FROM } }
+			hidden_tooltip = { participation_scaled_prestige = 1500 }
 		}
 	}
 
@@ -348,13 +299,8 @@ stop_invader = {
 	sort_priority = 2500
 
 	can_use = {
-		ROOT = {
-			can_declare_wars_trigger = yes
-			FROM = {
-				can_declare_wars_trigger = yes
-				can_fight_prev_trigger = yes
-			}
-		}
+		# Warcraft
+		ROOT = { FROM = { can_fight_prev_trigger = yes } }
 
 		# Other conditions
 		ROOT = {
@@ -425,6 +371,10 @@ stop_invader = {
 				total_invasion_cb_rev_effect = yes
 			}
 		}
+		any_attacker = {
+			limit = { NOT = { character = ROOT } }
+			hidden_tooltip = { participation_scaled_prestige = 1500 }
+		}
 	}
 
 	on_reverse_demand = {
@@ -455,8 +405,43 @@ stop_invader = {
 			limit = { NOT = { character = ROOT } }
 			hidden_tooltip = { participation_scaled_prestige = 200 }
 		}
+		
+		# Titles
+		# Illidari in 605 is special case, they die if lose
+		if = {
+			limit = {
+				start_date = 605.6.6
+				ROOT = { has_landed_title = k_illidari }
+				FROM = { has_landed_title = e_scourge }
+			}
+			ROOT = {
+				show_scope_change = no
+				save_event_target_as = target_illidan
+				save_event_target_as = target_defender
+				
+				any_playable_ruler = {
+					limit = {
+						OR = {
+							ai = no
+							has_character_flag = is_kaelthas_flag
+						}
+					}
+					
+					narrative_event = { id = WCTFT.400 }
+				}
+				
+				FROM = {
+					show_scope_change = no
+					save_event_target_as = target_attacker
+					
+					total_invasion_cb_suc_effect = yes
+				}
+				
+				death = { death_reason = death_missing }
+			}
+		}
 	}
-
+	
 	attacker_ai_victory_worth = {
 		factor = -1 # always accept
 	}
@@ -521,13 +506,8 @@ scourge_subjugation = {
 	}
 
 	can_use = {
-		ROOT = {
-			can_declare_wars_trigger = yes
-			FROM = {
-				can_declare_wars_trigger = yes
-				can_fight_prev_trigger = yes
-			}
-		}
+		# Warcraft
+		ROOT = { FROM = { can_fight_prev_trigger = yes } }
 
 		# Other conditions
 		ROOT = {
@@ -862,13 +842,8 @@ common_invasion = {
 	}
 
 	can_use = {
-		ROOT = {
-			can_declare_wars_trigger = yes
-			FROM = {
-				can_declare_wars_trigger = yes
-				can_fight_prev_trigger = yes
-			}
-		}
+		# Warcraft
+		ROOT = { FROM = { can_fight_prev_trigger = yes } }
 
 		ROOT = {
 			can_rule_peacefully_trigger = no
@@ -1150,13 +1125,8 @@ purge_lands = {
 	}
 
 	can_use = {
-		ROOT = {
-			can_declare_wars_trigger = yes
-			FROM = {
-				can_declare_wars_trigger = yes
-				can_fight_prev_trigger = yes
-			}
-		}
+		# Warcraft
+		ROOT = { FROM = { can_fight_prev_trigger = yes } }
 
 		ROOT = {
 			can_rule_peacefully_trigger = yes 	# These have another CB
@@ -1541,13 +1511,7 @@ county_adventure = {	# Based on duchy_adventure
 
 	can_use = {
 		# Warcraft
-		ROOT = {
-			can_declare_wars_trigger = yes
-			FROM = {
-				can_declare_wars_trigger = yes
-				can_fight_prev_trigger = yes
-			}
-		}
+		ROOT = { FROM = { can_fight_prev_trigger = yes } }
 		
 		ROOT = { has_character_flag = county_adventurer }
 	}

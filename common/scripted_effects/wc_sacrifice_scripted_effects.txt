@@ -1,28 +1,44 @@
 PREV_public_sacrifice_THIS_effect = {
 	PREV = { save_event_target_as = target_sacrificer }
 	save_event_target_as = target_sacrificed_prisoner
-	
-	any_liege = {
-		limit = {
-			ai = no
-			NOT = { character = PREVPREV }
+
+	if = {
+		limit = { is_ruler = yes }
+
+		any_liege = {
+			limit = {
+				ai = no
+				NOT = { character = PREVPREV }
+			}
+			character_event = { id = WCSCRFC.3 }
 		}
-		character_event = { id = SSI.60 }
 	}
+	else_if = {
+		limit = {
+			liege = {
+				ai = no
+				NOT = { character = PREVPREV }
+			}
+		}
+		liege = { character_event = { id = WCSCRFC.3 } }
+	}
+
 	PREV = {
 		if = {
 			limit = { NOT = { has_character_flag = wc_do_not_show_post_sacrifice_ping_event_flag } }
-			character_event = { id = HF.23002 }
+			character_event = { id = WCSCRFC.4 }
 		}
 		if = {
 			limit = {
 				religion = cult_of_hakkar
-				NOT = { has_character_flag = wc_do_not_show_post_sacrifice_cannibal_event_flag }
+				NOT = {
+					trait = cannibal_trait
+					has_character_flag = wc_do_not_show_post_sacrifice_cannibal_event_flag
+				}
 			}
 			random = {
 				chance = 10
 				character_event = { id = WCLOA.110 days = 1 random = 7 }
-				set_character_flag = wc_do_not_show_post_sacrifice_cannibal_event_flag
 			}
 		}
 	}
@@ -91,16 +107,7 @@ PREV_public_sacrifice_THIS_effect = {
 # OTHERWISE AMOUNT THAT YOUR CHARACTER WILL RECEIVE IF ON OG SCREEN THIRD PARTY SELECTOR WILL BE WRONG!
 caltulate_PREV_offmap_old_gods_currency_insanity_effect = {
 	if = {
-		limit = {
-			PREV = {
-				OR = {
-					cthun_offmap_decisions_enabled_trigger = yes
-					nzoth_offmap_decisions_enabled_trigger = yes
-					yogg_saron_offmap_decisions_enabled_trigger = yes
-					yshaarj_offmap_decisions_enabled_trigger = yes
-				}
-			}
-		}
+		limit = { PREV = { truly_worship_one_of_old_gods_trigger = yes } }
 		PREV = {
 			show_scope_change = no
 
@@ -108,11 +115,11 @@ caltulate_PREV_offmap_old_gods_currency_insanity_effect = {
 		}
 		hidden_effect = {
 			# Base
-			set_variable = { which = local_received_offmap_old_gods_currency_insanity_variable value = 100 }
+			set_variable = { which = local_received_offmap_old_gods_currency_insanity_from_character_sacrifice_variable value = 50 }
 			# Priests
 			if = {
 				limit = { controls_religion = yes }
-				PREV = { change_variable = { which = local_received_offmap_old_gods_currency_insanity_variable value = 500 } }
+				change_variable = { which = local_received_offmap_old_gods_currency_insanity_from_character_sacrifice_variable value = 500 }
 			}
 			if = {
 				limit = {
@@ -121,89 +128,159 @@ caltulate_PREV_offmap_old_gods_currency_insanity_effect = {
 						is_ascetic_trigger = yes
 					}
 				}
-				PREV = { change_variable = { which = local_received_offmap_old_gods_currency_insanity_variable value = 100 } }
+				change_variable = { which = local_received_offmap_old_gods_currency_insanity_from_character_sacrifice_variable value = 100 }
 			}
 			# Rulers and tiers
 			if = {
 				limit = { is_ruler = yes }
-				PREV = { change_variable = { which = local_received_offmap_old_gods_currency_insanity_variable value = 50 } }
+				change_variable = { which = local_received_offmap_old_gods_currency_insanity_from_character_sacrifice_variable value = 50 }
 
 				if = {
 					limit = { tier = COUNT }
-					PREV = { change_variable = { which = local_received_offmap_old_gods_currency_insanity_variable value = 50 } }
+					change_variable = { which = local_received_offmap_old_gods_currency_insanity_from_character_sacrifice_variable value = 50 }
 				}
 				else_if = {
 					limit = { tier = DUKE }
-					PREV = { change_variable = { which = local_received_offmap_old_gods_currency_insanity_variable value = 150 } }
+					change_variable = { which = local_received_offmap_old_gods_currency_insanity_from_character_sacrifice_variable value = 150 }
 				}
 				else_if = {
 					limit = { tier = KING }
-					PREV = { change_variable = { which = local_received_offmap_old_gods_currency_insanity_variable value = 300 } }
+					change_variable = { which = local_received_offmap_old_gods_currency_insanity_from_character_sacrifice_variable value = 350 }
 				}
 				else = {
 					limit = { tier = EMPEROR }
-					PREV = { change_variable = { which = local_received_offmap_old_gods_currency_insanity_variable value = 500 } }
+					change_variable = { which = local_received_offmap_old_gods_currency_insanity_from_character_sacrifice_variable value = 650 }
 				}
 			}
-			# Child
+			#Class
 			if = {
-				limit = { is_adult = no }
-				PREV = { change_variable = { which = local_received_offmap_old_gods_currency_insanity_variable value = 100 } }
+				limit = { is_1_2_physical_class_trigger = yes }
+				change_variable = { which = local_received_offmap_old_gods_currency_insanity_from_character_sacrifice_variable value = 50 }
+			}
+			else_if = {
+				limit = { is_1_2_magic_class_trigger = yes }
+				change_variable = { which = local_received_offmap_old_gods_currency_insanity_from_character_sacrifice_variable value = 50 }
+			}
+			else_if = {
+				limit = { is_3_4_physical_class_trigger = yes }
+				change_variable = { which = local_received_offmap_old_gods_currency_insanity_from_character_sacrifice_variable value = 100 }
+			}
+			else_if = {
+				limit = { is_3_4_magic_class_trigger = yes }
+				change_variable = { which = local_received_offmap_old_gods_currency_insanity_from_character_sacrifice_variable value = 100 }
+			}
+			else_if = {
+				limit = { is_5_6_physical_class_trigger = yes }
+				change_variable = { which = local_received_offmap_old_gods_currency_insanity_from_character_sacrifice_variable value = 150 }
+			}
+			else_if = {
+				limit = { is_5_6_magic_class_trigger = yes }
+				change_variable = { which = local_received_offmap_old_gods_currency_insanity_from_character_sacrifice_variable value = 150 }
+			}
+			else_if = {
+				limit = { is_7_8_physical_class_trigger = yes }
+				change_variable = { which = local_received_offmap_old_gods_currency_insanity_from_character_sacrifice_variable value = 250 }
+			}
+			else_if = {
+				limit = { is_7_8_magic_class_trigger = yes }
+				change_variable = { which = local_received_offmap_old_gods_currency_insanity_from_character_sacrifice_variable value = 250 }
+			}
+			else_if = {
+				limit = { is_9_10_physical_class_trigger = yes }
+				change_variable = { which = local_received_offmap_old_gods_currency_insanity_from_character_sacrifice_variable value = 400 }
+			}
+			else_if = {
+				limit = { is_9_10_magic_class_trigger = yes }
+				change_variable = { which = local_received_offmap_old_gods_currency_insanity_from_character_sacrifice_variable value = 400 }
+			}
+			#Races that cant have class
+			if = {
+				limit = { is_whelp_trigger = yes }
+				change_variable = { which = local_received_offmap_old_gods_currency_insanity_from_character_sacrifice_variable value = 50 }
+			}
+			else_if = {
+				limit = { is_drake_trigger = yes }
+				change_variable = { which = local_received_offmap_old_gods_currency_insanity_from_character_sacrifice_variable value = 100 }
+			}
+			else_if = {
+				limit = { is_dragon_trigger = yes }
+				change_variable = { which = local_received_offmap_old_gods_currency_insanity_from_character_sacrifice_variable value = 200 }
+			}
+			else_if = {
+				limit = { is_wyrm_trigger = yes }
+				change_variable = { which = local_received_offmap_old_gods_currency_insanity_from_character_sacrifice_variable value = 400 }
+			}
+			else_if = {
+				limit = { trait = creature_observer }
+				change_variable = { which = local_received_offmap_old_gods_currency_insanity_from_character_sacrifice_variable value = 200 }
+			}
+			else_if = {
+				limit = { is_plant_race_trigger = yes }
+				change_variable = { which = local_received_offmap_old_gods_currency_insanity_from_character_sacrifice_variable value = 150 }
+			}
+			else_if = {
+				limit = { is_elemental_trigger = yes }
+				change_variable = { which = local_received_offmap_old_gods_currency_insanity_from_character_sacrifice_variable value = 150 }
+			}
+			#Aspects
+			if = {
+				limit = { is_aspect_trigget = yes }
+				change_variable = { which = local_received_offmap_old_gods_currency_insanity_from_character_sacrifice_variable value = 200 }
 			}
 			# Has the blood of Twilight Viceroy
 			if = {
 				limit = { PREV = { any_owned_bloodline = { has_bloodline_flag = bloodline_insanity_gain } } }
-				PREV = { multiply_variable = { which = local_received_offmap_old_gods_currency_insanity_variable value = 1.5 } }
+				multiply_variable = { which = local_received_offmap_old_gods_currency_insanity_from_character_sacrifice_variable value = 1.5 }
 			}
 			# C'thun likes/dislikes
 			if = {
-				limit = { PREV = { cthun_offmap_decisions_enabled_trigger = yes } }
+				limit = { PREV = { has_character_modifier = follower_of_cthun } }
 
 				if = {
 					limit = { disliked_by_offmap = { type = offmap_cthun } }
-					PREV = { multiply_variable = { which = local_received_offmap_old_gods_currency_insanity_variable value = 1.25 } }
+					multiply_variable = { which = local_received_offmap_old_gods_currency_insanity_from_character_sacrifice_variable value = 1.25 }
 				}
 				if = {
 					limit = { PREV = { liked_by_offmap = { type = offmap_cthun } } }
-					PREV = { multiply_variable = { which = local_received_offmap_old_gods_currency_insanity_variable value = 1.25 } }
+					multiply_variable = { which = local_received_offmap_old_gods_currency_insanity_from_character_sacrifice_variable value = 1.25 }
 				}
 				if = {
 					limit = { PREV = { disliked_by_offmap = { type = offmap_cthun } } }
-					PREV = { multiply_variable = { which = local_received_offmap_old_gods_currency_insanity_variable value = 0.8 } }
+					multiply_variable = { which = local_received_offmap_old_gods_currency_insanity_from_character_sacrifice_variable value = 0.8 }
 				}
 			}
 			# N'zoth likes/dislikes
 			if = {
-				limit = { PREV = { nzoth_offmap_decisions_enabled_trigger = yes } }
+				limit = { PREV = { has_character_modifier = follower_of_nzoth } }
 
 				if = {
 					limit = { disliked_by_offmap = { type = offmap_nzoth } }
-					PREV = { multiply_variable = { which = local_received_offmap_old_gods_currency_insanity_variable value = 1.25 } }
+					multiply_variable = { which = local_received_offmap_old_gods_currency_insanity_from_character_sacrifice_variable value = 1.25 }
 				}
 				if = {
 					limit = { PREV = { liked_by_offmap = { type = offmap_nzoth } } }
-					PREV = { multiply_variable = { which = local_received_offmap_old_gods_currency_insanity_variable value = 1.25 } }
+					multiply_variable = { which = local_received_offmap_old_gods_currency_insanity_from_character_sacrifice_variable value = 1.25 }
 				}
 				if = {
 					limit = { PREV = { disliked_by_offmap = { type = offmap_nzoth } } }
-					PREV = { multiply_variable = { which = local_received_offmap_old_gods_currency_insanity_variable value = 0.8 } }
+					multiply_variable = { which = local_received_offmap_old_gods_currency_insanity_from_character_sacrifice_variable value = 0.8 }
 				}
 			}
 			# Yogg-Saron likes/dislikes
 			if = {
-				limit = { PREV = { yogg_saron_offmap_decisions_enabled_trigger = yes } }
+				limit = { PREV = { has_character_modifier = follower_of_yogg_saron } }
 
 				if = {
 					limit = { disliked_by_offmap = { type = offmap_yoggsaron } }
-					PREV = { multiply_variable = { which = local_received_offmap_old_gods_currency_insanity_variable value = 1.25 } }
+					multiply_variable = { which = local_received_offmap_old_gods_currency_insanity_from_character_sacrifice_variable value = 1.25 }
 				}
 				if = {
 					limit = { PREV = { liked_by_offmap = { type = offmap_yoggsaron } } }
-					PREV = { multiply_variable = { which = local_received_offmap_old_gods_currency_insanity_variable value = 1.25 } }
+					multiply_variable = { which = local_received_offmap_old_gods_currency_insanity_from_character_sacrifice_variable value = 1.25 }
 				}
 				if = {
 					limit = { PREV = { disliked_by_offmap = { type = offmap_yoggsaron } } }
-					PREV = { multiply_variable = { which = local_received_offmap_old_gods_currency_insanity_variable value = 0.8 } }
+					multiply_variable = { which = local_received_offmap_old_gods_currency_insanity_from_character_sacrifice_variable value = 0.8 }
 				}
 			}
 		}
@@ -212,30 +289,30 @@ caltulate_PREV_offmap_old_gods_currency_insanity_effect = {
 
 add_offmap_old_gods_currency_insanity_after_calculation_effect = {
 	if = {
-		limit = { old_gods_offmap_decisions_enabled_trigger = yes }
+		limit = { truly_worship_one_of_old_gods_trigger = yes }
 
 		if = {
-			limit = { cthun_offmap_decisions_enabled_trigger = yes }
+			limit = { has_character_modifier = follower_of_cthun }
 
 			add_offmap_currency = {
 				offmap = offmap_cthun
-				value = local_received_offmap_old_gods_currency_insanity_variable
+				value = local_received_offmap_old_gods_currency_insanity_from_character_sacrifice_variable
 			}
 		}
 		else_if = {
-			limit = { nzoth_offmap_decisions_enabled_trigger = yes }
+			limit = { has_character_modifier = follower_of_nzoth }
 
 			add_offmap_currency = {
 				offmap = offmap_nzoth
-				value = local_received_offmap_old_gods_currency_insanity_variable
+				value = local_received_offmap_old_gods_currency_insanity_from_character_sacrifice_variable
 			}
 		}
 		else_if = {
-			limit = { yogg_saron_offmap_decisions_enabled_trigger = yes }
+			limit = { has_character_modifier = follower_of_yogg_saron }
 
 			add_offmap_currency = {
 				offmap = offmap_yoggsaron
-				value = local_received_offmap_old_gods_currency_insanity_variable
+				value = local_received_offmap_old_gods_currency_insanity_from_character_sacrifice_variable
 			}
 		}
 	}
@@ -259,4 +336,17 @@ PREV_sacrifice_THIS_to_old_god_effect = {
 		}
 		PREV_society_sacrifice_THIS_effect = yes
 	}
+}
+
+sacrifice_province_population_effect = {
+	add_province_modifier = { name = bloodthirsty_flower_war_province years = 10 stacking = yes } 
+	change_variable = { which = prosperity_value value = -40 } 
+	if = {
+		limit = { NOT = { check_variable = { which = prosperity_value value = 0 } } } 
+		set_variable = { which = prosperity_value value = 0 }
+	}
+}
+
+THIS_sacrifice_PREV_subjects_opinion_effect = {
+	reverse_opinion = { modifier = opinion_abducted_peasants who = PREV years = 30 }
 }

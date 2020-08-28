@@ -436,25 +436,22 @@ character_event = {
 				}
 			}
 			give_minor_title = title_shadow_council_member_1
-			break = yes
 		}
-		if = {
+		else_if = {
 			limit = {
 				event_target:target_loyal_ruler = {
 					NOT = { has_assigned_minor_title = title_shadow_council_member_2 }
 				}
 			}
 			give_minor_title = title_shadow_council_member_2
-			break = yes
 		}
-		if = {
+		else_if = {
 			limit = {
 				event_target:target_loyal_ruler = {
 					NOT = { has_assigned_minor_title = title_shadow_council_member_3 }
 				}
 			}
 			give_minor_title = title_shadow_council_member_3
-			break = yes
 		}
 	}
 }
@@ -606,7 +603,7 @@ province_event = {
 
 	immediate = {
 		# Starts "The Voice from Beyond the Sea" event chain
-		province_event = { id = WCDAC.5029 days = 1825 }
+		province_event = { id = WCDAC.5029 years = 6 }
 		d_twilights_hammer = {
 			if = {
 				limit = {
@@ -614,7 +611,6 @@ province_event = {
 					is_primary_holder_title = yes
 				}
 				holder_scope = { narrative_event = { id = WCDAC.5000 } }
-				break = yes
 			}
 		}
 	}
@@ -635,7 +631,7 @@ narrative_event = {
 
 		add_5_void_corruption_effect = yes
 
-		hidden_effect = { 73 = { province_event = { id = WCDAC.5009 days = 3 } } }
+		hidden_effect = { 73 = { province_event = { id = WCDAC.5009 days = 90 } } }
 	}
 	# Suppress them!
 	option = {
@@ -664,17 +660,15 @@ province_event = {
 		if = {
 			limit = { FROM = { is_alive = yes } }
 			FROM = { narrative_event = { id = WCDAC.5005 } }
-			break = yes
 		}
-		d_twilights_hammer = {
-			if = {
-				limit = {
+		else_if = {
+			limit = {
+				d_twilights_hammer = {
 					has_holder = yes
 					is_primary_holder_title = yes
 				}
-				holder_scope = { narrative_event = { id = WCDAC.5005 } }
-				break = yes
 			}
+			d_twilights_hammer = { holder_scope = { narrative_event = { id = WCDAC.5005 } } }
 		}
 	}
 }
@@ -722,17 +716,15 @@ province_event = {
 		if = {
 			limit = { FROM = { is_alive = yes } }
 			FROM = { narrative_event = { id = WCDAC.5010 } }
-			break = yes
 		}
-		d_twilights_hammer = {
-			if = {
-				limit = {
+		else_if = {
+			limit = {
+				d_twilights_hammer = {
 					has_holder = yes
 					is_primary_holder_title = yes
 				}
-				holder_scope = { narrative_event = { id = WCDAC.5010 } }
-				break = yes
 			}
+			d_twilights_hammer = { holder_scope = { narrative_event = { id = WCDAC.5010 } } }
 		}
 	}
 }
@@ -775,17 +767,15 @@ province_event = {
 		if = {
 			limit = { FROM = { is_alive = yes } }
 			FROM = { narrative_event = { id = WCDAC.5015 } }
-			break = yes
 		}
-		d_twilights_hammer = {
-			if = {
-				limit = {
+		else_if = {
+			limit = {
+				d_twilights_hammer = {
 					has_holder = yes
 					is_primary_holder_title = yes
 				}
-				holder_scope = { narrative_event = { id = WCDAC.5015 } }
-				break = yes
 			}
+			d_twilights_hammer = { holder_scope = { narrative_event = { id = WCDAC.5015 } } }
 		}
 	}
 }
@@ -827,57 +817,42 @@ province_event = {
 	hide_window = yes
 
 	immediate = {
-		d_twilights_hammer = {
-			if = {
-				limit = {
-					has_holder = yes
-					holder_scope = {
-						prisoner = no
-						
-						true_religion = old_gods_worship
-					}
-				}
-				holder_scope = { narrative_event = { id = WCDAC.5030 } }
-				break = yes
-			}
-		}
 		if = {
 			limit = {
+				d_twilights_hammer = {
+					has_holder = yes
+					holder_scope = {
+						old_gods_chosen_event_trigger = yes
+						location = { region = world_eastern_kingdoms }
+					}
+				}
+			}
+			d_twilights_hammer = { holder_scope = { narrative_event = { id = WCDAC.5030 } } }
+		}
+		else_if = {
+			limit = {
 				any_player = {
-					is_adult = yes
 					is_incapable = no
-					prisoner = no
 					is_inaccessible_trigger = no
 
-					independent = no
-
-					is_dark_being_trigger = no
-					is_humanoid_trigger = yes
-					true_religion = old_gods_worship
-
-					has_invader_title_trigger = no
+					old_gods_chosen_event_trigger = yes
+					location = { region = world_eastern_kingdoms }
 				}
 			}
 			random_player = {
 				limit = {
-					is_adult = yes
 					is_incapable = no
-					prisoner = no
 					is_inaccessible_trigger = no
 
-					independent = no
-
-					is_dark_being_trigger = no
-					is_humanoid_trigger = yes
-					true_religion = old_gods_worship
-
-					has_invader_title_trigger = no
+					old_gods_chosen_event_trigger = yes
+					location = { region = world_eastern_kingdoms }
 				}
 				narrative_event = { id = WCDAC.5030 }
 			}
-			break = yes
 		}
-		province_event = { id = WCDAC.5039 days = 90 }
+		else = {
+			province_event = { id = WCDAC.5039 days = 90 }
+		}
 	}
 }
 # Beginning of Sea Travel
@@ -889,16 +864,28 @@ narrative_event = {
 	border = GFX_event_narrative_frame_intrigue
 
 	is_triggered_only = yes
-	
+
 	immediate = {
-		add_trait = travelling
+		add_traveling_immunity_effect = yes
+		set_character_flag = important_old_god_task_flag
 	}
 
 	# I will fulfill the will of the Gods!
 	option = {
 		name = EVTOPTA_WCDAC_5030
-
-		hidden_effect = { 73 = { province_event = { id = WCDAC.5034 days = 60 } } }
+		custom_tooltip = { text = chogall_journey_length }
+		hidden_effect = { remove_old_gods_follower_modifier_effect = yes }
+		add_character_modifier = { name = follower_of_cthun duration = -1 }
+		set_global_flag = twilights_hammer_kalimdor
+	}
+	option = {
+		name = EVTOPTB_WCDAC_5030
+		custom_tooltip = { text = chogall_journey_length }
+		hidden_effect = { remove_old_gods_follower_modifier_effect = yes }
+		add_character_modifier = { name = follower_of_yogg_saron duration = -1 }
+	}
+	after = {
+		hidden_effect = { 73 = { province_event = { id = WCDAC.5034 years = 4 } } }
 	}
 }
 # Ping event
@@ -909,45 +896,57 @@ province_event = {
 	hide_window = yes
 
 	immediate = {
-		FROM = {
-			if = {
-				limit = {
-					is_alive = yes
-					
-					prisoner = no
-					
-					true_religion = old_gods_worship
-				}
-				narrative_event = { id = WCDAC.5035 }
-				break = yes
-			}
+		if = {
+			limit = { FROM = { old_gods_chosen_event_trigger = yes } }
+			FROM = { narrative_event = { id = WCDAC.5035 } }
 		}
-		d_twilights_hammer = {
-			if = {
-				limit = {
+		else_if = {
+			limit = {
+				d_twilights_hammer = {
 					has_holder = yes
-					holder_scope = {
-						prisoner = no
-						
-						true_religion = old_gods_worship
-					}
+					holder_scope = { old_gods_chosen_event_trigger = yes }
 				}
-				holder_scope = { narrative_event = { id = WCDAC.5035 } }
-				break = yes
 			}
+			FROM = {
+				remove_traveling_immunity_effect = yes
+				clr_character_flag = important_old_god_task_flag
+			}
+			d_twilights_hammer = { holder_scope = { narrative_event = { id = WCDAC.5035 } } }
 		}
-		province_event = { id = WCDAC.5039 days = 90 }
+		else = {
+			FROM = {
+				remove_traveling_immunity_effect = yes
+				clr_character_flag = important_old_god_task_flag
+			}
+			province_event = { id = WCDAC.5039 days = 90 }
+		}
 	}
 }
 # Arrival in Kalimdor
 narrative_event = {
 	id = WCDAC.5035
 	title = EVTTITLE_WCDAC_5030
-	desc = EVTDESC_WCDAC_5035
-	picture = GFX_evt_ahnqiraj
+	desc = {
+		trigger = {
+			has_global_flag = twilights_hammer_kalimdor
+		}
+		text = EVTDESC_WCDAC_5035_kalimdor
+		picture = GFX_evt_ahnqiraj
+	}
+	desc = {
+		trigger = {
+			NOT = { has_global_flag = twilights_hammer_kalimdor }
+		}
+		text = EVTDESC_WCDAC_5035_northrend
+		picture = GFX_evt_yogg_saron
+	}
 	border = GFX_event_narrative_frame_intrigue
 
 	is_triggered_only = yes
+	
+	immediate = {
+		add_traveling_immunity_effect = yes
+	}
 
 	# Let's continue the journey.
 	option = {
@@ -964,85 +963,76 @@ province_event = {
 	hide_window = yes
 
 	immediate = {
-		FROM = {
-			if = {
-				limit = {
-					is_alive = yes
-					
-					prisoner = no
-					
-					true_religion = old_gods_worship
-				}
-				narrative_event = { id = WCDAC.5040 }
-				break = yes
-			}
+		if = {
+			limit = { FROM = { old_gods_chosen_event_trigger = yes } }
+			FROM = { narrative_event = { id = WCDAC.5040 } }
 		}
-		d_twilights_hammer = {
-			if = {
-				limit = {
+		else_if = {
+			limit = {
+				d_twilights_hammer = {
 					has_holder = yes
-					holder_scope = {
-						prisoner = no
-						
-						true_religion = old_gods_worship
-					}
+					holder_scope = { old_gods_chosen_event_trigger = yes }
 				}
-				holder_scope = { narrative_event = { id = WCDAC.5040 } }
-				break = yes
 			}
+			FROM = {
+				remove_traveling_immunity_effect = yes
+				clr_character_flag = important_old_god_task_flag
+			}
+			d_twilights_hammer = { holder_scope = { narrative_event = { id = WCDAC.5040 } } }
 		}
-		create_character = {
-			dynasty = none
-			religion = old_gods_worship
-			culture = azerothian
-			female = no
-			age = 45
-			random_traits = yes
-			trait = creature_human
-			trait = cruel
-			trait = zealous
-			trait = ambitious
-		}
-		hidden_effect = {
+		else = {
+			FROM = {
+				remove_traveling_immunity_effect = yes
+				clr_character_flag = important_old_god_task_flag
+			}
+			create_character = {
+				dynasty = none
+				religion = old_gods_worship
+				culture = azerothian
+				female = no
+				age = 45
+				random_traits = yes
+				trait = creature_human
+				trait = elusive_shadow
+				trait = cruel
+				trait = zealous
+				trait = ambitious
+			}
 			new_character = {
-				remove_education_effect = yes
-				random_list = {
-					35 = {
-						add_trait = intricate_webweaver
-						add_trait = class_shadow_priest_6
-					}
-					30 = {
-						add_trait = intricate_webweaver
-						add_trait = class_shadow_priest_7
-					}
-					20 = {
-						add_trait = elusive_shadow
-						add_trait = class_shadow_priest_8
-					}
-					15 = {
-						add_trait = elusive_shadow
-						add_trait = class_shadow_priest_9
-					}
-				}
+				set_character_flag = important_old_god_task_flag
 
-				# Removes wrong traits
-				remove_trait = chaste
-				remove_trait = kind
-				remove_trait = charitable
-				remove_trait = humble
-				remove_trait = honest
-				remove_trait = trusting
+				ai_add_shadow_priest_class_effect = yes
+				#Makes him follow old god that's on the continent he's travelling to
+				if = {
+					limit = { has_global_flag = twilights_hammer_kalimdor }
+					add_character_modifier = { name = follower_of_cthun duration = -1 }
+				}
+				else = {
+					add_character_modifier = { name = follower_of_yogg_saron duration = -1 }
+				}
 				narrative_event = { id = WCDAC.5040 }
 			}
 		}
 	}
 }
-# The Ruins of Ahn'Qiraj
+# Settles new base on continent
 narrative_event = {
 	id = WCDAC.5040
 	title = EVTTITLE_WCDAC_5030
-	desc = EVTDESC_WCDAC_5040
-	picture = GFX_evt_ahnqiraj
+	desc = {
+		trigger = {
+			has_global_flag = twilights_hammer_kalimdor
+		}
+		text = EVTDESC_WCDAC_5040_kalimdor
+		picture = GFX_evt_ahnqiraj
+	}
+	desc = {
+		trigger = {
+			NOT = { has_global_flag = twilights_hammer_kalimdor }
+		}
+		text = EVTDESC_WCDAC_5040_northrend
+		picture = GFX_evt_yogg_saron
+	}
 	border = GFX_event_narrative_frame_intrigue
 
 	is_triggered_only = yes
@@ -1050,50 +1040,76 @@ narrative_event = {
 	immediate = {
 		# Used in scripted effects
 		save_event_target_as = target_settler
-		
+
 		religion = old_gods_worship
-		clear_event_target = yes
-		
-		remove_trait = travelling
-		
-		c_hivezora = {
-			# event_target:target_settler and its people settle here
-			settle_as_target_settler_effect = yes
+
+		remove_traveling_immunity_effect = yes
+
+		any_courtier = {
+			limit = {
+				culture = twilights_hammer
+				can_switch_religion_character_trigger = yes
+			}
+			religion = old_gods_worship
 		}
-		
-		# If you're not independent ruler, gives old titles to liege
-		give_old_titles_to_heir_effect = yes
-		
-		d_crystalvale = {
-			any_direct_de_jure_vassal_title = {
+
+		if = {
+			limit = { has_global_flag = twilights_hammer_kalimdor }
+			c_southmoon = {
 				# event_target:target_settler and its people settle here
 				settle_as_target_settler_effect = yes
 			}
+
+			# If you're not independent ruler, gives old titles to liege
+			give_old_titles_to_heir_effect = yes
+
+			c_southmoon = {
+				# Declares war against player
+				target_settler_declare_war_effect = yes
+			}
 		}
-		d_scarab_wall = {
-			any_direct_de_jure_vassal_title = {
+		else = {
+			c_strand_of_ancients = {
 				# event_target:target_settler and its people settle here
 				settle_as_target_settler_effect = yes
 			}
+
+			# If you're not independent ruler, gives old titles to liege
+			give_old_titles_to_heir_effect = yes
+			
+			c_strand_of_ancients = {
+				# Declares war against player
+				target_settler_declare_war_effect = yes
+			}
 		}
-		
-		c_hivezora = {
-			# Declares war against player
-			target_settler_declare_war_effect = yes
-		}
-		
+
 		clear_settler_flag_effect = yes
 		
 		# Spawns army for start
 		spawn_colonial_troops_effect = yes
 	}
 
-	# I'll spread its will across Kalimdor!
+	# I'll spread its will across Kalimdor/Northrend!
 	option = {
 		name = EVTOPTA_WCDAC_5040
 
+		if = {
+			limit = {
+				potential_shadow_priest_wo_training_trigger = yes
+				is_magic_class_trigger = yes
+			}
+			hidden_effect = {
+				add_character_modifier = { name = training_self_shadow_priest duration = -1 }
+				recount_experience_effect = yes
+				narrative_event = { id = WCCLS.1300 }
+			}
+		}
+		if = {
+			limit = { NOT = { trait = zealous } }
+			add_trait = zealous
+		}
+
 		add_artifact = hammer_of_the_twilight
-		leave_society = yes
 		set_global_flag = twilights_hammer_cult_active_flag
 		join_society_twilights_hammer_cult_effect = yes
 		hidden_effect = {
@@ -1114,7 +1130,568 @@ narrative_event = {
 				character_event = { id = MNM.10030 }
 			}
 			narrative_event = { id = WCDAC.5050 }
+			
+			# Sets targets before event chain
+			c_52000 = { save_event_target_as = target_chogall }
+			c_10620 = { save_event_target_as = target_garona }
+			if = {
+				limit = {
+					garona_hunt_chain_trigger = yes
+					event_target:target_garona = { is_inaccessible_trigger = no }
+				}
+				event_target:target_garona = { add_traveling_immunity_effect = yes }
+				
+				character_event = { id = WCDAC.5041 days = 7 }
+			}
+			
+			73 = { province_event = { id = WCDAC.5075 years = 5 } }
 		}
+	}
+}
+# Garona kills character
+character_event = {
+	id = WCDAC.5041
+	desc = {
+		trigger = { NOT = { has_character_flag = hunted_by_garona } }
+		text = EVTDESC_WCDAC_5041_first_kill
+	}
+	desc = {
+		trigger = {
+			has_character_flag = hunted_by_garona 
+		}
+		text = EVTDESC_WCDAC_5041_later_kills
+	}
+	picture = GFX_evt_shadow
+	border = GFX_event_normal_frame_intrigue
+	portrait = event_target:target_killed
+
+	is_triggered_only = yes
+	
+	trigger = {
+		garona_hunt_chain_trigger = yes
+		any_courtier = {
+			is_possible_garona_target_trigger = yes
+		}
+	}
+	
+	fail_trigger_effect = {
+		# Skip event
+		garona_hunt_chain_skip_effect = yes
+	}
+	
+	immediate = {
+		hidden_effect = {
+			event_target:target_garona = { add_traveling_immunity_effect = yes }
+			random_courtier = {
+				limit = { is_possible_garona_target_trigger = yes }
+				save_event_target_as = target_killed
+				death = { death_reason = death_battle killer = event_target:target_garona }
+			}
+		}
+	}
+
+	# Let's continue the journey.
+	option = {
+		name = EVTOPTA_WCDAC_5041
+		trigger = { NOT = { has_character_flag = hunted_by_garona } }
+
+		set_character_flag = hunted_by_garona
+		hidden_effect = { set_variable = { which = local_garona_kills value = 1 } }
+	}
+	option = {
+		name = EVTOPTB_WCDAC_5041
+		trigger = { has_character_flag = hunted_by_garona }
+	}
+	after = {
+		hidden_effect = { change_variable = { which = local_garona_kills value = 1 } }
+		if = {
+			limit = { check_variable = { which = local_garona_kills value = 5 } }
+			character_event = { id = WCDAC.5042 months = 6 }
+		}
+		else = {
+			character_event = { id = WCDAC.5041 months = 10 random = 90 }
+		}
+	}
+}
+# Searches for Garona
+character_event = {
+	id = WCDAC.5042
+	desc = EVTDESC_WCDAC_5042
+	picture = GFX_evt_shadow
+	border = GFX_event_normal_frame_intrigue
+
+	is_triggered_only = yes
+	
+	trigger = {
+		garona_hunt_chain_trigger = yes
+	}
+	
+	fail_trigger_effect = {
+		# Skip event
+		garona_hunt_chain_skip_effect = yes
+	}
+	
+	immediate = {
+		add_traveling_immunity_effect = yes
+	}
+
+	option = {
+		name = EVTOPTA_WCDAC_5042
+		
+		character_event = { id = WCDAC.5043 months = 14 }
+	}
+}
+# Imprisons Garona
+character_event = {
+	id = WCDAC.5043
+	desc = EVTDESC_WCDAC_5043
+	picture = GFX_evt_shadow
+	border = GFX_event_normal_frame_intrigue
+
+	is_triggered_only = yes
+	
+	trigger = {
+		garona_hunt_chain_trigger = yes
+	}
+	
+	fail_trigger_effect = {
+		# Skip event
+		garona_hunt_chain_skip_effect = yes
+		remove_traveling_immunity_effect = yes
+	}
+
+	option = {
+		name = EVTOPTA_WCDAC_5043
+		
+		clr_character_flag = hunted_by_garona
+		remove_traveling_immunity_effect = yes
+		event_target:target_garona = {
+			remove_traveling_immunity_effect = yes
+			move_character = PREV
+		}
+		reverse_imprison = event_target:target_garona
+		character_event = { id = WCDAC.5044 days = 1 }
+	}
+}
+# Subjugates Garona
+character_event = {
+	id = WCDAC.5044
+	desc = EVTDESC_WCDAC_5044
+	picture = GFX_evt_shadow
+	border = GFX_event_normal_frame_intrigue
+
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCDAC_5044
+		
+		reverse_opinion = { modifier = opinion_loyal_servant who = event_target:target_garona }
+		event_target:target_garona = { imprison = no }
+	}
+}
+### Travels closer to the Old God
+#Delayer event
+province_event = {
+	id = WCDAC.5075
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
+		if = {
+			limit = { FROM = { old_gods_chosen_event_trigger = yes } }
+			FROM = { narrative_event = { id = WCDAC.5045 } }
+		}
+		else = {
+			FROM = {
+				remove_traveling_immunity_effect = yes
+				clr_character_flag = important_old_god_task_flag
+			}
+			province_event = { id = WCDAC.5076 days = 90 }
+		}
+	}
+}
+#Delayed event
+character_event = {
+	id = WCDAC.5045
+	desc = EVTDESC_WCDAC_5045
+	picture = {
+		trigger = { has_global_flag = twilights_hammer_kalimdor }
+		picture = GFX_evt_ahnqiraj
+	}
+	picture = {
+		trigger = { NOT = { has_global_flag = twilights_hammer_kalimdor } }
+		picture = GFX_evt_yogg_saron
+	}
+	border = GFX_event_normal_frame_intrigue
+
+	is_triggered_only = yes
+	
+	immediate = {
+		add_traveling_immunity_effect = yes
+	}
+
+	option = {
+		name = EVTOPTA_WCDAC_5045
+		
+		73 = { province_event = { id = WCDAC.5076 years = 2 } }
+	}
+}
+### The Ruins of Ahn'Qiraj and Darkness in Uldaur
+#Delayer event
+province_event = {
+	id = WCDAC.5076
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
+		if = {
+			limit = { FROM = { old_gods_chosen_event_trigger = yes } }
+			FROM = { narrative_event = { id = WCDAC.5046 } }
+		}
+		else = {
+			FROM = {
+				remove_traveling_immunity_effect = yes
+				clr_character_flag = important_old_god_task_flag
+			}
+			create_character = {
+				dynasty = none
+				religion = old_gods_worship
+				culture = azerothian
+				female = no
+				age = 45
+				random_traits = yes
+				trait = creature_human
+				trait = elusive_shadow
+				trait = cruel
+				trait = zealous
+				trait = ambitious
+			}
+			new_character = {
+				set_character_flag = important_old_god_task_flag
+				
+				ai_add_shadow_priest_class_effect = yes
+				#Makes him follow old god that's on the continent he's travelling to
+				if = {
+					limit = { has_global_flag = twilights_hammer_kalimdor }
+					add_character_modifier = { name = follower_of_cthun duration = -1 }
+				}
+				else = {
+					add_character_modifier = { name = follower_of_yogg_saron duration = -1 }
+				}
+				narrative_event = { id = WCDAC.5046 }
+			}
+		}
+	}
+}
+#Delayed event
+narrative_event = {
+	id = WCDAC.5046
+	title = EVTTITLE_WCDAC_5030
+	desc = {
+		trigger = {
+			has_global_flag = twilights_hammer_kalimdor
+		}
+		text = EVTDESC_WCDAC_5046_kalimdor
+		picture = GFX_evt_ahnqiraj
+	}
+	desc = {
+		trigger = {
+			NOT = { has_global_flag = twilights_hammer_kalimdor }
+		}
+		text = EVTDESC_WCDAC_5046_northrend
+		picture = GFX_evt_yogg_saron
+	}
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	immediate = {
+		# Used in scripted effects
+		save_event_target_as = target_settler
+		
+		religion = old_gods_worship
+		
+		remove_traveling_immunity_effect = no
+
+		if = {
+			limit = { has_global_flag = twilights_hammer_kalimdor }
+			c_hivezora = {
+				# event_target:target_settler and its people settle here
+				settle_as_target_settler_effect = yes
+				location = { culture = qiraji }
+			}
+			# If you're not independent ruler, gives old titles to liege
+			give_old_titles_to_heir_effect = yes
+			c_hiveashi = {
+				# event_target:target_settler and its people settle here
+				settle_as_target_settler_effect = yes
+				location = { culture = qiraji }
+			}
+			c_crystalvale = {
+				settle_as_target_settler_effect = yes
+				location = { culture = qiraji }
+			}
+			c_ishrak = {
+				settle_as_target_settler_effect = yes
+				location = { culture = qiraji }
+			}
+			c_ashakx = {
+				settle_as_target_settler_effect = yes
+				location = { culture = qiraji }
+			}
+			c_hiveregal = {
+				settle_as_target_settler_effect = yes
+				location = { culture = qiraji }
+			}
+			c_scarab_wall = {
+				settle_as_target_settler_effect = yes
+				location = { culture = qiraji }
+			}
+			c_hivezora = {
+				# Declares war against player
+				target_settler_declare_war_effect = yes
+			}
+		}
+		else = {
+			c_bouldercrag = {
+				# event_target:target_settler and its people settle here
+				settle_as_target_settler_effect = yes
+				location = { culture = titanforged }
+			}
+			# If you're not independent ruler, gives old titles to liege
+			give_old_titles_to_heir_effect = yes
+			c_snowdrift = {
+				# event_target:target_settler and its people settle here
+				settle_as_target_settler_effect = yes
+				location = { culture = titanforged }
+			}
+			c_nidavelir = {
+				settle_as_target_settler_effect = yes
+				location = { culture = titanforged }
+			}
+			c_bouldercrag = {
+				# Declares war against player
+				target_settler_declare_war_effect = yes
+			}
+		}
+
+		clear_settler_flag_effect = yes
+	}
+
+	# I'll spread its will across Kalimdor!
+	option = {
+		name = EVTOPTA_WCDAC_5046
+		
+		if = {
+			limit = {
+				NOT = {
+					has_game_rule = {
+						name = old_god_black_empire_invasion
+						value = off
+					}
+				}
+			}
+			save_event_target_as = target_chosen
+			
+			73 = { province_event = { id = WCDAC.5077 } }
+		}
+	}
+}
+### Comes close enough to awaken an Old God
+#Delayer event
+province_event = {
+	id = WCDAC.5077
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
+		if = {
+			limit = { event_target:target_chosen = { old_gods_chosen_event_trigger = yes } }
+			event_target:target_chosen = { narrative_event = { id = WCDAC.5047 } }
+		}
+		else = {
+			event_target:target_chosen = {
+				remove_traveling_immunity_effect = yes
+				clr_character_flag = important_old_god_task_flag
+			}
+			create_character = {
+				dynasty = none
+				religion = old_gods_worship
+				culture = azerothian
+				female = no
+				age = 45
+				random_traits = yes
+				trait = creature_human
+				trait = elusive_shadow
+				trait = cruel
+				trait = zealous
+				trait = ambitious
+			}
+			new_character = {
+				set_character_flag = important_old_god_task_flag
+				
+				ai_add_shadow_priest_class_effect = yes
+				#Makes him follow old god that's on the continent he's travelling to
+				if = {
+					limit = { has_global_flag = twilights_hammer_kalimdor }
+					add_character_modifier = { name = follower_of_cthun duration = -1 }
+				}
+				else = {
+					add_character_modifier = { name = follower_of_yogg_saron duration = -1 }
+				}
+				character_event = { id = WCDAC.5047 }
+			}
+		}
+	}
+}
+#Delayed event
+narrative_event = {
+	id = WCDAC.5047
+	title = EVTTITLE_WCDAC_5030
+	desc = {
+		trigger = {
+			has_global_flag = twilights_hammer_kalimdor
+		}
+		text = EVTDESC_WCDAC_5047_kalimdor
+		picture = GFX_evt_cthun
+	}
+	desc = {
+		trigger = {
+			NOT = { has_global_flag = twilights_hammer_kalimdor }
+		}
+		text = EVTDESC_WCDAC_5047_northrend
+		picture = GFX_evt_yogg_saron
+	}
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+	
+	immediate = {
+		# Used in scripted effects
+		save_event_target_as = target_settler
+		
+		if = {
+			limit = { NOT = { has_global_flag = twilights_hammer_kalimdor } }
+			if = {
+				limit = {
+					ai = no
+					c_ulduar = {
+						holder_scope = {
+							ai = yes
+							NOT = { any_liege = { ai = no } }
+						}
+					}
+				}
+				c_ulduar = {
+					# event_target:target_settler and its people settle here
+					settle_as_target_settler_effect = yes
+					location = { culture = titanforged }
+				}
+				# If you're not independent ruler, gives old titles to liege
+				give_old_titles_to_heir_effect = yes
+				d_ulduar = {
+					any_direct_de_jure_vassal_title = {
+						# event_target:target_settler and its people settle here
+						settle_as_target_settler_effect = yes
+						location = { culture = titanforged }
+					}
+				}
+				c_ulduar = {
+					# Declares war against player
+					target_settler_declare_war_effect = yes
+				}
+			}
+			else_if = {
+				limit = {
+					c_ulduar = {
+						holder_scope = {
+							top_liege = { religion = old_gods_worship }
+						}
+					}
+				}
+				c_ulduar = {
+					holder_scope = {
+						top_liege = {
+							set_defacto_vassal = ROOT
+						}
+					}
+				}
+			}
+		}
+		else = {
+			if = {
+				limit = {
+					ai = no
+					c_ahnqiraj = {
+						holder_scope = {
+							ai = yes
+							NOT = { any_liege = { ai = no } }
+						}
+					}
+				}
+				c_ahnqiraj = {
+					# event_target:target_settler and its people settle here
+					settle_as_target_settler_effect = yes
+					location = { culture = qiraji }
+				}
+				# If you're not independent ruler, gives old titles to liege
+				give_old_titles_to_heir_effect = yes
+				d_ahnqiraj = {
+					any_direct_de_jure_vassal_title = {
+						# event_target:target_settler and its people settle here
+						settle_as_target_settler_effect = yes
+						location = { culture = qiraji }
+					}
+				}
+				c_ahnqiraj = {
+					# Declares war against player
+					target_settler_declare_war_effect = yes
+				}
+			}
+			else_if = {
+				limit = {
+					c_ahnqiraj = {
+						holder_scope = {
+							top_liege = { religion = old_gods_worship }
+						}
+					}
+				}
+				c_ahnqiraj = {
+					holder_scope = {
+						top_liege = {
+							set_defacto_vassal = ROOT
+						}
+					}
+				}
+			}
+		}
+		
+		clear_settler_flag_effect = yes
+	}
+	
+	option = {
+		name = EVTOPTA_WCDAC_5047
+
+		any_courtier = {
+			limit = {
+				religion = old_gods_worship
+				culture = twilights_hammer
+				
+				is_unimportant_trigger = yes
+			}
+			death = { death_reason = death_sacrificed }
+		}
+		
+		character_event = { id = WCOME.300 }
+		
+		if = {
+			limit = { has_global_flag = twilights_hammer_kalimdor }
+			clr_global_flag = twilights_hammer_kalimdor
+		}
+		clr_character_flag = important_old_god_task_flag
 	}
 }
 # Notification of creation of the Twilight's Hammer Cult
@@ -1198,6 +1775,109 @@ character_event = {
 	}
 }
 
+# on_new_holder of e_scourge e_burning_legion e_black_empire
+# Gives traits when character gets e_scourge e_burning_legion e_black_empire
+character_event = {
+	id = WCDAC.5200
+
+	is_triggered_only = yes
+	hide_window = yes
+	
+	only_playable = yes
+	only_independent = yes
+
+	trigger = {
+		FROM = {
+			OR = {
+				title = e_scourge
+				title = e_burning_legion
+				title = e_black_empire
+			}
+		}
+	}
+
+	immediate = {
+		log = "WCDAC.5200 fired for [Root.GetBestName]"
+
+		#e_scourge
+		if = {
+			limit = { FROM = { title = e_scourge } }
+			if = {
+				limit = {
+					NOT = { trait = being_undead }
+					can_be_undead_trigger = yes
+				}
+				set_character_flag = transition_into_lich_flag
+				character_event = { id = WCPOD.5013 }
+			}
+			clear_secret_religion = yes
+			if = {
+				limit = {
+					NOR = {
+						religion = death_god
+						religion = burning_legion_religion
+					}
+				}
+				religion = death_god
+			}
+			culture = scourge
+			add_trait = lich_king
+			
+			FROMFROM = {
+				if = {
+					limit = { is_ruler = yes }
+					this_abdicate_transfer_wealth_to_play_prev_effect = yes
+				}
+				if = {
+					limit = {
+						is_alive = yes
+						is_dying = no
+					}
+					death = { death_reason = death_merged killer = ROOT }
+				}
+				remove_trait = lich_king
+			}
+			
+			character_event = { id = WCUND.1106 days = 1 }
+			narrative_event = { id = WCUND.551 }
+		}
+		#e_burning_legion
+		if = {
+			limit = { FROM = { title = e_burning_legion } }
+			clear_secret_religion = yes
+			if = {
+				limit = { NOT = { religion = burning_legion_religion } }
+				religion = burning_legion_religion
+			}
+			add_character_modifier = { name = legion_overlord duration = -1 }
+			
+			FROMFROM = {
+				if = {
+					limit = { has_character_modifier = legion_overlord }
+					remove_character_modifier = legion_overlord
+				}
+			}
+		}
+		#e_black_empire
+		if = {
+			limit = { FROM = { title = e_black_empire } }
+			clear_secret_religion = yes
+			if = {
+				limit = { NOT = { religion = old_gods_worship } }
+				religion = old_gods_worship
+			}
+			add_character_modifier = { name = black_empire_overlord duration = -1 }
+			
+			FROMFROM = {
+				if = {
+					limit = { has_character_modifier = black_empire_overlord }
+					remove_character_modifier = black_empire_overlord
+				}
+			}
+		}
+	}
+}
+
 # Fired from decision patrons_old_gods_worship
 character_event = {
 	id = WCDAC.5110
@@ -1216,32 +1896,8 @@ character_event = {
 		}
 		ai_chance = {
 			factor = 25
-			modifier = {
-				factor = 5
-				culture = qiraji
-			}
-			modifier = {
-				factor = 4
-				OR = {
-					has_education_stewardship_trigger = yes
-					has_education_learning_trigger = yes
-				}
-			}
-			modifier = {
-				factor = 0.1
-				NOT = { has_character_modifier = follower_of_cthun }
-			}
-			modifier = {
-				factor = 0
-				culture = nerubian
-			}
-			modifier = {
-				factor = 0
-				OR = {
-					has_landed_title = e_herald_nzoth
-					has_landed_title = e_herald_yoggsaron
-				}
-			}
+			prefers_cthun_score = yes
+			stewardship_score = yes
 		}
 	}
 	option = {
@@ -1253,32 +1909,8 @@ character_event = {
 		}
 		ai_chance = {
 			factor = 25
-			modifier = {
-				factor = 5
-				culture = nerubian
-			}
-			modifier = {
-				factor = 4
-				OR = {
-					has_education_intrigue_trigger = yes
-					has_education_learning_trigger = yes
-				}
-			}
-			modifier = {
-				factor = 0.1
-				NOT = { has_character_modifier = follower_of_yogg_saron }
-			}
-			modifier = {
-				factor = 0
-				culture = qiraji
-			}
-			modifier = {
-				factor = 0
-				OR = {
-					has_landed_title = e_herald_cthun
-					has_landed_title = e_herald_nzoth
-				}
-			}
+			prefers_yogg_saron_score = yes
+			learning_score = yes
 		}
 	}
 	# option = {
@@ -1312,313 +1944,9 @@ character_event = {
 		}
 		ai_chance = {
 			factor = 25
-			modifier = {
-				factor = 5
-				culture = naga
-			}
-			modifier = {
-				factor = 4
-				OR = {
-					has_education_diplomacy_trigger = yes
-					has_education_intrigue_trigger = yes
-				}
-			}
-			modifier = {
-				factor = 0.1
-				NOT = { has_character_modifier = follower_of_nzoth }
-			}
-			modifier = {
-				factor = 0
-				culture = qiraji
-			}
-			modifier = {
-				factor = 0
-				culture = nerubian
-			}
-			modifier = {
-				factor = 0
-				OR = {
-					has_landed_title = e_herald_cthun
-					has_landed_title = e_herald_yoggsaron
-				}
-			}
+			prefers_nzoth_score = yes
+			intrigue_score = yes
 		}
-	}
-}
-
-# Old Gods' Worship
-character_event = {
-	id = WCDAC.5125
-	desc = EVTDESC_WCDAC_5125
-	picture = GFX_evt_sacrifice
-	border = GFX_event_normal_frame_religion
-
-	is_triggered_only = yes
-
-	option = {
-		trigger = { piety = 200 }
-		name = EVTOPTA_WCDAC_5125
-
-		set_character_flag = medium_old_gods_sacrifice_flag
-
-		piety = -200
-
-		ai_chance = {
-			factor = 15
-		}
-	}
-	option = {
-		trigger = { num_of_prisoners = 1 }
-		name = EVTOPTB_WCDAC_5125
-
-		if = {
-			limit = { num_of_prisoners = 8 }
-			set_character_flag = major_old_gods_sacrifice_flag
-		}
-		else = {
-			if = {
-				limit = { num_of_prisoners = 4 }
-				set_character_flag = medium_old_gods_sacrifice_flag
-			}
-			else = {
-				set_character_flag = minor_old_gods_sacrifice_flag
-			}
-		}
-		ROOT = {
-			show_scope_change = no
-			
-			sacrifice_all_prisoners_effect = yes
-		}
-
-		ai_chance = {
-			factor = 75
-		}
-	}
-	option = {
-		trigger = { NOT = { trait = wounded } }
-		name = EVTOPTC_WCDAC_5125
-
-		set_character_flag = minor_old_gods_sacrifice_flag
-		add_trait_wounded_effect = yes
-
-		ai_chance = {
-			factor = 0
-		}
-	}
-	option = {
-		trigger = { piety = 500 }
-		name = EVTOPTD_WCDAC_5125
-
-		set_character_flag = major_old_gods_sacrifice_flag
-
-		piety = -500
-
-		ai_chance = {
-			factor = 10
-		}
-	}
-	after = {
-		character_event = { id = WCDAC.5130 }
-	}
-}
-character_event = {
-	id = WCDAC.5130
-	desc = {
-		trigger = { has_character_modifier = follower_of_cthun }
-		text = EVTDESC_WCDAC_5130_cthun
-		picture = GFX_evt_cthun
-	}
-	desc = {
-		trigger = { has_character_modifier = follower_of_yogg_saron }
-		text = EVTDESC_WCDAC_5130_yogg_saron
-		picture = GFX_evt_yogg_saron
-	}
-	desc = {
-		trigger = { has_character_modifier = follower_of_yshaarj }
-		text = EVTDESC_WCDAC_5130_yshaarj
-		picture = GFX_evt_yshaarj
-	}
-	desc = {
-		trigger = { has_character_modifier = follower_of_nzoth }
-		text = EVTDESC_WCDAC_5130_nzoth
-		picture = GFX_evt_nzoth
-	}
-	picture = GFX_evt_sacrifice
-	border = GFX_event_normal_frame_religion
-
-	is_triggered_only = yes
-
-	option = {
-		trigger = {
-			NOR = {
-				has_character_modifier = cthun_blessing_build_1
-				has_character_modifier = cthun_blessing_build_2
-				has_character_modifier = cthun_blessing_build_3
-				has_character_modifier = yogg_saron_blessing_learning_1
-				has_character_modifier = yogg_saron_blessing_learning_2
-				has_character_modifier = yogg_saron_blessing_learning_3
-				has_character_modifier = yshaarj_blessing_levy_1
-				has_character_modifier = yshaarj_blessing_levy_2
-				has_character_modifier = yshaarj_blessing_levy_3
-				has_character_modifier = nzoth_blessing_plot_power_1
-				has_character_modifier = nzoth_blessing_plot_power_2
-				has_character_modifier = nzoth_blessing_plot_power_3
-			}
-		}
-		name = {
-			trigger = { has_character_modifier = follower_of_cthun }
-			text = EVTOPTA_WCDAC_5130_cthun
-		}
-		name = {
-			trigger = { has_character_modifier = follower_of_yogg_saron }
-			text = EVTOPTA_WCDAC_5130_yogg_saron
-		}
-		name = {
-			trigger = { has_character_modifier = follower_of_yshaarj }
-			text = EVTOPTA_WCDAC_5130_yshaarj
-		}
-		name = {
-			trigger = { has_character_modifier = follower_of_nzoth }
-			text = EVTOPTA_WCDAC_5130_nzoth
-		}
-
-		trigger_switch = {
-			on_trigger = has_character_modifier
-			follower_of_cthun = {
-				trigger_switch = {
-					on_trigger = has_character_flag
-					minor_old_gods_sacrifice_flag = { add_character_modifier = { name = cthun_blessing_build_1 years = 1 } }
-					medium_old_gods_sacrifice_flag = { add_character_modifier = { name = cthun_blessing_build_2 years = 1 } }
-					major_old_gods_sacrifice_flag = { add_character_modifier = { name = cthun_blessing_build_3 years = 1 } }
-				}
-			}
-			follower_of_yogg_saron = {
-				trigger_switch = {
-					on_trigger = has_character_flag
-					minor_old_gods_sacrifice_flag = { add_character_modifier = { name = yogg_saron_blessing_learning_1 years = 1 } }
-					medium_old_gods_sacrifice_flag = { add_character_modifier = { name = yogg_saron_blessing_learning_2 years = 1 } }
-					major_old_gods_sacrifice_flag = { add_character_modifier = { name = yogg_saron_blessing_learning_3 years = 1 } }
-				}
-			}
-			follower_of_yshaarj = {
-				trigger_switch = {
-					on_trigger = has_character_flag
-					minor_old_gods_sacrifice_flag = { add_character_modifier = { name = yshaarj_blessing_levy_1 years = 1 } }
-					medium_old_gods_sacrifice_flag = { add_character_modifier = { name = yshaarj_blessing_levy_2 years = 1 } }
-					major_old_gods_sacrifice_flag = { add_character_modifier = { name = yshaarj_blessing_levy_3 years = 1 } }
-				}
-			}
-			follower_of_nzoth = {
-				trigger_switch = {
-					on_trigger = has_character_flag
-					minor_old_gods_sacrifice_flag = { add_character_modifier = { name = nzoth_blessing_plot_power_1 years = 1 } }
-					medium_old_gods_sacrifice_flag = { add_character_modifier = { name = nzoth_blessing_plot_power_2 years = 1 } }
-					major_old_gods_sacrifice_flag = { add_character_modifier = { name = nzoth_blessing_plot_power_3 years = 1 } }
-				}
-			}
-		}
-	}
-	option = {
-		trigger = {
-			NOR = {
-				has_character_modifier = cthun_blessing_demesne_size_1
-				has_character_modifier = cthun_blessing_demesne_size_2
-				has_character_modifier = cthun_blessing_demesne_size_3
-				has_character_modifier = yogg_saron_blessing_intrigue_1
-				has_character_modifier = yogg_saron_blessing_intrigue_2
-				has_character_modifier = yogg_saron_blessing_intrigue_3
-				has_character_modifier = yshaarj_blessing_siege_1
-				has_character_modifier = yshaarj_blessing_siege_2
-				has_character_modifier = yshaarj_blessing_siege_3
-				has_character_modifier = nzoth_blessing_opinion_1
-				has_character_modifier = nzoth_blessing_opinion_2
-				has_character_modifier = nzoth_blessing_opinion_3
-			}
-		}
-		name = {
-			trigger = { has_character_modifier = follower_of_cthun }
-			text = EVTOPTB_WCDAC_5130_cthun
-		}
-		name = {
-			trigger = { has_character_modifier = follower_of_yogg_saron }
-			text = EVTOPTB_WCDAC_5130_yogg_saron
-		}
-		name = {
-			trigger = { has_character_modifier = follower_of_yshaarj }
-			text = EVTOPTB_WCDAC_5130_yshaarj
-		}
-		name = {
-			trigger = { has_character_modifier = follower_of_nzoth }
-			text = EVTOPTB_WCDAC_5130_nzoth
-		}
-
-		trigger_switch = {
-			on_trigger = has_character_modifier
-			follower_of_cthun = {
-				trigger_switch = {
-					on_trigger = has_character_flag
-					minor_old_gods_sacrifice_flag = { add_character_modifier = { name = cthun_blessing_demesne_size_1 years = 1 } }
-					medium_old_gods_sacrifice_flag = { add_character_modifier = { name = cthun_blessing_demesne_size_2 years = 1 } }
-					major_old_gods_sacrifice_flag = { add_character_modifier = { name = cthun_blessing_demesne_size_3 years = 1 } }
-				}
-			}
-			follower_of_yogg_saron = {
-				trigger_switch = {
-					on_trigger = has_character_flag
-					minor_old_gods_sacrifice_flag = { add_character_modifier = { name = yogg_saron_blessing_intrigue_1 years = 1 } }
-					medium_old_gods_sacrifice_flag = { add_character_modifier = { name = yogg_saron_blessing_intrigue_2 years = 1 } }
-					major_old_gods_sacrifice_flag = { add_character_modifier = { name = yogg_saron_blessing_intrigue_3 years = 1 } }
-				}
-			}
-			follower_of_yshaarj = {
-				trigger_switch = {
-					on_trigger = has_character_flag
-					minor_old_gods_sacrifice_flag = { add_character_modifier = { name = yshaarj_blessing_siege_1 years = 1 } }
-					medium_old_gods_sacrifice_flag = { add_character_modifier = { name = yshaarj_blessing_siege_2 years = 1 } }
-					major_old_gods_sacrifice_flag = { add_character_modifier = { name = yshaarj_blessing_siege_3 years = 1 } }
-				}
-			}
-			follower_of_nzoth = {
-				trigger_switch = {
-					on_trigger = has_character_flag
-					minor_old_gods_sacrifice_flag = { add_character_modifier = { name = nzoth_blessing_opinion_1 years = 1 } }
-					medium_old_gods_sacrifice_flag = { add_character_modifier = { name = nzoth_blessing_opinion_2 years = 1 } }
-					major_old_gods_sacrifice_flag = { add_character_modifier = { name = nzoth_blessing_opinion_3 years = 1 } }
-				}
-			}
-		}
-	}
-	option = {
-		trigger = {
-			NOR = {
-				has_character_modifier = old_god_blessing_morale_1
-				has_character_modifier = old_god_blessing_morale_2
-				has_character_modifier = old_god_blessing_morale_3
-			}
-		}
-		name = EVTOPTC_WCDAC_5130
-
-		trigger_switch = {
-			on_trigger = has_character_flag
-			minor_old_gods_sacrifice_flag = { add_character_modifier = { name = old_god_blessing_morale_1 years = 1 } }
-			medium_old_gods_sacrifice_flag = { add_character_modifier = { name = old_god_blessing_morale_2 years = 1 } }
-			major_old_gods_sacrifice_flag = { add_character_modifier = { name = old_god_blessing_morale_3 years = 1 } }
-		}
-	}
-	option = {
-		name = EVTOPTD_WCDAC_5130
-
-		trigger_switch = {
-			on_trigger = has_character_flag
-			minor_old_gods_sacrifice_flag = { add_character_modifier = { name = old_god_blessing_piety_1 years = 1 } }
-			medium_old_gods_sacrifice_flag = { add_character_modifier = { name = old_god_blessing_piety_2 years = 1 } }
-			major_old_gods_sacrifice_flag = { add_character_modifier = { name = old_god_blessing_piety_3 years = 1 } }
-		}
-	}
-	after = {
-		clr_character_flag = minor_old_gods_sacrifice_flag
-		clr_character_flag = medium_old_gods_sacrifice_flag
-		clr_character_flag = major_old_gods_sacrifice_flag
 	}
 }
 
@@ -1674,12 +2002,33 @@ character_event = {
 
 # on_character_convert_religion and on_character_convert_secret_religion
 # If you converts to other religion removes some class and replaces it
+#Delayer event
 character_event = {
-	id = WCDAC.9995
+	id = WCDAC.9990
 
 	is_triggered_only = yes
 	hide_window = yes
 
+	trigger = {
+		OR = {
+			is_paladin_class_trigger = yes
+			is_priest_class_trigger = yes
+			is_loa_priest_class_trigger = yes
+			is_monk_class_trigger = yes
+		}
+	}
+
+	immediate = {
+		character_event = { id = WCDAC.9995 days = 1 }
+	}
+}
+#Delayed event
+character_event = {
+	id = WCDAC.9995
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
 	trigger = {
 		OR = {
 			AND = {
@@ -1694,9 +2043,13 @@ character_event = {
 				is_loa_priest_class_trigger = yes
 				can_be_loa_priest_trigger = no
 			}
+			AND = {
+				is_monk_class_trigger = yes
+				can_be_monk_trigger = no
+			}
 		}
 	}
-
+	
 	immediate = {
 		if = {
 			limit = { is_paladin_class_trigger = yes }
@@ -1737,13 +2090,18 @@ character_event = {
 				is_priest_class_trigger = yes
 			}
 		}
-		text = EVTDESC_WCDAC_9996_light_class
+		text = EVTDESC_WCDAC_9996
 		picture = GFX_evt_paladin_human
 	}
 	desc = {
 		trigger = { is_loa_priest_class_trigger = yes }
-		text = EVTDESC_WCDAC_9996_loa_class
+		text = EVTDESC_WCDAC_9996
 		picture = GFX_evt_loas_worship
+	}
+	desc = {
+		trigger = { is_monk_class_trigger = yes }
+		text = EVTDESC_WCDAC_9996
+		picture = GFX_evt_monk_pandaren_religion_group
 	}
 
 	is_triggered_only = yes

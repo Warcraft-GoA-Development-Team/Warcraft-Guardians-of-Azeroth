@@ -227,7 +227,11 @@ character_event = {
 	ai = no 
 
     trigger = {
-    	ai = no 
+    	ai = no
+        has_game_rule = {
+            name = ai_seduction
+            value = on
+        }
     	any_courtier = {
     		is_landed = no
     		prisoner = no
@@ -276,7 +280,7 @@ character_event = {
 			}
     		break = yes
     	}
-    	random_courtier = {
+    	any_courtier = { #Find 
     		limit = {
     			is_landed = no
 	    		prisoner = no
@@ -295,9 +299,28 @@ character_event = {
         			}
         		}
     		}
+            preferred_limit = {
+                trait = lustful
+            }
+            score_value = {
+                value = 1
+                modifier = {
+                    factor = 1.5
+                    is_married = no
+                }
+                modifier = {
+                    factor = 1.5
+                    any_spouse = {
+                        reverse_opinion = {
+                            who = PREV
+                            value < 0
+                        }
+                    }
+                }
+            }
     		save_event_target_as = courtier_1
     	}
-    	random_courtier = {
+    	any_courtier = {
     		limit = {
     			NOT = { CHARACTER = event_target:courtier_1 }
     			is_landed = no
@@ -317,17 +340,71 @@ character_event = {
         			}
         		}
     		}
+            preferred_limit = {
+                trait = lustful
+            }
+            score_value = {
+                value = 1
+                modifier = {
+                    factor = 1.5
+                    is_married = no
+                }
+                modifier = {
+                    factor = 1.5
+                    any_spouse = {
+                        reverse_opinion = {
+                            who = PREV
+                            value < 0
+                        }
+                    }
+                }
+            }
     		save_event_target_as = courtier_2
     	}
     	event_target:courtier_1 = {
     		random_list = {
 	    		40 = {
 	    			trigger = {
+						# Warcraft
+						event_target:courtier_2 = {
+							can_has_sexual_relation_with_prev = yes
+						}
+
 	    				NOT = { is_lover = event_target:courtier_2 }
 						NOT = { is_friend = event_target:courtier_2 }
 						NOT = { opinion = { who = event_target:courtier_2 value = 5 } }
+                        OR = {
+                            AND = {
+                                is_female = yes
+                                event_target:courtier_2 = {
+                                    is_female = no
+                                }
+                            }
+                            AND = {
+                                is_female = no
+                                event_target:courtier_2 = {
+                                    is_female = yes
+                                }
+                            }
+                            AND = {
+                                is_female = yes
+                                trait = homosexual
+                                event_target:courtier_2 = {
+                                    is_female = yes
+                                    trait = homosexual
+                                }
+                            }
+                            AND = {
+                                is_female = no
+                                trait = homosexual
+                                event_target:courtier_2 = {
+                                    is_female = no
+                                    trait = homosexual
+                                }
+                            }
+                        }
 	    			}
-	    			add_lover = event_target:courtier_2
+	    			event_target:courtier_2 = { add_lover_prev_effect = yes }
 	    		}
 	    		10 = {
 	    			modifier = {
@@ -478,8 +555,17 @@ character_event = {
 	ai = no 
 
     trigger = {
+		# Warcraft
+		evil_public_religion_trigger = no
+		
     	ai = no
     	any_courtier = {
+			# Warcraft
+			#Don't care about nicknames
+			is_dark_being_trigger = no
+			is_humanoid_trigger = yes
+			evil_public_religion_trigger = no
+			
     		is_landed = no
 	    	prisoner = no
 	    	has_nickname = no
@@ -490,6 +576,12 @@ character_event = {
     immediate = {
     	any_courtier = {
     		limit = {
+				# Warcraft
+				#Don't care about nicknames
+				is_dark_being_trigger = no
+				is_humanoid_trigger = yes
+				evil_public_religion_trigger = no
+				
     			is_landed = no
 	    		prisoner = no
 	    		has_nickname = no
@@ -715,23 +807,8 @@ character_event = {
     immediate = {
     	random_courtier = {
     		limit = {
-	    		prisoner = no
-	    		is_adult = yes
-	    		is_landed = no
-	    		important_character_to_root_trigger = no
-	    		trigger_if = {
-		    		limit = { is_married = yes }
-	    			any_spouse = { is_landed = no }
-		    	}
-		    	trigger_if = {
-		    		limit = { any_child = { always = yes } }
-		    		any_child = { 
-		    			NOR = {
-		    				is_child_of = root
-		    				important_character_to_root_trigger = yes
-		    			}
-		    		}
-		    	}
+	    		# Warcraft
+	    		can_be_asked_to_leave_court_by_root_trigger = yes
     		}
     		preferred_limit = {
 	    		has_nickname = no
@@ -741,23 +818,9 @@ character_event = {
     	}
     	random_courtier = {
     		limit = {
-	    		prisoner = no
-	    		is_adult = yes
-	    		is_landed = no
-	    		important_character_to_root_trigger = no
-	    		trigger_if = {
-	    			limit = { is_married = yes }
-	    			any_spouse = { is_landed = no }
-		    	}
-		    	trigger_if = {
-		    		limit = { any_child = { always = yes } }
-		    		any_child = { 
-		    			NOR = {
-		    				is_child_of = root
-		    				important_character_to_root_trigger = yes
-		    			}
-		    		}
-		    	}
+	    		# Warcraft
+	    		can_be_asked_to_leave_court_by_root_trigger = yes
+				
 	    		NOT = { event_target:courtier_1 = { CHARACTER = PREV } }
     		}
     		preferred_limit = {
@@ -768,23 +831,9 @@ character_event = {
     	}
     	random_courtier = {
     		limit = {
-	    		prisoner = no
-	    		is_adult = yes
-	    		is_landed = no
-	    		important_character_to_root_trigger = no
-	    		trigger_if = {
-	    			limit = { is_married = yes }
-	    			any_spouse = { is_landed = no }
-		    	}
-		    	trigger_if = {
-		    		limit = { any_child = { always = yes } }
-		    		any_child = { 
-		    			NOR = {
-		    				is_child_of = root
-		    				important_character_to_root_trigger = yes
-		    			}
-		    		}
-		    	}
+	    		# Warcraft
+	    		can_be_asked_to_leave_court_by_root_trigger = yes
+				
 	    		NOR = {
 	    			event_target:courtier_1 = { CHARACTER = PREV }
 	    			event_target:courtier_2 = { CHARACTER = PREV }
@@ -801,23 +850,9 @@ character_event = {
     		limit = {
     			free_court_slots < -1
     			any_courtier = {
-		    		prisoner = no
-			    	is_adult = yes
-			    	is_landed = no
-			    	important_character_to_root_trigger = no
-			    	trigger_if = {
-		    			limit = { is_married = yes }
-		    			any_spouse = { is_landed = no }
-			    	}
-			    	trigger_if = {
-			    		limit = { any_child = { always = yes } }
-			    		any_child = { 
-			    			NOR = {
-			    				is_child_of = root
-			    				important_character_to_root_trigger = yes
-			    			}
-			    		}
-			    	}
+		    		# Warcraft
+					can_be_asked_to_leave_court_by_root_trigger = yes
+					
 			    	is_unimportant_trigger = yes
 			    	NOR = {
 			    		event_target:courtier_1 = { CHARACTER = PREV }
@@ -828,23 +863,9 @@ character_event = {
     		}
     		random_courtier = {
     			limit = {
-	    			prisoner = no
-		    		is_adult = yes
-		    		is_landed = no
-		    		important_character_to_root_trigger = no
-		    		trigger_if = {
-		    			limit = { is_married = yes }
-		    			any_spouse = { is_landed = no }
-			    	}
-			    	trigger_if = {
-			    		limit = { any_child = { always = yes } }
-			    		any_child = { 
-			    			NOR = {
-			    				is_child_of = root
-			    				important_character_to_root_trigger = yes
-			    			}
-			    		}
-			    	}
+	    			# Warcraft
+					can_be_asked_to_leave_court_by_root_trigger = yes
+					
 		    		is_unimportant_trigger = yes
 		    		NOR = {
 		    			event_target:courtier_1 = { CHARACTER = PREV }
@@ -859,23 +880,9 @@ character_event = {
     		limit = {
     			free_court_slots < -2
     			any_courtier = {
-		    		prisoner = no
-			    	is_adult = yes
-			    	is_landed = no
-			    	important_character_to_root_trigger = no
-			    	trigger_if = {
-		    			limit = { is_married = yes }
-		    			any_spouse = { is_landed = no }
-			    	}
-			    	trigger_if = {
-			    		limit = { any_child = { always = yes } }
-			    		any_child = { 
-			    			NOR = {
-			    				is_child_of = root
-			    				important_character_to_root_trigger = yes
-			    			}
-			    		}
-			    	}
+		    		# Warcraft
+					can_be_asked_to_leave_court_by_root_trigger = yes
+					
 			    	is_unimportant_trigger = yes
 			    	NOR = {
 			    		event_target:courtier_1 = { CHARACTER = PREV }
@@ -887,23 +894,9 @@ character_event = {
     		}
     		random_courtier = {
     			limit = {
-	    			prisoner = no
-		    		is_adult = yes
-		    		is_landed = no
-		    		important_character_to_root_trigger = no
-		    		trigger_if = {
-		    			limit = { is_married = yes }
-		    			any_spouse = { is_landed = no }
-			    	}
-			    	trigger_if = {
-			    		limit = { any_child = { always = yes } }
-			    		any_child = { 
-			    			NOR = {
-			    				is_child_of = root
-			    				important_character_to_root_trigger = yes
-			    			}
-			    		}
-			    	}
+	    			# Warcraft
+					can_be_asked_to_leave_court_by_root_trigger = yes
+					
 		    		is_unimportant_trigger = yes
 		    		NOR = {
 		    			event_target:courtier_1 = { CHARACTER = PREV }

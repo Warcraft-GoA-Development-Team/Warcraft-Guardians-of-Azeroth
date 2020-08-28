@@ -32,6 +32,18 @@ set_undead_gfx_effect = {
 				set_graphical_culture = vrykul_undead
 			}
 			else_if = {
+				limit = { has_highelf_gfx_trigger = yes }
+				set_graphical_culture = highelf_undead
+			}
+			else_if = {
+				limit = { has_nightelf_gfx_trigger = yes }
+				set_graphical_culture = nightelf_undead
+			}
+			else_if = {
+				limit = { has_highborne_gfx_trigger = yes }
+				set_graphical_culture = highborne_undead
+			}
+			else_if = {
 				limit = {
 					OR = {
 						graphical_culture = gnollgfx
@@ -39,6 +51,10 @@ set_undead_gfx_effect = {
 					}
 				}
 				set_graphical_culture = gnoll_undead
+			}
+			else_if = {
+				limit = { has_troll_gfx_trigger = yes }
+				set_graphical_culture = troll_undead
 			}
 			# You're too ugly, sorry
 			# else = {
@@ -315,6 +331,9 @@ add_fel_corruption_modifier_effect = {
 		add_character_modifier = { name = fel_corruption_1 duration = -1 }
 		minor_soul_corruption_effect = yes
 	}
+	
+	set_demon_gfx_effect = yes
+	
 	hidden_effect = {
 		# Clear other corruption
 		clear_void_corruption_effect = yes
@@ -323,30 +342,73 @@ add_fel_corruption_modifier_effect = {
 set_demon_gfx_effect = {
 	hidden_effect = {
 		if = {
-			limit = { has_demon_gfx_trigger = no }
-			if = {
-				limit = { check_variable = { which = fel_corruption value = 66 } }
-				if = {
-					limit = { has_orc_gfx_trigger = yes }
-					if = { limit = { trait = creature_orc } remove_trait = creature_orc }
-					if = { limit = { NOT = { trait = creature_fel_orc } } add_trait = creature_fel_orc }
-					set_graphical_culture = orcfel
-				}
+			limit = {
+				check_variable = { which = fel_corruption value = 33 }
+				has_fel_gfx_trigger = no
 			}
 			if = {
+				limit = { has_orc_gfx_trigger = yes }
+				set_graphical_culture = warsong
+			}
+			else_if = {
+				limit = { has_highelf_gfx_trigger = yes }
+				set_graphical_culture = highelf_fel
+			}
+			else_if = {
+				limit = { has_nightelf_gfx_trigger = yes }
+				set_graphical_culture = nightelf_fel
+			}
+			else_if = {
+				limit = { has_highborne_gfx_trigger = yes }
+				set_graphical_culture = highborne_fel
+			}
+			else_if = {
+				limit = { has_troll_gfx_trigger = yes }
+				set_graphical_culture = troll_fel
+			}
+		}
+		if = {
+			limit = {
+				check_variable = { which = fel_corruption value = 66 }
+				has_demon_gfx_trigger = no
+			}
+			if = {
+				limit = { has_orc_gfx_trigger = yes }
+				if = { limit = { trait = creature_orc } remove_trait = creature_orc }
+				if = { limit = { NOT = { trait = creature_fel_orc } } add_trait = creature_fel_orc }
+				set_graphical_culture = orcfel
+			}
+			else_if = {
+				limit = { has_human_gfx_trigger = yes }
+				set_graphical_culture = human_demon
+			}
+		}
+		if = {
+			limit = {
+				check_variable = { which = fel_corruption value = 100 }
+				has_demon_gfx_trigger = no
+			}
+			if = {
+				limit = { has_eredar_gfx_trigger = yes }
+				if = { limit = { trait = creature_draenei } remove_trait = creature_draenei }
+				if = { limit = { NOT = { trait = creature_eredar } } add_trait = creature_eredar }
+				set_graphical_culture = eredar
+			}
+			else_if = {
 				limit = {
-					check_variable = { which = fel_corruption value = 100 }
-					has_demon_gfx_trigger = no
+					OR = {
+						has_nightelf_gfx_trigger = yes
+						has_highborne_gfx_trigger = yes
+					}
 				}
-				if = {
-					limit = { has_eredar_gfx_trigger = yes }
-					if = { limit = { trait = creature_draenei } remove_trait = creature_draenei }
-					if = { limit = { NOT = { trait = creature_eredar } } add_trait = creature_eredar }
-					set_graphical_culture = eredar
-				}
-				else = {
-					set_graphical_culture = demon_form
-				}
+				set_graphical_culture = nightelf_demon
+			}
+			else_if = {
+				limit = { has_highelf_gfx_trigger = yes }
+				set_graphical_culture = bloodelf_demon
+			}
+			else = {
+				set_graphical_culture = demon_form
 			}
 		}
 	}
@@ -366,6 +428,7 @@ add_trait_demon_effect = {
 	clean_dark_beings_effect = yes
 
 	set_demon_gfx_effect = yes
+	if = { limit = { culture = draenei } culture = eredar }
 
 	hidden_effect = {
 		# Pregnant shall not pass
@@ -652,9 +715,26 @@ add_void_corruption_modifier_effect = {
 		add_character_modifier = { name = void_corruption_1 duration = -1 }
 		minor_soul_corruption_effect = yes
 	}
+	
+	set_void_gfx_effect = yes
+	
 	hidden_effect = {
 		# Clear other corruption
 		clear_fel_corruption_effect = yes
+	}
+}
+set_void_gfx_effect = {
+	hidden_effect = {
+		if = {
+			limit = { has_void_gfx_trigger = no }
+			if = {
+				limit = { check_variable = { which = void_corruption value = 33 } }
+				if = {
+					limit = { has_human_gfx_trigger = yes }
+					set_graphical_culture = human_void
+				}
+			}
+		}
 	}
 }
 add_trait_void_creature_effect = {
@@ -684,6 +764,66 @@ add_trait_void_creature_effect = {
 	}
 }
 
+# Mutations
+add_tentacle_arm_mutation_effect = {
+	hidden_effect = {
+		if = {
+			limit = { trait = one_handed }
+			heal_one_handed_effect = yes
+		}
+	}
+	add_trait = tentacle_arm_mutation
+	hidden_effect = { change_variable = { which = void_mutations value = 1 } }
+	mutate_into_nraqi_effect = yes
+}
+add_chela_hand_mutation_effect = {
+	hidden_effect = {
+		if = {
+			limit = { trait = one_handed }
+			heal_one_handed_effect = yes
+		}
+	}
+	add_trait = chela_hand_mutation
+	hidden_effect = { change_variable = { which = void_mutations value = 1 } }
+	mutate_into_nraqi_effect = yes
+}
+add_chitinous_growths_mutation_effect = {
+	add_trait = chitinous_growths_mutation
+	hidden_effect = { change_variable = { which = void_mutations value = 1 } }
+	mutate_into_nraqi_effect = yes
+}
+add_spikes_mutation_effect = {
+	add_trait = spikes_mutation
+	hidden_effect = { change_variable = { which = void_mutations value = 1 } }
+	mutate_into_nraqi_effect = yes
+}
+add_scales_mutation_effect = {
+	add_trait = scales_mutation
+	hidden_effect = { change_variable = { which = void_mutations value = 1 } }
+	mutate_into_nraqi_effect = yes
+}
+add_eyes_mutation_effect = {
+	hidden_effect = {
+		if = {
+			limit = { trait = one_eyed }
+			heal_one_eyed_effect = yes
+		}
+		if = {
+			limit = { trait = blinded }
+			remove_trait = blinded
+		}
+	}
+	add_trait = eyes_mutation
+	hidden_effect = { change_variable = { which = void_mutations value = 1 } }
+	mutate_into_nraqi_effect = yes
+}
+mutate_into_nraqi_effect = {
+	if = {
+		limit = { has_max_mutations_trigger = yes }
+		long_character_event = { id = WCVOD.310 }
+	}
+}
+
 # Clear corruption stages (not final one) and variable
 clear_void_corruption_effect = {
 	set_variable = { which = void_corruption value = 0 }
@@ -694,6 +834,21 @@ show_void_corruption_effect = {
 	if = {
 		limit = { check_variable = { which = void_corruption value = 1 } }
 		custom_tooltip = { text = current_void_corruption_tooltip }
+	}
+}
+
+### LIGHT ###
+set_light_gfx_effect = {
+	hidden_effect = {
+		if = {
+			limit = {
+				has_light_gfx_trigger = no
+			}
+			if = {
+				limit = { has_highelf_gfx_trigger = yes }
+				set_graphical_culture = high_elf_light
+			}
+		}
 	}
 }
 

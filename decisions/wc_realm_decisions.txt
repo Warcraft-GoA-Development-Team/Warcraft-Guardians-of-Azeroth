@@ -224,7 +224,7 @@ decisions = {
 
 		effect = {
 			set_global_flag = sunwell_is_being_restored_flag
-
+			
 			clr_global_flag = sunwell_naaru_spark_flag
 			clr_global_flag = voidwell_restoring_flag
 			clr_global_flag = felwell_restoring_flag
@@ -360,25 +360,41 @@ decisions = {
 
 			NOT = { has_character_flag = claim_capital_city_attempt_flag }
 
-			OR = {
-				stromgarde_is_capital_trigger = yes
-				stratholme_is_capital_trigger = yes
-				stormwind_is_capital_trigger = yes
-				silvermoon_is_capital_trigger = yes
-				lordaeron_is_capital_trigger = yes
-				# AND = {
-					# has_landed_title = k_kul_tiras
-					# NOT = { has_landed_title = k_kul_tiras }
-					# any_realm_lord = {
-						# ai = yes
-						# has_landed_title = k_kul_tiras
-					# }
-				# }
-				ironforge_is_capital_trigger = yes
-				gnomeregan_is_capital_trigger = yes
-				gilneas_is_capital_trigger = yes
-				dalaran_is_capital_trigger = yes
-				alterac_is_capital_trigger = yes
+			primary_title = {
+				faction_title_trigger = no
+				OR = {
+					# If primary_title is one of these titles, can claim its capital
+					title = e_gorian_empire
+					# If capital is one of these counties, can claim it
+					capital_scope = {
+						county = {
+							OR = {
+								title = c_stromgarde
+								title = c_stratholme
+								title = c_stormwind
+								title = c_silvermoon
+								title = c_lordaeron
+								title = c_ironforge
+								title = c_gnomeregan
+								title = c_gilneas
+								title = c_dalaran
+								title = c_alterac
+							}
+						}
+					}
+				}
+				capital_scope = {
+					county = {
+						holder_scope = {
+							ai = yes
+							
+							war = no
+							
+							NOT = { character = ROOT }
+							is_vassal_or_below_of = ROOT
+						}
+					}
+				}
 			}
 		}
 
@@ -388,110 +404,16 @@ decisions = {
 		effect = {
 			set_character_flag = claim_capital_city_attempt_flag
 
-			if = {
-				limit = { stromgarde_is_capital_trigger = yes }
-				c_stromgarde = {
+			primary_title = {
+				show_scope_change = no
+				capital_scope = {
 					show_scope_change = no
-					usurp_title_plus_barony_if_unlanded_and_vassals = ROOT
+					county = {
+						show_scope_change = no
+						usurp_title_plus_barony_if_unlanded_and_vassals = ROOT
+					}
 				}
 			}
-			else_if = {
-				limit = { stratholme_is_capital_trigger = yes }
-				c_stratholme = {
-					show_scope_change = no
-					usurp_title_plus_barony_if_unlanded_and_vassals = ROOT
-				}
-			}
-			else_if = {
-				limit = { stormwind_is_capital_trigger = yes }
-				c_stormwind = {
-					show_scope_change = no
-					usurp_title_plus_barony_if_unlanded_and_vassals = ROOT
-				}
-			}
-			else_if = {
-				limit = { silvermoon_is_capital_trigger = yes }
-				c_silvermoon = {
-					show_scope_change = no
-					usurp_title_plus_barony_if_unlanded_and_vassals = ROOT
-				}
-			}
-			else_if = {
-				limit = { lordaeron_is_capital_trigger = yes }
-				c_lordaeron = {
-					show_scope_change = no
-					usurp_title_plus_barony_if_unlanded_and_vassals = ROOT
-				}
-			}
-			else_if = {
-				limit = { ironforge_is_capital_trigger = yes }
-				c_ironforge = {
-					show_scope_change = no
-					usurp_title_plus_barony_if_unlanded_and_vassals = ROOT
-				}
-			}
-			else_if = {
-				limit = { gnomeregan_is_capital_trigger = yes }
-				c_gnomeregan = {
-					show_scope_change = no
-					usurp_title_plus_barony_if_unlanded_and_vassals = ROOT
-				}
-			}
-			else_if = {
-				limit = { gilneas_is_capital_trigger = yes }
-				c_gilneas = {
-					show_scope_change = no
-					usurp_title_plus_barony_if_unlanded_and_vassals = ROOT
-				}
-			}
-			else_if = {
-				limit = { dalaran_is_capital_trigger = yes }
-				c_dalaran = {
-					show_scope_change = no
-					usurp_title_plus_barony_if_unlanded_and_vassals = ROOT
-				}
-			}
-			else_if = {
-				limit = { alterac_is_capital_trigger = yes }
-				c_alterac = {
-					show_scope_change = no
-					usurp_title_plus_barony_if_unlanded_and_vassals = ROOT
-				}
-			}
-		}
-
-		ai_will_do = {
-			factor = 1
-		}
-	}
-	wake_cthun = {
-		is_high_prio = yes
-
-		ai_check_interval = 12
-
-		ai = no
-		only_playable = yes
-		only_independent = yes
-
-		potential = {
-			NOT = { has_global_flag = reawakening_of_cthun_flag }
-
-			religion = old_gods_worship
-			culture = qiraji
-
-			has_landed_title = e_ahnqiraj
-		}
-
-		allow = {
-			scaled_wealth = { value = 25 min = 1000 }
-			piety = 250
-		}
-
-		effect = {
-			scaled_wealth = { value = -25 min = -1000 }
-			piety = -250
-
-			narrative_event = { id = WCVOD.1000 }
 		}
 
 		ai_will_do = {
@@ -547,7 +469,7 @@ decisions = {
 	awaken_ymiron = {
 		is_high_prio = yes
 		
-		ai_check_interval = 24
+		ai_check_interval = 12
 		
 		only_playable = yes
 		
@@ -575,6 +497,113 @@ decisions = {
 			set_global_flag = ymiron_happend_flag
 			
 			character_event = { id = WCRLM.799 }
+		}
+		
+		ai_will_do = {
+			factor = 1
+		}
+	}
+	
+	# Regent Lord of Quel'thalas removes Regent Lord title (makes Quel'thalas elective)
+	remove_regent_lord_title = {
+		is_high_prio = yes
+		
+		ai_check_interval = 120
+		
+		only_playable = yes
+		
+		potential = {
+			is_untouchable_trigger = no
+			
+			is_adult = yes
+			is_incapable = no
+			
+			has_character_flag = is_regent_lord_flag
+		}
+		
+		allow = {
+			prisoner = no
+			is_inaccessible_trigger = no
+			
+			ruled_years = 20
+		}
+		
+		effect = {
+			clr_character_flag = is_regent_lord_flag
+			
+			# Makes de-jure Quel'thalas titles elective
+			if = {
+				limit = {
+					is_feudal = yes
+					evil_public_religion_trigger = no
+					
+					any_demesne_title = {
+						de_jure_sunstrider_title_trigger = yes
+						prevs_title_can_has_laws_trigger = yes
+						is_law_potential = succ_feudal_elective
+						is_law_allowed = succ_feudal_elective
+						NOT = { has_law = succ_feudal_elective }
+					}
+				}
+				any_demesne_title = {
+					limit = {
+						de_jure_sunstrider_title_trigger = yes
+						prevs_title_can_has_laws_trigger = yes
+						is_law_potential = succ_feudal_elective
+						is_law_allowed = succ_feudal_elective
+						NOT = { has_law = succ_feudal_elective }
+					}
+					add_law = succ_feudal_elective
+				}
+				
+				# Small notification to players
+				any_player = {
+					limit = {
+						same_realm = ROOT
+					}
+					character_event = { id = WCTFT.600 }
+				}
+			}
+			remove_special_character_title = REGENT_LORD_TITLE
+		}
+	}
+	
+	#hive_government
+	#Gives 10 year bonus to morale, vassal opinion, but minus to taxes and building cost
+	song_of_swarm = {
+		is_high_prio = yes
+		
+		ai_check_interval = 24
+		
+		only_playable = yes
+		
+		potential = {
+			is_untouchable_trigger = no
+			
+			is_adult = yes
+			is_incapable = no
+			
+			government = hive_government
+		}
+		
+		allow = {
+			prisoner = no
+			is_inaccessible_trigger = no
+			
+			NOT = { has_character_modifier = song_of_swarm_cooldown }
+			NOT = { has_character_modifier = song_of_swarm_modifier }
+			
+			# AI preferences
+			trigger_if = {
+				limit = { ai = yes }
+				war = yes	# AI uses it at war
+			}
+		}
+		
+		effect = {
+			add_character_modifier = { name = song_of_swarm_cooldown years = 50 }
+			
+			add_character_modifier = { name = song_of_swarm_modifier years = 10 }
 		}
 		
 		ai_will_do = {
@@ -635,7 +664,7 @@ targeted_decisions = {
 	}
 }
 title_decisions = {
-	convert_to_your_culture_and_religion = {
+	genocide_decision = {
 		is_high_prio = yes
 
 		filter = owned
@@ -645,234 +674,76 @@ title_decisions = {
 		only_playable = yes
 
 		from_potential = {
-			is_adult = yes
-			OR = {
-				is_incapable = no
-				trait = lich_king
-			}
-			prisoner = no
 		}
 
 		potential = {
 			tier = COUNT
+			
 			owner = { character = FROM }
+		}
+
+		allow = {
+			FROM = { completely_controls = ROOT }
 			location = {
-				NOT = { true_religion = FROM }
-				# Forsaken and Scourge are in the same group, but can purge each other
+				NOT = { has_province_modifier = genocide_province_cooldown }
+				
 				trigger_if = {
-					limit = { culture_group = undead_group }
-					NOT = { culture = FROM }
+					limit = { from_potential_cull_this_province_trigger = yes }
+					from_allow_cull_this_province_trigger = yes
+				}
+				trigger_else_if = {
+					limit = { from_potential_raise_this_province_trigger = yes }
+					from_allow_raise_this_province_trigger = yes
 				}
 				trigger_else = {
-					NOT = { culture_group = FROM }
+					from_allow_genocide_this_province_trigger = yes
 				}
-			}
-
-			OR = {
-				AND = {
-					location = { NOT = { has_province_modifier = undead_province } }
-					FROM = {
-						NOR = {
-							trait = being_undead
-							religion_group = necromancy_group
-							government = scourge_government
-						}
-					}
-				}
-				AND = {
-					location = { has_province_modifier = undead_province }
-					FROM = {
-						OR = {
-							trait = being_undead
-							religion_group = necromancy_group
-							government = scourge_government
-						}
-					}
-				}
-			}
-		}
-
-		allow = {
-			custom_tooltip = {
-				text = has_not_used_decision_3_years_tooltip
-				hidden_tooltip = {
-					location = {
-						OR = {
-							NOT = { has_province_flag = recent_genocide_attempt_flag }
-							had_province_flag = { flag = recent_genocide_attempt_flag days = 730 }
-						}
-					}
-				}
-			}
-			# NOT = { has_holding_modifier = recently_conquered }
-
-			FROM = {
-				show_scope_change = no
 				
-				completely_controls = ROOT
-				top_liege = {
-					show_scope_change = no
-					ROOT = {
-						show_scope_change = no
-						location = {
-							trigger_if = {
-								limit = { independent = no }
-								NOT = { religion = PREVPREV }
-								# Forsaken and Scourge are in the same group, but can purge each other
-								trigger_if = {
-									limit = { culture_group = undead_group }
-									NOT = { culture = PREVPREV }
-								}
-								trigger_else = {
-									NOT = { culture_group = PREVPREV }
-								}
-							}
-							NOT = { has_province_modifier = nomad_agitation }
-							is_occupied = no
-						}
-					}
-				}
-			}
-			OR = {
-				location = { is_aggressive_trigger = yes }
-				FROM = { is_aggressive_trigger = yes }
-			}
-		}
-
-		effect = {
-			# Handled by pillage_settlement decision
-			hidden_tooltip = {
-				location = { save_event_target_as = nickname_target }
-				FROM = { save_event_target_as = nickname_receiver }
-				if = {
-					limit = {
-						owner = {
-							has_nickname = no
-							is_adult = yes
-							is_incapable = no
-						}
-						location = { is_aggressive_trigger = no }
-					}
-					random_list = {
-						5 = {
-							owner = { give_nickname = nick_the_destroyer }
-						}
-						5 = {
-							owner = { give_nickname = nick_the_slayer_of_culture }
-							modifier = {
-								factor = 0
-								event_target:nickname_target = { culture = FROM }
-							}
-						}
-						5 = {
-							owner = { give_nickname = nick_the_terror_of_provincename }
-						}
-						5 = {
-							owner = { give_nickname = nick_the_culture_marauder }
-							modifier = {
-								factor = 0
-								event_target:nickname_target = { culture = FROM }
-							}
-						}
-						75 = {}
-					}
-				}
-			}
-
-			location = {
-				show_scope_change = no
-
-				set_province_flag = recent_genocide_attempt_flag
-				add_province_modifier = { name = ongoing_genocide years = 2 }
-				custom_tooltip = {
-					text = "PILLAGE_DESTROY_BUILDINGS"
-					hidden_tooltip = {
-						any_province_holding = {
-							limit = {
-								settlement_can_be_destroyed_trigger = yes
-							}
-							destroy_random_building = THIS
-							destroy_random_building = THIS
-						}
-					}
-				}
-			}
-			location = { province_event = { id = WCRLM.200 years = 1 } }
-		}
-
-		ai_will_do = {
-			factor = 0.1
-		}
-	}
-	culling_of_province = {
-		is_high_prio = yes
-
-		filter = owned
-		ai_target_filter = owned
-		ai_check_interval = 24
-
-		only_playable = yes
-
-		from_potential = {
-			is_adult = yes
-			OR = {
-				is_incapable = no
-				trait = lich_king
-			}
-			prisoner = no
-
-			NOR = {
-				trait = being_undead
-				religion_group = necromancy_group
-				government = scourge_government
-			}
-		}
-
-		potential = {
-			tier = COUNT
-			owner = { character = FROM }
-			location = {
-				has_province_modifier = undead_province
-			}
-		}
-
-		allow = {
-			custom_tooltip = {
-				text = has_not_used_decision_3_years_tooltip
-				hidden_tooltip = {
-					location = {
-						OR = {
-							NOT = { has_province_flag = recent_genocide_attempt_flag }
-							had_province_flag = { flag = recent_genocide_attempt_flag days = 730 }
-						}
-					}
-				}
-			}
-			# NOT = { has_holding_modifier = recently_conquered }
-
-			FROM = {
-				show_scope_change = no
-				
-				completely_controls = ROOT
 				trigger_if = {
-					limit = { independent = no }
-					top_liege = {
-						NOR = {
-							trait = being_undead
-							religion_group = necromancy_group
-							government = scourge_government
+					limit = { has_province_modifier = nomad_agitation }
+					custom_tooltip = {
+						text = has_castle_or_city_tooltip
+						any_province_holding = {
+							OR = {
+								holding_type = castle
+								holding_type = city
+							}
 						}
 					}
 				}
-			}
-			location = {
-				has_disease = no
-				NOT = { has_province_modifier = nomad_agitation }
 				is_occupied = no
 			}
 		}
 
 		effect = {
+			hidden_effect = {
+				location = {
+					add_province_modifier = {
+						name = genocide_province_cooldown
+						years = 3
+						hidden = yes
+					}
+				}
+				
+				FROM = {
+					if = {
+						limit = { independent = no }
+						top_liege = {
+							add_character_modifier = {
+								name = genocide_realm_cooldown
+								months = 3 # 4 genocides per year
+								hidden = yes
+							}
+						}
+					}
+					add_character_modifier = {
+						name = genocide_realm_cooldown
+						months = 3 # 4 genocides per year
+						hidden = yes
+					}
+				}
+			}
+			
 			# Handled by pillage_settlement decision
 			hidden_tooltip = {
 				location = { save_event_target_as = nickname_target }
@@ -913,10 +784,18 @@ title_decisions = {
 			}
 
 			location = {
-				show_scope_change = no
-
-				set_province_flag = recent_genocide_attempt_flag
-				add_province_modifier = { name = ongoing_culling years = 2 }
+				if = {
+					limit = { from_potential_cull_this_province_trigger = yes }
+					add_province_modifier = { name = ongoing_culling years = 2 }
+				}
+				else_if = {
+					limit = { from_potential_raise_this_province_trigger = yes }
+					add_province_modifier = { name = ongoing_raising years = 2 }
+				}
+				else = {
+					add_province_modifier = { name = ongoing_genocide years = 2 }
+				}
+				
 				custom_tooltip = {
 					text = "PILLAGE_DESTROY_BUILDINGS"
 					hidden_tooltip = {
@@ -935,137 +814,26 @@ title_decisions = {
 
 		ai_will_do = {
 			factor = 1
-		}
-	}
-	bring_death_to_province = {
-		is_high_prio = yes
-
-		filter = owned
-		ai_target_filter = owned
-		ai_check_interval = 24
-
-		only_playable = yes
-
-		from_potential = {
-			is_adult = yes
-			OR = {
-				is_incapable = no
-				trait = lich_king
-			}
-			prisoner = no
-
-			OR = {
-				trait = being_undead
-				religion_group = necromancy_group
-				government = scourge_government
-			}
-		}
-
-		potential = {
-			tier = COUNT
-			owner = { character = FROM }
-			location = { NOT = { has_province_modifier = undead_province } }
-		}
-
-		allow = {
-			custom_tooltip = {
-				text = has_not_used_decision_3_years_tooltip
-				hidden_tooltip = {
-					location = {
-						OR = {
-							NOT = { has_province_flag = recent_genocide_attempt_flag }
-							had_province_flag = { flag = recent_genocide_attempt_flag days = 730 }
-						}
+			modifier = {
+				factor = 0
+				FROM = {
+					OR = {
+						war = yes
+						has_character_modifier = genocide_realm_cooldown
 					}
 				}
 			}
-			# NOT = { has_holding_modifier = recently_conquered }
-
-			FROM = {
-				show_scope_change = no
-				
-				completely_controls = ROOT
-				trigger_if = {
-					limit = { independent = no }
+			modifier = {
+				factor = 0
+				FROM = {
 					top_liege = {
 						OR = {
-							trait = being_undead
-							religion_group = necromancy_group
-							government = scourge_government
+							war = yes
+							has_character_modifier = genocide_realm_cooldown
 						}
 					}
 				}
 			}
-			location = {
-				has_disease = no
-				NOT = { has_province_modifier = nomad_agitation }
-				is_occupied = no
-			}
-		}
-
-		effect = {
-			# Handled by pillage_settlement decision
-			hidden_tooltip = {
-				location = { save_event_target_as = nickname_target }
-				FROM = { save_event_target_as = nickname_receiver }
-				if = {
-					limit = {
-						owner = {
-							has_nickname = no
-							is_adult = yes
-							is_incapable = no
-						}
-						location = { is_aggressive_trigger = no }
-					}
-					random_list = {
-						5 = {
-							owner = { give_nickname = nick_the_destroyer }
-						}
-						5 = {
-							owner = { give_nickname = nick_the_slayer_of_culture }
-							modifier = {
-								factor = 0
-								event_target:nickname_target = { culture = FROM }
-							}
-						}
-						5 = {
-							owner = { give_nickname = nick_the_terror_of_provincename }
-						}
-						5 = {
-							owner = { give_nickname = nick_the_culture_marauder }
-							modifier = {
-								factor = 0
-								event_target:nickname_target = { culture = FROM }
-							}
-						}
-						75 = {}
-					}
-				}
-			}
-
-			location = {
-				show_scope_change = no
-
-				set_province_flag = recent_genocide_attempt_flag
-				add_province_modifier = { name = spreading_of_death years = 2 }
-				custom_tooltip = {
-					text = "PILLAGE_DESTROY_BUILDINGS"
-					hidden_tooltip = {
-						any_province_holding = {
-							limit = {
-								settlement_can_be_destroyed_trigger = yes
-							}
-							destroy_random_building = THIS
-							destroy_random_building = THIS
-						}
-					}
-				}
-			}
-			location = { province_event = { id = WCRLM.200 years = 1 } }
-		}
-
-		ai_will_do = {
-			factor = 0.1
 		}
 	}
 
@@ -1099,7 +867,7 @@ title_decisions = {
 				from_can_switch_religion_province_trigger = yes
 				
 				NOT = { religion = FROM }
-				culture_group = high_elf_group
+				culture_group = elf_group
 			}
 			holder_scope = {
 				OR = {

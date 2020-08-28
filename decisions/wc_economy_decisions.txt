@@ -1,0 +1,138 @@
+###################################
+#
+# Economy decisions
+#
+###################################
+
+# Written by Miguel "Cipher" Rodrigues, reworked by Zuzu
+
+decisions = {
+	borrow_money = {
+		ai_check_interval = 30
+		
+		only_playable = yes
+		
+		potential = {
+			is_untouchable_trigger = no
+			
+			NOT = { has_character_modifier = debt_360_gold }
+			
+			NOT = { has_character_flag = ongoing_borrow_money_flag }
+		}
+		
+		allow = {
+			prisoner = no
+		}
+		
+		effect = {
+			set_character_flag = ongoing_borrow_money_flag
+			
+			character_event = { id = WCECO.100 }
+		}
+		
+		revoke_allowed = {
+			always = no
+		}
+		
+		ai_will_do = {
+			factor = 1
+			modifier = {
+				factor = 0
+				wealth = 0
+				war = no
+			}
+			modifier = {
+				factor = 0
+				wealth = 200
+				war = yes
+			}
+		}
+	}
+	repay_money = {
+		ai_check_interval = 12
+		
+		only_playable = yes
+		
+		potential = {
+			has_character_modifier = debt_360_gold
+		}
+		
+		allow = {
+			wealth = 360
+		}
+		
+		effect = {
+			wealth = -360
+			
+			remove_character_modifier = debt_360_gold
+		}
+		
+		revoke_allowed = {
+			always = no
+		}
+		
+		ai_will_do = {
+			factor = 1
+			modifier = {
+				factor = 0
+				NOT = { wealth = 450 }
+			}
+		}
+	}
+}
+targetted_decisions = {
+	ask_for_loan = {
+		filter = independent_rulers # Filter doesn't work
+		ai_target_filter = independent_rulers # Filter doesn't work
+
+		ai = no
+
+		from_potential = {
+			NOT = { has_character_modifier = debt_360_gold }
+			
+			NOT = { has_character_flag = ongoing_borrow_money_flag }
+		}
+
+		potential = {
+			is_playable = yes
+			
+			FROM = { can_positive_interact_with_prev_publicly_trigger = yes }
+		}
+		
+		allow = {
+			FROM = {
+				prisoner = no
+				
+				ROOT = {
+					this_can_lend_prev_money_trigger = yes
+				}
+			}
+		}
+		
+		effect = {
+			FROM = { save_event_target_as = target_borrower }
+			save_event_target_as = target_moneylender
+			
+			FROM = {
+				set_character_flag = ongoing_borrow_money_flag
+				# Fallback: conversation fails in 4 months
+				character_event = { id = WCECO.150 months = 4 }
+			}
+			
+			event_target:target_moneylender = { letter_event = { id = WCECO.110 days = 15 } }
+		}
+		
+		revoke_allowed = {
+			always = no
+		}
+		
+		ai_will_do = {
+			factor = 1
+		}
+		
+		ai_acceptance = {
+			factor = 5
+			yes_threshold = 0
+		}
+	}
+}

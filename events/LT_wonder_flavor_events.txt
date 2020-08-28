@@ -591,6 +591,42 @@ character_event = {
 	}
 }
 
+#Fallback for if the emissary dies
+character_event = {
+	id = LT.20011
+	title = EVT_TITLE_LT_20011
+	desc = EVTDESC_LT_20011
+	picture = GFX_evt_emissary
+	border = GFX_event_normal_frame_religion
+	hide_new = yes
+	portrait = event_target:emissary
+	
+	is_triggered_only = yes
+
+	immediate = {
+		export_to_variable = { 
+			which = money_left
+			value = stewardship
+			who = event_target:emissary
+		}
+	}
+
+	option = {
+		name = EVTOPTA_LT_20011
+		treasury = money_left
+	}
+
+	after = {
+		hidden_effect = {
+			clr_character_flag = looking_for_a_book
+			clear_flags_with_prefix = book_theme_
+			clear_flags_with_prefix = book_author_
+			set_variable = { which = money_left value = 0 }
+		}
+	}
+}
+
+
 #The book does not exist
 character_event = {
 	id = LT.20020
@@ -613,12 +649,19 @@ character_event = {
 		if = {
 			limit = {
 				is_alive = yes
+				event_target:emissary = { is_alive = yes }
 				OR = { 
 					is_inaccessible_trigger = yes
 					#war = yes
 				}
 			}
 			repeat_event = { id = LT.20020 days = 100 random = 10 }
+		}
+		if = {
+			limit = {
+				NOT = { event_target:emissary = { is_alive = yes } }
+			}
+			character_event = { id = LT.20011 days = 3 }
 		}
 	}
 
@@ -670,12 +713,20 @@ letter_event = {
 		if = {
 			limit = {
 				is_alive = yes
+				event_target:emissary = { is_alive = yes }
 				OR = { 
 					is_inaccessible_trigger = yes
 					war = yes
 				}
 			}
 			repeat_event = { id = LT.20030 days = 100 random = 10 }
+		}
+
+		if = {
+			limit = {
+				NOT = { event_target:emissary = { is_alive = yes } }
+			}
+			character_event = { id = LT.20011 days = 3 }
 		}
 	}
 
@@ -767,12 +818,19 @@ character_event = {
 		if = {
 			limit = {
 				is_alive = yes
+				event_target:emissary = { is_alive = yes }
 				OR = { 
 					is_inaccessible_trigger = yes
 					#war = yes
 				}
 			}
 			repeat_event = { id = LT.20035 days = 200 random = 10 }
+		}
+		if = {
+			limit = {
+				NOT = { event_target:emissary = { is_alive = yes } }
+			}
+			character_event = { id = LT.20011 days = 3 }
 		}
 	}
 
@@ -850,12 +908,19 @@ character_event = {
 		if = {
 			limit = {
 				is_alive = yes
+				event_target:emissary = { is_alive = yes }
 				OR = { 
 					is_inaccessible_trigger = yes
 					#war = yes
 				}
 			}
 			repeat_event = { id = LT.20035 days = 20 random = 2 }
+		}
+		if = {
+			limit = {
+				NOT = { event_target:emissary = { is_alive = yes } }
+			}
+			character_event = { id = LT.20011 days = 3 }
 		}
 	}
 
@@ -919,12 +984,19 @@ character_event = {
 		if = {
 			limit = {
 				is_alive = yes
+				event_target:emissary = { is_alive = yes }
 				OR = { 
 					is_inaccessible_trigger = yes
 					war = yes
 				}
 			}
 			repeat_event = { id = LT.20040 days = 200 random = 10 }
+		}
+		if = {
+			limit = {
+				NOT = { event_target:emissary = { is_alive = yes } }
+			}
+			character_event = { id = LT.20011 days = 3 }
 		}
 	}
 
@@ -2490,6 +2562,9 @@ character_event = { #What happens at the meeting
 	option = {  # Try to seduce
 		name = EVTOPTB_LT_20410
 		trigger = {
+			# Warcraft
+			FROM = { can_has_sexual_relation_with_prev = yes }
+
 			NOT = { is_lover = FROM }
 		}
 
@@ -2704,7 +2779,7 @@ character_event = { #Seduction reaction
 		}
 		FROM = { character_event = { id = LT.20432 days = 1 } }
 		tooltip = {
-			add_lover = FROM
+			FROM = { add_lover_prev_effect = yes }
 			opinion = {
 				modifier = opinion_seduced_attracted
 				who = FROM
@@ -2884,7 +2959,7 @@ character_event = { #We are lovers now
 			}	
 		}
 		else = {
-			add_lover = FROM
+			FROM = { add_lover_prev_effect = yes }
 			reverse_opinion = {
 				modifier = opinion_seduced_attracted
 				who = FROM
@@ -2979,7 +3054,7 @@ character_event = { #Murder attempt Reaction. This event can happen to either ch
 			}
 			50 = {
 				custom_tooltip = { text = EVTOPTA_LT_20441_TT_wounded }
-				add_trait = wounded
+				add_trait_silently_wounded_effect = yes
 				set_character_flag = wounded_in_attempt
 				character_event = { id = LT.20450 days = 3 }
 				FROM = { character_event = { id = LT.20460 } }
@@ -4058,6 +4133,7 @@ character_event = {
 			}
 		}
 		NOT = { has_character_flag = disciplinary_commander }
+		is_allowed_to_loot = no # A little bit of a too harsh block. Could be expanded upon.
 	}
 	weight_multiplier = {
 		modifier = {
@@ -4065,11 +4141,11 @@ character_event = {
 			has_character_modifier = strong_leader_modifier
 		}
 		modifier = {
-			factor = 2
+			factor = 1.5
 			has_character_modifier = weak_leader_modifier
 		}
 		modifier = {
-			factor = 2
+			factor = 1.5
 			FROM = { is_capital = yes }
 		}
 		modifier = {
@@ -4245,6 +4321,12 @@ character_event = {
 	
 	option = {
 		name = EVTOPTC_LT_21000
+		trigger = {
+			NOR = {
+				has_character_modifier = strong_leader_modifier
+				has_character_modifier = weak_leader_modifier
+			}
+		}
 		ai_chance = {
 			factor = 50
 		}
