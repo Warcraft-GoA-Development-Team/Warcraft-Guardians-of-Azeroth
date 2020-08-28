@@ -354,8 +354,6 @@ decisions = {
 				is_incapable = no
 				trait = lich_king
 			}
-			prisoner = no
-			is_inaccessible_trigger = no
 
 			year = 603											# Let's say the Legion needs time to prepare
 			NOT = { e_burning_legion = { has_holder = yes } }
@@ -371,6 +369,12 @@ decisions = {
 		}
 
 		allow = {
+			prisoner = no
+			OR = {
+				is_inaccessible_trigger = no
+				trait = lich_king
+			}
+			
 			custom_tooltip = {
 				text = legion_is_destroyed_tooltip
 				NOT = { has_global_flag = biggest_legion_invasion_flag }
@@ -442,6 +446,7 @@ decisions = {
 			prisoner = no
 
 			true_religion = old_gods_worship
+			NOT = { has_character_flag = freeing_old_god_flag }
 		}
 		allow = {
 			custom_tooltip = {
@@ -543,25 +548,24 @@ decisions = {
 	}
 	reborn_black_empire = {
 		is_high_prio = yes
-		
+
 		ai_check_interval = 12
-		
+
 		only_playable = yes
 		only_independent = yes
 
 		potential = {
 			NOT = {
 				has_game_rule = {
-					name = black_empire_invasion
+					name = old_god_black_empire_invasion
 					value = off
 				}
 			}
-			
 			is_untouchable_trigger = no
 
 			# is_adult = yes
 			# is_incapable = no
-			
+
 			OR = {
 				NOT = { has_global_flag = black_empire_cooldown_flag }
 				had_global_flag = { flag = black_empire_cooldown_flag years = 50 }
@@ -581,9 +585,36 @@ decisions = {
 				government = black_pact_government
 				government = hive_government
 			}
-			
-			religion_authority = 0.75
-			num_of_holy_sites = 4
+
+			religion_authority = 0.5
+			num_of_holy_sites = 3
+			trigger_if = {
+				limit = { cthun_offmap_decisions_enabled_trigger = yes }
+				has_cthun_wonder_trigger = yes
+				offmap_cthun = {
+					has_status = old_god_free
+					has_policy = old_god_working 
+				}
+			}
+			trigger_else_if = {
+				limit = { nzoth_offmap_decisions_enabled_trigger = yes }
+				has_nzoth_wonder_trigger = yes
+				offmap_nzoth = {
+					has_status = old_god_free
+					has_policy = old_god_working 
+				}
+			}
+			trigger_else_if = {
+				limit = { yogg_saron_offmap_decisions_enabled_trigger = yes }
+				has_yogg_saron_wonder_trigger = yes
+				offmap_yoggsaron = {
+					has_status = old_god_free
+					has_policy = old_god_working 
+				}
+			}
+			trigger_else = {
+				has_old_gods_follower_modifier_trigger = yes
+			}
 		}
 
 		effect = {
@@ -596,9 +627,24 @@ decisions = {
 
 			clr_global_flag = black_empire_cooldown_flag
 			set_global_flag = black_empire_cooldown_flag
+			
+			if = {
+				limit = { cthun_offmap_decisions_enabled_trigger = yes }
+				offmap_cthun = { set_policy = old_god_black_empire }
+				offmap_cthun = { set_status = old_god_full_power }
+			}
+			else_if = {
+				limit = { nzoth_offmap_decisions_enabled_trigger = yes }
+				offmap_nzoth = { set_policy = old_god_black_empire }
+				offmap_nzoth = { set_status = old_god_full_power }
+			}
+			else = {
+				offmap_yoggsaron = { set_policy = old_god_black_empire }
+				offmap_yoggsaron = { set_status = old_god_full_power }
+			}
 
 			73 = { province_event = { id = WCTHW.50 } } # When shit happens, Medivh tries to fix it
-			
+
 			narrative_event = { id = WCVOD.605 }
 		}
 
