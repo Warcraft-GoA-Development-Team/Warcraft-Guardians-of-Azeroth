@@ -1,0 +1,120 @@
+namespace = WCARTSPWN
+
+character_event = { # Spawn artifacts at gamestart
+	id = WCARTSPWN.1
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	only_rulers = yes
+
+	trigger = {
+		is_save_game = no
+		NOT = {
+			has_game_rule = {
+				name = artifact_spawn
+				value = off
+			}
+		}
+		can_get_artifacts_at_gamestart_distribution_trigger = yes
+	}
+
+	immediate = {
+		random = {
+			chance = 3
+
+			modifier = {
+				factor = 2
+
+				has_game_rule = {
+					name = artifact_spawn
+					value = x0_5
+				}
+			}
+			modifier = {
+				factor = 4
+
+				has_game_rule = {
+					name = artifact_spawn
+					value = default
+				}
+			}
+			modifier = {
+				factor = 6
+
+				has_game_rule = {
+					name = artifact_spawn
+					value = x1_5
+				}
+			}
+			modifier = {
+				factor = 8
+
+				has_game_rule = {
+					name = artifact_spawn
+					value = x2
+				}
+			}
+
+			set_variable = { which = local_new_generic_artifact_receiving_character_matter_variable value = 1 }
+			set_variable = { which = local_new_generic_artifact_gamestart_variable value = 1 }
+
+			spawn_random_generic_artifact_effect = yes
+		}
+	}
+}
+
+letter_event = { # Spawn artifacts as quest reward
+	id = WCARTSPWN.2
+
+	desc = EVTDESC_WCARTSPWN_2
+	border = GFX_event_letter_frame_economy
+	portrait = event_target:target_rewarder
+
+	is_triggered_only = yes
+
+	trigger = {
+		any_society_member = {
+			same_society_as = ROOT
+			NOT = { character = ROOT }
+			prisoner = no
+			opinion = { who = ROOT value = 0 }
+		}
+	}
+
+	immediate = {
+		random_society_member = {
+			limit = {
+				same_society_as = ROOT
+				NOT = { character = ROOT }
+				prisoner = no
+				opinion = { who = ROOT value = 0 }
+			}
+			save_event_target_as = target_rewarder
+		}
+
+		set_variable = { which = local_new_generic_artifact_receiving_character_matter_variable value = 1 }
+		while = { count = 4 set_local_variables_for_new_received_generic_artifact_effect = yes }
+	}
+
+	option = {
+		name = EVTOPT_WCARTSPWN_2_A
+
+		spawn_generic_artifact_based_on_option_a_variables_effect = yes
+	}
+	option = {
+		name = EVTOPT_WCARTSPWN_2_B
+
+		spawn_generic_artifact_based_on_option_b_variables_effect = yes
+	}
+	option = {
+		name = EVTOPT_WCARTSPWN_2_C
+
+		spawn_generic_artifact_based_on_option_c_variables_effect = yes
+	}
+#	option = {
+#		name = EVTOPT_WCARTSPWN_2_D
+#
+#		spawn_generic_artifact_based_on_option_d_variables_effect = yes
+#	}
+}
