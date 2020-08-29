@@ -28,7 +28,7 @@ character_event = {
 				value = off
 			}
 			has_game_rule = {
-				name = black_empire_invasion
+				name = old_god_black_empire_invasion
 				value = off
 			}
 		}
@@ -2618,6 +2618,13 @@ narrative_event = {
 
 	immediate = {
 		e_scourge = { holder_scope = { save_event_target_as = target_lich_king } }
+		random_artifact = {
+			limit = {
+				is_artifact_equipped = yes
+				has_artifact_flag = combat_weapon
+			}
+			save_event_target_as = target_champion_previous_weapon
+		}
 	}
 
 	option = {
@@ -2625,7 +2632,53 @@ narrative_event = {
 
 		add_artifact_frostmourne_effect = yes
 
+		if = {
+			limit = {
+				event_target:target_champion_previous_weapon = { always = yes }
+				c_frostfate = { holder_scope = { NOT = { character = ROOT } } }
+			}
+			custom_tooltip = {
+				text = champion_discard_weapon_tooltip
+
+				random_playable_ruler = {
+					limit = {
+						capital_scope = {
+							OR = {
+								region = world_northrend_dragonblight
+								region = world_northrend_grizzly_hills
+								region = world_northrend_crystalsong
+							}
+						}
+					}
+					preferred_limit = { ai = no }
+					preferred_limit = { NOT = { religion = death_god } }
+					preferred_limit = { government = feudal_government }
+					preferred_limit = { has_landed_title = c_frostfate }
+
+					character_event = { id = WCTHW.2047 }
+				}
+			}
+		}
+
 		73 = { province_event = { id = WCTHW.2049 days = 1 } }
+	}
+}
+# Someone gets discarded weapon
+character_event = {
+	id = WCTHW.2047
+	picture = GFX_evt_icecrown
+	desc = EVTDESC_WCTHW_2047
+
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCTHW_2047
+
+		event_target:target_champion_previous_weapon = {
+			show_scope_change = no
+
+			transfer_artifact = { from = owner to = ROOT }
+		}
 	}
 }
 ### The Last Vestiges of the Sanity

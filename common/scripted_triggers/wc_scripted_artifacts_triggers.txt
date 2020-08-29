@@ -1,11 +1,237 @@
+# Can use
+
 shared_physical_weapon_trigger = {
 	is_adult = yes
-	OR = {
-		custom_tooltip = {
-			text = has_no_class_trait_trigger_tooltip
-			has_class_trait_trigger = no
+	trigger_if = {
+		limit = { has_game_rule = { name = shared_physical_weapon_class_requirement value = default } }
+
+		OR = {
+			custom_tooltip = {
+				text = has_no_class_trait_trigger_tooltip
+				has_class_trait_trigger = no
+			}
+			is_physical_class_trigger = yes
+			is_combined_class_trigger = yes
 		}
-		is_physical_class_trigger = yes
-		is_combined_class_trigger = yes
+	}
+}
+
+shared_ranged_weapon_trigger = {
+	is_adult = yes
+
+	trigger_if = {
+		limit = { has_game_rule = { name = shared_ranged_weapon_class_requirement value = default } }
+
+		OR = {
+			custom_tooltip = {
+				text = has_no_class_trait_trigger_tooltip
+				has_class_trait_trigger = no
+			}
+			is_physical_class_trigger = yes
+			is_combined_class_trigger = yes
+			trait = subclass_moon_priest
+		}
+	}
+	trigger_else_if = {
+		limit = { has_game_rule = { name = shared_ranged_weapon_class_requirement value = restricted } }
+
+		OR = {
+			is_hunter_class_trigger = yes
+			trait = subclass_moon_priest
+		}
+	}
+}
+
+shared_magical_weapon_trigger = {
+	is_adult = yes
+	trigger_if = {
+		limit = { has_game_rule = { name = shared_magical_weapon_class_requirement value = default } }
+
+		OR = {
+			is_magic_class_trigger = yes
+			is_combined_class_trigger = yes
+		}
+	}
+	trigger_else_if = {
+		limit = { has_game_rule = { name = shared_magical_weapon_class_requirement value = restricted } }
+
+		is_magic_class_trigger = yes
+	}
+}
+
+crossbow_artifact_active_trigger = {
+	capital_scope = { TECH_SIEGE_EQUIPMENT = 3 }
+}
+
+rifle_artifact_active_trigger = {
+	capital_scope = { TECH_SIEGE_EQUIPMENT = 4 }
+}
+
+# Can get at gamestart
+
+can_get_amulet_at_gamestart_distribution_trigger = {
+	NOT = { any_artifact = { has_artifact_flag = amulet } }
+}
+
+can_get_ring_at_gamestart_distribution_trigger = {
+	NOT = {
+		any_artifact = {
+			has_artifact_flag = ring
+			count = 2
+		}
+	}
+}
+
+can_get_bracelet_at_gamestart_distribution_trigger = {
+	NOT = { any_artifact = { has_artifact_flag = bracelet } }
+}
+
+can_get_weapon_at_gamestart_distribution_trigger = {
+	NOT = { any_artifact = { has_artifact_flag = combat_weapon } }
+}
+
+can_get_melee_weapon_at_gamestart_distribution_trigger = {
+	can_get_weapon_at_gamestart_distribution_trigger = yes
+	is_theocracy = no # Classless priests receive artifacts after game start and instantly gain classes, making artifacts inactive
+	shared_physical_weapon_trigger = yes
+}
+
+can_get_ranged_weapon_at_gamestart_distribution_trigger = {
+	can_get_weapon_at_gamestart_distribution_trigger = yes
+	is_theocracy = no # Classless priests receive artifacts after game start and instantly gain classes, making artifacts inactive
+	shared_ranged_weapon_trigger = yes
+}
+
+can_get_artifacts_at_gamestart_distribution_trigger = {
+	is_landed = yes
+	OR = {
+		can_get_amulet_at_gamestart_distribution_trigger = yes
+		can_get_ring_at_gamestart_distribution_trigger = yes
+		can_get_bracelet_at_gamestart_distribution_trigger = yes
+		can_get_melee_weapon_at_gamestart_distribution_trigger = yes
+		can_get_ranged_weapon_at_gamestart_distribution_trigger = yes
+	}
+}
+
+# Preferences
+
+prefers_melee_weapons_trigger = {
+	OR = {
+		is_warrior_class_trigger = yes
+		is_paladin_class_trigger = yes
+		is_rogue_class_trigger = yes
+		is_death_knight_class_trigger = yes
+	}
+}
+
+prefers_ranged_weapons_trigger = {
+	OR = {
+		is_hunter_class_trigger = yes
+		trait = subclass_moon_priest
+	}
+}
+
+prefers_onehanded_weapons_trigger = {
+	# OR = {
+		is_small_humanoid_trigger = yes
+	# }
+}
+
+prefers_twohanded_weapons_trigger = {
+	# OR = {
+		is_large_humanoid_trigger = yes
+	# }
+}
+
+prefers_swords_trigger = {
+	OR = {
+		culture_group = human_group
+		culture_group = vrykul_group
+		prefers_scimitars_trigger = yes
+	}
+}
+
+prefers_scimitars_trigger = {
+	OR = {
+		marine_culture_trigger = yes
+		
+		culture_group = aqir_group
+		culture_group = arakkoa_group
+		culture_group = centaur_group
+		culture_group = elf_group
+		culture_group = sethrak_group
+		culture_group = troll_group
+		culture_group = vulpera_group
+		# More Pandaria cultures should be there
+	}
+}
+
+prefers_axes_trigger = {
+	OR = {
+		culture_group = orc_group
+		culture_group = troll_group
+		culture_group = vrykul_group
+		culture = centaur
+	}
+}
+
+prefers_maces_trigger = {
+	OR = {
+		culture_group = dwarf_group
+		culture_group = human_group
+		culture = ogre
+	}
+}
+
+prefers_spears_trigger = {
+	OR = {
+		culture_group = troll_group
+		culture = centaur
+		culture = naga
+	}
+}
+
+prefers_halberds_trigger = {
+	OR = {
+		culture = tirassian
+		culture = naga
+	}
+}
+
+prefers_bow_trigger = {
+	OR = {
+		culture_group = troll_group
+		culture_group = elf_group
+		culture = centaur
+	}
+}
+
+prefers_crossbow_trigger = {
+	OR = {
+		culture_group = draenei_group
+		culture_group = human_group
+		culture = forsaken
+	}
+}
+
+prefers_rifle_trigger = {
+	OR = {
+		culture_group = demonic_group
+		AND = {
+			culture_group = dwarf_group
+			NOT = { culture = wildhammer }
+		}
+		culture_group = gnome_group
+		culture_group = goblin_group
+		culture_group = tauren_group
+		culture = gilnean
+		culture = baradin
+		culture = tirassian
+		culture = northern
+		culture = pirate_culture
+		AND = {
+			culture_group = titanforged_group
+			NOT = { culture = tolvir }
+		}
 	}
 }
