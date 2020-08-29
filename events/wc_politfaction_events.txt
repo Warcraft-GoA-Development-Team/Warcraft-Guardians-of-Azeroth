@@ -141,7 +141,9 @@ character_event = {
 	}
 }
 
-### Cleanup ###
+###########################
+### Cleanups
+###########################
 # on_new_holder, on_new_holder_inheritance, on_new_holder_usurpation
 character_event = {
 	id = WCPLF.45
@@ -150,15 +152,24 @@ character_event = {
 	hide_window = yes
 
 	trigger = {
-		FROMFROM = { is_in_political_faction_trigger = yes }
+		FROMFROM = {
+			is_alive = yes
+			is_dying = no
+
+			OR = {
+				is_in_political_faction_trigger = yes
+				has_alliances_with_faction_trigger = yes
+			}
+		}
 	}
 
 	immediate = {
 		log = "WCPLF.45 fired for [Root.GetBestName]"
-		FROMFROM = { character_event = { id = WCPLF.52 } }
+		FROMFROM = {
+			character_event = { id = WCPLF.52 days = 1 }	# Clears faction trait/modifier if something is wrong
+		}
 	}
 }
-
 # on_character_convert_religion
 # Checks faction triggers after religion conversion
 character_event = {
@@ -192,8 +203,18 @@ character_event = {
 
 	trigger = {
 		OR = {
-			ROOT = { is_in_political_faction_trigger = yes }
-			FROM = { is_in_political_faction_trigger = yes }
+			ROOT = {
+				OR = {
+					is_in_political_faction_trigger = yes
+					has_alliances_with_faction_trigger = yes
+				}
+			}
+			FROM = {
+				OR = {
+					is_in_political_faction_trigger = yes
+					has_alliances_with_faction_trigger = yes
+				}
+			}
 		}
 	}
 
@@ -205,7 +226,11 @@ character_event = {
 				limit = {
 					is_alive = yes
 					is_dying = no
-					is_in_political_faction_trigger = yes
+
+					OR = {
+						is_in_political_faction_trigger = yes
+						has_alliances_with_faction_trigger = yes
+					}
 				}
 				character_event = { id = WCPLF.52 days = 1 }	# Clears faction trait/modifier if something is wrong
 			}
@@ -215,7 +240,11 @@ character_event = {
 				limit = {
 					is_alive = yes
 					is_dying = no
-					is_in_political_faction_trigger = yes
+
+					OR = {
+						is_in_political_faction_trigger = yes
+						has_alliances_with_faction_trigger = yes
+					}
 				}
 				character_event = { id = WCPLF.52 days = 1 }	# Clears faction trait/modifier if something is wrong
 			}
@@ -234,7 +263,7 @@ character_event = {
 			# It means that character only need to clear alliances
 			AND = {
 				is_in_political_faction_trigger = no
-				is_ruler = yes
+				has_alliances_with_faction_trigger = yes
 			}
 			AND = {
 				is_member_of_horde_faction_trigger = yes
@@ -271,6 +300,40 @@ character_event = {
 		}
 	}
 }
+#ASK_FOR_VASSALIZATION_INTERACTION_ACCEPT_EVENT
+#Breaks alliances with all factions
+character_event = {
+	id = WCPLF.55
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		log = "WCPLF.55 fired for [Root.GetBestName]"
+		
+		break_alliances_with_horde_faction_effect = yes
+		break_alliances_with_alliance_faction_effect = yes
+	}
+}
+#OFFER_VASSALIZATION_INTERACTION_ACCEPT_EVENT
+#FROM breaks alliances with all factions
+character_event = {
+	id = WCPLF.56
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		log = "WCPLF.56 fired for [Root.GetBestName], [From.GetBestName] is FROM"
+		
+		FROM = {
+			break_alliances_with_horde_faction_effect = yes
+			break_alliances_with_alliance_faction_effect = yes
+		}
+	}
+}
+
+###########################
 
 # New faction leader because prev leader leaves faction
 narrative_event = {

@@ -28,7 +28,7 @@ character_event = {
 				value = off
 			}
 			has_game_rule = {
-				name = black_empire_invasion
+				name = old_god_black_empire_invasion
 				value = off
 			}
 		}
@@ -1436,435 +1436,6 @@ narrative_event = {
 	}
 }
 
-### Magical addiction ###
-#
-# Ways to satisfy the addiction:
-# - Be a worshiper of fel_group or consuming_fel_magic_flag
-# - Be a worshiper of void_group or consuming_void_magic_flag
-# - Mana crystals
-# P.S. If character is consuming_<fel/void>_magic_flag, it's also receiving fel/void corruption
-# (check events WCFEL.95 and WCVOD.95)
-#
-# Satisfy magical addiction of others (if you're a Fel/Void worshiper)
-# character_event = {
-	# id = WCTHW.1045
-	# picture = GFX_evt_vorna_the_wretched
-	# desc = EVTDESC_WCTHW_1045
-	# border = GFX_event_normal_frame_religion
-
-	# is_triggered_only = yes
-
-	# # The Fel will help them!
-	# option = {
-		# trigger = { true_religion_group = fel_group }
-		# name = EVTOPTA_WCTHW_1045
-
-		# if = {
-			# limit = { has_secret_religion = yes }
-			# convert_to_secret_religion = yes
-		# }
-		# drain_fel_source_effect = yes
-	# }
-	# # Look into the Void!
-	# option = {
-		# trigger = { true_religion_group = void_group }
-		# name = EVTOPTB_WCTHW_1045
-
-		# if = {
-			# limit = { has_secret_religion = yes }
-			# convert_to_secret_religion = yes
-		# }
-		# drain_void_source_effect = yes
-	# }
-	# # They're not prepared!
-	# option = {
-		# name = EVTOPTC_WCTHW_1045
-
-		# ai_chance = {
-			# factor = 0
-		# }
-	# }
-# }
-# Magical addiction
-character_event = {
-	id = WCTHW.1050
-	picture = GFX_evt_vorna_the_wretched
-	desc = EVTDESC_WCTHW_1050
-	border = GFX_event_normal_frame_religion
-
-	is_triggered_only = yes
-	
-	only_capable = yes
-	only_playable = yes
-
-	trigger = {
-		is_incapable = no
-		is_playable = yes
-		
-		is_alive = yes
-		is_dying = no
-
-		OR = {
-			is_susceptible_to_fel_corruption_trigger = yes
-			is_susceptible_to_void_corruption_trigger = yes
-		}
-		is_high_elf_trigger = yes
-		NOR = {
-			dark_true_religion_trigger = yes
-			has_character_flag = consuming_fel_magic_flag
-			has_character_flag = consuming_void_magic_flag
-		}
-
-		394 = {
-			wonder = {
-				has_wonder_flag = wonder_deathwell_flag
-			}
-		}
-
-		# Independent elves outside Quel'thalas don't feel magical addiction
-		OR = {
-			location = { region = world_eastern_kingdoms_quelthalas }
-			394 = {
-				wonder = {
-					wonder_owner = {
-						OR = {
-							character = ROOT
-							same_realm = ROOT
-						}
-					}
-				}
-			}
-		}
-	}
-
-	immediate = {
-		set_character_flag = magical_addiction_timer_flag
-		# liege = {
-			# if = {
-				# limit = {
-					# NOT = { has_character_flag = tried_to_satisfy_others_hunger_flag }
-					# OR = {
-						# trait = creature_blood_elf
-						# trait = creature_high_elf
-					# }
-					# OR = {
-						# true_religion_group = fel_group
-						# true_religion_group = void_group
-					# }
-				# }
-				# set_character_flag = tried_to_satisfy_others_hunger_flag
-				# character_event = { id = WCTHW.1045 days = 7 }
-			# }
-		# }
-	}
-
-	# Try to get a mana crystal
-	option = {
-		name = EVTOPTA_WCTHW_1050
-
-		if = { limit = { trait = has_magical_withdrawal } remove_trait = has_magical_withdrawal }
-		if = {
-			limit = { had_character_flag = { flag = magical_addiction_timer_flag days = 7300 } }
-			scaled_wealth = { value = -0.90 max = -500 min = -25 }
-		}
-		else = {
-			if = {
-				limit = { had_character_flag = { flag = magical_addiction_timer_flag days = 3650 } }
-				scaled_wealth = { value = -0.72 max = -500 min = -25 }
-			}
-			else = {
-				if = {
-					limit = { had_character_flag = { flag = magical_addiction_timer_flag days = 1825 } }
-					scaled_wealth = { value = -0.54 max = -500 min = -25 }
-				}
-				else = {
-					if = {
-						limit = { had_character_flag = { flag = magical_addiction_timer_flag days = 730 } }
-						scaled_wealth = { value = -0.36 max = -500 min = -25 }
-					}
-					else = {
-						scaled_wealth = { value = -0.18 max = -500 min = -25 }
-					}
-				}
-			}
-		}
-
-		ai_chance = {
-			factor = 40
-			modifier = {
-				factor = 0.01
-
-				is_playable = yes
-				NOT = { wealth = 0 }
-			}
-		}
-	}
-	# Find another way
-	option = {
-		trigger = {
-			is_adult = yes
-			is_playable = yes
-
-			NOT = { has_character_flag = tried_to_find_way_to_satisfy_hunger_flag }
-
-			learning = 10
-		}
-		name = EVTOPTB_WCTHW_1050
-
-		set_character_flag = tried_to_find_way_to_satisfy_hunger_flag
-
-		character_event = { id = WCTHW.1055 days = 30 random = 30 }
-
-		ai_chance = {
-			factor = 9
-			modifier = {
-				factor = 2
-				independent = yes
-			}
-			modifier = {
-				factor = 1.5
-				trait = diligent
-			}
-			modifier = {
-				factor = 1.5
-				trait = ambitious
-			}
-			modifier = {
-				factor = 1.5
-				trait = stubborn
-			}
-			modifier = {
-				factor = 0
-				NOT = { trait = cynical }
-			}
-		}
-	}
-	# If your liege are consuming Fel/Void magic
-	option = {
-		trigger = {
-			OR = {
-				ai = no
-				NOT = { has_character_flag = ai_refused_dark_magic_flag }
-			}
-			liege = {
-				OR = {
-					religion_group = fel_group
-					religion_group = void_group
-					has_character_flag = consuming_fel_magic_flag
-					has_character_flag = consuming_void_magic_flag
-				}
-			}
-		}
-		name = EVTOPTC_WCTHW_1050
-
-		if = {
-			limit = {
-				liege = {
-					OR = {
-						religion_group = fel_group
-						has_character_flag = consuming_fel_magic_flag
-					}
-				}
-			}
-			drain_fel_source_effect = yes
-		}
-		else_if = {
-			limit = {
-				liege = {
-					OR = {
-						religion_group = void_group
-						has_character_flag = consuming_void_magic_flag
-					}
-				}
-			}
-			drain_void_source_effect = yes
-		}
-
-		ai_chance = {
-			factor = 50
-		}
-	}
-	# I can't...
-	option = {
-		name = EVTOPTD_WCTHW_1050
-
-		if = { limit = { NOT = { trait = has_magical_withdrawal } } add_trait = has_magical_withdrawal }
-
-		ai_chance = {
-			factor = 1
-		}
-	}
-}
-# Another ways
-character_event = {
-	id = WCTHW.1055
-	picture = GFX_evt_vorna_the_wretched
-	desc = EVTDESC_WCTHW_1055
-	border = GFX_event_normal_frame_religion
-
-	is_triggered_only = yes
-
-	trigger = {
-		NOR = {
-			true_religion_group = fel_group
-			true_religion_group = void_group
-			has_character_flag = consuming_fel_magic_flag
-			has_character_flag = consuming_void_magic_flag
-		}
-	}
-
-	# Use Fel magic
-	option = {
-		name = EVTOPTA_WCTHW_1055
-
-		set_character_flag = chose_fel_magic_flag
-		long_character_event = { id = WCTHW.1060 days = 15 random = 15 }
-
-		ai_chance = {
-			factor = 75
-		}
-	}
-	# Use Void magic
-	option = {
-		name = EVTOPTB_WCTHW_1055
-
-		set_character_flag = chose_void_magic_flag
-		long_character_event = { id = WCTHW.1060 days = 15 random = 15 }
-
-		ai_chance = {
-			factor = 25
-		}
-	}
-	# Refuse this idea
-	option = {
-		name = EVTOPTC_WCTHW_1055
-
-		ai_chance = {
-			factor = 0
-		}
-	}
-}
-long_character_event = {
-	id = WCTHW.1060
-	desc = {
-		trigger = { has_character_flag = chose_fel_magic_flag }
-		text = EVTDESC_WCTHW_1060_fel
-		picture = GFX_evt_fel_storm
-	}
-	desc = {
-		trigger = { has_character_flag = chose_void_magic_flag }
-		text = EVTDESC_WCTHW_1060_void
-		picture = GFX_evt_voidwalker
-	}
-	border = GFX_event_long_frame_religion
-
-	is_triggered_only = yes
-
-	trigger = {
-		NOR = {
-			true_religion_group = fel_group
-			true_religion_group = void_group
-			has_character_flag = consuming_fel_magic_flag
-			has_character_flag = consuming_void_magic_flag
-		}
-	}
-
-	# This is a necessary measure!
-	option = {
-		name = EVTOPTA_WCTHW_1060
-
-		if = {
-			limit = { has_character_flag = chose_fel_magic_flag }
-			drain_fel_source_effect = yes
-		}
-		else_if = {
-			limit = { has_character_flag = chose_void_magic_flag }
-			drain_void_source_effect = yes
-		}
-	}
-	# We will never sink so low!
-	option = {
-		name = EVTOPTB_WCTHW_1060
-
-		ai_chance = {
-			factor = 0
-		}
-	}
-	
-	after = {
-		clr_character_flag = chose_fel_magic_flag
-		clr_character_flag = chose_void_magic_flag
-	}
-}
-# FROM has found way to satisfy hunger
-letter_event = {
-	id = WCTHW.1065
-	desc = EVTDESC_WCTHW_1065
-	border = GFX_event_letter_frame_religion
-
-	is_triggered_only = yes
-
-	# This is a necessary measure!
-	option = {
-		name = EVTOPTA_WCTHW_1060
-
-		if = {
-			limit = {
-				liege = {
-					OR = {
-						religion_group = fel_group
-						has_character_flag = consuming_fel_magic_flag
-					}
-				}
-			}
-			drain_fel_source_effect = yes
-		}
-		else_if = {
-			limit = {
-				liege = {
-					OR = {
-						religion_group = void_group
-						has_character_flag = consuming_void_magic_flag
-					}
-				}
-			}
-			drain_void_source_effect = yes
-		}
-
-		ai_chance = {
-			factor = 50
-			
-			evil_ai_chance_score = yes
-			evil_ai_chance_religion_score = yes
-		}
-	}
-	# We will never sink so low!
-	option = {
-		name = EVTOPTB_WCTHW_1060
-
-		set_character_flag = ai_refused_dark_magic_flag
-		
-		reverse_opinion = { modifier = opinion_very_disappointed who = FROM years = 5 }
-		FROM = { letter_event = { id = WCTHW.1066 days = 1 random = 29 } }
-
-		ai_chance = {
-			factor = 50
-		}
-	}
-}
-# FROM has refused to use Fel/Void magic
-letter_event = {
-	id = WCTHW.1066
-	desc = EVTDESC_WCTHW_1066
-	border = GFX_event_letter_frame_religion
-
-	is_triggered_only = yes
-
-	option = {
-		name = ALAS
-	}
-}
-
 # Start event
 narrative_event = {
 	id = WCTHW.1100
@@ -2214,7 +1785,7 @@ narrative_event = {
 		set_global_flag = sunwell_naaru_spark_flag
 	}
 	option = {
-		name = EVTOPTA_WCTHW_1121
+		name = EVTOPTB_WCTHW_1121
 
 		ai_chance = {
 			factor = 0
@@ -2495,7 +2066,7 @@ province_event = {
 							religion_group = light_group
 							culture_group = human_group
 							
-							NOT = { has_province_modifier = undead_province }
+							province_can_get_disease_trigger = yes
 							region = world_eastern_kingdoms_lordaeron
 							holder_scope = { NOT = { character = PREVPREV } }
 						}
@@ -2534,7 +2105,7 @@ narrative_event = {
 					religion_group = light_group
 					culture_group = human_group
 					
-					NOT = { has_province_modifier = undead_province }
+					province_can_get_disease_trigger = yes
 					region = world_eastern_kingdoms_lordaeron
 					holder_scope = { NOT = { character = PREVPREV } }
 				}
@@ -3047,6 +2618,13 @@ narrative_event = {
 
 	immediate = {
 		e_scourge = { holder_scope = { save_event_target_as = target_lich_king } }
+		random_artifact = {
+			limit = {
+				is_artifact_equipped = yes
+				has_artifact_flag = combat_weapon
+			}
+			save_event_target_as = target_champion_previous_weapon
+		}
 	}
 
 	option = {
@@ -3054,7 +2632,53 @@ narrative_event = {
 
 		add_artifact_frostmourne_effect = yes
 
+		if = {
+			limit = {
+				event_target:target_champion_previous_weapon = { always = yes }
+				c_frostfate = { holder_scope = { NOT = { character = ROOT } } }
+			}
+			custom_tooltip = {
+				text = champion_discard_weapon_tooltip
+
+				random_playable_ruler = {
+					limit = {
+						capital_scope = {
+							OR = {
+								region = world_northrend_dragonblight
+								region = world_northrend_grizzly_hills
+								region = world_northrend_crystalsong
+							}
+						}
+					}
+					preferred_limit = { ai = no }
+					preferred_limit = { NOT = { religion = death_god } }
+					preferred_limit = { government = feudal_government }
+					preferred_limit = { has_landed_title = c_frostfate }
+
+					character_event = { id = WCTHW.2047 }
+				}
+			}
+		}
+
 		73 = { province_event = { id = WCTHW.2049 days = 1 } }
+	}
+}
+# Someone gets discarded weapon
+character_event = {
+	id = WCTHW.2047
+	picture = GFX_evt_icecrown
+	desc = EVTDESC_WCTHW_2047
+
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCTHW_2047
+
+		event_target:target_champion_previous_weapon = {
+			show_scope_change = no
+
+			transfer_artifact = { from = owner to = ROOT }
+		}
 	}
 }
 ### The Last Vestiges of the Sanity
