@@ -821,7 +821,10 @@ province_event = {
 			limit = {
 				d_twilights_hammer = {
 					has_holder = yes
-					holder_scope = { old_gods_chosen_event_trigger = yes }
+					holder_scope = {
+						old_gods_chosen_event_trigger = yes
+						location = { region = world_eastern_kingdoms }
+					}
 				}
 			}
 			d_twilights_hammer = { holder_scope = { narrative_event = { id = WCDAC.5030 } } }
@@ -833,6 +836,7 @@ province_event = {
 					is_inaccessible_trigger = no
 
 					old_gods_chosen_event_trigger = yes
+					location = { region = world_eastern_kingdoms }
 				}
 			}
 			random_player = {
@@ -841,6 +845,7 @@ province_event = {
 					is_inaccessible_trigger = no
 
 					old_gods_chosen_event_trigger = yes
+					location = { region = world_eastern_kingdoms }
 				}
 				narrative_event = { id = WCDAC.5030 }
 			}
@@ -994,6 +999,8 @@ province_event = {
 				trait = ambitious
 			}
 			new_character = {
+				set_character_flag = important_old_god_task_flag
+
 				ai_add_shadow_priest_class_effect = yes
 				#Makes him follow old god that's on the continent he's travelling to
 				if = {
@@ -1102,7 +1109,6 @@ narrative_event = {
 			add_trait = zealous
 		}
 
-		add_artifact = hammer_of_the_twilight
 		set_global_flag = twilights_hammer_cult_active_flag
 		join_society_twilights_hammer_cult_effect = yes
 		hidden_effect = {
@@ -1362,6 +1368,8 @@ province_event = {
 				trait = ambitious
 			}
 			new_character = {
+				set_character_flag = important_old_god_task_flag
+				
 				ai_add_shadow_priest_class_effect = yes
 				#Makes him follow old god that's on the continent he's travelling to
 				if = {
@@ -1411,58 +1419,56 @@ narrative_event = {
 			c_hivezora = {
 				# event_target:target_settler and its people settle here
 				settle_as_target_settler_effect = yes
+				location = { culture = qiraji }
 			}
-
 			# If you're not independent ruler, gives old titles to liege
 			give_old_titles_to_heir_effect = yes
-
 			c_hiveashi = {
 				# event_target:target_settler and its people settle here
 				settle_as_target_settler_effect = yes
+				location = { culture = qiraji }
 			}
 			c_crystalvale = {
 				settle_as_target_settler_effect = yes
+				location = { culture = qiraji }
 			}
 			c_ishrak = {
 				settle_as_target_settler_effect = yes
+				location = { culture = qiraji }
 			}
 			c_ashakx = {
 				settle_as_target_settler_effect = yes
+				location = { culture = qiraji }
 			}
 			c_hiveregal = {
 				settle_as_target_settler_effect = yes
+				location = { culture = qiraji }
 			}
 			c_scarab_wall = {
 				settle_as_target_settler_effect = yes
+				location = { culture = qiraji }
 			}
 			c_hivezora = {
 				# Declares war against player
 				target_settler_declare_war_effect = yes
 			}
-
-			c_hivezora = { location = { culture = qiraji } }
-			c_hiveashi = { location = { culture = qiraji } }
-			c_crystalvale = { location = { culture = qiraji } }
-			c_ishrak = { location = { culture = qiraji } }
-			c_ashakx = { location = { culture = qiraji } }
-			c_hiveregal = { location = { culture = qiraji } }
-			c_scarab_wall = { location = { culture = qiraji } }
 		}
 		else = {
 			c_bouldercrag = {
 				# event_target:target_settler and its people settle here
 				settle_as_target_settler_effect = yes
+				location = { culture = titanforged }
 			}
-
 			# If you're not independent ruler, gives old titles to liege
 			give_old_titles_to_heir_effect = yes
-
 			c_snowdrift = {
 				# event_target:target_settler and its people settle here
 				settle_as_target_settler_effect = yes
+				location = { culture = titanforged }
 			}
 			c_nidavelir = {
 				settle_as_target_settler_effect = yes
+				location = { culture = titanforged }
 			}
 			c_bouldercrag = {
 				# Declares war against player
@@ -1476,6 +1482,209 @@ narrative_event = {
 	# I'll spread its will across Kalimdor!
 	option = {
 		name = EVTOPTA_WCDAC_5046
+		
+		if = {
+			limit = {
+				NOT = {
+					has_game_rule = {
+						name = old_god_black_empire_invasion
+						value = off
+					}
+				}
+			}
+			save_event_target_as = target_chosen
+			
+			73 = { province_event = { id = WCDAC.5077 } }
+		}
+	}
+}
+### Comes close enough to awaken an Old God
+#Delayer event
+province_event = {
+	id = WCDAC.5077
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
+		if = {
+			limit = { event_target:target_chosen = { old_gods_chosen_event_trigger = yes } }
+			event_target:target_chosen = { narrative_event = { id = WCDAC.5047 } }
+		}
+		else = {
+			event_target:target_chosen = {
+				remove_traveling_immunity_effect = yes
+				clr_character_flag = important_old_god_task_flag
+			}
+			create_character = {
+				dynasty = none
+				religion = old_gods_worship
+				culture = azerothian
+				female = no
+				age = 45
+				random_traits = yes
+				trait = creature_human
+				trait = elusive_shadow
+				trait = cruel
+				trait = zealous
+				trait = ambitious
+			}
+			new_character = {
+				set_character_flag = important_old_god_task_flag
+				
+				ai_add_shadow_priest_class_effect = yes
+				#Makes him follow old god that's on the continent he's travelling to
+				if = {
+					limit = { has_global_flag = twilights_hammer_kalimdor }
+					add_character_modifier = { name = follower_of_cthun duration = -1 }
+				}
+				else = {
+					add_character_modifier = { name = follower_of_yogg_saron duration = -1 }
+				}
+				character_event = { id = WCDAC.5047 }
+			}
+		}
+	}
+}
+#Delayed event
+narrative_event = {
+	id = WCDAC.5047
+	title = EVTTITLE_WCDAC_5030
+	desc = {
+		trigger = {
+			has_global_flag = twilights_hammer_kalimdor
+		}
+		text = EVTDESC_WCDAC_5047_kalimdor
+		picture = GFX_evt_cthun
+	}
+	desc = {
+		trigger = {
+			NOT = { has_global_flag = twilights_hammer_kalimdor }
+		}
+		text = EVTDESC_WCDAC_5047_northrend
+		picture = GFX_evt_yogg_saron
+	}
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+	
+	immediate = {
+		# Used in scripted effects
+		save_event_target_as = target_settler
+		
+		if = {
+			limit = { NOT = { has_global_flag = twilights_hammer_kalimdor } }
+			if = {
+				limit = {
+					ai = no
+					c_ulduar = {
+						holder_scope = {
+							ai = yes
+							NOT = { any_liege = { ai = no } }
+						}
+					}
+				}
+				c_ulduar = {
+					# event_target:target_settler and its people settle here
+					settle_as_target_settler_effect = yes
+					location = { culture = titanforged }
+				}
+				# If you're not independent ruler, gives old titles to liege
+				give_old_titles_to_heir_effect = yes
+				d_ulduar = {
+					any_direct_de_jure_vassal_title = {
+						# event_target:target_settler and its people settle here
+						settle_as_target_settler_effect = yes
+						location = { culture = titanforged }
+					}
+				}
+				c_ulduar = {
+					# Declares war against player
+					target_settler_declare_war_effect = yes
+				}
+			}
+			else_if = {
+				limit = {
+					c_ulduar = {
+						holder_scope = {
+							top_liege = { religion = old_gods_worship }
+						}
+					}
+				}
+				c_ulduar = {
+					holder_scope = {
+						top_liege = {
+							set_defacto_vassal = ROOT
+						}
+					}
+				}
+			}
+		}
+		else = {
+			if = {
+				limit = {
+					ai = no
+					c_ahnqiraj = {
+						holder_scope = {
+							ai = yes
+							NOT = { any_liege = { ai = no } }
+						}
+					}
+				}
+				c_ahnqiraj = {
+					# event_target:target_settler and its people settle here
+					settle_as_target_settler_effect = yes
+					location = { culture = qiraji }
+				}
+				# If you're not independent ruler, gives old titles to liege
+				give_old_titles_to_heir_effect = yes
+				d_ahnqiraj = {
+					any_direct_de_jure_vassal_title = {
+						# event_target:target_settler and its people settle here
+						settle_as_target_settler_effect = yes
+						location = { culture = qiraji }
+					}
+				}
+				c_ahnqiraj = {
+					# Declares war against player
+					target_settler_declare_war_effect = yes
+				}
+			}
+			else_if = {
+				limit = {
+					c_ahnqiraj = {
+						holder_scope = {
+							top_liege = { religion = old_gods_worship }
+						}
+					}
+				}
+				c_ahnqiraj = {
+					holder_scope = {
+						top_liege = {
+							set_defacto_vassal = ROOT
+						}
+					}
+				}
+			}
+		}
+		
+		clear_settler_flag_effect = yes
+	}
+	
+	option = {
+		name = EVTOPTA_WCDAC_5047
+
+		any_courtier = {
+			limit = {
+				religion = old_gods_worship
+				culture = twilights_hammer
+				
+				is_unimportant_trigger = yes
+			}
+			death = { death_reason = death_sacrificed }
+		}
+		
+		character_event = { id = WCOME.300 }
 		
 		if = {
 			limit = { has_global_flag = twilights_hammer_kalimdor }
