@@ -55,21 +55,13 @@ character_event = {
 			character_event = { id = WCRAC.10 }		# Adds race trait just for sure
 			FROM = {
 				save_event_target_as = target_spouse
+				
 				character_event = { id = WCRAC.10 }		# Adds race trait just for sure
 				if = {
 					limit = { can_has_sexual_relation_with_prev = no }
 					character_event = { id = WCCLN.101 days = 1 }
 				}
 			}
-		}
-
-		# Notifications for ROOTs
-		if = {
-			limit = {
-				FROM = { NOT = { character = ROOT } }
-				new_character = { NOT = { character = ROOT } }
-			}
-			ROOT = { character_event = { id = WCCLN.113 days = 1 } }
 		}
 	}
 }
@@ -108,7 +100,18 @@ character_event = {
 			any_close_relative = { opinion = { modifier = opinion_divorced_relative who = event_target:target_other_spouse } }
 		}
 		
-		character_event = { id = WCCLN.102 }
+		# Sends characters back
+		if = {
+			limit = { is_ruler = no }
+			move_character = FROM
+		}
+		
+		# Send notification
+		character_event = { id = WCCLN.113 days = 1 }					# Must be delayed to make sure character is moved
+		if = {
+			limit = { NOT = { character = FROM } }
+			FROM = { character_event = { id = WCCLN.113 days = 1 } }	# Must be delayed to make sure character is moved
+		}
 
 		if = {
 			limit = {
@@ -120,88 +123,6 @@ character_event = {
 		}
 		# Set cannot_marry flag or find right spouse
 		set_cannot_marry_or_find_spouse_effect = yes
-	}
-}
-# Choses "messanger" or type of notification
-character_event = {
-	id = WCCLN.102
-
-	is_triggered_only = yes
-	hide_window = yes
-
-	immediate = {
-		if = {
-			limit = { can_marry_trigger = no }
-			character_event = { id = WCCLN.112 }
-		}
-		else = { character_event = { id = WCCLN.111 } }
-		# if = {
-			# limit = {
-				# rightful_religious_head_scope = {
-					# is_alive = yes
-					# NOR = {
-						# religion_group = fel_group
-						# religion_group = necromancy_group
-						# religion_group = void_group
-					# }
-				# }
-			# }
-			# rightful_religious_head_scope = { character_event = { id = WCCLN.103 } }
-			# break = yes
-		# }
-	}
-}
-# character_event = {
-	# id = WCCLN.103
-
-	# is_triggered_only = yes
-	# hide_window = yes
-
-	# immediate = { FROM = { letter_event = { id = WCCLN.110 } } }
-# }
-# # Notification about divorce of interracial marriage
-# letter_event = {
-	# id = WCCLN.110
-	# desc = EVTDESC_WCCLN_110
-	# border = GFX_event_letter_frame_religion
-
-	# is_triggered_only = yes
-
-	# trigger = { ai = no }
-
-	# option = {
-		# name = I_SEE
-	# }
-# }
-
-# Notification about divorce of interracial marriage
-character_event = {
-	id = WCCLN.111
-	desc = EVTDESC_WCCLN_111
-	picture = GFX_evt_gift
-	border = GFX_event_normal_frame_religion
-
-	is_triggered_only = yes
-
-	trigger = { ai = no }
-
-	option = {
-		name = I_SEE
-	}
-}
-# Notification about divorce if you can't marry
-character_event = {
-	id = WCCLN.112
-	desc = EVTDESC_WCCLN_112
-	picture = GFX_evt_gift
-	border = GFX_event_normal_frame_religion
-
-	is_triggered_only = yes
-
-	trigger = { ai = no }
-
-	option = {
-		name = I_SEE
 	}
 }
 # Notification about divorce for ROOTs from WCCLN.100 event
