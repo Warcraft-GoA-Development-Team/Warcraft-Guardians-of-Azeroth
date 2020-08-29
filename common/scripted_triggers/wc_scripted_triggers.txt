@@ -1,9 +1,14 @@
 ### IMPORTANT, WIDELY USED TRIGGERS ###
 # YOU CAN NOT INTERACT WITH THEM
 is_untouchable_trigger = {
+	# Since Ulduar can't be opened outside, it was sad you couldn't conquer it
 	always = no
-	# hidden_tooltip = {
-		# trait = sleeping_trait
+	# trigger_if = {
+		# limit = { top_liege = { primary_title = { title = d_ulduar } } }
+		# custom_tooltip = { text = ulduar_is_opened_tooltip NOT = { has_global_flag = ulduar_opened_flag } }
+	# }
+	# trigger_else = {
+		# always = no
 	# }
 }
 
@@ -74,6 +79,7 @@ can_rule_peacefully_trigger = {
 					is_theocracy = no
 					holy_order = no
 					mercenary = no
+					NOT = { government = hive_government }
 				}
 				evil_government_trigger = no
 			}
@@ -96,7 +102,18 @@ can_declare_wars_trigger = {
 		is_untouchable_trigger = yes
 		AND = {
 			trait = creature_qiraji
-			NOT = { has_global_flag = reawakening_of_cthun_flag }
+			offmap_cthun = {
+				OR = {
+					has_status = old_god_imprisoned
+					has_status = old_god_partly_imprisoned
+				}
+			}
+			NOT = {
+				has_game_rule = {
+					name = old_god_black_empire_invasion
+					value = off
+				}
+			}
 		}
 	}
 }
@@ -127,14 +144,9 @@ is_susceptible_to_worgen_curse_province_trigger = {
 	num_of_settlements = 1
 	OR = {
 		culture_group = human_group
-		culture_group = night_elf_group
+		culture = night_elf
 	}
-	NOR = {
-		has_province_modifier = undead_province
-		religion_group = fel_group
-		religion_group = void_group
-		religion = wolf_cult_religion
-	}
+	province_can_get_disease_trigger = yes
 }
 # CAN'T CHANGE RELIGION IF IT'S NOT TRUE
 can_switch_religion_character_trigger = {
@@ -291,8 +303,8 @@ can_switch_culture_character_trigger = {
 			OR = {
 				culture_group = aqir_group
 				culture_group = demonic_group
-				culture_group = naga_group
-				culture_group = satyr_group
+				culture = naga
+				culture = satyr
 				culture_group = shathyar_group
 				culture_group = undead_group
 			}
@@ -305,6 +317,7 @@ can_switch_culture_character_trigger = {
 }
 # CAN'T CHANGE CULTURE TO PREV CULTURE IF IT'S NOT TRUE
 can_switch_culture_to_prev_character_trigger = {
+	can_switch_culture_character_trigger = yes
 	trigger_if = {
 		limit = { PREV = { culture_group = aqir_group } }
 		is_aqir_trigger = yes
@@ -314,7 +327,7 @@ can_switch_culture_to_prev_character_trigger = {
 			PREV = {
 				OR = {
 					culture_group = demonic_group
-					culture_group = satyr_group
+					culture = satyr
 				}
 			}
 		}
@@ -327,7 +340,7 @@ can_switch_culture_to_prev_character_trigger = {
 		limit = {
 			PREV = {
 				OR = {
-					culture_group = naga_group
+					culture = naga
 					culture_group = shathyar_group
 				}
 			}
@@ -353,8 +366,8 @@ can_switch_culture_province_trigger = {
 			OR = {
 				culture_group = aqir_group
 				culture_group = demonic_group
-				culture_group = naga_group
-				culture_group = satyr_group
+				culture = naga
+				culture = satyr
 				culture_group = shathyar_group
 				culture_group = undead_group
 			}
@@ -387,7 +400,7 @@ title_can_be_lost_trigger = {
 		limit = { tier = BARON }
 		NOT = { holding_type = family_palace }
 	}
-	invader_title_trigger = no
+	# invader_title_trigger = no # Allowed claiming via factions
 	dragonflight_title_trigger = no
 }
 # TITLES ARE IN DANGER, SO MANY ACTIONS CAN'T BE USED AGAINST THIS CHARACTER
@@ -396,7 +409,7 @@ character_can_lose_title_trigger = {
 
 	NOT = { is_offmap_governor = yes }
 	
-	has_invader_title_trigger = no
+	# has_invader_title_trigger = no # Allowed claiming via factions
 	has_dragonflight_title_trigger = no
 }
 character_can_be_vassalized_trigger = {
@@ -491,7 +504,6 @@ is_completely_infertile_race_and_being_trigger = {
 		trait = creature_harpy
 
 		is_nraqi_trigger = yes
-		trait = creature_qiraji
 
 		is_plant_race_trigger = yes
 	}
@@ -663,10 +675,7 @@ can_be_sacrificed_trigger = {
 		trait = creature_lich
 	}
 	is_nraqi_trigger = no
-	OR = {
-		is_dragon_race_trigger = yes
-		is_humanoid_trigger = yes
-	}
+	is_elemental_trigger = no
 	has_invader_title_trigger = no
 }
 # CAN'T HAVE COURT PHYSICIAN IF IT'S NOT TRUE
@@ -724,8 +733,50 @@ can_be_adventurer_trigger = {
 # CAN'T GO HUNTING IF IT'S NOT TRUE
 can_go_hunting_trigger = {
 	evil_public_religion_trigger = no
-	NOT = { religion_group = druidism_group }
+	NOT = { religion = kaldorei_religion }
 	is_plant_race_trigger = no
+}
+# CAN'T SWAY SOMEONE IF IT'S NOT TRUE
+can_sway_trigger = {
+	is_untouchable_trigger = no
+	
+	evil_public_religion_trigger = no
+	has_invader_title_trigger = no
+}
+# CAN'T BE SWAYED IF IT'S NOT TRUE
+can_be_swayed_trigger = {
+	is_untouchable_trigger = no
+	
+	evil_public_religion_trigger = no
+	has_invader_title_trigger = no
+}
+# CAN'T ANTAGONIZE IF IT'S NOT TRUE
+can_antagonize_trigger = {
+	is_untouchable_trigger = no
+	
+	evil_public_religion_trigger = no
+	has_invader_title_trigger = no
+}
+# CAN'T BE ANTAGONIZED IF IT'S NOT TRUE
+can_be_antagonized_trigger = {
+	is_untouchable_trigger = no
+	
+	evil_public_religion_trigger = no
+	has_invader_title_trigger = no
+}
+# CAN'T BE ABDUCATED IF IT'S NOT TRUE
+can_be_abducted_trigger = {
+	is_untouchable_trigger = no
+	is_humanoid_trigger = yes
+	is_ethereal_trigger = no
+	has_invader_title_trigger = no
+}
+province_can_get_disease_trigger = {
+	NOT = {
+		has_province_modifier = undead_province
+		demon_being_province_trigger = yes
+		void_being_province_trigger = yes
+	}
 }
 ### IMPORTANT, WIDELY USED TRIGGERS ###
 
@@ -779,6 +830,7 @@ is_aggressive_trigger = {
 					has_global_flag = orcish_invasion_flag
 				}
 				culture = pirate_culture
+				culture = wastewander
 			}
 		}
 	}
@@ -792,6 +844,7 @@ is_aggressive_religion_trigger = {
 		religion = scarlet_light
 		religion = lightbound
 		religion = cult_of_hakkar
+		religion = throsic
 		religion_group = primitive_group
 		religion_group = vrykul_religion_group
 	}
@@ -843,7 +896,6 @@ dark_public_religion_trigger = {
 		religion_group = necromancy_group
 		religion_group = void_group
 		# religion = forsaken_cult
-		religion = cult_of_loken
 		religion = cult_of_hakkar
 		religion = helya
 	}
@@ -854,7 +906,6 @@ dark_true_religion_trigger = {
 		true_religion_group = necromancy_group
 		true_religion_group = void_group
 		true_religion = forsaken_cult
-		true_religion = cult_of_loken
 		true_religion = cult_of_hakkar
 		true_religion = helya
 	}
@@ -892,7 +943,6 @@ can_be_feudal_trigger = {
 			religion_group = arakkoa_religion_group
 			religion_group = arcane_group
 			religion_group = dragon_religion_group
-			religion = druidism_beliefs
 			religion = kaldorei_religion
 			religion_group = elemental_lords_group
 			religion = illidari
@@ -906,6 +956,7 @@ can_be_feudal_trigger = {
 
 			culture_group = aqir_group
 			culture_group = dryad_group
+			culture_group = elf_group
 			culture_group = vulpera_group
 			culture_group = sethrak_group
 			culture_group = demonic_group
@@ -915,10 +966,7 @@ can_be_feudal_trigger = {
 			culture_group = elemental_group
 			culture_group = gnome_group
 			culture_group = goblin_group
-			culture_group = high_elf_group
 			culture_group = human_group
-			culture_group = naga_group
-			culture_group = night_elf_group
 			culture_group = titanforged_group
 			culture_group = undead_group
 		}
@@ -985,6 +1033,7 @@ is_medium_humanoid_trigger = {
 			trait = creature_frostnymph
 			trait = creature_highborne
 			trait = creature_sethrak
+			trait = creature_wickerman # sort of?
 		}
 	}
 }
@@ -1010,6 +1059,8 @@ is_large_humanoid_trigger = {
 			trait = creature_cthraxxi
 			trait = creature_tauren
 			trait = creature_qiraji
+			trait = creature_wicker_behemoth # sort of?
+			trait = creature_wicker_golem # sort of?
 		}
 	}
 }
@@ -1078,14 +1129,7 @@ potential_race_ogre_trigger = {
 	NOT = { trait = creature_ogre }
 }
 potential_race_troll_trigger = {
-	OR = {
-		graphical_culture = jungletrollgfx
-		graphical_culture = icetrollgfx
-		graphical_culture = foresttrollgfx
-		graphical_culture = zandalarigfx
-		graphical_culture = trolldarkgfx
-		graphical_culture = trollsandgfx
-	}
+	has_troll_gfx_trigger = yes
 	NOT = { trait = creature_troll }
 }
 potential_race_murloc_trigger = {
@@ -1114,7 +1158,7 @@ potential_race_gnome_trigger = {
 	NOT = { trait = creature_gnome }
 }
 potential_race_high_elf_trigger = {
-	graphical_culture = highelfgfx
+	has_highelf_gfx_trigger = yes
 	NOT = { culture = blood_elf }
 	NOR = {
 		trait = creature_high_elf
@@ -1122,7 +1166,7 @@ potential_race_high_elf_trigger = {
 	}
 }
 potential_race_blood_elf_trigger = {
-	graphical_culture = highelfgfx
+	has_highelf_gfx_trigger = yes
 	culture = blood_elf
 	NOR = {
 		trait = creature_high_elf
@@ -1383,7 +1427,7 @@ potential_race_cthraxxi_trigger = {
 	NOT = { trait = creature_cthraxxi }
 }
 potential_race_night_elf_trigger = {
-	graphical_culture = nightelfgfx
+	has_nightelf_gfx_trigger = yes
 	NOT = { trait = creature_night_elf }
 }
 potential_race_tauren_trigger = {
@@ -1418,7 +1462,7 @@ potential_race_frostnymph_trigger = {
 	NOT = { trait = creature_frostnymph }
 }
 potential_race_highborne_trigger = {
-	graphical_culture = highbornegfx
+	has_highborne_gfx_trigger = yes
 	NOT = { trait = creature_highborne }
 }
 potential_race_infinite_dragon_trigger = {
@@ -1453,6 +1497,18 @@ potential_race_ancient_lore_trigger = {
 potential_race_ancient_wind_trigger = {
 	graphical_culture = ancientwindgfx
 	NOT = { trait = creature_ancient_wind }
+}
+potential_race_wickerman_trigger = {
+	graphical_culture = wickermangfx
+	NOT = { trait = creature_wickerman }
+}
+potential_race_wicker_behemoth_trigger = {
+	graphical_culture = wickerbehemothgfx
+	NOT = { trait = creature_wicker_behemoth }
+}
+potential_race_wicker_golem_trigger = {
+	graphical_culture = wickergolemgfx
+	NOT = { trait = creature_wicker_golem }
 }
 potential_race_trigger = {
 	# Add new races always at the end
@@ -1607,7 +1663,10 @@ has_race_trait_trigger = {
 		trait = creature_plague_eruptor
 		trait = creature_abomination
 		trait = creature_lich
-
+		trait = creature_wickerman
+		trait = creature_wicker_behemoth
+		trait = creature_wicker_golem
+		
 		# Demons
 		trait = creature_annihilan
 		trait = creature_nathrezim
@@ -1726,6 +1785,9 @@ has_prev_race_trigger = {
 	trigger_else_if = { limit = { trait = creature_plague_eruptor 		} PREV = { trait = creature_plague_eruptor 		} }
 	trigger_else_if = { limit = { trait = creature_abomination 			} PREV = { trait = creature_abomination 			} }
 	trigger_else_if = { limit = { trait = creature_lich 				} PREV = { trait = creature_lich 					} }
+	trigger_else_if = { limit = { trait = creature_wickerman 			} PREV = { trait = creature_wickerman 			} }
+	trigger_else_if = { limit = { trait = creature_wicker_behemoth 			} PREV = { trait = creature_wicker_behemoth 			} }
+	trigger_else_if = { limit = { trait = creature_wicker_golem 			} PREV = { trait = creature_wicker_golem 			} }
 	
 	# Demons
 	trigger_else_if = { limit = { trait = creature_annihilan 			} PREV = { trait = creature_annihilan 				} }
@@ -1945,7 +2007,7 @@ is_landless_type_title_trigger = {
 		title = e_black_empire
 		title = e_burning_legion
 		title = e_scourge
-		title = e_twilight
+		# title = e_twilight
 		title = k_bilgewater_cartel
 		title = k_dampwick_cartel
 		title = k_greasyshatter_cartel
@@ -2117,8 +2179,9 @@ is_susceptible_to_plague_province_trigger = {
 		}
 		AND = {
 			OR = {
-				culture_group = high_elf_group
-				culture_group = night_elf_group
+				is_high_elf_culture_trigger = yes
+				culture = night_elf
+				culture = highborne
 			}
 			has_global_flag = elves_susceptible_to_plague
 		}
@@ -2127,12 +2190,9 @@ is_susceptible_to_plague_province_trigger = {
 			has_global_flag = trolls_susceptible_to_plague
 		}
 	}
-	NOR = {
-		has_province_modifier = undead_province
-		religion_group = fel_group
-		religion_group = void_group
+	province_can_get_disease_trigger = yes
+	NOT = {
 		religion = wolf_cult_religion
-		culture_group = dryad_group
 	}
 }
 
@@ -2166,6 +2226,8 @@ has_weak_character_trigger = {
 	}
 }
 can_fight_prev_trigger = {
+	can_declare_wars_trigger = yes
+	PREV = { can_declare_wars_trigger = yes }
 	trigger_if = {
 		limit = {
 			OR = {
@@ -2223,6 +2285,10 @@ has_undead_gfx_trigger = {
 		# graphical_culture = frostvrykulgfx
 		graphical_culture = gnollundeadgfx
 		graphical_culture = undeadvrykulgfx
+		graphical_culture = highelfundeadgfx
+		graphical_culture = nightelfundeadgfx
+		graphical_culture = highborneundeadgfx
+		graphical_culture = trollundeadgfx
 	}
 }
 has_demon_gfx_trigger = {
@@ -2237,7 +2303,33 @@ has_demon_gfx_trigger = {
 		graphical_culture = demonformgfx
 		graphical_culture = orcfelgfx
 		graphical_culture = satyrgfx
+		graphical_culture = humandemongfx
+		graphical_culture = nightelfdemongfx	#Should be here to block double-picking demonic portraits
+		graphical_culture = highelfdemongfx
+		graphical_culture = trollfelgfx
 	}
+}
+has_fel_gfx_trigger = {
+	OR = {
+		has_demon_gfx_trigger = yes
+		graphical_culture = orcgfx
+		graphical_culture = highelffelgfx
+		graphical_culture = nightelffelgfx
+		graphical_culture = highbornefelgfx
+	}
+}
+has_void_gfx_trigger = {
+	OR = {
+		graphical_culture = nagagfx
+		graphical_culture = qirajigfx
+		graphical_culture = nerubiangfx
+		graphical_culture = nraqigfx
+		graphical_culture = cthraxxigfx
+		graphical_culture = humanvoidgfx
+	}
+}
+has_light_gfx_trigger = {
+	graphical_culture = highelflightgfx
 }
 has_human_gfx_trigger = {
 	OR = {
@@ -2251,6 +2343,32 @@ has_human_gfx_trigger = {
 		graphical_culture = humantangfx
 		graphical_culture = humanblackgfx
 		graphical_culture = humanundeadgfx
+		graphical_culture = humandemongfx
+		graphical_culture = humanvoidgfx
+	}
+}
+has_nightelf_gfx_trigger = {
+	OR = {
+		graphical_culture = nightelfgfx
+		graphical_culture = nightelfdemongfx	#Should be here to give Night Elf race to characters that look like this
+		graphical_culture = nightelffelgfx
+		graphical_culture = nightelfundeadgfx
+	}
+}
+has_highelf_gfx_trigger = {
+	OR = {
+		graphical_culture = highelfgfx
+		graphical_culture = highelfdemongfx
+		graphical_culture = highelffelgfx
+		graphical_culture = highelfundeadgfx
+		graphical_culture = highelflightgfx
+	}
+}
+has_highborne_gfx_trigger = {
+	OR = {
+		graphical_culture = highbornegfx
+		graphical_culture = highbornefelgfx
+		graphical_culture = highborneundeadgfx
 	}
 }
 has_orc_gfx_trigger = {
@@ -2309,6 +2427,18 @@ has_eredar_gfx_trigger = {
 		graphical_culture = draeneigfx
 	}
 }
+has_troll_gfx_trigger = {
+	OR = {
+		graphical_culture = jungletrollgfx
+		graphical_culture = icetrollgfx
+		graphical_culture = foresttrollgfx
+		graphical_culture = zandalarigfx
+		graphical_culture = trolldarkgfx
+		graphical_culture = trollsandgfx
+		graphical_culture = trollundeadgfx
+		graphical_culture = trollfelgfx
+	}
+}
 
 # PREV can break all relations with THIS because PREV thinks THIS is unpleasant creature
 is_unpleasant_creature_to_prev_trigger = {
@@ -2317,12 +2447,8 @@ is_unpleasant_creature_to_prev_trigger = {
 		trigger_if = {
 			limit = {
 				PREV = {
-					is_dark_being_trigger = no
-					NOT = { trait = worgen }
-					is_warlock_class_trigger = no
-					is_death_knight_class_trigger = no
-					is_necromancer_class_trigger = no
-					is_shadow_priest_class_trigger = no
+					is_monster_being_trigger = no
+					is_dark_class_trigger = no
 					dark_true_religion_trigger = no
 
 					trigger_if = {
@@ -2342,10 +2468,7 @@ is_unpleasant_creature_to_prev_trigger = {
 					}
 				}
 			}
-			OR = {
-				is_dark_being_trigger = yes
-				trait = worgen
-			}
+			is_monster_being_trigger = yes
 		}
 		is_unholy_creature_to_prev_trigger = yes
 	}
@@ -2357,12 +2480,8 @@ is_unholy_creature_to_prev_trigger = {
 		trigger_if = {
 			limit = {
 				PREV = {
-					is_dark_being_trigger = no
-					NOT = { trait = worgen }
-					is_warlock_class_trigger = no
-					is_death_knight_class_trigger = no
-					is_necromancer_class_trigger = no
-					is_shadow_priest_class_trigger = no
+					is_monster_being_trigger = no
+					is_dark_class_trigger = no
 					OR = {
 						religion = scarlet_light
 						religion = lightbound
@@ -2374,10 +2493,7 @@ is_unholy_creature_to_prev_trigger = {
 				}
 			}
 			NOT = { religion = PREV }
-			OR = {
-				is_dark_being_trigger = yes
-				trait = worgen
-			}
+			is_monster_being_trigger = yes
 		}
 		# Because of religion
 		trigger_if = {
@@ -2614,60 +2730,6 @@ destroyable_religious_head_trigger = {
 	religion = tidemother
 }
 
-# Note: better stop using this triggers, they're CPU heavy
-# If you want to make gender-equal culture, the best way is adding Status of Woman law to every title of the culture
-is_matriarchal_trigger = {
-	custom_tooltip = {
-		text = is_matriarchal_trigger_tooltip
-		hidden_tooltip = {
-			OR = {
-				has_religion_feature = religion_matriarchal
-				AND = {
-					NOR = {
-						has_religion_feature = religion_patriarchal
-						has_religion_feature = religion_equal
-					}
-					OR = {
-						# Better not add cultures here
-						culture_group = harpy_group
-						culture = blood_troll
-						culture = hyldnir
-						culture = frostnymph
-					}
-				}
-			}
-		}
-	}
-}
-is_gender_equal_trigger = {
-	custom_tooltip = {
-		text = is_gender_equal_trigger_tooltip
-		hidden_tooltip = {
-			OR = {
-				has_religion_feature = religion_equal
-				AND = {
-					NOR = {
-						has_religion_feature = religion_patriarchal
-						is_matriarchal_trigger = yes
-					}
-					OR = {
-						# Better not add cultures here
-						religion_group = arcane_group
-						religion_group = dragon_religion_group
-						religion = kaldorei_religion
-						religion_group = fel_group
-						religion_group = loa_group
-						religion_group = necromancy_group
-						religion_group = nerubian_religion_group
-						religion_group = secular_group
-						religion_group = void_group
-					}
-				}
-			}
-		}
-	}
-}
-
 light_public_religion_trigger = {
 	OR = {
 		religion_group = light_group
@@ -2696,97 +2758,6 @@ shamanic_true_religion_trigger = {
 		true_religion_group = primitive_group
 		true_religion_group = shamanism_group
 		true_religion_group = vrykul_religion_group
-	}
-}
-
-# Used in claim_capital_city
-stromgarde_is_capital_trigger = {
-	has_landed_title = k_stromgarde
-	NOT = { has_landed_title = c_stromgarde }
-	any_realm_lord = {
-		ai = yes
-		has_landed_title = c_stromgarde
-	}
-}
-stratholme_is_capital_trigger = {
-	has_landed_title = k_stratholme
-	NOT = { has_landed_title = c_stratholme }
-	any_realm_lord = {
-		ai = yes
-		has_landed_title = c_stratholme
-	}
-}
-stormwind_is_capital_trigger = {
-	OR = {
-		has_landed_title = k_stormwind
-		has_landed_title = e_azeroth
-	}
-	NOT = { has_landed_title = c_stormwind }
-	any_realm_lord = {
-		ai = yes
-		has_landed_title = c_stormwind
-	}
-}
-silvermoon_is_capital_trigger = {
-	OR = {
-		has_landed_title = k_quelthalas
-		has_landed_title = e_quelthalas
-	}
-	NOT = { has_landed_title = c_silvermoon }
-	any_realm_lord = {
-		ai = yes
-		has_landed_title = c_silvermoon
-	}
-}
-lordaeron_is_capital_trigger = {
-	OR = {
-		has_landed_title = k_lordaeron
-		has_landed_title = e_lordaeron
-	}
-	NOT = { has_landed_title = c_lordaeron }
-	any_realm_lord = {
-		ai = yes
-		has_landed_title = c_lordaeron
-	}
-}
-ironforge_is_capital_trigger = {
-	has_landed_title = k_ironforge
-	NOT = { has_landed_title = c_ironforge }
-	any_realm_lord = {
-		ai = yes
-		has_landed_title = c_ironforge
-	}
-}
-gnomeregan_is_capital_trigger = {
-	has_landed_title = k_gnomeregan
-	NOT = { has_landed_title = c_gnomeregan }
-	any_realm_lord = {
-		ai = yes
-		has_landed_title = c_gnomeregan
-	}
-}
-gilneas_is_capital_trigger = {
-	has_landed_title = k_gilneas
-	NOT = { has_landed_title = c_gilneas }
-	any_realm_lord = {
-		ai = yes
-		has_landed_title = c_gilneas
-	}
-}
-dalaran_is_capital_trigger = {
-	has_landed_title = k_dalaran
-	NOT = { has_landed_title = c_dalaran }
-	any_realm_lord = {
-		ai = yes
-		has_landed_title = c_dalaran
-	}
-}
-alterac_is_capital_trigger = {
-	has_landed_title = k_alterac
-	NOT = { has_landed_title = c_alterac }
-	any_realm_lord = {
-		ai = yes
-		has_landed_title = c_alterac
 	}
 }
 
@@ -2868,11 +2839,7 @@ can_be_appointed_trigger = {
 
 # Analogs of the Hermetics in the Warcraft universe
 is_member_of_hermetics_trigger = {
-	OR = {
-		# To be added
-		always = no
-		# society_member_of = hermetics
-	}
+	society_member_of = hermetics
 }
 # Analogs of the Benedictines in the Warcraft universe
 is_member_of_benedictine_trigger = {
@@ -3009,9 +2976,7 @@ true_religion_associated_with_sunwell_trigger = {
 ai_like_dark_magic_trigger = {
 	OR = {
 		is_dark_being_trigger = yes
-		is_warlock_class_trigger = yes
-		is_necromancer_class_trigger = yes
-		is_shadow_priest_class_trigger = yes
+		is_dark_class_trigger = yes
 		dark_true_religion_trigger = yes
 		trait = cynical
 	}
@@ -3062,7 +3027,9 @@ require_cannot_marry_flag_trigger = {
 		# trait = creature_kvaldir
 		trait = creature_nraqi
 		trait = creature_cthraxxi
-		# trait = creature_qiraji
+		trait = creature_wickerman
+		trait = creature_wicker_behemoth
+		trait = creature_wicker_golem
 	}
 }
 
@@ -3230,10 +3197,10 @@ like_proud_trait_trigger = {
 		culture_group = aqir_group
 		culture_group = arakkoa_group
 		culture_group = centaur_group
-		culture_group = naga_group
+		culture = naga
 		culture = highborne
 		culture_group = ogre_group
-		culture_group = satyr_group
+		culture = satyr
 		culture_group = sethrak_group
 		culture_group = titanforged_group
 		culture_group = troll_group
@@ -3260,10 +3227,10 @@ like_ambitious_trait_trigger = {
 		culture_group = aqir_group
 		culture_group = arakkoa_group
 		culture_group = centaur_group
-		culture_group = naga_group
+		culture = naga
 		culture = highborne
 		culture_group = ogre_group
-		culture_group = satyr_group
+		culture = satyr
 		culture_group = sethrak_group
 		culture_group = titanforged_group
 		culture_group = troll_group
@@ -3448,6 +3415,7 @@ prefer_zealous_trait_trigger = {
 	like_zealous_trait_trigger = yes
 	like_cynical_trait_trigger = no
 }
+#cannibal_trait
 like_cannibal_trait_trigger = {
 	OR = {
 		culture = amani
@@ -3505,7 +3473,6 @@ kind_public_religion_trigger = {
 			religion_group = secular_group
 			NOT = {
 				religion = cult_of_wealth
-				religion = cult_of_loken
 			}
 		}
 		religion_group = shamanism_group
@@ -3537,20 +3504,70 @@ is_50_physical_age_trigger = {
 	age = 50
 }
 is_60_physical_age_trigger = {
-	immortal = no
-	age = 60
+	trigger_if = {
+		limit = { immortal = yes }
+		is_old_immortal_physical_age_trigger = yes
+	}
+	trigger_else = {
+		age = 60
+	}
 }
 is_70_physical_age_trigger = {
-	immortal = no
-	age = 70
+	trigger_if = {
+		limit = { immortal = yes }
+		is_old_immortal_physical_age_trigger = yes
+	}
+	trigger_else = {
+		age = 70
+	}
 }
 is_80_physical_age_trigger = {
-	immortal = no
-	age = 80
+	trigger_if = {
+		limit = { immortal = yes }
+		is_old_immortal_physical_age_trigger = yes
+	}
+	trigger_else = {
+		age = 80
+	}
 }
 is_90_physical_age_trigger = {
-	immortal = no
-	age = 90
+	trigger_if = {
+		limit = { immortal = yes }
+		is_old_immortal_physical_age_trigger = yes
+	}
+	trigger_else = {
+		age = 90
+	}
+}
+is_old_immortal_physical_age_trigger = {
+	immortal = yes
+	OR = {
+		trigger_if = {
+			limit = { trait = creature_dwarf }
+			age = 215
+		}
+		trigger_else_if = {
+			limit = { trait = creature_gnome }
+			age = 260
+		}
+		trigger_else_if = {
+			limit = { is_high_elf_trigger = yes }
+			age = 860
+		}
+		trigger_else_if = {
+			limit = { trait = creature_vrykul }
+			age = 215
+		}
+		trigger_else_if = {
+			limit = { trait = creature_giant }
+			age = 690
+		}
+		trigger_else = {	# creature_naga, creature_night_elf, creature_highborne
+			age = 1290
+		}
+		# If characters are born before 20 year it means they're much older
+		year_of_birth > 20
+	}
 }
 
 is_30_mental_age_trigger = {
@@ -3574,6 +3591,7 @@ is_80_mental_age_trigger = {
 is_90_mental_age_trigger = {
 	age = 90
 }
+
 # These religions create their religious heads via decisions (NOT REFORMATION)
 creatable_religious_head_trigger = {
 	OR = {
@@ -3587,6 +3605,7 @@ creatable_religious_head_trigger = {
 		religion = voidfarer
 		religion = forsaken_cult
 		religion = lightbound
+		religion = throsic
 	}
 }
 
@@ -3631,18 +3650,6 @@ colonial_culture_trigger = {
 		culture = wastewander
 		culture = western
 		culture = durotaric
-	}
-}
-
-# These regions are like world_steppe
-like_world_steppe_region_trigger = {
-	OR = {
-		region = world_kalimdor_barrens
-		region = world_kalimdor_dustwallow
-		region = world_kalimdor_mulgore
-		region = world_kalimdor_desolace
-		region = world_kalimdor_thousand_needles
-		region = world_kalimdor_tanaris
 	}
 }
 
@@ -3749,26 +3756,24 @@ is_mammal_trigger = {
 # No prays, no religious rites, no religious restrictions
 secular_public_religion_trigger = {
 	OR = {
-		religion_group = arcane_group
 		religion_group = dragon_religion_group
 		religion_group = elemental_lords_group
 		religion_group = fel_group
 		religion_group = necromancy_group
 		religion_group = nerubian_religion_group
 		religion_group = secular_group
-		religion = voidfarer
+		religion = arcane_religion
 	}
 }
 secular_true_religion_trigger = {
 	OR = {
-		true_religion_group = arcane_group
 		true_religion_group = dragon_religion_group
 		true_religion_group = elemental_lords_group
 		true_religion_group = fel_group
 		true_religion_group = necromancy_group
 		true_religion_group = nerubian_religion_group
 		true_religion_group = secular_group
-		true_religion = voidfarer
+		true_religion = arcane_religion
 	}
 }
 
@@ -3894,10 +3899,7 @@ is_evil_cultist_trigger = {
 
 use_dark_artifacts_trigger = {
 	OR = {
-		is_warlock_class_trigger = yes
-		is_death_knight_class_trigger = yes
-		is_necromancer_class_trigger = yes
-		is_shadow_priest_class_trigger = yes
+		is_dark_class_trigger = yes
 		dark_public_religion_trigger = yes
 	}
 }
@@ -3966,11 +3968,14 @@ has_blood_trait_trigger = {
 		trait = blood_orc
 		trait = blood_ogre
 		trait = blood_high_elf
+		trait = blood_draenei
+		trait = blood_vrykul
 		trait = blood_magnataur
 		trait = blood_taunka
 		trait = blood_night_elf
 		trait = blood_tauren
 		trait = blood_centaur
+		trait = blood_dryad
 		trait = blood_frostnymph
 		trait = blood_highborne
 	}
@@ -3980,11 +3985,14 @@ has_prev_blood_trigger = {
 	trigger_else_if = { limit = { trait = blood_orc 			} PREV = { trait = blood_orc 					} }
 	trigger_else_if = { limit = { trait = blood_ogre 			} PREV = { trait = blood_ogre 					} }
 	trigger_else_if = { limit = { trait = blood_high_elf 		} PREV = { trait = blood_high_elf 				} }
+	trigger_else_if = { limit = { trait = blood_draenei 		} PREV = { trait = blood_draenei 				} }
+	trigger_else_if = { limit = { trait = blood_vrykul 		} PREV = { trait = blood_vrykul 				} }
 	trigger_else_if = { limit = { trait = blood_magnataur 	} PREV = { trait = blood_magnataur 				} }
 	trigger_else_if = { limit = { trait = blood_taunka 		} PREV = { trait = blood_taunka 				} }
 	trigger_else_if = { limit = { trait = blood_night_elf 	} PREV = { trait = blood_night_elf 				} }
 	trigger_else_if = { limit = { trait = blood_tauren 		} PREV = { trait = blood_tauren 				} }
 	trigger_else_if = { limit = { trait = blood_centaur 		} PREV = { trait = blood_centaur 				} }
+	trigger_else_if = { limit = { trait = blood_dryad 		} PREV = { trait = blood_dryad 				} }
 	trigger_else_if = { limit = { trait = blood_frostnymph 	} PREV = { trait = blood_frostnymph 			} }
 	trigger_else_if = { limit = { trait = blood_highborne 	} PREV = { trait = blood_highborne 				} }
 
@@ -4126,7 +4134,6 @@ religion_has_heresy_trigger = {
 		religion = naaru
 		religion = lightbound
 		religion = mystery_of_the_makers
-		religion = cult_of_loken
 	}
 }
 
@@ -4265,7 +4272,12 @@ need_infertile_trait_trigger = {
 	}
 	trigger_else = {
 		trigger_if = {
-			limit = { is_female = no }
+			limit = {
+				OR = {
+					is_female = no
+					is_mammal_trigger = no	# Females and males have the same limitations
+				}
+			}
 			age = 60
 		}
 		trigger_else = {
@@ -4275,11 +4287,16 @@ need_infertile_trait_trigger = {
 }
 immortal_need_infertile_trait_trigger = {
 	trigger_if = {
-		limit = { is_female = no }
-		num_of_children = 7
+		limit = {
+			OR = {
+				is_female = no
+				is_mammal_trigger = no	# Females and males have the same limitations
+			}
+		}
+		num_of_children = 4
 	}
 	trigger_else = {
-		num_of_children = 5
+		num_of_children = 3
 	}
 }
 
@@ -4289,9 +4306,24 @@ reawakening_of_cthun_qiraji_event_trigger = {
 	culture_group = aqir_group
 }
 
+create_event_empire_potential_trigger = {
+	higher_real_tier_than = COUNT
+	character_can_lose_title_trigger = yes
+	has_important_empire_titles = no
+}
+create_event_empire_allow_trigger = {
+	is_adult = yes
+	
+	independent = yes
+	war = no
+	
+	prestige = 5000
+	
+	realm_size = 100
+}
 create_titular_duchy_common_trigger = {
 	prestige = 500
-	realm_size = 10
+	realm_size = 25
 	NOT = { higher_tier_than = FROM }
 }
 create_titular_kingdom_common_trigger = {
@@ -4301,7 +4333,7 @@ create_titular_kingdom_common_trigger = {
 }
 create_titular_empire_common_trigger = {
 	prestige = 2000
-	realm_size = 75
+	realm_size = 100
 	NOT = { higher_tier_than = FROM }
 }
 
@@ -4325,7 +4357,6 @@ religion_has_no_gods_trigger = {
 	OR = {
 		secular_public_religion_trigger = yes
 		religion = old_ways
-		religion = druidism_beliefs
 	}
 }
 
@@ -4354,23 +4385,6 @@ owner_can_have_trade_post_trigger = {
 	}
 }
 
-use_scimitars_trigger = {
-	OR = {
-		marine_culture_trigger = yes
-		
-		culture_group = aqir_group
-		culture_group = arakkoa_group
-		culture_group = centaur_group
-		culture_group = high_elf_group
-		culture_group = night_elf_group
-		culture_group = naga_group
-		culture_group = sethrak_group
-		culture_group = troll_group
-		culture_group = vulpera_group
-		# More Pandaria cultures should be there
-	}
-}
-
 marine_culture_trigger = {
 	OR = {
 		religion = tidemother
@@ -4396,7 +4410,6 @@ arcane_public_religion_trigger = {
 		religion_group = arcane_group
 		religion_group = dragon_religion_group
 		religion = mystery_of_the_makers
-		religion = cult_of_loken
 		religion = odyn
 	}
 }
@@ -4405,7 +4418,6 @@ arcane_true_religion_trigger = {
 		true_religion_group = arcane_group
 		true_religion_group = dragon_religion_group
 		true_religion = mystery_of_the_makers
-		true_religion = cult_of_loken
 		true_religion = odyn
 	}
 }
@@ -4429,7 +4441,10 @@ is_in_player_sphere_of_influence_trigger = {
 }
 
 special_succession_type_trigger = {
-	 has_law = succ_evil_elective
+	OR = {
+		has_law = succ_evil_elective
+		has_law = succ_byzantine_elective
+	}
 }
 
 # Is NOT raising or creating an undead being
@@ -4455,10 +4470,11 @@ can_be_mind_controlled_by_scourge_trigger = {
 }
 can_break_scourge_mind_control_trigger = {
 	trait = being_undead
-	
+
 	trigger_if = {
 		limit = { religion = death_god }
-		NOT = { has_artifact = frostmourne }
+		NOT = { has_artifact = frostmourne } # Tied to the Lich King
+		NOT = { society_member_of = cult_of_the_damned } # Let's say, helps the Scourge willingly
 	}
 	NOT = { has_landed_title = e_scourge }
 	e_scourge = {
@@ -4615,5 +4631,553 @@ can_positive_interact_with_prev_publicly_trigger = {
 	# Otherwise, PREV can interact with those who doesn't follow evil religions publicly
 	trigger_else = {
 		evil_public_religion_trigger = no
+	}
+}
+
+can_fly_trigger = {
+	OR = {
+		is_dragon_race_trigger = yes
+		trait = creature_lich # Levitate
+		trait = creature_nathrezim # Have wings
+		trait = creature_eredruin # Have wings
+		trait = creature_observer # Levitate
+		trait = creature_harpy
+		
+		talon_form_trigger = yes
+		master_talon_form_trigger = yes
+	}
+}
+can_breath_underwater_trigger = {
+	OR = {
+		is_dark_being_trigger = yes #Don't need to breath
+		
+		trait = creature_murloc
+		is_elemental_trigger = yes #Don't need to breath
+		is_uncursed_titanforged_trigger = yes #Don't need to breath
+		trait = creature_gorloc
+		is_plant_race_trigger = yes #Need to "breath", but not often
+	}
+}
+
+is_monster_being_trigger = {
+	OR = {
+		is_dark_being_trigger = yes
+		trait = worgen
+	}
+}
+
+can_travel_in_carriage_trigger = {
+	is_humanoid_trigger = yes
+	is_cenarius_offspring_trigger = no
+	can_fly_trigger = no
+}
+
+allow_sky_burial_trigger = {
+	religion_group = primitive_group
+	# Followers of water deities have no use for a sky burial 
+	NOT = {
+		religion = water_deities
+	}
+}
+
+from_potential_cull_this_province_trigger = {
+	has_province_modifier = undead_province
+	FROM = {
+		NOT = {
+			trait = being_undead
+			religion_group = necromancy_group
+			government = scourge_government
+		}
+	}
+}
+from_potential_raise_this_province_trigger = {
+	NOT = { has_province_modifier = undead_province }
+	FROM = {
+		OR = {
+			trait = being_undead
+			religion_group = necromancy_group
+			government = scourge_government
+		}
+	}
+}
+from_potential_genocide_this_province_trigger = {
+	# Not needed because it's active if both from_potential_cull_this_province_trigger and from_potential_raise_this_province_trigger return false
+}
+from_allow_cull_this_province_trigger = {
+	trigger_if = {
+		limit = { FROM = { independent = no } }
+		FROM = {
+			top_liege = {
+				NOT = {
+					trait = being_undead
+					religion_group = necromancy_group
+					government = scourge_government
+				}
+			}
+		}
+	}
+	
+	has_disease = no
+}
+from_allow_raise_this_province_trigger = {
+	trigger_if = {
+		limit = { FROM = { independent = no } }
+		FROM = {
+			top_liege = {
+				OR = {
+					trait = being_undead
+					religion_group = necromancy_group
+					government = scourge_government
+				}
+			}
+		}
+	}
+	
+	# has_disease = no
+}
+from_allow_genocide_this_province_trigger = {
+	FROM = {
+		NOT = { true_religion = PREV }
+		# These cultures can be genocided by their own group
+		trigger_if = {
+			limit = { PREV = { monster_culture_trigger = yes } }
+			NOT = { culture = PREV }
+		}
+		trigger_else = {
+			NOT = { culture_group = PREV }
+		}
+		trigger_if = {
+			limit = { independent = no }
+			top_liege = {
+				NOT = { religion = PREVPREV }
+				# These cultures can be genocided by their own group
+				trigger_if = {
+					limit = { PREVPREV = { monster_culture_trigger = yes  } }
+					NOT = { culture = PREVPREV }
+				}
+				trigger_else = {
+					NOT = { culture_group = PREVPREV }
+				}
+			}
+		}
+	}
+	# If you're aggressive, you can genocide others
+	# If province is aggressive, you can genocide it
+	OR = {
+		is_aggressive_trigger = yes
+		FROM = { is_aggressive_trigger = yes }
+	}
+}
+# This character can lead the Scarlet Crusade
+is_potential_scarlet_leader_trigger = {
+	is_alive = yes
+	is_dying = no
+	is_untouchable_trigger = no
+	
+	ai = yes
+	is_adult = yes
+	is_incapable = no
+	prisoner = no
+	is_inaccessible_trigger = no
+	
+	OR = {
+		religion = holy_light
+		religion = scarlet_light
+	}
+	OR = {
+		true_religion = holy_light
+		true_religion = scarlet_light
+	}
+	culture = lordaeronian
+	trait = zealous
+	
+	is_lowborn = no
+}
+# This character can be converted to Scarlet Light religion in Scarlet event chains
+is_potential_scarlet_follower_trigger = {
+	trait = creature_human
+	true_religion = holy_light
+	
+	can_switch_religion_character_trigger = yes
+}
+
+is_potential_argent_leader_trigger = {
+	is_alive = yes
+	is_dying = no
+	is_untouchable_trigger = no
+	
+	ai = yes
+	is_adult = yes
+	is_incapable = no
+	prisoner = no
+	is_inaccessible_trigger = no
+	
+	religion = holy_light
+	true_religion = holy_light
+	culture = lordaeronian
+	NOT = { trait = zealous }
+}
+
+frozen_throne_silver_betrayer_trigger = {
+	is_alive = yes
+	is_dying = no
+	is_untouchable_trigger = no
+	
+	is_adult = yes
+	is_incapable = no
+	prisoner = no
+	
+	OR = {
+		true_religion = scarlet_light
+		
+		is_potential_scarlet_follower_trigger = yes
+	}
+	trait = deceitful
+}
+frozen_throne_silver_leader_trigger = {
+	is_alive = yes
+	is_dying = no
+	is_untouchable_trigger = no
+	
+	is_adult = yes
+	is_incapable = no
+	prisoner = no
+	is_inaccessible_trigger = no
+	
+	religion = holy_light
+	
+	has_landed_title = d_order_of_the_silver_hand
+}
+
+is_sharp_weapon_artifact_trigger = {
+	OR = {
+		has_artifact_flag = sword
+		has_artifact_flag = axe
+		has_artifact_flag = spear
+	}
+}
+
+argent_dawn_and_scarlet_crusade_can_be_formed_trigger = {
+	NOT = { d_argent_dawn = { has_holder = yes } }
+	NOT = { d_scarlet_crusade = { has_holder = yes } }
+
+	# Lordaeron
+	269 = {
+		holder_scope = {
+			OR = {
+				NOT = { religion_group = light_group }
+				NOT = { culture_group = human_group }
+			}
+			top_liege = {
+				OR = {
+					NOT = { religion_group = light_group }
+					NOT = { culture_group = human_group }
+				}
+			}
+		}
+	}
+	# Stratholme
+	324 = {
+		holder_scope = {
+			OR = {
+				NOT = { religion_group = light_group }
+				NOT = { culture_group = human_group }
+			}
+			top_liege = {
+				OR = {
+					NOT = { religion_group = light_group }
+					NOT = { culture_group = human_group }
+				}
+			}
+		}
+	}
+}
+
+# Used in End of Thalassian Regency events
+kaelthas_can_return_to_quelthalas_trigger = {
+	evil_public_religion_trigger = no
+	
+	has_character_flag = is_kaelthas_flag
+	
+	OR = {
+		e_quelthalas = { kaelthas_can_return_to_this_trigger = yes }
+		k_quelthalas = { kaelthas_can_return_to_this_trigger = yes }
+		d_silvermoon = { kaelthas_can_return_to_this_trigger = yes }
+		c_silvermoon = { kaelthas_can_return_to_this_trigger = yes }
+		c_falconwing_square = { kaelthas_can_return_to_this_trigger = yes }
+	}
+}
+kaelthas_can_follow_illidan_trigger = {
+	evil_public_religion_trigger = no
+	
+	has_character_flag = is_kaelthas_flag
+}
+kaelthas_can_return_to_this_trigger = {
+	has_holder = yes
+	holder_scope = {
+		evil_public_religion_trigger = no
+		
+		has_character_flag = is_regent_lord_flag
+	}
+}
+de_jure_sunstrider_title_trigger = {
+	OR = {
+		title = e_quelthalas
+		title = k_quelthalas
+		title = d_silvermoon
+		title = c_silvermoon
+		title = c_falconwing_square
+	}
+}
+
+# Used in Frozen Throne CBs
+is_plaguelands_belligerent_trigger = {
+	OR = {
+		has_character_flag = is_calia
+		has_character_flag = is_balnazzar
+		has_character_flag = is_sylvanas
+		has_character_flag = is_garithos
+	}
+}
+is_scale_race_trigger = {
+	OR = {
+		trait = creature_murloc
+		trait = creature_naga
+		is_whelp_trigger = yes
+		is_drake_trigger = yes
+		is_dragon_trigger = yes
+		is_wyrm_trigger = yes
+		trait = creature_arakkoa_corrupted
+		# trait = creature_arakkoa
+		trait = creature_gorloc
+		trait = creature_sethrak
+	}
+}
+# True if THIS can lend money to PREV
+this_can_lend_prev_money_trigger = {
+	war = no
+	
+	is_within_diplo_range = PREV
+	
+	custom_tooltip = {
+		text = borrowing_bothering_tooltip
+		NOT = { has_character_modifier = borrowing_bothering_cooldown }
+	}
+	
+	wealth = 600 # Let's say 500 is enough to build holding, so if you have 600 you don't know how to spend money
+	
+	trigger_if = {
+		limit = {
+			is_patrician = yes
+		}
+		opinion = { who = PREV value = -30 }
+	}
+	trigger_else = {
+		opinion = { who = PREV value = -20 }
+	}
+}
+
+is_high_elf_culture_trigger = {
+	OR = {
+		culture = high_elf
+		culture = blood_elf
+	}
+}
+
+#Used in from_allow_genocide_this_province_trigger, their own culture group can genocide them
+monster_culture_trigger = {
+	OR = {
+		culture = scourge
+		culture = naga
+		culture = satyr
+	}
+}
+
+# Returns true if the Lich King sits on the Frozen Throne and can't get up
+sits_on_frozen_throne_trigger = {
+	OR = {
+		trait = in_ice_prison
+		trait = sleeping_trait
+	}
+}
+is_ethereal_trigger = {
+	trait = creature_lich
+}
+
+can_adopt_characters_trigger = {
+	is_alive = yes
+	is_dying = no
+	
+	is_playable = yes
+	prisoner = no
+	
+	mercenary = no
+	holy_order = no
+	NOT = { is_offmap_governor = yes }
+	is_theocracy = no
+	OR = {
+		is_republic = no
+		is_patrician = yes
+	}
+
+	trigger_if = {
+		limit = {
+			has_game_rule = {
+				name = adoption
+				value = no_player_dynastly
+			}
+			ai = yes
+		}
+		NOT = { any_dynasty_member = { ai = no } }
+	}
+	trigger_else = {
+		NOT = {
+			has_game_rule = {
+				name = adoption
+				value = disabled
+			}
+		}
+	}
+
+	is_lowborn = no
+	OR = {
+		can_marry_trigger = no
+		can_has_children_trigger = no
+	}
+	OR = {
+		has_living_children = no
+		NOT = { num_of_children = 5 }
+	}
+}
+potential_adoption_by_prev_trigger = {
+	is_ruler = no
+	
+	NOT = {
+		character = PREV #Can't adopt itself... just to make sure
+		dynasty = PREV
+		any_dynasty_member = { ai = no }
+		any_spouse = { character = PREVPREV } # Can't adopt its own spouses
+	}
+}
+allow_adoption_by_prev_trigger = {
+	trigger_if = {
+		limit = { PREV = { is_dark_being_trigger = no } }
+		is_dark_being_trigger = no
+	}
+	has_prev_race_trigger = yes
+	# OR = {
+		# has_prev_race_trigger = yes
+		# is_prev_dark_being_trigger = yes
+	# }
+	
+	# If character has claims, pay more
+	trigger_if = {
+		limit = { num_of_claims = 1 }
+		PREV = {
+			prestige = 1000
+		}
+	}
+	# If you have children, pay more
+	trigger_else_if = {
+		limit = { PREV = { has_living_children = yes } }
+		PREV = {
+			prestige = 500
+		}
+	}
+	
+	is_heir = no							# Not first in any succession line
+	has_living_children = no				# Without children...
+	NOT = { num_of_dynasty_members = 4 }	# From small dynasties
+	opinion = { who = PREV value = 25 }		# Good opinion of me
+	trigger_if = {
+		limit = { is_married = yes }
+		# Spouses are from §Y[Prev.GetOnlyDynastyName]§! dynasty or lowborn
+		custom_tooltip = {
+			text = spouse_are_from_prev_dynasty_or_lowborn_tooltip
+			NOT = {
+				any_spouse = {
+					is_lowborn = no
+					NOT = { dynasty = PREVPREV }
+					num_of_dynasty_members = 3
+				}
+			}
+		}
+	}
+}
+
+heal_wounds_faster_trigger = {
+	OR = {
+		true_religion_group = loa_group
+		trait = creature_troll
+	}
+}
+
+suicide_always_successful_trigger = {
+	is_dark_being_trigger = yes
+}
+
+must_have_ruled_too_long_penalty_trigger = {
+	is_playable = yes
+	
+	NOT = {
+		has_game_rule = {
+			name = ruled_too_long_penalty
+			value = off
+		}
+	}
+	OR = {
+		AND = {
+			ai = yes										# Is AI
+			NOT = { any_dynasty_member = { ai = no } }		# There's no non-AI dynasty members
+		}
+		NOT = {
+			has_game_rule = {
+				name = ruled_too_long_penalty
+				value = ai
+			}
+		}
+	}
+	
+	NOT = { has_character_flag = ruled_too_long_timer_flag }
+}
+
+can_be_overthrown_trigger = {
+	can_rule_peacefully_trigger = yes
+	character_can_lose_title_trigger = yes
+}
+
+has_magical_addiction_trigger = {
+	OR = {
+		is_susceptible_to_fel_corruption_trigger = yes
+		is_susceptible_to_void_corruption_trigger = yes
+	}
+	is_high_elf_trigger = yes
+	# Only high elves of Quel'thalas are magic addicted
+	OR = {
+		location = { region = world_eastern_kingdoms_quelthalas }
+		394 = {
+			wonder = {
+				wonder_owner = {
+					OR = {
+						character = ROOT
+						same_realm = ROOT
+					}
+				}
+			}
+		}
+	}
+	
+	# Doesn't consume some sort of magic
+	NOT = {
+		dark_true_religion_trigger = yes
+		has_character_flag = consuming_fel_magic_flag
+		has_character_flag = consuming_void_magic_flag
+		public_religion_associated_with_sunwell_trigger = yes
+		true_religion_associated_with_sunwell_trigger = yes
+	}
+	
+	# Doesn't have immunity
+	NOT = {
+		has_character_flag = immune_magical_addiction
 	}
 }

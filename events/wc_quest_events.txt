@@ -20,20 +20,88 @@ character_event = {
 			society_member_of = twilights_hammer_cult
 			society_member_of = cenarion_circle
 			society_member_of = sisterhood_of_elune
+			is_member_of_hermetics_trigger = yes
 		}
 		has_any_quest = no
 		NOT = { has_character_modifier = quest_cooldown_timer }
 		NOT = { is_society_grandmaster = yes }
 		NOT = { is_inaccessible_trigger = yes }
+		trigger_if = {
+			limit = { is_member_of_hermetics_trigger = yes }
+			society = {
+				any_society_member = {
+					NOT = { character = ROOT }
+					prisoner = no
+					is_within_diplo_range = ROOT
+					opinion = { who = ROOT value = -25 }
+				}
+			}
+		}
 	}
 
 	immediate = {
-		random_society_member = {
-			limit = {
-				is_society_grandmaster = yes
-				same_society_as = ROOT
+		if = {
+			limit = { is_member_of_hermetics_trigger = yes }
+				random_list = {
+				20 = { #International society member
+					society = {
+						any_society_member = {
+							limit = { 	
+								NOT = { character = ROOT }
+								prisoner = no
+								is_within_diplo_range = ROOT
+								opinion = { who = ROOT value = -25 }
+							}
+							save_event_target_as = target_questgiver
+						}
+					}
+				}
+				40 = { #Realm society member
+					trigger = {
+						society = {
+							any_society_member = {
+								NOT = { character = ROOT }
+								prisoner = no
+								is_within_diplo_range = ROOT
+								opinion = { who = ROOT value = -25 }
+								same_realm = ROOT
+							}
+						}
+					}
+					society = {
+						any_society_member = {
+							limit = { 	
+								NOT = { character = ROOT }
+								prisoner = no
+								is_within_diplo_range = ROOT
+								opinion = { who = ROOT value = -25 }
+								same_realm = ROOT
+							}
+							save_event_target_as = target_questgiver
+						}
+					}
+				}
+				40 = { #Apprentice
+					trigger = {
+						any_courtier_or_vassal = { has_minor_title =  title_hermetics_apprentice prisoner = no }
+						is_member_of_hermetics_trigger = yes
+					}
+					random_courtier_or_vassal = {
+						limit = { has_minor_title =  title_hermetics_apprentice }
+						save_event_target_as = target_questgiver
+					}
+				}
 			}
-			save_event_target_as = grandmaster
+			event_target:target_questgiver = { save_event_target_as = hermetic_collaborator }
+		}
+		else = {
+			random_society_member = {
+				limit = {
+					is_society_grandmaster = yes
+					same_society_as = ROOT
+				}
+				save_event_target_as = target_questgiver
+			}
 		}
 
 		random_list = {
@@ -50,7 +118,7 @@ character_event = {
 					}
 				}
 				set_character_flag = monastic_orders_mission_theology
-				event_target:grandmaster = { character_event = { id = MNM.4010 days = 7 random = 7 } }
+				event_target:target_questgiver = { character_event = { id = MNM.4010 days = 7 random = 7 } }
 			}
 			
 			# Infect the grain (mod)
@@ -72,13 +140,13 @@ character_event = {
 					NOT = {
 						any_realm_province = {
 							NOT = { religion = death_god }
-							NOT = { has_province_modifier = undead_province }
+							province_can_get_disease_trigger = yes
 							any_province_holding = { holder_scope = { NOT = { character = ROOT } } }
 						}
 					}
 				}
 				set_character_flag = quest_infect_grain_flag
-				event_target:grandmaster = { character_event = { id = WCQUE.105 } }
+				event_target:target_questgiver = { character_event = { id = WCQUE.105 } }
 			}
 
 			# Disembowel character (mod)
@@ -92,7 +160,7 @@ character_event = {
 					NOT = { society_member_of = cult_of_the_damned }
 				}
 				set_character_flag = quest_disembowel_flag
-				event_target:grandmaster = { character_event = { id = WCQUE.105 } }
+				event_target:target_questgiver = { character_event = { id = WCQUE.105 } }
 			}
 
 			# Turn into undead (mod)
@@ -105,7 +173,7 @@ character_event = {
 					society_member_of = cult_of_the_damned
 				}
 				set_character_flag = quest_turn_into_undead_flag
-				event_target:grandmaster = { character_event = { id = WCQUE.105 } }
+				event_target:target_questgiver = { character_event = { id = WCQUE.105 } }
 			}
 
 			# Drain a soul (mod)
@@ -119,7 +187,7 @@ character_event = {
 					NOT = { society_member_of = shadow_council }
 				}
 				set_character_flag = quest_drain_soul_flag
-				event_target:grandmaster = { character_event = { id = WCQUE.105 } }
+				event_target:target_questgiver = { character_event = { id = WCQUE.105 } }
 			}
 
 			# Mind Control (mod)
@@ -135,7 +203,7 @@ character_event = {
 					}
 				}
 				set_character_flag = quest_control_mind_flag
-				event_target:grandmaster = { character_event = { id = WCQUE.105 } }
+				event_target:target_questgiver = { character_event = { id = WCQUE.105 } }
 			}
 
 			# Desecrate temple (vanilla)
@@ -168,7 +236,7 @@ character_event = {
 						}
 					}
 				}
-				event_target:grandmaster = {
+				event_target:target_questgiver = {
 					character_event = { id = MNM.7023 }
 				}
 			}
@@ -182,7 +250,7 @@ character_event = {
 
 					society_member_of = twilights_hammer_cult
 				}
-				event_target:grandmaster = {
+				event_target:target_questgiver = {
 					character_event = { id = MNM.7024 }
 				}
 			}
@@ -196,7 +264,7 @@ character_event = {
 					society_member_of = cenarion_circle
 				}
 				set_character_flag = quest_enter_emerald_dream_flag
-				event_target:grandmaster = { character_event = { id = WCQUE.105 } }
+				event_target:target_questgiver = { character_event = { id = WCQUE.105 } }
 			}
 			
 			# Build Barrow Den (mod)
@@ -208,7 +276,7 @@ character_event = {
 					NOT = { has_character_flag = barrow_den_completed }
 				}
 				set_character_flag = quest_build_barrow_den_flag
-				event_target:grandmaster = { character_event = { id = WCQUE.105 } }
+				event_target:target_questgiver = { character_event = { id = WCQUE.105 } }
 			}
 			
 			# Build Hospital (mod)
@@ -226,7 +294,76 @@ character_event = {
 					any_demesne_province = { has_hospital = no }
 				}
 				set_character_flag = quest_build_hospital_flag
-				event_target:grandmaster = { character_event = { id = WCQUE.105 } }
+				event_target:target_questgiver = { character_event = { id = WCQUE.105 } }
+			}
+			
+			20 = { #Find an apprentice (vanilla)
+    			trigger = {
+					is_member_of_hermetics_trigger = yes
+    				NOT = { any_courtier_or_vassal = { has_minor_title =  title_hermetics_apprentice } }
+    				ai = no
+    			}
+    			event_target:target_questgiver = { character_event = { id = MNM.1404 days = 7 random = 7 } }
+    		}
+			
+			20 = { #Build a laboratory (vanilla)
+				trigger = {
+					is_member_of_hermetics_trigger = yes
+					NOT = { has_character_flag = building_laboratory }
+					NOT = { has_character_flag = built_laboratory }
+					OR = {
+    					ai = no
+    					society_rank == 4
+    				}
+    				is_landed = yes
+				}
+				event_target:target_questgiver = { character_event = { id = MNM.1120 days = 7 random = 7 } }
+			}
+    		15 = { #Find a rare scroll/book/tablet (vanilla)
+				trigger = {
+					is_member_of_hermetics_trigger = yes
+					is_landed = yes
+				}
+    			event_target:target_questgiver = { character_event = { id = MNM.1417 days = 7 random = 7 } }
+    		}
+			20 = { #Acquire/gather ingredients (vanilla)
+				trigger = {
+					is_member_of_hermetics_trigger = yes
+					is_landed = yes
+					NOT = {
+						any_artifact = {
+							has_artifact_flag = ingredient
+						}
+					}
+					event_target:hermetic_collaborator = { ai = yes }
+				}
+				event_target:target_questgiver = { character_event = { id = MNM.1801 days = 7 random = 7 } }
+			}
+    		10 = { #Infiltrate lab (vanilla)
+    			trigger = {
+					is_member_of_hermetics_trigger = yes
+    				society = {
+    					any_society_member = {
+    						is_within_diplo_range = ROOT
+    						NOR = { 
+    							character = ROOT
+    							character = event_target:hermetic_collaborator
+    							reverse_opinion = { who = event_target:hermetic_collaborator value = 20 }
+    							reverse_opinion = { who = ROOT value = 20 }
+    							has_character_flag = infiltration_rival
+    							has_character_flag = infiltration_mutual_dislike
+    							has_character_flag = infiltration_rich
+    						}
+    					}
+    				}
+    			}
+    			event_target:target_questgiver = { character_event = { id = MNM.1430 days = 7 random = 7 } }
+    		}
+			10 = { #Observe stars (vanilla)
+				trigger = {
+					is_member_of_hermetics_trigger = yes
+				}
+				event_target:target_questgiver = { character_event = { id = MNM.1828 days = 7 random = 7 } } 
 			}
 
 			75 = { # AI bypasses missions at times
@@ -314,7 +451,7 @@ society_quest_event = {
 		random_realm_province = {
 			limit = {
 				NOT = { religion = death_god }
-				NOT = { has_province_modifier = undead_province }
+				province_can_get_disease_trigger = yes
 				any_province_holding = { holder_scope = { NOT = { character = ROOT } } }
 			}
 			random_province_holding = {
@@ -327,7 +464,7 @@ society_quest_event = {
 			limit = {
 				NOT = { holder_scope =  { character = ROOT } }
 				NOT = { religion = death_god }
-				NOT = { has_province_modifier = undead_province }
+				province_can_get_disease_trigger = yes
 			}
 			random_province_holding = {
 				save_event_target_as = infection_target
@@ -651,7 +788,7 @@ character_event = {
 		name = EXCELLENT
 
 		clr_quest = quest_infect_grain
-		add_society_currency_medium_effect = yes
+		add_society_currency_medium_and_chance_to_get_artifact_effect = yes
 
 		event_target:infection_target = {
 			add_holding_modifier = {
@@ -1333,7 +1470,7 @@ character_event = {
 		name = EVTOPTA_WCCC.243
 		clr_quest = quest_build_barrow_den
 		set_character_flag = barrow_den_completed
-		add_society_currency_medium_effect = yes
+		add_society_currency_medium_and_chance_to_get_artifact_effect = yes
 		
 		trigger_switch = {	# trigger_switch is less CPU heavy
 			on_trigger = has_character_flag
@@ -1415,7 +1552,7 @@ letter_event = {
 	option = {
 		name = EVTOPTA_WCCC.222
 		clr_quest = quest_build_hospital
-		add_society_currency_minor_effect = yes
+		add_society_currency_minor_and_chance_to_get_artifact_effect = yes
 	}
 	
 	after = {

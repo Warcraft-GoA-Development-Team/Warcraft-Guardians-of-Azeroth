@@ -568,4 +568,164 @@ society_decisions = {
 			# factor = 0
 		# }
 	# }
+	
+	write_down_whispers = {
+		only_playable = yes
+		is_in_society = yes
+		
+		filter = self
+		ai_target_filter = self
+
+		ai_check_interval = 180
+
+		potential = {
+			is_untouchable_trigger = no
+
+			true_religion = old_gods_worship
+
+			society_member_of = twilights_hammer_cult
+			society_rank >= 3
+		}
+
+		allow = {
+			prisoner = no
+			NOT = { is_incapable = yes }
+			
+			custom_tooltip = {
+				text = twilights_hammer_cult_wrote_whispers_cd_tooltip
+				NOT = { has_character_modifier = wrote_whispers_cooldown_modifier }
+			}
+
+			religion = old_gods_worship
+			
+			has_society_currency_major_trigger = yes
+			piety = 250
+			custom_tooltip = {
+				text = write_down_whispers_duplicate_tooltip
+				OR = {
+					NOR = {
+						has_artifact = whispers_martial_1
+						has_artifact = whispers_martial_2
+						has_artifact = whispers_martial_3
+						has_artifact = whispers_martial_4
+					}
+					NOR = {
+						has_artifact = whispers_stewardship_1
+						has_artifact = whispers_stewardship_2
+						has_artifact = whispers_stewardship_3
+						has_artifact = whispers_stewardship_4
+					}
+					NOR = {
+						has_artifact = whispers_intrigue_1
+						has_artifact = whispers_intrigue_2
+						has_artifact = whispers_intrigue_3
+						has_artifact = whispers_intrigue_4
+					}
+					NOR = {
+						has_artifact = whispers_learning_1
+						has_artifact = whispers_learning_2
+						has_artifact = whispers_learning_3
+						has_artifact = whispers_learning_4
+					}
+				}
+			}
+		}
+
+		effect = {
+			hidden_effect = {
+				character_event = { id = WCCSO.10200 days = 1 }
+
+				add_character_modifier = { name = wrote_whispers_cooldown_modifier years = 30 hidden = yes }
+			}
+			detract_society_currency_major_effect = yes
+			if = {
+				limit = {
+					NOT = { piety = 500 }
+				}
+				piety = -250
+				custom_tooltip = { text = whispers_tooltip_tip_1 }
+				set_character_flag = whispers_quality_1
+			}
+			else_if = {
+				limit = {
+					piety = 500
+					NOT = { piety = 750 }
+				}
+				piety = -500
+				custom_tooltip = { text = whispers_tooltip_tip_2 }
+				set_character_flag = whispers_quality_2
+			}
+			else_if = {
+				limit = {
+					piety = 750
+					NOT = { piety = 1000 }
+				}
+				piety = -750
+				custom_tooltip = { text = whispers_tooltip_tip_3 }
+				set_character_flag = whispers_quality_3
+			}
+			else = {
+				piety = -1000
+				custom_tooltip = { text = whispers_tooltip_tip_4 }
+				set_character_flag = whispers_quality_4
+			}
+		}
+	}
+	forge_hammer_of_the_twilight = {
+		is_high_prio = yes
+
+		ai_check_interval = 24
+
+		only_playable = yes
+		is_in_society = yes
+
+		potential = {
+			is_untouchable_trigger = no
+
+			is_adult = yes
+			is_incapable = no
+			prisoner = no
+
+			society_member_of = twilights_hammer_cult
+			society_rank == 4
+			NOT = { has_global_flag = hammer_of_the_twilight_forged }
+		}
+
+		allow = {
+			is_inaccessible_trigger = no
+
+			religion = old_gods_worship
+			true_religion = old_gods_worship
+
+			society_currency >= 5000
+			OR = {
+				AND = {
+					has_character_modifier = follower_of_nzoth
+					offmap_nzoth = { has_policy = old_god_working }
+				}
+				AND = {
+					has_character_modifier = follower_of_cthun
+					offmap_cthun = { has_policy = old_god_working }
+				}
+				AND = {
+					has_character_modifier = follower_of_yogg_saron
+					offmap_yoggsaron = { has_policy = old_god_working }
+				}
+			}
+		}
+
+		effect = {
+			add_artifact = hammer_of_the_twilight
+			set_global_flag = hammer_of_the_twilight_forged
+			change_society_currency = -5000
+		}
+
+		revoke_allowed = {
+			always = no
+		}
+
+		ai_will_do = {
+			factor = 1
+		}
+	}
 }

@@ -1,0 +1,1461 @@
+namespace = WCTFT
+
+# d_crowvale starts a revolt against k_gilneas together with c_emberstone
+province_event = {
+	id = WCTFT.50
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	trigger = {
+		start_date = 605.6.6
+	}
+	
+	immediate = {
+		d_crowvale = {
+			holder_scope = {
+				war = {
+					target = k_gilneas
+					casus_belli = overthrow_ruler_no_calls
+				}
+			}
+		}
+	}
+}
+
+# Delayed event that corrupts Sunwell
+province_event = {
+	id = WCTFT.95
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
+		add_deathwell_no_restore_effect = yes
+	}
+}
+
+#############################
+### Plaguelands Civil War ###
+#############################
+### Ping event
+province_event = {
+	id = WCTFT.99
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	trigger = {
+		start_date = 605.6.6
+		NOT = { 
+			has_global_flag = plaguelands_civil_war_ongoing
+			has_game_rule = {
+				name = frozen_throne_story
+				value = off
+			}
+		}
+	}
+
+	immediate = {
+		set_global_flag = plaguelands_civil_war_ongoing
+		
+		c_60030 = {
+			narrative_event = { id = WCTFT.100 }
+		}
+	}
+}
+### Notifies the world of the ongoing civil war, Garithos can choose his CB here
+narrative_event = {
+	id = WCTFT.100
+	title = EVTTITLE_WCTFT_100
+	desc = EVTDESC_WCTFT_100
+	picture = GFX_evt_scourge_march
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+
+	major = yes
+	major_trigger = {
+		ai = no
+	}
+	show_root = yes
+
+	option = { #To the strongest!
+		trigger = { character = ROOT }
+		k_lordaeron = {
+			show_scope_change = no
+
+			if = {
+				limit = { has_holder = yes }
+				holder_scope = {
+					show_scope_change = no
+
+					reverse_unsafe_war = {
+						target = ROOT
+						casus_belli = invasion
+						thirdparty_title = PREV
+					}
+				}
+			}
+		}
+		
+		prestige = 500
+		piety = -250
+		
+		name = EVTOPTA_WCTFT_100
+		ai_chance = {
+			factor = 1
+		}
+	}
+
+	option = { #To the rightful heir!
+		trigger = { character = ROOT }
+		k_lordaeron = {
+			show_scope_change = no
+
+			if = {
+				limit = { has_holder = yes }
+				holder_scope = {
+					show_scope_change = no
+
+					reverse_unsafe_war = {
+						target = c_60004
+						casus_belli = other_claim
+						thirdparty = ROOT
+						thirdparty_title = PREV
+					}
+				}
+			}
+		}
+		
+		prestige = 250
+		
+		name = EVTOPTB_WCTFT_100
+		ai_chance = {
+			factor = 0
+		}
+	}
+	
+	option = { #Scourge reacts
+		trigger = {
+			NOT = { character = ROOT }
+			true_religion = death_god
+		}
+		name = EVTOPTC_WCTFT_100
+	}
+	
+	option = { #Legion reacts
+		trigger = {
+			NOT = { character = ROOT }
+			true_religion = burning_legion_religion
+		}
+		name = EVTOPTF_WCTFT_100
+	}
+	
+	option = { #Forsaken react
+		trigger = {
+			NOT = {
+				character = ROOT
+				true_religion = death_god
+				true_religion = burning_legion_religion
+			}
+			culture = forsaken
+		}
+		name = EVTOPTD_WCTFT_100
+	}
+	
+	option = { #Humans react
+		trigger = {
+			NOT = { 
+				character = ROOT
+				true_religion = death_god
+				true_religion = burning_legion_religion
+				culture = forsaken
+			}
+			culture_group = human_group
+		}
+		name = EVTOPTE_WCTFT_100
+	}
+	
+	option = { #Who cares
+		trigger = {
+			NOT = { 
+				character = ROOT
+				true_religion = death_god
+				true_religion = burning_legion_religion
+				culture = forsaken
+				culture_group = human_group
+			}
+		}
+		name = EVTOPTG_WCTFT_100
+	}
+}
+
+### Additional troops join the cause
+
+#############################
+### Resistance Calia Path ###
+#############################
+### Resistance Calia Path: Garithos victorious, Calia installed
+#Pinger event
+province_event = {
+	id = WCTFT.109
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	trigger = {
+		has_global_flag = plaguelands_civil_war_ongoing
+	}
+	
+	immediate = {
+		clr_global_flag = plaguelands_civil_war_ongoing
+		
+		#Add Calia to faction
+		event_target:target_calia = { join_alliance_faction_effect = yes }
+		
+		#Vassalize the Grand Marshal
+		event_target:target_garithos = {
+			set_defacto_liege = event_target:target_calia
+		}
+		
+		#Give nicknames
+		event_target:target_calia = {
+			give_nickname = nick_the_deliverer
+		}
+		event_target:target_garithos = {
+			give_nickname = nick_the_liberator
+			create_bloodline = { type = liberator_of_lordaeron }
+		}
+		
+		# Shows notification
+		event_target:target_calia = { narrative_event = { id = WCTFT.110 } }
+		any_player = {
+			limit = {
+				NOT = { character = event_target:target_calia }
+			}
+			narrative_event = { id = WCTFT.110 }
+		}
+		
+		# Resistance Calia Path: The Silver Hand's Loyalties
+		73 = { province_event = { id = WCTFT.114 days = 7 } }
+	}
+}
+#Pinged event
+narrative_event = {
+	id = WCTFT.110
+	title = EVTTITLE_WCTFT_110
+	desc = EVTDESC_WCTFT_110
+	picture = GFX_evt_stormwind_champion
+	border = GFX_event_narrative_frame_war
+	portrait = event_target:target_calia
+
+	is_triggered_only = yes
+
+	option = { #Sometimes I wish to be in her place
+		trigger = {
+			ai = no
+			event_target:target_calia = { ai = yes }
+			
+			character = event_target:target_garithos
+		}
+		name = EVTOPTA_WCTFT_110_wish_to_be_calia
+		
+		set_player_character = event_target:target_calia
+	}
+	
+	option = {
+		trigger = {
+			character = event_target:target_calia
+		}
+		name = EVTOPTA_WCTFT_110
+		
+		spawn_colonial_troops_effect = yes
+		spawn_colonial_troops_effect = yes
+		spawn_colonial_troops_effect = yes
+		
+		# Gives claims on western Lordaeron duchies
+		claim_western_lordaeron_effect = yes
+	}
+
+	option = { #A new hope for Lordaeron
+		trigger = {
+			NOT = {
+				character = event_target:target_calia
+			}
+			true_religion = { target = event_target:target_calia target_type = public }
+		}
+		name = EVTOPTA_WCTFT_110
+	}
+	
+	option = { #She won't rule for long
+		trigger = {
+			NOT = {
+				character = event_target:target_calia
+				true_religion = { target = event_target:target_calia target_type = public }
+			}
+			OR = {
+				evil_true_religion_trigger = yes
+				culture = forsaken
+			}
+		}
+		name = EVTOPTB_WCTFT_110
+	}
+	
+	option = { #At least she can be reasoned with
+		trigger = {
+			NOT = {
+				character = event_target:target_calia
+				true_religion = { target = event_target:target_calia target_type = public }
+				culture = forsaken
+			}
+			evil_true_religion_trigger = no
+			is_high_elf_culture_trigger = yes
+		}
+		name = EVTOPTC_WCTFT_110
+	}
+
+	option = { #Pah!
+		trigger = {
+			NOT = {
+				character = event_target:target_calia
+				true_religion = { target = event_target:target_calia target_type = public }
+				culture = forsaken
+			}
+			evil_true_religion_trigger = no
+			is_high_elf_culture_trigger = no
+		}
+		name = EVTOPTD_WCTFT_110
+	}
+}
+### Resistance Calia Path: The Silver Hand's Loyalties
+# Delayer event
+province_event = {
+	id = WCTFT.114
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	trigger = {
+		# Calia controls k_lordaeron and is light_group
+		k_lordaeron = {
+			has_holder = yes
+			holder_scope = {
+				true_religion_group = light_group
+				
+				character = event_target:target_calia
+			}
+		}
+	}
+	
+	immediate = {
+		d_order_of_the_silver_hand = { holder_scope = { narrative_event = { id = WCTFT.115 } } }
+	}
+}
+# Delayed event
+narrative_event = {
+	id = WCTFT.115
+	title = EVTTITLE_WCTFT_111
+	desc = EVTDESC_WCTFT_111
+	picture = GFX_evt_paladin_human
+	border = GFX_event_narrative_frame_diplomacy
+
+	is_triggered_only = yes
+	
+	show_root = yes
+	
+	option = { #We stand with Lordaeron
+		name = EVTOPTA_WCTFT_111
+		
+		# Creates d_argent_dawn
+		create_d_argent_dawn_effect = yes
+		
+		# Eastern Silver Hand provinces support the Argent Dawn
+		d_order_of_the_silver_hand = {
+			holder_scope = { 
+				any_vassal = { 
+					limit = { capital_scope = { region = world_eastern_kingdoms_lordaeron_eastern_lordaeron } }
+					support_argent_dawn_effect = yes
+				}
+			}
+		}
+		
+		# Makes d_order_of_the_silver_hand vassal of Lordaeron
+		d_order_of_the_silver_hand = {
+			set_defacto_liege = k_lordaeron
+			holder_scope = { k_lordaeron = { holder_scope = { reverse_opinion = { modifier = opinion_very_grateful who = PREVPREV years = 10 } } } }
+		}
+		
+		#Calia is pleased
+		k_lordaeron = {
+			holder_scope = { d_order_of_the_silver_hand = { holder_scope = { reverse_opinion = { modifier = opinion_very_grateful who = PREVPREV years = 10 } } } }
+		}
+		
+		# Notify the world of the split
+		hidden_effect = {
+			d_argent_dawn = {
+				holder_scope = {
+					narrative_event = { id = WCTFT.112 }
+				}
+			}
+		}
+		
+		ai_chance = {
+			factor = 1
+		}
+	}
+	
+	option = { #The Order stands alone
+
+		#Calia is disappointed
+		k_lordaeron = {
+			holder_scope = { d_order_of_the_silver_hand = { holder_scope = { reverse_opinion = { modifier = opinion_very_disappointed who = PREVPREV years = 10 } } } }
+		}
+
+		name = EVTOPTB_WCTFT_111
+		
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+### Resistance Calia Path: The Argent Dawn is formed
+# In this outcome, Scarlet Crusade doesn't form ###
+narrative_event = {
+	id = WCTFT.112
+	title = EVTTITLE_WCTFT_112
+	desc = EVTDESC_WCTFT_112
+	picture = GFX_evt_paladin_human
+	border = GFX_event_narrative_frame_diplomacy
+
+	is_triggered_only = yes
+	
+	major = yes
+	major_trigger = {
+		ai = no
+	}
+	show_root = yes
+	
+	option = { #Most unfortunate
+		trigger = {
+			true_religion = holy_light
+		}
+		name = EVTOPTA_WCTFT_112
+	}
+	
+	option = { #Fools
+		trigger = {
+			NOT = {
+				true_religion = holy_light
+			}
+		}
+		name = EVTOPTB_WCTFT_112
+	}
+}
+
+################################
+### Resistance Garithos Path ###
+################################
+### Resistance Garithos Path: Garithos claims the throne
+narrative_event = {
+	id = WCTFT.120
+	title = EVTTITLE_WCTFT_110
+	desc = EVTDESC_WCTFT_120
+	picture = GFX_evt_stormwind_champion
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+	
+	major = yes
+	major_trigger = {
+		ai = no
+	}
+	show_root = yes
+	
+	trigger = {
+		has_global_flag = plaguelands_civil_war_ongoing
+	}
+
+	immediate = {
+		clr_global_flag = plaguelands_civil_war_ongoing
+		
+		#Give nick and bloodline
+		event_target:target_garithos = {
+			give_nickname = nick_the_usurper
+			create_bloodline = { type = scarlet_king }
+			
+			remove_special_character_title = GRAND_MARSHAL_TITLE
+		}
+		
+		#Kick out Garithos from faction
+		event_target:target_garithos = { leave_alliance_faction_effect = yes }
+		
+		# Resistance Garithos Path: The Abbendis Schism
+		73 = { province_event = { id = WCTFT.124 days = 7 } }
+	}
+	
+	option = { #This will ruffle some feathers
+		trigger = {
+			character = ROOT
+		}
+		name = EVTOPTA_WCTFT_120
+		
+		spawn_colonial_troops_effect = yes
+		spawn_colonial_troops_effect = yes
+		spawn_colonial_troops_effect = yes
+		
+		# Gives claims on western Lordaeron duchies
+		claim_western_lordaeron_effect = yes
+	}
+
+	option = { #This will ruffle some feathers
+		trigger = {
+			NOT = {
+				character = ROOT
+			}
+			true_religion = { target = event_target:target_garithos target_type = public }
+		}
+		name = EVTOPTA_WCTFT_120
+	}
+	
+	option = { #Let them kill each other
+		trigger = {
+			NOT = {
+				character = ROOT
+				true_religion = { target = event_target:target_garithos target_type = public }
+			}
+			OR = {
+				evil_true_religion_trigger = yes
+				culture = forsaken
+			}
+		}
+		name = EVTOPTB_WCTFT_120
+	}
+	
+	option = { #The last vestiges of honor are lost
+		trigger = {
+			NOT = {
+				character = ROOT
+				true_religion = { target = event_target:target_garithos target_type = public }
+				culture = forsaken
+			}
+			evil_true_religion_trigger = no
+			is_high_elf_culture_trigger = yes
+		}
+		name = EVTOPTC_WCTFT_120
+	}
+
+	option = { #Disconcerting
+		trigger = {
+			NOT = { 
+				character = ROOT
+				true_religion = { target = event_target:target_garithos target_type = public }
+				culture = forsaken
+			}
+			evil_true_religion_trigger = no
+			is_high_elf_culture_trigger = no
+		}
+		name = EVTOPTD_WCTFT_120
+	}
+}
+### Resistance Garithos Path: The Abbendis Schism
+# In this outcome Argent Dawn doesn't form #
+# Delayer event
+province_event = {
+	id = WCTFT.124
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	trigger = {
+		# Garithos controls k_lordaeron and is light_group
+		k_lordaeron = {
+			has_holder = yes
+			holder_scope = {
+				true_religion_group = light_group
+				
+				character = event_target:target_garithos
+			}
+		}
+	}
+	
+	immediate = {
+		### Creates d_scarlet_crusade and d_church_scarlet_light
+		create_d_scarlet_crusade_effect = yes
+		create_d_church_scarlet_light_effect = yes
+		
+		### Changes religion_authority
+		religious_split_holy_light_bad_effect = yes
+		religious_split_scarlet_light_good_effect = yes
+		
+		# Western Silver Hand provinces support the Scarlet Crusade
+		d_order_of_the_silver_hand = {
+			holder_scope = {
+				any_vassal = {
+					limit = {
+						is_potential_scarlet_follower_trigger = yes
+						capital_scope = { region = world_eastern_kingdoms_lordaeron_western_lordaeron }
+					}
+					support_scarlet_light_effect = yes
+				}
+			}
+		}
+		
+		d_scarlet_crusade = {
+			holder_scope = {
+				# Makes d_scarlet_crusade vassal of k_lordaeron
+				set_defacto_liege = k_lordaeron
+				k_lordaeron = { holder_scope = { reverse_opinion = { modifier = opinion_very_grateful who = PREVPREV years = 10 } } }
+				# First leader called High General
+				set_special_character_title = "HIGH_GENERAL_TITLE"
+				
+				# Notification
+				narrative_event = { id = WCTFT.125 }
+			}
+		}
+	}
+}
+# Delayed event
+narrative_event = {
+	id = WCTFT.125
+	title = EVTTITLE_WCTFT_121
+	desc = EVTDESC_WCTFT_121
+	picture = GFX_evt_high_commander
+	border = GFX_event_narrative_frame_diplomacy
+
+	is_triggered_only = yes
+
+	major = yes
+	major_trigger = {
+		OR = {
+			ai = no
+			religion_group = light_group
+		}
+	}
+	show_root = yes
+	
+	# Garithos always support the Crusade
+	option = {
+		trigger = { 
+			has_landed_title = k_lordaeron
+		}
+		name = EVTOPTB_WCLAT_9001
+		
+		support_scarlet_light_effect = yes
+	}
+	
+	# Doesn't support the Crusade
+	option = {
+		trigger = { 
+			NOT = { has_landed_title = k_lordaeron }
+			true_religion = holy_light
+		}
+		name = EVTOPTB_WCTFT_121
+		
+		piety = 100
+
+		ai_chance = {
+			factor = 50
+			
+			supports_holy_light_score = yes
+		}
+	}
+	
+	# Support the Scarlet Crusade
+	option = {
+		trigger = {
+			NOT = { has_landed_title = k_lordaeron }
+			OR = {
+				true_religion = scarlet_light
+				
+				is_potential_scarlet_follower_trigger = yes
+			}
+		}
+		name = EVTOPTB_WCLAT_9001
+		
+		support_scarlet_light_effect = yes
+
+		ai_chance = {
+			factor = 50
+			
+			supports_scarlet_light_score = yes
+		}
+	}
+	
+	option = { #Evil reaction
+		trigger = {
+			NOT = { has_landed_title = k_lordaeron }
+			evil_true_religion_trigger = yes
+		}
+		name = EVTOPTD_WCTFT_121
+	}
+	
+	option = { #Everyone else's reaction
+		trigger = { 
+			NOT = {
+				has_landed_title = k_lordaeron
+				true_religion = holy_light
+				true_religion = scarlet_light
+			}
+			evil_true_religion_trigger = no
+		}
+		name = EVTOPTE_WCTFT_121
+	}
+	
+	after = {
+		tooltip = {
+			religious_split_holy_light_bad_effect = yes
+			religious_split_scarlet_light_good_effect = yes
+		}
+	}
+}
+
+#####################
+### Forsaken Path ###
+#####################
+### Forsaken Path: Sylvanas victorious
+narrative_event = {
+	id = WCTFT.130
+	title = EVTTITLE_WCTFT_130
+	desc = EVTDESC_WCTFT_130
+	picture = GFX_evt_scourge_march
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+	
+	major = yes
+	major_trigger = {
+		ai = no
+	}
+	show_root = yes
+	
+	trigger = {
+		has_global_flag = plaguelands_civil_war_ongoing
+	}
+
+	immediate = {
+		clr_global_flag = plaguelands_civil_war_ongoing
+		
+		#Ping Saidan or create the Grand Crusader of Scarlet Crusade
+		73 = { province_event = { id = WCTFT.134 days = 15 random = 15 } }
+	}
+	
+	option = { #For the Forsaken!
+		trigger = {
+			character = ROOT
+		}
+		name = EVTOPTB_WCTFT_130
+		
+		spawn_colonial_troops_effect = yes
+		spawn_colonial_troops_effect = yes
+		spawn_colonial_troops_effect = yes
+		spawn_colonial_troops_effect = yes # Sylvanas needs more because she fights the Alliance
+		
+		# Gives claims on western Lordaeron duchies
+		claim_western_lordaeron_effect = yes
+	}
+	
+	option = { #Treacherous scum
+		trigger = { evil_true_religion_trigger = yes }
+		name = TREACHEROUS_SCUM
+	}
+	
+	option = { #We will slaughter anyone who stands in our way
+		trigger = {
+			NOT = {
+				character = ROOT
+				evil_true_religion_trigger = yes
+			}
+			culture = forsaken
+		}
+		name = EVTOPTB_WCTFT_130
+	}
+
+	option = { #It's over
+		trigger = {
+			NOT = {
+				character = ROOT
+				evil_true_religion_trigger = yes
+			}
+			culture = lordaeronian
+		}
+		name = ITS_OVER
+	}
+	
+	option = { #Our fallen champion
+		trigger = {
+			NOT = {
+				character = ROOT
+				evil_true_religion_trigger = yes
+			}
+			is_high_elf_culture_trigger= yes
+		}
+		name = EVTOPTD_WCTFT_130
+	}
+
+	option = { #Looks like the balance of power has changed
+		trigger = {
+			NOT = {
+				character = ROOT
+				evil_true_religion_trigger = yes
+				culture = forsaken
+				culture = lordaeronian
+				is_high_elf_culture_trigger = yes
+			}
+		}
+		name = EVTOPTE_WCTFT_130
+	}
+}
+### Forsaken Path: Saidan makes deal with close relative of Silver Hand leader
+# Delayer event
+province_event = {
+	id = WCTFT.134
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	trigger = {
+		# Saidan Dathrohan
+		c_60021 = { is_potential_scarlet_leader_trigger = yes }
+		d_order_of_the_silver_hand = {
+			has_holder = yes
+			holder_scope = {
+				frozen_throne_silver_leader_trigger = yes
+				any_courtier_or_vassal = {
+					is_inaccessible_trigger = no
+
+					frozen_throne_silver_betrayer_trigger = yes
+				}
+			}
+		}
+	}
+	
+	immediate = {
+		c_60021 = { save_event_target_as = target_future_crusader }
+		d_order_of_the_silver_hand = {
+			holder_scope = {
+				save_event_target_as = target_silver_leader
+				
+				random_courtier_or_vassal = {
+					limit = {
+						is_inaccessible_trigger = no
+
+						frozen_throne_silver_betrayer_trigger = yes
+					}
+					preferred_limit = {
+						OR = {
+							is_close_relative = PREV
+							is_friend = PREV
+							is_lover = PREV
+						}
+					}
+					save_event_target_as = target_silver_betrayer
+					
+					narrative_event = { id = WCTFT.135 }
+				}
+			}
+		}
+	}
+}
+# Delayed event
+narrative_event = {
+	id = WCTFT.135
+	title = EVTTITLE_WCTFT_135
+	desc = EVTDESC_WCTFT_135
+	picture = GFX_evt_high_commander
+	border = GFX_event_narrative_frame_intrigue
+	portrait = event_target:target_future_crusader
+
+	is_triggered_only = yes
+	
+	immediate = {
+		add_trait = travelling
+	}
+
+	# I'll do it
+	option = {
+		name = EVTOPTA_WCTFT_135
+		
+		73 = { province_event = { id = WCTFT.140 days = 14 random = 14 } }
+	}
+	
+	# I can't do it
+	option = {
+		name = EVTOPTB_WCTFT_135
+		
+		remove_trait = travelling
+		
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+### Forsaken Path: You murders Silver Hand leader
+# Delayer event
+province_event = {
+	id = WCTFT.140
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
+		if = {
+			limit = {
+				event_target:target_silver_leader = { frozen_throne_silver_leader_trigger = yes }
+				event_target:target_silver_betrayer = { frozen_throne_silver_betrayer_trigger = yes }
+			}
+			event_target:target_silver_betrayer= { narrative_event = { id = WCTFT.141 } }
+		}
+		else = {
+			event_target:target_future_crusader = { character_event = { id = WCTFT.200 } }
+			event_target:target_silver_betrayer = { character_event = { id = WCTFT.200 } }
+		}
+	}
+}
+# Delayed event
+narrative_event = {
+	id = WCTFT.141
+	title = EVTTITLE_WCTFT_135
+	desc = EVTDESC_WCTFT_141
+	picture = GFX_evt_high_commander
+	border = GFX_event_narrative_frame_intrigue
+	portrait = event_target:target_silver_leader
+
+	is_triggered_only = yes
+	
+	immediate = {
+		# Saves location to be used in localization
+		324 = { # Stratholme
+			if = {
+				limit = { evil_public_religion_trigger = yes }
+				save_event_target_as = target_province
+			}
+		}
+		event_target:target_silver_leader = {
+			# Saves artifact to be used in localization
+			if = {
+				limit = {
+					any_artifact = {
+						is_dueling_weapon_artifact_and_equipped = yes
+						is_sharp_weapon_artifact_trigger = yes
+					}
+				}
+				random_artifact = {
+					limit = {
+						is_dueling_weapon_artifact_and_equipped = yes
+						is_sharp_weapon_artifact_trigger = yes
+					}
+					save_event_target_as = dueling_weapon_1 #for loc purposes, kept separate
+				}
+			}
+		}
+	}
+
+	# The deed is done, may my own legend begin!
+	option = {
+		name = EVTOPTA_WCTFT_141
+		
+		remove_trait = travelling
+		
+		event_target:target_silver_leader = {
+			show_scope_change = no
+			
+			tooltip = { death = { death_reason = death_murder_unknown_butchered killer = ROOT } }
+			
+			narrative_event = { id = WCTFT.150 }
+		}
+	}
+}
+### Forsaken Path: You, Silver Hand leader, is murdered
+narrative_event = {
+	id = WCTFT.150
+	title = EVTTITLE_WCTFT_135
+	desc = EVTDESC_WCTFT_150
+	picture = GFX_evt_high_commander
+	border = GFX_event_narrative_frame_intrigue
+	portrait = event_target:target_silver_betrayer
+
+	is_triggered_only = yes
+
+	# Betrayed by my own...
+	option = {
+		name = EVTOPTA_WCTFT_150
+		
+		death = { death_reason = death_murder_unknown_butchered killer = event_target:target_silver_betrayer }
+	}
+}
+
+### Forsaken Path: Silver Hand splinters into Scarlets and Argents
+# Canon outcome - Argents and Scarlets both form ###
+# on_new_holder on_new_holder_inheritance on_new_holder_usurpation
+character_event = {
+	id = WCTFT.155
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	only_playable = yes
+	
+	trigger = {
+		FROMFROM = { character = yes }
+		FROM = { title = d_order_of_the_silver_hand }
+		
+		argent_dawn_and_scarlet_crusade_can_be_formed_trigger = yes
+	}
+	
+	immediate = {
+		FROMFROM = { save_event_target_as = target_former_highlord }
+		
+		# Creates d_scarlet_crusade, d_argent_dawn
+		73 = { province_event = { id = WCLAT.9000 days = 1 } }
+	}
+}
+### Forsaken Path: Silver Hand plot failed
+character_event = {
+	id = WCTFT.200
+	desc = EVTDESC_WCTFT_200
+	picture = GFX_evt_high_commander
+	border = GFX_event_normal_frame_intrigue
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = ALAS
+	}
+	
+	after = {
+		if = {
+			limit = {
+				trait = travelling
+				
+				character = event_target:target_silver_betrayer
+			}
+			remove_trait = travelling	
+		}
+	}
+}
+
+################################
+### War of the Frozen Throne ###
+################################
+# War of the Frozen Throne: Illidari Lost
+narrative_event = {
+	id = WCTFT.400
+	title = EVTTITLE_WCTFT_400
+	desc = {
+		trigger = { kaelthas_can_follow_illidan_trigger = no }
+		text = EVTDESC_WCTFT_400
+	}
+	desc = {
+		trigger = { kaelthas_can_follow_illidan_trigger = yes }
+		text = EVTDESC_WCTFT_400_kaelthas
+	}
+	picture = GFX_evt_scourge_army
+	border = GFX_event_narrative_frame_war
+	portrait = event_target:target_illidan
+
+	is_triggered_only = yes
+	
+	immediate = {
+		if = {
+			limit = { has_character_flag = is_kaelthas_flag }
+			any_playable_ruler = {
+				limit = { has_character_flag = is_regent_lord_flag }
+				save_event_target_as = target_regent_lord
+			}
+		}
+	}
+	
+	### Kael'thas options
+	# It's time to get home
+	option = {
+		trigger = {
+			kaelthas_can_return_to_quelthalas_trigger = yes
+		}
+		name = ITS_TIME_TO_GET_HOME
+		
+		save_event_target_as = target_kaelthas
+		
+		# End of Thalassian Regency
+		73 = { province_event = { id = WCTFT.495 days = 30 random = 30 } }
+		
+		ai_chance = {
+			factor = 50
+			# Positive
+			modifier = { # Want to be a king
+				factor = 2
+				trait = ambitious
+			}
+			modifier = { # Don't like ventures
+				factor = 2
+				trait = craven
+			}
+			modifier = { # Don't care what I did
+				factor = 2
+				trait = arbitrary
+			}
+			
+			# Negative
+			modifier = { # Don't want to be a king
+				factor = 0.5
+				trait = content
+			}
+			modifier = { # Like ventures
+				factor = 0.5
+				trait = brave
+			}
+			modifier = { # How can I do it after what I did?
+				factor = 0.5
+				trait = just
+			}
+			modifier = { # It makes me depressed
+				factor = 0.5
+				trait = depressed
+			}
+		}
+	}
+	# We will follow Illidan
+	option = {
+		trigger = {
+			kaelthas_can_follow_illidan_trigger = yes
+		}
+		
+		name = EVTOPTA_WCTFT_400_follow_illidan
+		
+		if = {
+			limit = {
+				ai = no
+				event_target:target_regent_lord = { ai = yes }
+			}
+			set_player_character = event_target:target_regent_lord
+		}
+		else = {
+			custom_tooltip = { text = get_game_over_tooltip }
+		}
+		hidden_effect = {
+			e_scourge = {
+				holder_scope = {
+					ROOT = {
+						prev_usurp_all_demesne_provinces_effect = yes
+						death = { death_reason = death_missing }
+					}
+				}
+			}
+		}
+		
+		ai_chance = {
+			factor = 50
+		}
+	}
+	
+	# Death is eternal!
+	option = {
+		trigger = {
+			NOT = {
+				kaelthas_can_follow_illidan_trigger = yes
+			}
+			
+			e_scourge = { holder_scope = { religion = { target = PREVPREV target_type = true } } }
+		}
+		name = EVTOPTA_WCTFT_400_scourge
+	}
+	# We were not prepared...
+	option = {
+		trigger = {
+			NOT = {
+				kaelthas_can_follow_illidan_trigger = yes
+				e_scourge = { holder_scope = { religion = { target = PREVPREV target_type = true } } }
+			}
+			OR = {
+				character = event_target:target_illidan
+				suzerain = { character = event_target:target_illidan }
+				top_liege = {
+					OR = {
+						character = event_target:target_illidan
+						suzerain = { character = event_target:target_illidan }
+					}
+				}
+			}
+		}
+		name = EVTOPTA_WCTFT_400_illidari
+	}
+	# Interesting...
+	option = {
+		trigger = {
+			NOT = {
+				kaelthas_can_follow_illidan_trigger = yes
+				e_scourge = {
+					holder_scope = {
+						religion = { target = PREVPREV target_type = true }
+					}
+				}
+				OR = {
+					character = event_target:target_illidan
+					suzerain = { character = event_target:target_illidan }
+					top_liege = {
+						OR = {
+							character = event_target:target_illidan
+							suzerain = { character = event_target:target_illidan }
+						}
+					}
+				}
+			}
+		}
+		name = INTERESTING
+	}
+	# Who cares?
+	option = {
+		trigger = {
+			NOT = {
+				kaelthas_can_follow_illidan_trigger = yes
+				e_scourge = {
+					holder_scope = {
+						religion = { target = PREVPREV target_type = true }
+					}
+				}
+				OR = {
+					character = event_target:target_illidan
+					suzerain = { character = event_target:target_illidan }
+					top_liege = {
+						OR = {
+							character = event_target:target_illidan
+							suzerain = { character = event_target:target_illidan }
+						}
+					}
+				}
+			}
+		}
+		name = WHO_CARES
+	}
+}
+
+#################################
+### End of Thalassian Regency ###
+#################################
+### End of Thalassian Regency
+# Delayer event
+province_event = {
+	id = WCTFT.495
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
+		event_target:target_kaelthas = {
+			if = {
+				limit = { kaelthas_can_return_to_quelthalas_trigger = yes }
+				
+				# Abdication
+				set_defacto_liege = THIS
+				suzerain = { remove_tributary = PREV }
+				e_quelthalas = {
+					if = {
+						limit = { kaelthas_can_return_to_this_trigger = yes }
+						
+						holder_scope = {
+							save_event_target_as = target_regent_lord
+						}
+						grant_title_no_opinion = event_target:target_kaelthas
+					}
+				}
+				k_quelthalas = {
+					if = {
+						limit = { kaelthas_can_return_to_this_trigger = yes }
+						
+						holder_scope = {
+							save_event_target_as = target_regent_lord
+						}
+						grant_title_no_opinion = event_target:target_kaelthas
+					}
+				}
+				d_silvermoon = {
+					if = {
+						limit = { kaelthas_can_return_to_this_trigger = yes }
+						
+						holder_scope = {
+							save_event_target_as = target_regent_lord
+						}
+						grant_title_no_opinion = event_target:target_kaelthas
+					}
+				}
+				c_silvermoon = {
+					if = {
+						limit = { kaelthas_can_return_to_this_trigger = yes }
+						
+						grant_title_no_opinion = event_target:target_kaelthas
+					}
+				}
+				c_falconwing_square = {
+					if = {
+						limit = { kaelthas_can_return_to_this_trigger = yes }
+						
+						grant_title_no_opinion = event_target:target_kaelthas
+					}
+				}
+				capital = c_silvermoon
+				
+				# If the Scourge exists, the Lich King takes your titles in Northrend
+				# P.S. Can't say I like it... feels unnatural - your Zuzu
+				if = {
+					limit = { e_scourge = { has_holder = yes } }
+					e_scourge = { holder_scope = { save_event_target_as = target_lich_king } }
+					
+					any_demesne_title = {
+						limit = {
+							title_can_be_lost_trigger = yes
+							lower_tier_than = DUKE
+							
+							region = world_northrend
+						}
+						grant_title_no_opinion = { target = event_target:target_lich_king type = invasion }
+					}
+				}
+				
+				# Spawns some army so Kael may kick the Scourge out of Quel'thalas
+				spawn_colonial_troops_effect = yes
+				spawn_colonial_troops_effect = yes
+				
+				any_player = {
+					narrative_event = { id = WCTFT.500 }
+				}
+				
+				event_target:target_regent_lord = {
+					clr_character_flag = is_regent_lord_flag
+					
+					remove_special_character_title = REGENT_LORD_TITLE
+				}
+			}
+			else = {
+				# Fail fallback
+				character_event = { id = WCTFT.550 }
+			}
+		}
+	}
+}
+# Delayed event
+narrative_event = {
+	id = WCTFT.500
+	title = EVTTITLE_WCTFT_500
+	desc = EVTDESC_WCTFT_500
+	picture = GFX_evt_sunwell
+	border = GFX_event_narrative_frame_economy
+	portrait = event_target:target_kaelthas
+
+	is_triggered_only = yes
+	
+	# Kael'thas: I'm back
+	option = {
+		trigger = {
+			character = event_target:target_kaelthas
+		}
+		name = KING_RETURNED
+	}
+	# The king has returned!
+	option = {
+		trigger = {
+			NOT = {
+				character = event_target:target_kaelthas
+			}
+			opinion = { who = event_target:target_kaelthas value = 0 }
+			
+			realm = {
+				OR = {
+					title = e_quelthalas
+					title = k_quelthalas
+					title = d_silvermoon
+				}
+			}
+		}
+		name = KING_RETURNED
+	}
+	# It would be better if he didn't return
+	option = {
+		trigger = {
+			NOT = {
+				character = event_target:target_kaelthas
+				opinion = { who = event_target:target_kaelthas value = 0 }
+			}
+			
+			realm = {
+				OR = {
+					title = e_quelthalas
+					title = k_quelthalas
+					title = d_silvermoon
+				}
+			}
+		}
+		name = EVTOPTA_WCTFT_500_negative
+	}
+	# Interesting...
+	option = {
+		trigger = {
+			NOT = {
+				character = event_target:target_kaelthas
+				opinion = { who = event_target:target_kaelthas value = 0 }
+				realm = {
+					OR = {
+						title = e_quelthalas
+						title = k_quelthalas
+						title = d_silvermoon
+					}
+				}
+			}
+		}
+		name = INTERESTING
+	}
+	# Who cares?
+	option = {
+		trigger = {
+			NOT = {
+				character = event_target:target_kaelthas
+				opinion = { who = event_target:target_kaelthas value = 0 }
+				realm = {
+					OR = {
+						title = e_quelthalas
+						title = k_quelthalas
+						title = d_silvermoon
+					}
+				}
+			}
+		}
+		name = WHO_CARES
+	}
+}
+### End of Thalassian Regency: fail fallback
+character_event = {
+	id = WCTFT.550
+	desc = EVTDESC_WCTFT_550
+	picture = GFX_evt_sunwell
+	border = GFX_event_normal_frame_economy
+	
+	is_triggered_only = yes
+	
+	show_root = yes
+	
+	option = {
+		name = ALAS
+	}
+}
+
+
+### Regent Lord of Quel'thalas makes Quel'thalas elective, becomes the king
+character_event = {
+	id = WCTFT.600
+	title = EVTTITLE_WCTFT_500
+	desc = EVTDESC_WCTFT_600
+	picture = GFX_evt_sunwell
+	border = GFX_event_normal_frame_diplomacy
+	
+	is_triggered_only = yes
+	
+	#Regent Lord's reaction
+	option = {
+		trigger = { character = FROM }
+		name = EXCELLENT
+	}
+	# Others' reaction
+	option = {
+		trigger = { NOT = { character = FROM } }
+		name = INTERESTING
+	}
+}

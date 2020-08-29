@@ -1,0 +1,694 @@
+namespace = WCCRS
+
+### CRISIS: DRUST INCURSION EVENTS ###
+# Opening event: A sick spouse
+character_event = {
+	id = WCCRS.100
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	only_playable = yes
+
+	trigger = {
+		NOT = {	has_global_flag = drust_incursion_happened }
+		NOT = {	has_global_flag = heartsbane_coven_event_flag }
+		
+		has_landed_title = d_drustwar
+		trigger_if = {
+			limit = { drust_sick_spouse_trigger = yes }
+			any_spouse = { drust_worried_spouse_trigger = yes }
+		}
+		trigger_else = {
+			drust_worried_spouse_trigger = yes
+			any_spouse = { drust_sick_spouse_trigger = yes }
+		}
+	}
+
+	immediate = {
+		set_global_flag = heartsbane_coven_event_flag
+		set_global_flag = drustvar_crisis_ongoing_flag	# Blocks summon_gorak_tul
+		
+		# Picks who is sick and who isn't
+		if = {
+			limit = { drust_sick_spouse_trigger = yes }
+			save_event_target_as = target_sick_spouse
+			random_spouse = {
+				limit = { drust_worried_spouse_trigger = yes }
+				save_event_target_as = target_worried_spouse
+			}
+		}
+		else = {
+			save_event_target_as = target_worried_spouse
+			random_spouse = {
+				limit = { drust_sick_spouse_trigger = yes }
+				save_event_target_as = target_sick_spouse
+			}
+		}
+		
+		event_target:target_worried_spouse = { narrative_event = { id = WCCRS.110 } }
+	}
+}
+
+#Drust King, Gorak Tul contacts the grief-stricken spouse
+narrative_event = {
+	id = WCCRS.110
+	title = EVTTITLE_WCCRS_110
+	desc = EVTDESC_WCCRS_110
+	picture = GFX_evt_drustvar
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	immediate = {
+		log = "WCCRS.110 fired for [Root.GetBestName]"
+		
+		# Moved to WCCRS.119
+	}
+
+	# Not even death will do us part
+	option = {
+		name = EVTOPTA_WCCRS_110
+		
+		event_target:target_worried_spouse = {
+			drust_spouse_becomes_undead_effect = yes
+		}
+		event_target:target_sick_spouse = {
+			drust_spouse_becomes_undead_effect = yes
+		}
+		
+		event_target:target_sick_spouse = { narrative_event = { id = WCCRS.111 } }
+		
+		# Gives units to d_drustwar holder
+		if = {
+			limit = {
+				d_drustwar = {
+					holder_scope = {
+						OR = {
+							character = event_target:target_worried_spouse
+							character = event_target:target_sick_spouse
+						}
+					}
+				}
+			}
+			d_drustwar = {
+				holder_scope = {
+					save_event_target_as = target_unit_owner
+				}
+			}
+		}
+		# ...otherwise, gives units to target_worried_spouse
+		else_if = {
+			limit = { event_target:target_worried_spouse = { is_landed = yes } }
+			event_target:target_worried_spouse = {
+				save_event_target_as = target_unit_owner
+			}
+		}
+		# ...otherwise, gives units to target_sick_spouse
+		else = {
+			limit = { event_target:target_sick_spouse = { is_landed = yes } }
+			event_target:target_sick_spouse = {
+				save_event_target_as = target_unit_owner
+			}
+		}
+		if = {
+			limit = { event_target:target_unit_owner = { character = yes } }
+			event_target:target_unit_owner = {
+				# Gives money, spawn commanders
+				for_war_start_pack_effect = yes
+				# Gives troops
+				spawn_colonial_troops_effect = yes
+				spawn_colonial_troops_effect = yes
+			}
+		}
+		
+		# Independence?
+		if = {
+			limit = {
+				event_target:target_worried_spouse = {
+					independent = no
+					is_ruler = yes
+					
+					liege = { NOT = { religion = throsic } }
+				} 
+			}
+			event_target:target_worried_spouse = { set_defacto_liege = THIS }
+		}
+		if = {
+			limit = {
+				event_target:target_sick_spouse = {
+					independent = no
+					is_ruler = yes
+					
+					liege = { NOT = { religion = throsic } }
+				} 
+			}
+			event_target:target_sick_spouse = { set_defacto_liege = THIS }
+		}
+
+		# The Order of Embers
+		73 = { province_event = { id = WCCRS.119 days = 7 } }
+
+		ai_chance = {
+			factor = 1
+		}
+	}
+
+	# I refuse
+	option = {
+		name = EVTOPTB_WCCRS_110
+
+		set_character_flag = heartsbane_coven_declined_flag
+
+		custom_tooltip = {
+			text = stops_the_event_chain
+			clr_global_flag = heartsbane_coven_event_flag
+			clr_global_flag = drustvar_crisis_ongoing_flag	# Blocks summon_gorak_tul
+		}
+
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+
+#Ping the raised spouse
+narrative_event = {
+	id = WCCRS.111
+	title = EVTTITLE_WCCRS_111
+	desc = EVTDESC_WCCRS_111
+	picture = GFX_evt_drustvar
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	immediate = {
+		log = "WCCRS.111 fired for [Root.GetBestName]"
+	}
+
+	option = {
+		name = EVTOPTA_WCCRS_111 # Dynloc is to be used depending on spouse's gender here, if male bargainer, Gorak raises his spouse as Mother of the Heartsbane
+	}
+}
+
+# The Order of Embers
+# Delayer event		# This event helps to fire WCCRS.120 in case of character's death
+province_event = {
+	id = WCCRS.119
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		if = {
+			limit = {
+				event_target:target_worried_spouse = {
+					any_child = { ooe_founder_triggers = yes }	# Used a few times, so I created scripted trigger
+				}
+			}
+			event_target:target_worried_spouse = {
+				random_child = {
+					limit = { ooe_founder_triggers = yes }
+					save_event_target_as = target_ooe_founder
+				}
+			}
+		}
+		# Fallback
+		else = {
+			create_character = {
+				random_traits = yes
+				dynasty = none
+				religion = tidemother
+				culture = tirassian
+				female = yes
+				age = 26
+				attributes = {
+					martial = 7
+				}
+				trait = creature_human
+				trait = brilliant_strategist
+				trait = class_paladin_7
+				trait = zealous
+			}
+			new_character = {
+				save_event_target_as = target_ooe_founder	# Saves new target
+			}
+		}
+		event_target:target_ooe_founder = { narrative_event = { id = WCCRS.120 } }	# Creates the Order
+	}
+}
+# Delayed event
+narrative_event = {
+	id = WCCRS.120
+	title = EVTTITLE_WCCRS_120
+	desc = EVTDESC_WCCRS_120
+	picture = GFX_evt_drustvar
+	border = GFX_event_narrative_frame_war
+
+	major = yes
+	major_trigger = {
+		ai = no
+	}
+	show_root = yes
+
+	is_triggered_only = yes
+
+	immediate = {
+		log = "WCCRS.120 fired for [Root.GetBestName]"
+		
+		clr_global_flag = drustvar_crisis_ongoing_flag
+
+		religion = tidemother	# This's tidemother's order
+		clear_secret_religion = yes
+		add_trait = zealous
+
+		activate_title = { title = d_order_of_embers status = yes }
+		d_order_of_embers = { grant_title = event_target:target_ooe_founder }
+		if = {
+			limit = {
+				k_kul_tiras = {
+					holder_scope = {
+						religion = tidemother
+					}
+				}
+			}
+			set_defacto_liege = k_kul_tiras
+		}
+		
+		#Gives money and moral authority
+		holy_order_start_pack_effect = yes
+		# Gives money, spawn commanders
+		for_war_start_pack_effect = yes
+
+		# Declares war against the duchy of Drustvar
+		d_drustwar = {
+			holder_scope = {
+				save_event_target_as = target_drustwar_leader
+				if = {
+					limit = {
+						OR = {
+							character = event_target:target_worried_spouse
+							character = event_target:target_sick_spouse
+						}
+					}
+					reverse_unsafe_war = {
+						target = event_target:target_ooe_founder
+						casus_belli = religious
+						thirdparty_title = PREV
+					}
+				}
+			}
+		}
+		# Gives units to fight d_drustwar
+		if = {
+			limit = { war = yes }
+			location = {
+				ROOT = {
+					spawn_unit = {
+						owner = THIS
+						province = PREV
+						home = PREV
+						match_character = event_target:target_drustwar_leader
+						match_mult = 0.75
+						match_min = 1000
+						match_max = 10000
+						attrition = 1.0
+						maintenance = no
+					}
+				}
+			}
+		}
+	}
+
+	option = {
+		trigger = {
+			true_religion = throsic
+		}
+		name = EVTOPTA_WCCRS_120
+	}
+	option = {
+		trigger = {
+			NOT = {
+				true_religion = throsic
+			}
+		}
+		name = EVTOPTB_WCCRS_120
+	}
+}
+
+#Gorak Tul invades - triggered by decision
+narrative_event = {
+	id = WCCRS.130
+	title = EVTTITLE_WCCRS_130
+	desc = EVTDESC_WCCRS_130
+	picture = GFX_evt_drustvar
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	major = yes
+	major_trigger = {
+		ai = no
+	}
+	show_root = yes
+
+	immediate = {
+		log = "WCCRS.130 fired for [Root.GetBestName]"
+		save_event_target_as = target_summoner_of_gorak
+		
+		set_global_flag = drust_incursion_happened		# Locks the crisis opening event if it didn't happen
+		
+		create_character = {
+			name = Tul
+			dynasty = 70201
+			culture = drust
+			religion = throsic
+			attributes = {
+				martial=5 diplomacy=5 stewardship=5 intrigue=6 learning=6
+			}
+			trait=mastermind_theologian
+			trait=creature_vrykul
+			trait=class_necromancer_9
+			trait=cruel trait=patient trait=zealous trait=deceitful trait=being_undead
+			trait=gorak_tul_trait
+			age = 500
+		}
+		new_character = {
+			save_event_target_as = target_gorak_tul
+			# Used in scripted effects
+			save_event_target_as = target_settler
+			add_artifact = blightreaper
+			add_artifact = mantle_of_gorak_tul
+
+			# effect = {
+				# set_graphical_culture = vrykul_undead		# Nani is that? There must be no effect!
+			# }
+			
+			set_graphical_culture = vrykul_undead
+
+			create_bloodline = { type = gorak_tul }
+			
+			c_fates_end = {
+				# event_target:target_settler and its people settle here	# without gameover if current ruler is player
+				settle_as_target_settler_effect = yes
+			}
+			
+			clear_settler_flag_effect = yes
+			
+			activate_title = { title = k_drustvar status = yes }
+			k_drustvar = { grant_title = event_target:target_gorak_tul }
+			
+			wealth = 1000
+			set_government_type = tribal_monarchy_government
+			
+			create_character = {
+				name = Maloch
+				dynasty = 70202
+				culture = drust religion = throsic
+				attributes = {
+					martial=5 diplomacy=4 stewardship=5 intrigue=4 learning=4
+				}
+				trait=mastermind_theologian
+				trait=creature_vrykul
+				trait=class_necromancer_5
+				trait=zealous trait=cruel trait=proud trait=being_undead
+				age = 400
+			}
+			new_character = {
+				set_graphical_culture = vrykul_undead
+			}
+			
+			create_character = {
+				name = Drif
+				dynasty = 70203
+				culture = drust religion = throsic
+				attributes = {
+					martial=6 diplomacy=3 stewardship=4 intrigue=5 learning=4
+				}
+				trait=brilliant_strategist
+				trait=creature_vrykul
+				trait=class_death_knight_5
+				trait=zealous trait=sturdy trait=brave trait=wroth trait=being_undead
+				age = 400
+			}
+			new_character = {
+				set_graphical_culture = vrykul_undead
+			}
+			
+			create_character = {
+				name = Saor
+				dynasty = 70204
+				culture = drust religion = throsic
+				attributes = {
+					martial=5 diplomacy=5 stewardship=4 intrigue=4 learning=6
+				}
+				trait=grey_eminence
+				trait=creature_vrykul
+				trait=class_druid_5
+				trait=zealous trait=shrewd trait=cruel trait=temperate trait=patient trait=being_undead
+				age = 400
+				add_trait_undead_effect = yes
+			}
+			new_character = {
+				set_graphical_culture = vrykul_undead
+			}
+		}
+		# Make the person that fired the decison a vassal of Gorak Tul
+		event_target:target_summoner_of_gorak = {
+			if = {
+				limit = { character_can_be_vassalized_trigger = yes }
+				set_defacto_liege = event_target:target_gorak_tul
+			}
+		}
+		# Declares war against Kul Tiras (wip)
+		c_boralus = {
+			holder_scope = {
+				top_liege = {
+					save_event_target_as = target_gorak_tul_enemy
+					reverse_war = {
+						target = event_target:target_gorak_tul
+						casus_belli = invasion
+						thirdparty_title = k_kul_tiras
+					}
+				}
+            }
+        }
+		#Gives troops
+		event_target:target_gorak_tul = {
+			# Gives money, spawn commanders
+			for_war_start_pack_effect = yes
+			# Gives troops
+			spawn_colonial_troops_effect = yes
+			spawn_colonial_troops_effect = yes
+			# Gives troops to fight c_boralus's liege
+			if = {
+				limit = { war = yes }
+				location = {
+					event_target:target_gorak_tul = {
+						spawn_unit = {
+							owner = THIS
+							province = PREV
+							home = PREV
+							match_character = event_target:target_gorak_tul_enemy
+							match_mult = 1
+							match_min = 1500
+							match_max = 15000
+							attrition = 1.0
+							maintenance = no
+						}
+					}
+				}
+			}
+		}
+		
+		
+		# The Thornspeakers take action
+		73 = { province_event = { id = WCCRS.149 days = 7 } }
+	}
+
+	option = {
+		name = EVTOPTA_WCCRS_130
+	}
+	
+	option = {
+		trigger = {
+			ai = no
+			event_target:target_gorak_tul = { ai = yes }
+			
+			character = event_target:target_summoner_of_gorak
+		}
+		name = EVTOPTB_WCCRS_130
+		
+		set_player_character = event_target:target_gorak_tul
+	}
+}
+
+# The Drust sack Boralus
+narrative_event = {
+	id = WCCRS.140
+	title = "EVTTITLE_WCCRS_140"
+	desc = {
+		trigger = { NOT = { true_religion = throsic } }
+		text = EVTDESC_WCCRS_140
+	}
+	desc = {
+		trigger = { true_religion = throsic }
+		text = EVTDESC_WCCRS_141
+	}
+	picture = "GFX_evt_boralus_siege"
+	border = "GFX_event_narrative_frame_war"
+
+	is_triggered_only = yes
+	
+	major = yes
+	major_trigger = {
+		ai = no
+	}
+	show_root = yes
+	
+	religion = throsic
+
+	trigger = {
+		has_global_flag = drust_incursion_happened
+		NOT = { has_global_flag = drust_sack_boralus }
+		
+		religion = throsic
+		
+		FROM = {
+			title = b_boralus
+			location = {
+				NOT = { has_province_modifier = undead_province }	# I think it is not necessary to explain why I added these ones
+				dark_public_religion_trigger = no
+				culture_group = human_group
+			}
+		}
+	}
+
+	immediate = {
+		set_global_flag = drust_sack_boralus
+		
+		FROM = {
+			location = {
+				add_max_depopulation_effect = yes
+				hidden_effect = {
+					any_province_character = {
+						limit = {
+							NOT = { character = ROOT }
+
+							in_command = no
+						}
+						random = {
+							chance = 75
+							death = {
+								death_reason = death_battle
+								killer = ROOT
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	option = {
+		name = "EVTOPTA_WCCRS_140"
+		trigger = { NOT = { true_religion = throsic } }
+	}
+	option = {
+		name = "EVTOPTB_WCCRS_140"
+		trigger = { true_religion = throsic }
+		
+		prestige = 100
+	}
+}
+
+# The Thornspeakers
+# Delayer event		# This event helps to fire WCCRS.150 in case of character's death
+province_event = {
+	id = WCCRS.149
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
+		if = {
+			limit = {
+				c_460000 = {	# Ulfar
+					is_alive = yes
+					is_dying = no
+					is_adult = yes
+					is_incapable = no
+					prisoner = no
+					is_inaccessible_trigger = no
+
+					is_ruler = no	# ...since he's gonna become head of holy order
+					is_dark_being_trigger = no
+					religion = old_ways
+					true_religion = old_ways
+				}
+			}
+			c_460000 = { save_event_target_as = target_thornspeakers_founder }
+		}
+		# Fallback
+		else = {
+			create_character = {
+				random_traits = yes
+				dynasty = none
+				religion = old_ways
+				culture = drust
+				female = no
+				age = 80
+				attributes = {
+					learning = 7
+				}
+				trait = creature_vrykul
+				trait = mastermind_theologian
+				trait = class_druid_7
+			}
+			new_character = {
+				save_event_target_as = target_thornspeakers_founder
+			}
+		}
+		event_target:target_thornspeakers_founder = { narrative_event = { id = WCCRS.150 } }
+	}
+}
+narrative_event = {
+	id = WCCRS.150
+	title = EVTTITLE_WCCRS_150
+	desc = EVTDESC_WCCRS_150
+	picture = GFX_evt_drustvar
+	border = GFX_event_narrative_frame_war
+
+	major = yes
+	major_trigger = {
+		ai = no
+	}
+	show_root = yes
+
+	is_triggered_only = yes
+
+	immediate = {
+		# Moved to WCCRS.149
+		
+		activate_title = { title = d_thornspeakers status = yes }
+		d_thornspeakers = { grant_title = event_target:target_thornspeakers_founder }
+		
+		#Gives money and moral authority
+		holy_order_start_pack_effect = yes
+	}
+
+	option = {
+		trigger = {
+			NOT = {
+				true_religion = throsic
+			}
+		}
+		name = EVTOPTA_WCCRS_150
+	}
+	option = {
+		trigger = {
+			true_religion = throsic
+		}
+		name = EVTOPTB_WCCRS_150
+	}
+}
