@@ -67,6 +67,9 @@ decisions = {
 targetted_decisions = {
 	drink_brew = {
 		filter = realm_including_me
+		third_party_filter = artifacts
+		third_party = FROM
+		show_third_party_potential = yes
 		ai_target_filter = court_including_me
 		ai_check_interval = 24
 
@@ -74,22 +77,22 @@ targetted_decisions = {
 
 		from_potential = {
 			is_untouchable_trigger = no
-
-			is_adult = yes
-			is_incapable = no
-			prisoner = no
-			
-			trait = brewmaster
 		}
 
 		potential = {
-			is_untouchable_trigger = no
-			
 			is_adult = yes
+			is_ill = no
+			is_incapable = no
+			prisoner = no
 			
 			is_within_diplo_range = FROM
 		}
-
+		third_party_potential = {
+			# FROMFROM = {
+				# has_artifact_flag = alcohol
+			# }
+		}
+		third_party_allow = {}
 		allow = {	
 			ROOT = {
 				is_inaccessible_trigger = no
@@ -102,116 +105,125 @@ targetted_decisions = {
 				}
 			}
 			FROM = {
-				OR = {
-					has_artifact = halaani_whiskey_keg
-					has_artifact = sulfuron_slammer_keg
-					has_artifact = metal_brew_keg
-					has_artifact = tiger_stout_keg
-					has_artifact = serpent_ale_keg
-				}
 				custom_tooltip = {
 					text = is_not_busy_trigger_tooltip
 					hidden_tooltip = { NOT = { has_character_flag = do_not_disturb } }
 				}
+				is_inaccessible_trigger = no
 			}
 
-			FROM = {
-				conditional_tooltip = {
-					trigger = { NOT = { ROOT = { character = PREV } } }
-					is_inaccessible_trigger = no
-				}
-			}
+			# FROM = {
+				# conditional_tooltip = {
+					# trigger = { NOT = { ROOT = { character = PREV } } }
+					# is_inaccessible_trigger = no
+				# }
+			# }
 		}
 
 		effect = {
 			ROOT = { save_event_target_as = brew_receiver }
 			FROM = { save_event_target_as = brew_giver }
-			if = {
-				FROM = { limit = { ai = no } }
-				FROM = {
-					if = {
-						trigger = {
-							OR = {
-								has_artifact = halaani_whiskey_keg
-								has_artifact = sulfuron_slammer_keg
-								has_artifact = metal_brew_keg
-							}
-						}
-						character_event = { id = WCLIFES.30 }
-					}
-					else = { character_event = { id = WCLIFES.31 } }
-				}
+			FROMFROM = { save_event_target_as = brew_keg }
+			FROM = {
+				character_event = { id = WCLIFES.35 }
+					# if = {
+						# trigger = {
+							# OR = {
+								# has_artifact = halaani_whiskey_keg
+								# has_artifact = sulfuron_slammer_keg
+								# has_artifact = metal_brew_keg
+							# }
+						# }
+						# character_event = { id = WCLIFES.30 }
+					# }
+					# else = { character_event = { id = WCLIFES.31 } }
 			}
-			else = {
-				random_list = {
-					10 = {
-						modifier = {
-							factor = 0
-							NOT = { has_artifact = halaani_whiskey_keg }
-						}
-						event_target:brew_receiver = { add_character_modifier = { name = halaani_whiskey_intoxication months = 36 } }
-						event_target:brew_giver = {
-							random_artifact = {
-								limit = { artifact_type = halaani_whiskey_keg }
-								drink_keg_brew_effect = yes
-							}
-						}
-					}
-					10 = {
-						modifier = {
-							factor = 0
-							NOT = { has_artifact = sulfuron_slammer_keg }
-						}
-						event_target:brew_receiver = { add_character_modifier = { name = sulfuron_slammer_intoxication months = 36 } }
-						event_target:brew_giver = {
-							random_artifact = {
-								limit = { artifact_type = sulfuron_slammer_keg }
-								drink_keg_brew_effect = yes
-							}
-						}
-					}
-					10 = {
-						modifier = {
-							factor = 0
-							NOT = { has_artifact = metal_brew_keg }
-						}
-						event_target:brew_receiver = { add_character_modifier = { name = metal_brew_intoxication months = 36 } }
-						event_target:brew_giver = {
-							random_artifact = {
-								limit = { artifact_type = metal_brew_keg }
-								drink_keg_brew_effect = yes
-							}
-						}
-					}
-					10 = {
-						modifier = {
-							factor = 0
-							NOT = { has_artifact = tiger_stout_keg }
-						}
-						event_target:brew_receiver = { add_character_modifier = { name = tiger_stout_intoxication months = 36 } }
-						event_target:brew_giver = {
-							random_artifact = {
-								limit = { artifact_type = tiger_stout_keg }
-								drink_keg_brew_effect = yes
-							}
-						}
-					}
-					10 = {
-						modifier = {
-							factor = 0
-							NOT = { has_artifact = serpent_ale_keg }
-						}
-						event_target:brew_receiver = { add_character_modifier = { name = serpent_ale_intoxication months = 36 } }
-						event_target:brew_giver = {
-							random_artifact = {
-								limit = { artifact_type = serpent_ale_keg }
-								drink_keg_brew_effect = yes
-							}
-						}
-					}
+			# if = {
+				# FROM = { limit = { ai = no } }
+				# FROM = {
+					# if = {
+						# trigger = {
+							# OR = {
+								# has_artifact = halaani_whiskey_keg
+								# has_artifact = sulfuron_slammer_keg
+								# has_artifact = metal_brew_keg
+							# }
+						# }
+						# character_event = { id = WCLIFES.30 }
+					# }
+					# else = { character_event = { id = WCLIFES.31 } }
+				# }
+			# }
+			# else = {
+				# random_list = {
+					# 10 = {
+						# modifier = {
+							# factor = 0
+							# NOT = { has_artifact = halaani_whiskey_keg }
+						# }
+						# event_target:brew_receiver = { add_character_modifier = { name = halaani_whiskey_intoxication months = 36 } }
+						# event_target:brew_giver = {
+							# random_artifact = {
+								# limit = { artifact_type = halaani_whiskey_keg }
+								# drink_keg_brew_effect = yes
+							# }
+						# }
+					# }
+					# 10 = {
+						# modifier = {
+							# factor = 0
+							# NOT = { has_artifact = sulfuron_slammer_keg }
+						# }
+						# event_target:brew_receiver = { add_character_modifier = { name = sulfuron_slammer_intoxication months = 36 } }
+						# event_target:brew_giver = {
+							# random_artifact = {
+								# limit = { artifact_type = sulfuron_slammer_keg }
+								# drink_keg_brew_effect = yes
+							# }
+						# }
+					# }
+					# 10 = {
+						# modifier = {
+							# factor = 0
+							# NOT = { has_artifact = metal_brew_keg }
+						# }
+						# event_target:brew_receiver = { add_character_modifier = { name = metal_brew_intoxication months = 36 } }
+						# event_target:brew_giver = {
+							# random_artifact = {
+								# limit = { artifact_type = metal_brew_keg }
+								# drink_keg_brew_effect = yes
+							# }
+						# }
+					# }
+					# 10 = {
+						# modifier = {
+							# factor = 0
+							# NOT = { has_artifact = tiger_stout_keg }
+						# }
+						# event_target:brew_receiver = { add_character_modifier = { name = tiger_stout_intoxication months = 36 } }
+						# event_target:brew_giver = {
+							# random_artifact = {
+								# limit = { artifact_type = tiger_stout_keg }
+								# drink_keg_brew_effect = yes
+							# }
+						# }
+					# }
+					# 10 = {
+						# modifier = {
+							# factor = 0
+							# NOT = { has_artifact = serpent_ale_keg }
+						# }
+						# event_target:brew_receiver = { add_character_modifier = { name = serpent_ale_intoxication months = 36 } }
+						# event_target:brew_giver = {
+							# random_artifact = {
+								# limit = { artifact_type = serpent_ale_keg }
+								# drink_keg_brew_effect = yes
+							# }
+						# }
+					# }
 				
-				}
-			}
+				# }
+			# }
 		}
 
 		revoke_allowed = { always = no }
