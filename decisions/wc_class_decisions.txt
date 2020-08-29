@@ -789,6 +789,73 @@ decisions = {
 			}
 		}
 	}
+	
+	### Monk ###
+	teach_yourself_monk = {
+		is_high_prio = yes
+
+		ai_check_interval = 60
+
+		ai = no
+		only_playable = yes
+
+		potential = {
+			is_untouchable_trigger = no
+
+			is_adult = yes
+			is_incapable = no
+			prisoner = no
+
+			NOT = { has_character_flag = hide_class_training_decisions_flag }
+
+			potential_monk_trigger = yes
+		}
+		allow = {
+			show_only_failed_conditions = yes
+
+			is_inaccessible_trigger = no
+
+			allow_monk_trigger = yes
+			OR = {
+				AND = {
+					is_ruler = yes
+					wealth = 25
+				}
+				is_ruler = no
+			}
+		}
+		effect = {
+			if = {
+				limit = { ai = no }
+				wealth = -25
+			}
+			character_event = { id = WCCLS.1600 }
+		}
+		revoke_allowed = {
+			always = no
+		}
+		ai_will_do = {
+			factor = 0.05
+
+			modifier = {
+				factor = 10
+
+				true_religion_group = pandaren_religion_group
+				OR = {
+					has_benevolent_trait_trigger = yes
+					has_pious_trait_trigger = yes
+				}
+			}
+			modifier = {
+				factor = 2
+				trait = ambitious
+			}
+			modifier = {
+				factor = 2
+				trait = brave
+			}
+		}
+	}
 
 	# Hide class training decisions
 	# Always must be after these decisions
@@ -2118,6 +2185,7 @@ targetted_decisions = {
 				is_shaman_class_trigger = yes
 				is_druid_class_trigger = yes
 				is_loa_priest_class_trigger = yes
+				is_monk_class_trigger = yes
 			}
 		}
 
@@ -2127,7 +2195,10 @@ targetted_decisions = {
 			OR = {
 				trait = wounded
 				trait = severely_injured
+				trait = infection
 			}
+			
+			from_prefer_to_heal_and_buff_this_trigger = yes
 		}
 
 		allow = {
@@ -2167,18 +2238,11 @@ targetted_decisions = {
 				set_character_flag = heal_wounds_cooldown_flag
 
 				if = {
-					limit = { trait = severely_injured }
-					tooltip = { remove_trait = severely_injured }
-				}
-				if = {
-					limit = { trait = wounded }
-					tooltip = { remove_trait = wounded }
-				}
-				if = {
 					limit = { character = FROM }
-					heal_wounds_magic_effect = yes
+					heal_wounds_effect = yes
 				}
 				else = {
+					tooltip = { heal_wounds_effect = yes }
 					letter_event = { id = WCCLS.805 }
 				}
 			}
@@ -2211,30 +2275,8 @@ targetted_decisions = {
 		revoke_allowed = { always = no }
 
 		ai_will_do = {
-			factor = 0.01
-			modifier = {
-				factor = 100
-				character = FROM
-			}
-			modifier = {
-				factor = 10
-				reverse_opinion = {
-					who = FROM
-					value = 30
-				}
-			}
-			modifier = {
-				factor = 0
-				NOR = {
-					is_close_relative = FROM
-					is_friend = FROM
-					is_lover = FROM
-					FROM = {
-						has_minor_title = title_court_physician
-						de_facto_liege = ROOT
-					}
-				}
-			}
+			factor = 0.1
+			from_prefer_to_heal_and_buff_this_score = yes
 		}
 	}
 	# Gives 2 year health bonus or health penalty if ROOT is undead, demon or void creature
@@ -2275,6 +2317,8 @@ targetted_decisions = {
 					is_dark_being_trigger = yes
 				}
 			}
+			
+			from_prefer_to_heal_and_buff_this_trigger = yes
 		}
 
 		allow = {
@@ -2351,34 +2395,8 @@ targetted_decisions = {
 		revoke_allowed = { always = no }
 
 		ai_will_do = {
-			factor = 0.1
-			modifier = {
-				factor = 10
-				character = FROM
-			}
-			modifier = {
-				factor = 4
-				FROM = { is_benevolent_trigger = yes }
-			}
-			modifier = {
-				factor = 2
-				reverse_opinion = {
-					who = FROM
-					value = 30
-				}
-			}
-			modifier = {
-				factor = 0
-				NOR = {
-					is_close_relative = FROM
-					is_friend = FROM
-					is_lover = FROM
-					FROM = {
-						has_minor_title = title_court_physician
-						de_facto_liege = ROOT
-					}
-				}
-			}
+			factor = 0.01
+			from_prefer_to_heal_and_buff_this_score = yes
 			# AI can't hurt anyone
 			modifier = {
 				factor = 0
@@ -2816,9 +2834,10 @@ targetted_decisions = {
 			prisoner = no
 
 			is_warlock_class_trigger = yes
-			NOR = {
+			NOT = {
 				trait = being_demon
 				check_variable = { which = fel_corruption value = 100 }
+				is_susceptible_to_fel_corruption_trigger = no
 			}
 		}
 
@@ -2947,35 +2966,21 @@ targetted_decisions = {
 			}
 		}
 
-		# If you modify potential or allow, don't forget to change WCDAC.8010
 		potential = {
-			is_untouchable_trigger = no
-
-			ai = yes
-			is_adult = yes
+			control_mind_target_potential_trigger = yes
 
 			NOT = { character = FROM }
-			from_in_range_to_hurt_this_trigger = yes
 			NOT = { has_character_flag = mind_control_attempt_flag }
 		}
 
-		# If you modify potential or allow, don't forget to change WCDAC.8010
 		allow = {
 			# show_only_failed_conditions = yes # Better to see conditions because this decision is part of quest
-
-			is_inaccessible_trigger = no
-
-			OR = {
-				host = { character = FROM }
-				liege = { character = FROM }
-				trigger_if = {
-					limit = {
-						FROM = {
-							is_society_grandmaster = yes
-							society_member_of = shadow_council
-						}
-					}
-					same_realm = FROM
+			
+			FROM = {
+				show_scope_change = yes
+				ROOT = {
+					show_scope_change = yes
+					control_mind_target_allow_trigger = yes
 				}
 			}
 
@@ -3009,13 +3014,6 @@ targetted_decisions = {
 					}
 				}
 			}
-
-			NOT = { trait = being_demon }
-			NOT = { trait = being_void }
-			is_humanoid_trigger = yes
-
-			has_invader_title_trigger = no
-			has_weak_character_trigger = yes
 
 			FROM = {
 				is_inaccessible_trigger = no
@@ -3075,6 +3073,8 @@ targetted_decisions = {
 		}
 
 		effect = {
+			save_event_target_as = target_mind
+			
 			set_character_flag = mind_control_attempt_flag
 
 			FROM = {
@@ -3406,7 +3406,10 @@ targetted_decisions = {
 
 			NOT = { diplomatic_immunity = yes }
 			FROM = {
-				is_inaccessible_trigger = no
+				OR = {
+					is_inaccessible_trigger = no
+					trait = lich_king
+				}
 			}
 		}
 
@@ -3535,7 +3538,10 @@ targetted_decisions = {
 			FROM = {
 				show_scope_change = no
 
-				is_inaccessible_trigger = no
+				OR = {
+					is_inaccessible_trigger = no
+					trait = lich_king	# Ner'zhul is incapable
+				}
 
 				not_raising_undead_flag_trigger = yes
 
@@ -3683,7 +3689,10 @@ targetted_decisions = {
 
 			FROM = {
 				show_scope_change = no
-				is_inaccessible_trigger = no
+				OR = {
+					is_inaccessible_trigger = no
+					trait = lich_king	# Ner'zhul is incapable
+				}
 
 				not_raising_undead_flag_trigger = yes
 
@@ -4005,6 +4014,78 @@ targetted_decisions = {
 
 		ai_will_do = {
 			factor = 0.25
+		}
+	}
+	
+	### Monk ###
+	soothing_mist = {
+		filter = realm_including_me
+		ai_target_filter = court_including_me
+		ai_check_interval = 12
+		
+		only_playable = yes
+
+		from_potential = {
+			is_untouchable_trigger = no
+
+			is_adult = yes
+			is_incapable = no
+			prisoner = no
+
+			is_monk_class_trigger = yes
+		}
+
+		potential = {
+			is_untouchable_trigger = no
+
+			OR = {
+				trait = stressed
+				trait = depressed
+			}
+			
+			from_prefer_to_heal_and_buff_this_trigger = yes
+		}
+
+		allow = {
+			show_only_failed_conditions = yes
+
+			prisoner = no
+			is_inaccessible_trigger = no
+
+			FROM = {
+				is_inaccessible_trigger = no
+
+				has_5_6_magic_class_or_higher_trigger = yes
+				has_2_mana_trigger = yes
+			}
+		}
+
+		effect = {
+			if = {
+				limit = { character = FROM }
+				remove_stressed_and_depressed_effect = yes
+			}
+			else = {
+				tooltip = { remove_stressed_and_depressed_effect = yes }
+				
+				letter_event = { id = WCCLS.1605 }
+			}
+			FROM = {
+				if = {
+					limit = { character = ROOT }
+					remove_2_mana_effect = yes
+				}
+				else = {
+					tooltip = { remove_2_mana_effect = yes }
+				}
+			}
+		}
+
+		revoke_allowed = { always = no }
+
+		ai_will_do = {
+			factor = 0.1
+			from_prefer_to_heal_and_buff_this_score = yes
 		}
 	}
 }
