@@ -1,0 +1,581 @@
+namespace = WCSCRFC
+
+character_event = { # Army commander sacrifice province population, owner gets boni
+	id = WCSCRFC.1
+
+	desc = {
+		trigger = { publicly_worship_one_of_old_gods_trigger = yes }
+		text = EVTDESC_WCSCRFC_1_V1
+	}
+	desc = {
+		trigger = { publicly_worship_one_of_old_gods_trigger = no }
+		text = EVTDESC_WCSCRFC_1_V2
+	}
+
+	picture = {
+		trigger = { religion = cult_of_hakkar }
+		picture = GFX_evt_hakkar
+	}
+	picture = {
+		trigger = { religion = old_gods_worship has_character_modifier = follower_of_cthun }
+		picture = GFX_evt_cthun
+	}
+	picture = {
+		trigger = { religion = old_gods_worship has_character_modifier = follower_of_nzoth }
+		picture = GFX_evt_nzoth
+	}
+	picture = {
+		trigger = { religion = old_gods_worship has_character_modifier = follower_of_yogg_saron }
+		picture = GFX_evt_yogg_saron
+	}
+	picture = {
+		trigger = { religion = old_gods_worship has_character_modifier = follower_of_yshaarj }
+		picture = GFX_evt_yshaarj
+	}
+	picture = {
+		trigger = {
+			religion = old_gods_worship
+			NOT = {
+				has_character_modifier = follower_of_cthun
+				has_character_modifier = follower_of_nzoth
+				has_character_modifier = follower_of_yogg_saron
+				has_character_modifier = follower_of_yshaarj
+			}
+		}
+		picture = GFX_evt_voidwalker
+	}
+	picture = {
+		trigger = { NOT = { religion = cult_of_hakkar religion = old_gods_worship  } }
+		picture = GFX_evt_pagan_blood_sacrifice
+	}
+
+	notification = yes
+	is_triggered_only = yes
+
+	trigger = {
+		is_ruler = yes
+		religion_have_sacrifices_trigger = yes
+		FROM = {
+			OR = {
+				holding_type = city
+				holding_type = temple
+				holding_type = castle
+				holding_type = tribal
+			}
+			holder_scope = { NOT = { character = ROOT same_realm = ROOT } }
+			NOT = { has_holding_modifier = inhabitants_sacrificed }
+			location = {
+				NOT = {
+					has_province_modifier = bloodthirsty_flower_war_province
+					has_province_modifier = depopulated_1
+					has_province_modifier = depopulated_2
+					has_province_modifier = depopulated_3
+				}
+			}
+		}
+	}
+
+	weight_multiplier = {
+		modifier = {
+			factor = 1.25
+			trait = zealous
+		}
+		modifier = {
+			factor = 0.75
+			trait = cynical
+		}
+		modifier = {
+			factor = 1.25
+			trait = ambitious
+		}
+		modifier = {
+			factor = 0.75
+			trait = content
+		}
+		modifier = {
+			factor = 1.25
+			trait = cruel
+		}
+		modifier = {
+			factor = 0.75
+			trait = kind
+		}
+	}
+
+	immediate = {
+		FROM = { save_event_target_as = target_sacrifice_location }
+		save_event_target_as = target_sacrificer_unit_owner
+
+		if = { # Get Offmap Old Gods Currency if worship Old Gods
+			limit = { publicly_worship_one_of_old_gods_trigger = yes }
+
+			random_list = {
+				10 = {
+					if = {
+						limit = { any_owned_bloodline = { has_bloodline_flag = bloodline_insanity_gain } }
+						set_variable = { which = local_received_offmap_old_gods_currency_insanity_from_province_population_sacrifice_variable value = 900 }
+					}
+					else = { set_variable = { which = local_received_offmap_old_gods_currency_insanity_from_province_population_sacrifice_variable value = 600 } }
+				}
+				20 = {
+					if = {
+						limit = { any_owned_bloodline = { has_bloodline_flag = bloodline_insanity_gain } }
+						set_variable = { which = local_received_offmap_old_gods_currency_insanity_from_province_population_sacrifice_variable value = 600 }
+					}
+					else = { set_variable = { which = local_received_offmap_old_gods_currency_insanity_from_province_population_sacrifice_variable value = 400 } }
+				}
+				30 = {
+					trigger = { FROM = { is_richer_holding = no } }
+
+					if = {
+						limit = { any_owned_bloodline = { has_bloodline_flag = bloodline_insanity_gain } }
+						set_variable = { which = local_received_offmap_old_gods_currency_insanity_from_province_population_sacrifice_variable value = 300 }
+					}
+					else = { set_variable = { which = local_received_offmap_old_gods_currency_insanity_from_province_population_sacrifice_variable value = 200 } }
+				}
+				40 = {
+					trigger = { FROM = { is_rich_holding = no } }
+
+					if = {
+						limit = { any_owned_bloodline = { has_bloodline_flag = bloodline_insanity_gain } }
+						set_variable = { which = local_received_offmap_old_gods_currency_insanity_from_province_population_sacrifice_variable value = 120 }
+					}
+					else = { set_variable = { which = local_received_offmap_old_gods_currency_insanity_from_province_population_sacrifice_variable value = 80 } }
+				}
+			}
+
+			set_variable = {
+				which = local_received_offmap_old_gods_currency_insanity_from_sacrifices_total_variable
+				which = local_received_offmap_old_gods_currency_insanity_from_province_population_sacrifice_variable
+			}
+		}
+		else_if = { # Or get sacrifice points
+			limit = { religion_have_ritual_sacrifice_trigger = yes }
+
+			bloodthirsty_tiered_traits_effect = yes
+		}
+
+		piety = 25
+
+		FROM = { # Sacrifice province population
+			add_holding_modifier = { name = inhabitants_sacrificed years = 5 }
+			if = {
+				limit = { settlement_can_be_destroyed_trigger = yes }
+				destroy_random_building = THIS
+				location = {
+					wonder = {
+						if = {
+							limit = { is_damaged = no }
+							random = {
+								chance = 30
+								ROOT = { wealth = 100 }
+								set_wonder_damaged = yes
+							}
+						}
+					}
+				}
+			}
+
+			owner = { # Ping event and negative opinion effect
+				ROOT = {
+					THIS_sacrifice_PREV_subjects_opinion_effect = yes
+					PREV = {
+						if = { limit = { ai = no } character_event = { id = WCSCRFC.2 } }
+						any_liege = {
+							if = { limit = { ai = no } character_event = { id = WCSCRFC.2 } }
+							ROOT = { THIS_sacrifice_PREV_subjects_opinion_effect = yes }
+						}
+					}
+				}
+			}
+			if = { # Sacrifice characters
+				limit = { is_capital = yes }
+				owner = {
+					while = {
+						count = 3
+
+						random_courtier = {
+							limit = {
+								is_ruler = no
+								can_be_sacrificed_trigger = yes
+							}
+
+							random = {
+								chance = 25
+								modifier = {
+									factor = 3
+									is_unimportant_trigger = yes
+								}
+								modifier = {
+									factor = 3
+									has_minor_title = title_commander
+								}
+								modifier = { #Less likely to be in battle.
+									factor = 0.5
+									is_adult = no
+								}
+								modifier = { #Less likely to be in battle.
+									factor = 0.5
+									is_adult = no
+									is_child_of = PREV
+								}
+
+								save_event_target_as = target_sacrificed_character
+
+								ROOT = {
+									set_character_flag = wc_do_not_show_post_sacrifice_ping_event_flag
+									set_character_flag = wc_do_not_show_post_sacrifice_cannibal_event_flag
+
+									event_target:target_sacrificed_character = {
+										caltulate_PREV_offmap_old_gods_currency_insanity_effect = yes
+										change_variable = {
+											which = local_received_offmap_old_gods_currency_insanity_from_sacrifices_total_variable
+											which = local_received_offmap_old_gods_currency_insanity_from_character_sacrifice_variable
+										}
+										PREV_public_sacrifice_THIS_effect = yes
+									}
+
+									clr_character_flag = wc_do_not_show_post_sacrifice_ping_event_flag
+									clr_character_flag = wc_do_not_show_post_sacrifice_cannibal_event_flag
+								}
+
+								clear_event_target = target_sacrificed_character
+
+							}
+						}
+					}
+				}
+			}
+		}
+
+		if = { # Get Offmap Old Gods Currency if worship Old Gods
+			limit = { publicly_worship_one_of_old_gods_trigger = yes }
+
+			trigger_switch = {
+				on_trigger = has_character_modifier
+				follower_of_cthun = {		add_offmap_currency = { offmap = offmap_cthun		value = local_received_offmap_old_gods_currency_insanity_from_sacrifices_total_variable } }
+				follower_of_nzoth = {		add_offmap_currency = { offmap = offmap_nzoth		value = local_received_offmap_old_gods_currency_insanity_from_sacrifices_total_variable } }
+				follower_of_yogg_saron = {	add_offmap_currency = { offmap = offmap_yoggsaron	value = local_received_offmap_old_gods_currency_insanity_from_sacrifices_total_variable } }
+				follower_of_yshaarj = {		add_offmap_currency = { offmap = offmap_yshaarj		value = local_received_offmap_old_gods_currency_insanity_from_sacrifices_total_variable } }
+			}
+		}
+
+	}
+
+	option = { name = EVTOPT_WCSCRFC_1 }
+
+}
+
+character_event = { # Ping - Population of province was sacrificed
+	id = WCSCRFC.2
+
+	desc = EVTDESC_WCSCRFC_2
+
+	picture = {
+		trigger = { event_target:target_sacrificer_unit_owner = { religion = cult_of_hakkar } }
+		picture = GFX_evt_hakkar
+	}
+	picture = {
+		trigger = { event_target:target_sacrificer_unit_owner = { religion = old_gods_worship has_character_modifier = follower_of_cthun } }
+		picture = GFX_evt_cthun
+	}
+	picture = {
+		trigger = { event_target:target_sacrificer_unit_owner = { religion = old_gods_worship has_character_modifier = follower_of_nzoth } }
+		picture = GFX_evt_nzoth
+	}
+	picture = {
+		trigger = { event_target:target_sacrificer_unit_owner = { religion = old_gods_worship has_character_modifier = follower_of_yogg_saron } }
+		picture = GFX_evt_yogg_saron
+	}
+	picture = {
+		trigger = { event_target:target_sacrificer_unit_owner = { religion = old_gods_worship has_character_modifier = follower_of_yshaarj } }
+		picture = GFX_evt_yshaarj
+	}
+	picture = {
+		trigger = {
+			event_target:target_sacrificer_unit_owner = {
+				religion = old_gods_worship
+				NOT = {
+					has_character_modifier = follower_of_cthun
+					has_character_modifier = follower_of_nzoth
+					has_character_modifier = follower_of_yogg_saron
+					has_character_modifier = follower_of_yshaarj
+				}
+			}
+		}
+		picture = GFX_evt_voidwalker
+	}
+	picture = {
+		trigger = { event_target:target_sacrificer_unit_owner = { NOT = { religion = cult_of_hakkar religion = old_gods_worship  } } }
+		picture = GFX_evt_pagan_blood_sacrifice
+	}
+
+	notification = yes
+	is_triggered_only = yes
+
+	option = { name = EVTOPT_WCSCRFC_2 }
+
+}
+
+character_event = { # Ping - Your vassal was sacrificed
+	id = WCSCRFC.3
+
+	desc = EVTDESC_WCSCRFC_3
+	border = GFX_event_normal_frame_war
+
+	notification = yes
+	is_triggered_only = yes
+
+	picture = {
+		trigger = { event_target:target_sacrificer = { religion = cult_of_hakkar } }
+		picture = GFX_evt_hakkar
+	}
+	picture = {
+		trigger = { event_target:target_sacrificer = { religion = old_gods_worship has_character_modifier = follower_of_cthun } }
+		picture = GFX_evt_cthun
+	}
+	picture = {
+		trigger = { event_target:target_sacrificer = { religion = old_gods_worship has_character_modifier = follower_of_nzoth } }
+		picture = GFX_evt_nzoth
+	}
+	picture = {
+		trigger = { event_target:target_sacrificer = { religion = old_gods_worship has_character_modifier = follower_of_yogg_saron } }
+		picture = GFX_evt_yogg_saron
+	}
+	picture = {
+		trigger = { event_target:target_sacrificer = { religion = old_gods_worship has_character_modifier = follower_of_yshaarj } }
+		picture = GFX_evt_yshaarj
+	}
+	picture = {
+		trigger = {
+			event_target:target_sacrificer = {
+				religion = old_gods_worship
+				NOT = {
+					has_character_modifier = follower_of_cthun
+					has_character_modifier = follower_of_nzoth
+					has_character_modifier = follower_of_yogg_saron
+					has_character_modifier = follower_of_yshaarj
+				}
+			}
+		}
+		picture = GFX_evt_voidwalker
+	}
+	picture = {
+		trigger = { event_target:target_sacrificer = { NOT = { religion = cult_of_hakkar religion = old_gods_worship } } }
+		picture = GFX_evt_pagan_blood_sacrifice
+	}
+
+	option = { name = EVTOPTAHF23001 } # How terrible!
+
+}
+
+character_event = { # Ritual Sacrifice Prisoner (Jailer's perspective)
+	id = WCSCRFC.4
+
+	desc = {
+		trigger = {
+			trigger_if = {
+				limit = { religion = old_gods_worship }
+
+				is_shadow_priest_class_trigger = no
+				NOT = {
+					any_realm_wonder_upgrade = {
+						has_wonder_upgrade = upgrade_twilight_altar
+						is_active = yes
+					}
+				}
+			}
+			trigger_else ={
+				NOR = {
+					trait = bloodthirsty_gods_1
+					trait = bloodthirsty_gods_2
+					trait = bloodthirsty_gods_3
+				}
+				NOT = {
+					any_realm_wonder_upgrade = {
+						has_wonder_upgrade = upgrade_sacrificial_altar
+						is_active = yes
+					}
+				}
+			}
+		}
+
+		text = EVTDESCHF23002
+	}
+	desc = {
+		trigger = {
+			is_incapable = no
+			trigger_if = {
+				limit = { religion = old_gods_worship }
+
+				is_shadow_priest_class_trigger = yes
+				NOT = {
+					any_realm_wonder_upgrade = {
+						has_wonder_upgrade = upgrade_twilight_altar
+						is_active = yes
+					}
+				}
+			}
+			trigger_else ={
+				OR = {
+					trait = bloodthirsty_gods_1
+					trait = bloodthirsty_gods_2
+					trait = bloodthirsty_gods_3
+				}
+				NOT = {
+					any_realm_wonder_upgrade = {
+						has_wonder_upgrade = upgrade_sacrificial_altar
+						is_active = yes
+					}
+				}
+			}
+		}
+
+		text = EVTDESCHF23002_B 	#Do it yourself.
+	}
+	desc = {
+		trigger = {
+			trigger_if = {
+				limit = { religion = old_gods_worship }
+
+				is_shadow_priest_class_trigger = no
+				any_realm_wonder_upgrade = {
+					has_wonder_upgrade = upgrade_twilight_altar
+					is_active = yes
+				}
+			}
+			trigger_else ={
+				NOR = {
+					trait = bloodthirsty_gods_1
+					trait = bloodthirsty_gods_2
+					trait = bloodthirsty_gods_3
+				}
+				any_realm_wonder_upgrade = {
+					has_wonder_upgrade = upgrade_sacrificial_altar
+					is_active = yes
+				}
+			}
+		}
+
+		text = EVTDESCHF23002_C
+	}
+	desc = {
+		trigger = {
+			is_incapable = no
+			trigger_if = {
+				limit = { religion = old_gods_worship }
+
+				is_shadow_priest_class_trigger = yes
+				any_realm_wonder_upgrade = {
+					has_wonder_upgrade = upgrade_twilight_altar
+					is_active = yes
+				}
+			}
+			trigger_else ={
+				OR = {
+					trait = bloodthirsty_gods_1
+					trait = bloodthirsty_gods_2
+					trait = bloodthirsty_gods_3
+				}
+				any_realm_wonder_upgrade = {
+					has_wonder_upgrade = upgrade_sacrificial_altar
+					is_active = yes
+				}
+			}
+		}
+
+		text = EVTDESCHF23002_D 	#Do it yourself.
+	}
+
+	picture = {
+		trigger = { religion = cult_of_hakkar }
+		picture = GFX_evt_hakkar
+	}
+	picture = {
+		trigger = { religion = old_gods_worship has_character_modifier = follower_of_cthun }
+		picture = GFX_evt_cthun
+	}
+	picture = {
+		trigger = { religion = old_gods_worship has_character_modifier = follower_of_nzoth }
+		picture = GFX_evt_nzoth
+	}
+	picture = {
+		trigger = { religion = old_gods_worship has_character_modifier = follower_of_yogg_saron }
+		picture = GFX_evt_yogg_saron
+	}
+	picture = {
+		trigger = { religion = old_gods_worship has_character_modifier = follower_of_yshaarj }
+		picture = GFX_evt_yshaarj
+	}
+	picture = {
+		trigger = {
+			religion = old_gods_worship
+			NOT = {
+				has_character_modifier = follower_of_cthun
+				has_character_modifier = follower_of_nzoth
+				has_character_modifier = follower_of_yogg_saron
+				has_character_modifier = follower_of_yshaarj
+			}
+		}
+		picture = GFX_evt_voidwalker
+	}
+	picture = {
+		trigger = { NOT = { religion = cult_of_hakkar religion = old_gods_worship } }
+		picture = GFX_evt_pagan_blood_sacrifice
+	}
+
+	border = GFX_event_normal_frame_war
+	
+	is_triggered_only = yes
+
+	immediate = {
+		random_realm_wonder_upgrade = {
+			limit = {
+				trigger_if = {
+					limit = { PREV = { religion = old_gods_worship } }
+
+					has_wonder_upgrade = upgrade_twilight_altar
+				}
+				trigger_else = { has_wonder_upgrade = upgrade_sacrificial_altar }
+
+				is_active = yes
+			}
+			save_event_target_as = the_sacrificial_altar
+			wonder = { save_event_target_as = the_temple }
+		}
+	}
+	
+	option = {
+		name = EVTOPTA_SSI_072
+
+		if = {
+			limit = { event_target:the_sacrificial_altar = { is_active = yes } }
+
+			prestige = 10
+		}
+	}
+
+	option = {
+		name = EVTOPTBHF23002
+		trigger = {
+			event_target:target_sacrificed_prisoner = { can_be_eaten_trigger = yes }
+			event_target:the_sacrificial_altar = { is_active = yes }
+		}
+		tooltip_info_custom = EVTOPTBHF23002_TT
+
+		if = {
+			limit = { NOT = { trait = cannibal_trait } }
+			add_trait = cannibal_trait
+		}
+
+		add_character_modifier = {
+			name = ate_beating_heart
+			months = 6
+		}
+	}
+
+
+	after = {
+		tooltip = { add_offmap_old_gods_currency_insanity_after_calculation_effect = yes } # Offmap OG currency
+	}
+}

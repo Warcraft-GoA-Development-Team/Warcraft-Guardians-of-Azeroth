@@ -102,6 +102,13 @@ decisions = {
 					create_religious_head_effect = yes
 				}
 			}
+			else_if = {
+				limit = { religion = throsic }
+				d_throsic = {
+					show_scope_change = no
+					create_religious_head_effect = yes
+				}
+			}
 		}
 
 		revoke_allowed = {
@@ -205,6 +212,52 @@ decisions = {
 			factor = 1
 		}
 	} #end of pick_main_loa
+	regenerate_body_part = {
+		is_high_prio = yes
+		
+		ai_check_interval = 36
+		
+		only_playable = yes
+		
+		potential = {
+			OR = {
+				true_religion_group = loa_group
+				trait = creature_troll
+			}
+			
+			OR = {
+				has_injury_trigger = yes
+				is_maimed_trigger = yes
+				has_healable_disability_trigger = yes
+			}
+		}
+		
+		allow = {
+			prisoner = no
+			
+			NOT = { has_character_modifier = regenerate_body_part_cooldown }
+			
+			prestige = 500
+			piety = 250
+		}
+		
+		effect = {
+			add_character_modifier = { name = regenerate_body_part_cooldown years = 10 hidden = yes }
+			
+			prestige = -500
+			piety = -250
+			
+			character_event = { id = WCTRO.500 }
+		}
+		
+		revoke_allowed = {
+			always = no
+		}
+
+		ai_will_do = {
+			factor = 1
+		}
+	}
 
 	# primitive_group
 	primitive_rites = {
@@ -345,7 +398,6 @@ decisions = {
 
 		effect = {
 			set_character_flag = do_not_disturb
-
 
 			wealth = -25
 
@@ -582,54 +634,6 @@ decisions = {
 	}
 
 	# druidism_group
-	pray_to_elune = {
-		ai_check_interval = 24
-
-		only_playable = yes
-
-		potential = {
-			is_playable = yes
-			age = 16
-			prisoner = no
-			religion = kaldorei_religion
-			true_religion = kaldorei_religion
-		}
-		allow = {
-			piety = 0
-			war = no
-			prisoner = no
-			is_inaccessible_trigger = no
-			custom_tooltip = {
-				text = is_not_busy_trigger_tooltip
-				hidden_tooltip = { NOT = { has_character_flag = do_not_disturb } }
-			}
-			custom_tooltip = {
-				text = has_not_used_decision_3_years_tooltip
-				hidden_tooltip = {
-					OR = {
-						NOT = { has_character_flag = pray_to_elune_cooldown_flag }
-						had_character_flag = { flag = pray_to_elune_cooldown_flag years = 3 }
-					}
-				}
-			}
-		}
-
-
-
-		effect = {
-			set_character_flag = do_not_disturb
-			hidden_tooltip = {
-				character_event = { id = WCSAD.75 }
-			}
-		}
-		revoke_allowed = {
-			always = no
-		}
-		ai_will_do = {
-			factor = 0.25
-
-		}
-	}
 	request_the_gift = {
 		is_high_prio = yes
 		ai_check_interval = 24
@@ -750,13 +754,10 @@ decisions = {
 					prestige = 500
 				}
 			}
-			OR = {
-				religion = druidism_beliefs
-				AND = {
-					religion_group = druidism_group
-					is_druid_class_trigger = yes
-				}
-			}
+			
+			religion_group = druidism_group
+			is_druid_class_trigger = yes
+			
 			is_inaccessible_trigger = no
 			custom_tooltip = {
 				text = is_not_busy_trigger_tooltip
@@ -907,10 +908,7 @@ decisions = {
 			age = 16
 			is_incapable = no
 			prisoner = no
-			OR = {
-				religion = kaldorei_religion
-				religion = druidism_beliefs
-			}
+			religion = kaldorei_religion
 		}
 		allow = {
 			piety = 600
@@ -931,6 +929,119 @@ decisions = {
 		}
 		ai_will_do = {
 			factor = 0.25
+		}
+	}
+	
+	# Picks religious_branch's
+	pick_religious_branch = {
+		is_high_prio = yes
+		
+		ai_check_interval = 36
+		
+		only_playable = yes
+
+		potential = {
+			is_adult = yes
+			is_incapable = no
+			
+			religion_has_branches_trigger = yes
+		}
+
+		allow = {
+			prisoner = no
+			
+			NOT = { has_character_modifier = picked_branch_cooldown }
+			
+			piety = 25
+		}
+
+		effect = {
+			add_character_modifier = { name = picked_branch_cooldown years = 10 hidden = yes }
+			
+			piety = -25
+			
+			character_event = { id = WCREL.6000 }
+		}
+
+		revoke_allowed = {
+			always = no
+		}
+
+		ai_will_do = {
+			factor = 1
+			modifier = {
+				factor = 0
+				has_religious_branch_trigger = yes
+			}
+		}
+	}
+}
+targeted_decisions = {
+	# water_deities
+	waterspeaking_decision = {
+		filter = dynasty_including_me
+		ai_target_filter = close_relatives_including_me
+		
+		ai_check_interval = 36
+
+		only_playable = yes
+		
+		from_potential = {
+			is_untouchable_trigger = no
+			is_adult = yes
+			is_incapable = no
+			
+			OR = {
+				religion = water_deities
+				religion = waterspeaker
+			}
+		}
+		
+		potential = {
+			is_untouchable_trigger = no
+			
+			OR = {
+				ai = yes
+				character = FROM
+			}
+			
+			host = { character = FROM }
+		}
+		
+		allow = {
+			is_adult = yes
+			is_incapable = no
+			prisoner = no
+			is_inaccessible_trigger = no
+
+			custom_tooltip = {
+				text = has_not_used_decision_tooltip
+				NOT = { has_character_flag = waterspeaking_decision_used_flag }
+			}
+			FROM = {
+				prisoner = no
+				is_inaccessible_trigger = no
+
+				piety = 100
+			}
+		}
+
+		effect = {
+			save_event_target_as = target_fatalist
+			
+			set_character_flag = waterspeaking_decision_used_flag
+			
+			FROM = {
+				piety = -100
+				
+				character_event = { id = WCPRM.600 }
+			}
+		}
+
+		revoke_allowed = { always = no }
+
+		ai_will_do = {
+			factor = 1
 		}
 	}
 }

@@ -230,7 +230,7 @@ character_event = {
 	
 	option = {
 		name = "EVTOPTA64003"
-		add_trait = wounded
+		add_trait_silently_wounded_effect = yes
 		FROM = {
 			reverse_opinion = {
 				modifier = opinion_love_rival
@@ -254,7 +254,7 @@ character_event = {
 		trigger = {
 			has_character_flag = wounded_by_lover
 		}
-		add_trait = wounded
+		add_trait_silently_wounded_effect = yes
 		clr_character_flag = wounded_by_lover
 		FROM = {
 			reverse_opinion = {
@@ -584,6 +584,7 @@ character_event = {
 			# Warcraft
 			is_untouchable_trigger = no
 			can_rule_peacefully_trigger = yes
+			can_has_sexual_relation_with_prev = yes
 			
 			is_married = no
 			has_epidemic = no
@@ -620,29 +621,43 @@ character_event = {
 	weight_multiplier = {
 		days = 1
 	}
-	
-	option = {
-		name = "EVTOPTA64010"
-		trigger = {
-			is_female = no
-		}
-		ai_chance = {
-			factor = 95
-		}
-		any_courtier = {
+
+	immediate = {
+		random_courtier = {
 			limit = {
 				# Warcraft
 				is_untouchable_trigger = no
 				can_rule_peacefully_trigger = yes
-				
+				can_has_sexual_relation_with_prev = yes
+
 				age = 12
-				is_female = yes
+				OR = {
+					AND = {
+						ROOT = { is_female = no }
+						is_female = yes
+					}
+					AND = {
+						ROOT = { is_female = yes }
+						is_female = no
+					}
+					AND = {
+						ROOT = {
+							is_female = yes
+							trait = homosexual
+						}
+						is_female = yes
+					}
+					AND = {
+						ROOT = {
+							is_female = no
+							trait = homosexual
+						}
+						is_female = no
+					}
+				}
 				is_married = no
 				has_epidemic = no
 				is_ill = no
-				NOT = {
-					trait = homosexual
-				}
 				NOT = {
 					trait = celibate
 				}
@@ -663,6 +678,19 @@ character_event = {
 	            value = 10
 	            interesting_courtier_selection_score = yes
 	        }
+			save_event_target_as = lover
+		}
+	}
+	
+	option = {
+		name = "EVTOPTA64010"
+		trigger = {
+			is_female = no
+		}
+		ai_chance = {
+			factor = 95
+		}
+		event_target:lover = {
 			random_list = {
 				80 = {
 					set_character_flag = good_reply
@@ -689,40 +717,7 @@ character_event = {
 		ai_chance = {
 			factor = 95
 		}
-		any_courtier = {
-			limit = {
-				# Warcraft
-				is_untouchable_trigger = no
-				can_rule_peacefully_trigger = yes
-				
-				age = 12
-				is_female = no
-				is_married = no
-				has_epidemic = no
-				NOT = {
-					trait = homosexual
-				}
-				NOT = {
-					trait = celibate
-				}
-				NOT = {
-					is_incapable = yes
-				}
-				NOT = {
-					trait = eunuch
-				}
-				is_ill = no
-				NOT = {
-					family = ROOT
-				}
-				NOT = {
-					age = 18
-				}
-			}
-			score_value = { #Prioritizes selecting an interesting courtier...
-	            value = 10
-	            interesting_courtier_selection_score = yes
-	        }
+		event_target:lover = {
 			random_list = {
 				80 = {
 					set_character_flag = good_reply
@@ -1424,6 +1419,7 @@ character_event = {
 				prisoner = no
 				NOT = { is_incapable = yes }
 			}
+			save_event_target_as = lover
 			set_character_flag = lover_retreat_64030
 		}
 	}
@@ -1556,6 +1552,7 @@ character_event = {
 					trait = wroth
 				}
 			}
+			save_event_target_as = lover
 			set_character_flag = lover_dostuff_64035
 		}
 	}
@@ -1607,7 +1604,7 @@ character_event = {
 			clr_character_flag = lover_dostuff_64035
 			random = {
 				chance = 10
-				add_trait = wounded
+				add_trait_silently_wounded_effect = yes
 			}
 		}
 	}
@@ -1791,10 +1788,8 @@ character_event = {
 			trait = drunkard
 		}
 	}
-	
-	option = {
-		name = "EVTOPTA64045"
-		clr_character_flag = lost_loving_feeling # Set in chief Qadi event chain (105035). Zina.
+
+	immediate = {
 		random_lover = {
 			limit = {
 				# Warcraft
@@ -1810,6 +1805,14 @@ character_event = {
 					}
 				}				
 			}
+			save_event_target_as = lover
+		}
+	}
+	
+	option = {
+		name = "EVTOPTA64045"
+		clr_character_flag = lost_loving_feeling # Set in chief Qadi event chain (105035). Zina.
+		event_target:lover = {
 			character_event = {
 				id = 64046
 				tooltip = "EVTTOOLTIP64046"
@@ -2293,6 +2296,20 @@ character_event = {
 			trait = lustful
 		}
 	}
+
+	immediate = {
+		random_lover = {
+			limit = {
+				# Warcraft
+				is_untouchable_trigger = no
+				can_rule_peacefully_trigger = yes
+
+				is_female = yes
+				is_married = yes 
+			}
+			save_event_target_as = lover		
+		}
+	}
 	
 	option = {
 		name = "EVTOPTA64065" #And thus it ends..
@@ -2444,6 +2461,20 @@ character_event = {
 		modifier = {
 			factor = 1.5
 			trait = lustful
+		}
+	}
+
+	immediate = {
+		random_lover = {
+			limit = {
+				# Warcraft
+				is_untouchable_trigger = no
+				can_rule_peacefully_trigger = yes
+
+				is_female = yes
+				is_married = yes 
+			}
+			save_event_target_as = lover		
 		}
 	}
 	
@@ -3007,6 +3038,20 @@ character_event = {
 	mean_time_to_happen = {
 		months = 120
 	}
+
+	immediate = {
+		random_lover = {
+			limit = {
+				# Warcraft
+				is_untouchable_trigger = no
+				can_rule_peacefully_trigger = yes
+
+				is_female = yes
+				is_married = yes 
+			}
+			save_event_target_as = lover		
+		}
+	}
 	
 	option = {
 		name = "EVTOPTA64085" #They elope to get married
@@ -3183,9 +3228,9 @@ character_event = {
 	option = {
 		name = "EVTOPTA64090" #Ask for God's help with our childless marriage
 		trigger = {
-			NOT = {	religion = buddhist }
-			NOT = {	religion = jain }
-			NOT = {	religion_group = muslim }
+			NOT = {	like_buddhist_public_religion_trigger = yes }
+			# NOT = {	religion = jain }
+			# NOT = {	religion_group = muslim }
 		}
 		random_list = {
 			70 = {
@@ -4323,6 +4368,17 @@ character_event = {
 		modifier = {
 			factor = 2.5
 			trait = depressed
+		}
+	}
+
+	immediate = {
+		random_lover = {
+			limit = {
+				# Warcraft
+				is_untouchable_trigger = no
+				can_rule_peacefully_trigger = yes
+			}
+			save_event_target_as = lover
 		}
 	}
 	

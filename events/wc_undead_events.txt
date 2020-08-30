@@ -96,7 +96,7 @@ province_event = {
 			spawn_scourge_troops_effect = yes
 			spawn_scourge_troops_effect = yes
 			spawn_scourge_troops_effect = yes
-			# spawn_scourge_troops_effect = yes
+			spawn_scourge_troops_effect = yes
 
 			c_icecrown = {
 				# Declares war against player
@@ -680,10 +680,6 @@ character_event = {
 
 		add_maimed_trait_effect = yes
 	}
-
-	after = {
-		# character_event = { id = WCUND.200 days = 30 random = 30 }
-	}
 }
 
 # Ping doctor
@@ -900,181 +896,6 @@ long_character_event = {
 	}
 }
 
-# Note: this event disabled
-# 'Natural' transition into other undead form
-character_event = {
-	id = WCUND.200
-	desc = {
-		trigger = { NOT = { has_character_flag = transition_into_ghoul_flag } }
-		text = EVTDESC_WCUND_200
-		picture = GFX_evt_plague_eruptor
-	}
-	desc = {
-		trigger = { has_character_flag = transition_into_ghoul_flag }
-		text = EVTDESC_WCUND_200
-		picture = GFX_evt_ghoul
-	}
-	picture = GFX_evt_plague_eruptor
-
-	is_triggered_only = yes
-
-	trigger = {
-		is_humanoid_trigger = yes
-		trait = being_undead
-		NOR = {
-			trait = creature_ghoul
-			trait = creature_wraith
-			trait = creature_banshee
-			trait = creature_plague_eruptor
-			trait = creature_abomination
-			trait = skeleton
-			trait = creature_lich
-			trait = creature_wickerman
-			trait = creature_wicker_behemoth
-			trait = creature_wicker_golem
-		}
-		is_ruler = no
-		dynasty = none
-
-		has_severe_disability_trigger = yes
-		OR = {
-			# Transition into ghoul
-			AND = {
-				NOT = { trait = creature_ghoul }
-				OR = {
-					is_small_humanoid_trigger = yes
-					is_medium_humanoid_trigger = yes
-				}
-				OR = {
-					NOT = { learning = 5 }
-					is_dumb_trigger = yes
-				}
-			}
-			# Transition into skeleton
-			AND = {
-				NOT = { trait = skeleton }
-				OR = {
-					is_small_humanoid_trigger = yes
-					is_medium_humanoid_trigger = yes
-				}
-				OR = {
-					learning = 5
-					is_smart_trigger = yes
-				}
-			}
-			# Transition into plague eruptor
-			AND = {
-				NOT = { trait = creature_plague_eruptor }
-				is_large_humanoid_trigger = yes
-				OR = {
-					trait = creature_ghoul
-					NOT = { learning = 5 }
-					is_dumb_trigger = yes
-				}
-			}
-		}
-	}
-
-	immediate = {
-		log = "WCUND.200 fired for [Root.GetBestName]"
-
-		random_list = {
-			# Transition into a ghoul
-			10 = {
-				modifier = {
-					factor = 0
-					OR = {
-						trait = creature_ghoul
-						NOR = {
-							is_small_humanoid_trigger = yes
-							is_medium_humanoid_trigger = yes
-						}
-						NOR = {
-							NOT = { learning = 5 }
-							is_dumb_trigger = yes
-						}
-					}
-				}
-				set_character_flag = transition_into_ghoul_flag
-			}
-			# Transition into a skeleton
-			10 = {
-				modifier = {
-					factor = 0
-					OR = {
-						trait = skeleton
-						NOR = {
-							is_small_humanoid_trigger = yes
-							is_medium_humanoid_trigger = yes
-						}
-						NOR = {
-							learning = 5
-							is_smart_trigger = yes
-						}
-					}
-				}
-				set_character_flag = transition_into_skeleton_flag
-			}
-			# Transition into plague eruptor
-			10 = {
-				modifier = {
-					factor = 0
-					OR = {
-						trait = creature_plague_eruptor
-						NOT = { is_large_humanoid_trigger = yes }
-						NOR = {
-							trait = creature_ghoul
-							NOT = { learning = 5 }
-							is_dumb_trigger = yes
-						}
-					}
-				}
-				set_character_flag = transition_into_plague_eruptor_flag
-			}
-		}
-	}
-
-	weight_multiplier = {
-		days = 1
-	}
-
-	option = {
-		name = {
-			trigger = { NOT = { has_character_flag = transition_into_skeleton_flag } }
-			text = EVTOPTA_WCUND_200_case_01
-		}
-		name = {
-			trigger = { has_character_flag = transition_into_skeleton_flag }
-			text = EVTOPTA_WCUND_200_case_02
-		}
-		remove_racial_traits_effect = yes
-		trigger_switch = {
-			on_trigger = has_character_flag
-			transition_into_ghoul_flag = {
-				clr_character_flag = transition_into_ghoul_flag
-				add_trait = creature_ghoul
-			}
-			transition_into_skeleton_flag = {
-				clr_character_flag = transition_into_skeleton_flag
-				add_trait = skeleton
-			}
-			transition_into_plague_eruptor_flag = {
-				clr_character_flag = transition_into_plague_eruptor_flag
-				add_trait = creature_plague_eruptor
-			}
-		}
-
-		# Fixes immortal age
-		add_age_back_effect = yes
-
-		if = { limit = { trait = infirm 		} remove_trait = infirm 		}
-		if = { limit = { trait = mangled 		} remove_trait = mangled 		}
-		if = { limit = { trait = inbred 		} remove_trait = inbred 		}
-		if = { limit = { trait = blinded 		} remove_trait = blinded 		}
-		if = { limit = { trait = incapable 		} remove_trait = incapable 		}
-		if = { limit = { trait = maimed 		} remove_trait = maimed 		}
-	}
-}
 # Chooses form of undead
 character_event = {
 	id = WCUND.300
@@ -2262,55 +2083,6 @@ narrative_event = {
 		}
 	}
 }
-# on_new_holder e_scourge
-character_event = {
-	id = WCUND.552
-
-	is_triggered_only = yes
-	hide_window = yes
-	
-	only_playable = yes
-	only_independent = yes
-
-	trigger = {
-		FROM = {
-			title = e_scourge
-		}
-	}
-
-	immediate = {
-		log = "WCUND.552 fired for [Root.GetBestName]"
-
-		clear_secret_religion = yes
-		if = {
-			limit = {
-				NOR = {
-					religion = death_god
-					religion = burning_legion_religion
-				}
-			}
-			religion = death_god
-		}
-		culture = scourge
-		if = {
-			limit = {
-				NOT = { trait = being_undead }
-				can_be_undead_trigger = yes
-			}
-			set_character_flag = transition_into_lich_flag
-			character_event = { id = WCPOD.5013 }
-		}
-		add_trait = lich_king
-		FROMFROM = {
-			if = {
-				limit = { is_alive = yes }
-				death = { death_reason = death_merged killer = ROOT }
-			}
-		}
-		character_event = { id = WCUND.1106 days = 1 }
-		narrative_event = { id = WCUND.551 }
-	}
-}
 
 # Vampiric Hunger
 character_event = {
@@ -2428,6 +2200,8 @@ character_event = {
 	}
 	
 	immediate = {
+		save_event_target_as = target_lich_king
+		
 		activate_title = { title = e_scourge status = no }
 		e_scourge = { destroy_landed_title = THIS }
 		
@@ -2438,8 +2212,20 @@ character_event = {
 					has_character_flag = is_kaelthas_flag
 				}
 			}
+			if = {
+				limit = {
+					OR = {
+						reverse_has_opinion_modifier = { who = event_target:target_lich_king modifier = declared_war }
+						reverse_has_opinion_modifier = { who = event_target:target_lich_king modifier = opinion_tyrant }
+						reverse_has_opinion_modifier = { who = event_target:target_lich_king modifier = lost_war }
+					}
+				}
+				set_character_flag = interested_in_scourge_defeat_flag
+			}
 			narrative_event = { id = WCUND.1010 }
 		}
+		
+		event_target:target_lich_king = { death = { death_reason = death_missing } } # The Lich King goes down with the Scourge
 	}
 }
 # Delayed event
@@ -2454,19 +2240,9 @@ narrative_event = {
 
 	hide_new = yes
 
-	immediate = {
-		e_scourge = { holder_scope = { save_event_target_as = target_lich_king } }
-		
-		activate_title = { title = e_scourge status = no }
-		e_scourge = { destroy_landed_title = THIS }
-
-		event_target:target_lich_king = { death = { death_reason = death_missing } } # The Lich King goes down with the Scourge
-	}
-
 	# Kael'thas: It's time to get home
 	option = {
 		trigger = {
-			has_character_flag = is_kaelthas_flag
 			kaelthas_can_return_to_quelthalas_trigger = yes
 		}
 		name = ITS_TIME_TO_GET_HOME
@@ -2480,10 +2256,7 @@ narrative_event = {
 	option = {
 		trigger = {
 			NOT = {
-				AND = {
-					has_character_flag = is_kaelthas_flag
-					kaelthas_can_return_to_quelthalas_trigger = yes
-				}
+				kaelthas_can_return_to_quelthalas_trigger = yes
 			}
 			OR = {
 				true_religion = death_god
@@ -2496,14 +2269,15 @@ narrative_event = {
 	option = {
 		trigger = {
 			NOT = {
-				AND = {
-					has_character_flag = is_kaelthas_flag
-					kaelthas_can_return_to_quelthalas_trigger = yes
-				}
+				kaelthas_can_return_to_quelthalas_trigger = yes
 				true_religion = death_god
 				true_religion = burning_legion_religion
 			}
-			is_aggressive_trigger = no
+			OR = {
+				is_aggressive_trigger = no
+				religion = scarlet_light	#Hates the undead
+				has_character_flag = interested_in_scourge_defeat_flag
+			}
 		}
 		name = WE_CAN_SLEEP_PEACEFULLY_NOW
 	}
@@ -2511,16 +2285,19 @@ narrative_event = {
 	option = {
 		trigger = {
 			NOT = {
-				AND = {
-					has_character_flag = is_kaelthas_flag
-					kaelthas_can_return_to_quelthalas_trigger = yes
-				}
+				kaelthas_can_return_to_quelthalas_trigger = yes
 				true_religion = death_god
 				true_religion = burning_legion_religion
 				is_aggressive_trigger = no
+				religion = scarlet_light	#Hates the undead
+				has_character_flag = interested_in_scourge_defeat_flag
 			}
 		}
 		name = WHO_CARES
+	}
+	
+	after = {
+		clr_character_flag = interested_in_scourge_defeat_flag
 	}
 }
 
@@ -2745,9 +2522,8 @@ character_event = {
 								AND = {
 									event_target:target_religion = { dark_public_religion_trigger = yes }
 									OR = {
-										culture_group = high_elf_group
+										culture_group = elf_group
 										culture_group = human_group
-										culture_group = night_elf_group
 									}
 								}
 							}

@@ -975,23 +975,24 @@ narrative_event = {
 		# The Scourge forms an alliance with the Legion (or not) when it arrives
 		e_scourge = { holder_scope = { narrative_event = { id = WCUND.130 days = 7 } } }
 		# Declares war against the night elves
-		1921 = {
-			holder_scope = {
-				top_liege = {
-					if = {
-						limit = {
-							is_untouchable_trigger = no
-
-							NOT = { religion = burning_legion_religion }
-							NOT = { true_religion = burning_legion_religion }
-						}
-						set_character_flag = event_war_exception_flag
+		1921 = {	#Nordrassil
+			kingdom = {
+				if = {
+					limit = {
 						ROOT = {
-							unsafe_war = {
+							can_use_cb = {
 								target = PREV
-								casus_belli = total_invasion
 								thirdparty_title = PREV
+								casus_belli = total_invasion
+								only_check_triggers = yes
 							}
+						}
+					}
+					holder_scope = {
+						reverse_unsafe_war = {
+							target = ROOT
+							thirdparty_title = PREV
+							casus_belli = total_invasion
 						}
 					}
 				}
@@ -1010,7 +1011,44 @@ narrative_event = {
 		}
 	}
 }
-# The Burning Legion was defeated
+### The Burning Legion was defeated
+#Delayer event
+character_event = {
+	id = WCFEL.1009
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	trigger = {
+		has_landed_title = e_burning_legion
+	}
+	
+	immediate = {
+		save_event_target_as = target_legion_overlord
+		
+		set_global_flag = legion_cooldown_flag
+		
+		activate_title = { title = e_burning_legion status = no }
+		e_burning_legion = { destroy_landed_title = THIS }
+		
+		any_playable_ruler = {
+			if = {
+				limit = {
+					OR = {
+						reverse_has_opinion_modifier = { who = event_target:target_legion_overlord modifier = declared_war }
+						reverse_has_opinion_modifier = { who = event_target:target_legion_overlord modifier = opinion_tyrant }
+						reverse_has_opinion_modifier = { who = event_target:target_legion_overlord modifier = lost_war }
+					}
+				}
+				set_character_flag = interested_in_legion_defeat_flag
+			}
+			narrative_event = { id = WCFEL.1010 }
+		}
+		
+		event_target:target_legion_overlord = { death = { death_reason = death_battle } }
+	}
+}
+#Delayed event
 narrative_event = {
 	id = WCFEL.1010
 	title = EVTTITLE_WCCLS_1010
@@ -1019,25 +1057,8 @@ narrative_event = {
 	border = GFX_event_narrative_frame_war
 
 	is_triggered_only = yes
-	
-	major = yes
-	major_trigger = {
-		ai = no
-	}
-	show_root = yes
-	hide_from = yes
-	hide_new = yes
-	
-	trigger = {
-		has_landed_title = e_burning_legion
-	}
 
-	immediate = {
-		set_global_flag = legion_cooldown_flag
-		
-		activate_title = { title = e_burning_legion status = no }
-		e_burning_legion = { destroy_landed_title = THIS }
-	}
+	hide_new = yes
 
 	# It's not over yet!
 	option = {
@@ -1052,7 +1073,10 @@ narrative_event = {
 			NOT = {
 				true_religion = burning_legion_religion
 			}
-			is_aggressive_trigger = no
+			OR = {
+				is_aggressive_trigger = no
+				has_character_flag = interested_in_legion_defeat_flag
+			}
 		}
 		name = WE_CAN_SLEEP_PEACEFULLY_NOW
 	}
@@ -1062,9 +1086,14 @@ narrative_event = {
 			NOT = {
 				true_religion = burning_legion_religion
 				is_aggressive_trigger = no
+				has_character_flag = interested_in_legion_defeat_flag
 			}
 		}
 		name = WHO_CARES
+	}
+
+	after = {
+		clr_character_flag = interested_in_legion_defeat_flag
 	}
 }
 

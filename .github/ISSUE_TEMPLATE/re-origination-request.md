@@ -1,10 +1,12 @@
 ---
 name: Re-Origination Request
 about: Bug Report
-title: "Issue Title"
-labels: ":beetle: bug :beetle:"
+title: Issue Title
+labels: ":beetle: bug :beetle:, :grey_exclamation: priority low"
+assignees: ''
 
 ---
+
 <!--
 **DO NOT REMOVE PRE-EXISTING LINES**
 ------------------------------------------------------------------------------------------------------------

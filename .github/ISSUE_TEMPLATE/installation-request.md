@@ -1,10 +1,12 @@
 ---
 name: Installation Problem
 about: Report about installation problems
-title: "Issue Title"
-labels: ":beetle: bug - installation :computer:" 
+title: Issue Title
+labels: ":grey_exclamation: priority low"
+assignees: ''
 
 ---
+
 <!--
 **DO NOT REMOVE PRE-EXISTING LINES**
 ------------------------------------------------------------------------------------------------------------

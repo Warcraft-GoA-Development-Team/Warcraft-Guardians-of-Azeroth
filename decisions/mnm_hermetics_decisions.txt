@@ -13,22 +13,17 @@ targeted_decisions = {
 
 		from_potential = {
 			# Warcraft
-			always = no
 			is_untouchable_trigger = no
-			
+
 			has_dlc = "Mystics"
-			
-			# Warcraft
-			# society_rank = {
-				# rank >= 2
-				# society = hermetics
-			# }
+			is_member_of_hermetics_trigger = yes
+			society_rank >= 2
 		}
 
 		potential = {
 			# Warcraft
 			is_untouchable_trigger = no
-			
+
 			OR = {
 				trait = stressed
 				trait = depressed
@@ -39,13 +34,9 @@ targeted_decisions = {
 				}
 				character = FROM
 			}
-			OR = {
-				FROM = { ai = no }
-				character = FROM
-				is_close_relative = FROM
-				is_friend = FROM
-				is_lover = FROM
-			}
+			
+			# Warcraft
+			from_prefer_to_heal_and_buff_this_trigger = yes
 		}
 
 		allow = {
@@ -94,37 +85,15 @@ targeted_decisions = {
 			}
 
 			tooltip = {
-				if = { 
-					limit = { trait = stressed }
-					remove_trait = stressed
-				}
-				if = { 
-					limit = { trait = depressed }
-					remove_trait = depressed
-				}
-				if = {
-					limit = { has_character_modifier = apathetic }
-					remove_character_modifier = apathetic
-				}
+				remove_stressed_and_depressed_effect = yes
 			}
 		}
 
 		revoke_allowed = { always = no }
 
 		ai_will_do = {
-
 			factor = 0.01
-			modifier = {	
-				factor = 100
-				character = FROM
-			}
-			modifier = {
-				factor = 10
-				reverse_opinion = {
-					who = FROM
-					value = 30
-				}
-			}
+			from_prefer_to_heal_and_buff_this_score = yes
 		}
 	}
 
@@ -338,113 +307,85 @@ targeted_decisions = {
 		}
 	}
 
-	# Warcraft
-	#Power: write down whispers
+	#Power: write Magnum Opus
 	hermetics_write_magnum_opus = {
-		# Warcraft
-		only_rulers = yes
-		
 		is_in_society = yes
 		
 		filter = self
 		ai_target_filter = self
 
-		ai_check_interval = 180
+		ai_check_interval = 12
 
 		potential = {
 			# Warcraft
 			is_untouchable_trigger = no
-			
-			religion = old_gods_worship
-			true_religion = old_gods_worship
-			
-			society_member_of = twilights_hammer_cult
-			society_rank >= 3
+
+			is_member_of_hermetics_trigger = yes
+			society_rank = 4
+			prisoner = no
+			NOT = { trait = incapable }
 		}
 
 		allow = {
-			# Warcraft
-			prisoner = no
-			NOT = { is_incapable = yes }
-			
-			custom_tooltip = {
-				text = twilights_hammer_cult_wrote_whispers_cd_tooltip
-				NOT = { has_character_modifier = wrote_whispers_cooldown_modifier }
-			}
-			
-			has_society_currency_major_trigger = yes
-			piety = 250
-			custom_tooltip = {
-				text = hermetics_wrote_magnum_opus_duplicate
-				OR = {
-					NOR = {
-						has_artifact = whispers_martial_1
-						has_artifact = whispers_martial_2
-						has_artifact = whispers_martial_3
-						has_artifact = whispers_martial_4
-					}
-					NOR = {
-						has_artifact = whispers_stewardship_1
-						has_artifact = whispers_stewardship_2
-						has_artifact = whispers_stewardship_3
-						has_artifact = whispers_stewardship_4
-					}
-					NOR = {
-						has_artifact = whispers_intrigue_1
-						has_artifact = whispers_intrigue_2
-						has_artifact = whispers_intrigue_3
-						has_artifact = whispers_intrigue_4
-					}
-					NOR = {
-						has_artifact = whispers_learning_1
-						has_artifact = whispers_learning_2
-						has_artifact = whispers_learning_3
-						has_artifact = whispers_learning_4
-					}
+			FROM = {
+				custom_tooltip = {
+					text = hermetics_wrote_magnum_opus_cd_tooltip
+					NOT = { has_character_flag = wrote_magnum_opus }
 				}
+				has_society_currency_major_trigger = yes
+				custom_tooltip = {
+					text = hermetics_wrote_magnum_opus_duplicate
+					OR = {
+    					NOR = {
+    						has_artifact = magnum_opus_theurgy_ritual_1
+							has_artifact = magnum_opus_theurgy_ritual_2
+							has_artifact = magnum_opus_theurgy_ritual_3
+							has_artifact = magnum_opus_theurgy_ritual_4
+    					}
+    					NOR = {
+    						has_artifact = magnum_opus_theurgy_contemplation_1
+							has_artifact = magnum_opus_theurgy_contemplation_2
+							has_artifact = magnum_opus_theurgy_contemplation_3
+							has_artifact = magnum_opus_theurgy_contemplation_4
+    					}
+    					NOR = {
+    						has_artifact = magnum_opus_astrology_stars_1
+							has_artifact = magnum_opus_astrology_stars_2
+							has_artifact = magnum_opus_astrology_stars_3
+							has_artifact = magnum_opus_astrology_stars_4
+    					}
+    					NOR = {
+    						has_artifact = magnum_opus_astrology_planets_1
+							has_artifact = magnum_opus_astrology_planets_2
+							has_artifact = magnum_opus_astrology_planets_3
+							has_artifact = magnum_opus_astrology_planets_4
+    					}
+    					NOR = {
+    						has_artifact = magnum_opus_alchemy_panacea_1
+							has_artifact = magnum_opus_alchemy_panacea_2
+							has_artifact = magnum_opus_alchemy_panacea_3
+							has_artifact = magnum_opus_alchemy_panacea_4
+    					}
+    					NOR = {
+    						has_artifact = magnum_opus_alchemy_transmutation_1
+							has_artifact = magnum_opus_alchemy_transmutation_2
+							has_artifact = magnum_opus_alchemy_transmutation_3
+							has_artifact = magnum_opus_alchemy_transmutation_4
+    					}
+    				}
+    			}
 			}
 		}
 
 		effect = {
-			# Warcraft
-			hidden_effect = {
-				character_event = { id = WCCSO.10200 days = 1 }
-
-				add_character_modifier = { name = wrote_whispers_cooldown_modifier years = 30 hidden = yes }
+			hidden_effect = { 
+				character_event = { id = MNM.1610 days = 1 }
+				set_character_flag = wrote_magnum_opus
 			}
 			detract_society_currency_major_effect = yes
-			if = {
-				limit = {
-					NOT = { piety = 500 }
-				}
-				piety = -250
-				custom_tooltip = { text = whispers_tooltip_tip_1 }
-				set_character_flag = whispers_quality_1
-			}
-			else_if = {
-				limit = {
-					piety = 500
-					NOT = { piety = 750 }
-				}
-				piety = -500
-				custom_tooltip = { text = whispers_tooltip_tip_2 }
-				set_character_flag = whispers_quality_2
-			}
-			else_if = {
-				limit = {
-					piety = 750
-					NOT = { piety = 1000 }
-				}
-				piety = -750
-				custom_tooltip = { text = whispers_tooltip_tip_3 }
-				set_character_flag = whispers_quality_3
-			}
-			else = {
-				piety = -1000
-				custom_tooltip = { text = whispers_tooltip_tip_4 }
-				set_character_flag = whispers_quality_4
-			}
-
+		}
+		revoke_allowed = {
+			always = no
 		}
 	}
 	
@@ -471,7 +412,7 @@ targeted_decisions = {
 			is_adult = yes
 			prisoner = no
 			is_member_of_hermetics_trigger = yes
-			is_within_diplo_range = FROM
+			FROM = { is_within_prev_diplo_range_trigger = yes }
 		}
 		
 		allow = {

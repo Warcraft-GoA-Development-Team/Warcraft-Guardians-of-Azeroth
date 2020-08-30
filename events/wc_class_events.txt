@@ -807,96 +807,46 @@ narrative_event = {
 # Inspire Army
 character_event = {
 	id = WCCLS.105
-	desc = EVTDESC_WCCLS_105
+	desc = EVTDESC_WCCLS_105_you
 	picture = GFX_evt_warrior_human
 	border = GFX_event_normal_frame_war
 
 	is_triggered_only = yes
 
-	min_age = 16
-	only_capable = yes
-	prisoner = no
+	# Forward!
+	option = {
+		name = EVTOPTA_WCCLS_105
 
-	trigger = {
-		is_alive = yes
-		is_dying = no
-
-		OR = {
-			war = yes
-			liege = { war = yes }
-		}
-
-		OR = {
-			is_hunter_class_trigger = yes
-			is_warrior_class_trigger = yes
-		}
-		NOT = { trait = craven }
-	}
-
-	immediate = {
-		log = "WCCLS.105 fired for [Root.GetBestName]"
-
-		location = { save_event_target_as = target_province }
-	}
-
-	weight_multiplier = {
-		days = 1
-		modifier = {
-			factor = 1.5
-			trait = brave
+		class_inspire_army_effect = yes
+		if = {
+			limit = {
+				liege = {
+					NOT = { character = ROOT }
+					
+					any_army = { location = { province = event_target:target_province } }
+				}
+			}
+			liege = {
+				tooltip = { class_inspire_army_effect = yes }
+				character_event = { id = WCCLS.106 }
+			}
 		}
 	}
+}
+# Notification event
+character_event = {
+	id = WCCLS.106
+	desc = EVTDESC_WCCLS_105_other
+	picture = GFX_evt_warrior_human
+	border = GFX_event_normal_frame_war
+
+	is_triggered_only = yes
 
 	# Forward!
 	option = {
 		name = EVTOPTA_WCCLS_105
 
-		random_army = {
-			limit = { location = { province = event_target:target_province } }
-			if = {
-				limit = { ROOT = { is_9_10_physical_class_trigger = yes } }
-				morale = 0.5
-			}
-			else_if = {
-				limit = { ROOT = { is_7_8_physical_class_trigger = yes } }
-				morale = 0.4
-			}
-			else_if = {
-				limit = { ROOT = { is_5_6_physical_class_trigger = yes } }
-				morale = 0.3
-			}
-			else_if = {
-				limit = { ROOT = { is_3_4_physical_class_trigger = yes } }
-				morale = 0.2
-			}
-			else = {
-				morale = 0.1
-			}
-		}
-		liege = {
-			random_army = {
-				limit = { location = { province = event_target:target_province } }
-				if = {
-					limit = { ROOT = { is_9_10_physical_class_trigger = yes } }
-					morale = 0.5
-				}
-				else_if = {
-					limit = { ROOT = { is_7_8_physical_class_trigger = yes } }
-					morale = 0.4
-				}
-				else_if = {
-					limit = { ROOT = { is_5_6_physical_class_trigger = yes } }
-					morale = 0.3
-				}
-				else_if = {
-					limit = { ROOT = { is_3_4_physical_class_trigger = yes } }
-					morale = 0.2
-				}
-				else = {
-					morale = 0.1
-				}
-			}
-		}
+		class_inspire_army_effect = yes
 	}
 }
 
@@ -1006,7 +956,6 @@ narrative_event = {
 #########################
 # Paladin
 #########################
-
 # Notification of the beginning of self-training
 narrative_event = {
 	id = WCCLS.301
@@ -1535,7 +1484,8 @@ character_event = {
 	}
 }
 
-# Mind Control Spellcasting
+### Mind Control
+# Spellcasting
 character_event = {
 	id = WCCLS.615
 	desc = EVTDESC_WCCLS_615
@@ -1543,9 +1493,16 @@ character_event = {
 	border = GFX_event_normal_frame_intrigue
 
 	is_triggered_only = yes
-
-	immediate = {
-		FROM = { save_event_target_as = target_mind }
+	
+	trigger = {
+		event_target:target_mind = {
+			control_mind_target_potential_trigger = yes
+			control_mind_target_allow_trigger = yes
+		}
+	}
+	
+	fail_trigger_effect = {
+		character_event = { id = WCCLS.625 }
 	}
 
 	# I'll do it
@@ -1631,9 +1588,8 @@ character_event = {
 		
 		custom_tooltip = { text = EVTOPTB_WCCLS_615_tooltip }
 	}
-}
-
-# Mind Control Success event
+} 
+# Success event
 character_event = {
 	id = WCCLS.616
 	desc = EVTDESC_WCCLS_616
@@ -1662,7 +1618,7 @@ character_event = {
 			else = {
 				clr_quest = quest_control_mind_fair
 			}
-			add_society_currency_medium_effect = yes
+			add_society_currency_medium_and_chance_to_get_artifact_effect = yes
 		}
 		
 		reverse_opinion = {
@@ -1676,8 +1632,7 @@ character_event = {
 		clr_character_flag = control_mind_ongoing_flag
 	}
 }
-
-# Mind Control Failure event
+# Failure event
 character_event = {
 	id = WCCLS.617
 	desc = EVTDESC_WCCLS_617
@@ -1697,8 +1652,7 @@ character_event = {
 		clr_character_flag = control_mind_ongoing_flag
 	}
 }
-
-# Mind Control Absolute Failure event
+# Absolute Failure event
 character_event = {
 	id = WCCLS.618
 	desc = EVTDESC_WCCLS_618
@@ -1713,6 +1667,24 @@ character_event = {
 		add_trait = incapable
 		event_target:target_mind = { add_trait = incapable }
 		major_soul_corruption_effect = yes
+	}
+	
+	after = {
+		clr_character_flag = control_mind_ongoing_flag
+	}
+}
+# Fallback: can't cast a spell
+character_event = {
+	id = WCCLS.625
+	desc = EVTDESC_WCCLS_625
+	picture = GFX_evt_mind_control
+	border = GFX_event_normal_frame_intrigue
+	portrait = event_target:target_mind
+
+	is_triggered_only = yes
+
+	option = {
+		name = ALAS
 	}
 	
 	after = {
@@ -1858,20 +1830,16 @@ letter_event = {
 
 	option = {
 		name = ACCEPT
-		
-		if = { limit = { has_character_flag = pending_infection } clr_character_flag = pending_infection }
 
 		if = {
 			limit = { trait = severely_injured }
-			tooltip = { remove_trait = severely_injured }
-			character_event = { id = RIP.11000 }
 			hidden_effect = { FROMFROM = { remove_3_mana_effect = yes } }
 		}
 		else = {
-			tooltip = { remove_trait = wounded }
-			character_event = { id = 6081 }
 			hidden_effect = { FROMFROM = { remove_1_mana_effect = yes } }
 		}
+		
+		heal_wounds_effect = yes
 	}
 	option = {
 		name = DECLINE
@@ -2942,6 +2910,142 @@ narrative_event = {
 }
 
 #########################
+# Monk
+#########################
+# Notification of the beginning of self-training
+character_event = {
+	id = WCCLS.1600
+	title = EVTTITLE_WCCLS_1
+	desc = EVTDESC_WCCLS_1600
+	picture = GFX_evt_monk_pandaren_religion_group
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+		add_character_modifier = {
+			name = training_self_monk
+			duration = -1
+		}
+		character_event = { id = WCCLS.2152 }
+		character_event = {
+			id = WCCLS.1700
+			years = 5
+		}
+	}
+
+	option = {
+		name = EXCELLENT
+	}
+}
+
+# FROM suggests to heal your depression and stress
+letter_event = {
+	id = WCCLS.1605
+	desc = EVTDESC_WCCLS_1605
+	border = GFX_event_letter_frame_religion
+
+	is_triggered_only = yes
+
+	option = {
+		name = ACCEPT
+
+		hidden_effect = { FROMFROM = { remove_2_mana_effect = yes } }
+		
+		remove_stressed_and_depressed_effect = yes
+	}
+	option = {
+		name = DECLINE
+
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+#on_combat_pulse
+# Heal Army
+character_event = {
+	id = WCCLS.1610
+	desc = EVTDESC_WCCLS_1610_you
+	picture = GFX_evt_bishop_pandaren_religion_group
+	border = GFX_event_normal_frame_war
+
+	is_triggered_only = yes
+
+	# Forward!
+	option = {
+		name = EVTOPTA_WCCLS_105
+
+		class_heal_army_effect = yes
+		if = {
+			limit = {
+				liege = {
+					NOT = { character = ROOT }
+					
+					any_army = { location = { province = event_target:target_province } }
+				}
+			}
+			liege = {
+				tooltip = { class_heal_army_effect = yes }
+				character_event = { id = WCCLS.1611 }
+			}
+		}
+	}
+}
+# Notification event
+character_event = {
+	id = WCCLS.1611
+	desc = EVTDESC_WCCLS_1610_other
+	picture = GFX_evt_bishop_pandaren_religion_group
+	border = GFX_event_normal_frame_war
+
+	is_triggered_only = yes
+
+	# Forward!
+	option = {
+		name = EVTOPTA_WCCLS_105
+
+		class_heal_army_effect = yes
+	}
+}
+
+# Notification of the end of the training
+character_event = {
+	id = WCCLS.1700
+	title = EVTTITLE_WCCLS_100
+	desc = EVTDESC_WCCLS_1700
+	picture = GFX_evt_monk_pandaren_religion_group
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	trigger = {
+		is_incapable = no
+		OR = {
+			has_character_modifier = training_self_monk
+			has_character_modifier = training_mentor_monk
+		}
+	}
+
+	fail_trigger_effect = {
+		if = {
+			limit = { is_incapable = yes }
+			character_event = { id = WCCLS.1450 }
+		}
+	}
+
+	option = {
+		name = EXCELLENT
+
+		add_class_trait_effect = yes
+	}
+	
+	after = {
+		notifies_class_training_initiator_effect = yes
+	}
+}
+
+#########################
 
 # Notifies target_initiator about the end of the training
 character_event = {
@@ -3521,6 +3625,46 @@ character_event = {
 			factor = 99
 		}
 	}
+	
+	# Monk
+	option = {
+		trigger = {
+			event_target:student = {
+				OR = {
+					AND = {
+						potential_monk_wo_training_trigger = yes
+						allow_monk_trigger = yes
+					}
+					is_weak_monk_class_trigger = yes
+				}
+			}
+			event_target:mentor = { potential_mentor_monk_trigger = yes }
+		}
+		name = A_MONK
+
+		event_target:student = {
+			show_scope_change = no
+
+			set_character_flag = training_mentor_monk_flag
+			if = {
+				limit = {
+					NOT = { guardian = { character = event_target:mentor } }
+					NOT = { educator = { character = event_target:mentor } }
+				}
+				event_target:mentor = { letter_event = { id = WCCLS.2100 days = 14 } }
+			}
+			else = {
+				custom_tooltip = {
+					text = starts_training_tooltip
+					hidden_effect = { character_event = { id = WCCLS.2150 } }
+				}
+			}
+		}
+		
+		ai_chance = {
+			factor = 99
+		}
+	}
 
 	# Cancel
 	option = {
@@ -3812,6 +3956,17 @@ character_event = {
 			clr_character_flag = training_mentor_shadow_priest_flag
 			narrative_event = { id = WCCLS.1300 years = 5 }
 		}
+		if = {
+			limit = {
+				has_character_flag = training_mentor_monk_flag
+			}
+			add_character_modifier = {
+				name = training_mentor_monk
+				duration = -1
+			}
+			clr_character_flag = training_mentor_monk_flag
+			narrative_event = { id = WCCLS.1700 years = 5 }
+		}
 		
 		clr_character_flag = ask_to_be_mentor_ongoing_flag
 		
@@ -3881,6 +4036,7 @@ character_event = {
 						training_self_death_knight 		= { change_variable = { which = wc_experience_death_knight 		value = 1 } }
 						training_self_necromancer 		= { change_variable = { which = wc_experience_necromancer 		value = 1 } }
 						training_self_shadow_priest 	= { change_variable = { which = wc_experience_shadow_priest 	value = 1 } }
+						training_self_monk 			= { change_variable = { which = wc_experience_monk 			value = 1 } }
 					}
 				}
 				10 = {
@@ -3903,6 +4059,7 @@ character_event = {
 						training_self_death_knight 		= { change_variable = { which = wc_experience_death_knight 		value = 2 } }
 						training_self_necromancer 		= { change_variable = { which = wc_experience_necromancer 		value = 2 } }
 						training_self_shadow_priest 	= { change_variable = { which = wc_experience_shadow_priest 	value = 2 } }
+						training_self_monk 			= { change_variable = { which = wc_experience_monk 			value = 2 } }
 					}
 				}
 			}
@@ -3963,6 +4120,10 @@ character_event = {
 					event_target:mentor = { ROOT = { set_variable = { which = wc_experience_difference which = wc_experience_shadow_priest which = PREV } } }
 					subtract_variable = { which = wc_experience_difference which = wc_experience_shadow_priest }
 				}
+				training_mentor_monk = {
+					event_target:mentor = { ROOT = { set_variable = { which = wc_experience_difference which = wc_experience_monk which = PREV } } }
+					subtract_variable = { which = wc_experience_difference which = wc_experience_monk }
+				}
 			}
 			if = {
 				limit = {
@@ -3985,6 +4146,7 @@ character_event = {
 					training_mentor_death_knight 	= { change_variable = { which = wc_experience_death_knight 		value = 1 } }
 					training_mentor_necromancer 	= { change_variable = { which = wc_experience_necromancer 		value = 1 } }
 					training_mentor_shadow_priest 	= { change_variable = { which = wc_experience_shadow_priest 	value = 1 } }
+					training_mentor_monk 		= { change_variable = { which = wc_experience_monk 			value = 1 } }
 				}
 				random_list = {
 					10 = {
@@ -4008,6 +4170,7 @@ character_event = {
 							training_mentor_death_knight 	= { change_variable = { which = wc_experience_death_knight 		value = 1 } }
 							training_mentor_necromancer 	= { change_variable = { which = wc_experience_necromancer 		value = 1 } }
 							training_mentor_shadow_priest 	= { change_variable = { which = wc_experience_shadow_priest 	value = 1 } }
+							training_mentor_monk 		= { change_variable = { which = wc_experience_monk 			value = 1 } }
 						}
 						modifier = {
 							factor = 2
@@ -4050,6 +4213,7 @@ character_event = {
 							training_mentor_death_knight 	= { change_variable = { which = wc_experience_death_knight 		value = 2 } }
 							training_mentor_necromancer 	= { change_variable = { which = wc_experience_necromancer 		value = 2 } }
 							training_mentor_shadow_priest 	= { change_variable = { which = wc_experience_shadow_priest 	value = 2 } }
+							training_mentor_monk 		= { change_variable = { which = wc_experience_monk 			value = 2 } }
 						}
 						modifier = {
 							factor = 2
@@ -4092,6 +4256,7 @@ character_event = {
 							training_mentor_death_knight 	= { change_variable = { which = wc_experience_death_knight 		value = 3 } }
 							training_mentor_necromancer 	= { change_variable = { which = wc_experience_necromancer 		value = 3 } }
 							training_mentor_shadow_priest 	= { change_variable = { which = wc_experience_shadow_priest 	value = 3 } }
+							training_mentor_monk 		= { change_variable = { which = wc_experience_monk 			value = 3 } }
 						}
 						modifier = {
 							factor = 1.5
@@ -4126,6 +4291,7 @@ character_event = {
 							training_mentor_death_knight 	= { change_variable = { which = wc_experience_death_knight 		value = 4 } }
 							training_mentor_necromancer 	= { change_variable = { which = wc_experience_necromancer 		value = 4 } }
 							training_mentor_shadow_priest 	= { change_variable = { which = wc_experience_shadow_priest 	value = 4 } }
+							training_mentor_monk 		= { change_variable = { which = wc_experience_monk 			value = 4 } }
 						}
 						modifier = {
 							factor = 1.5
@@ -4160,6 +4326,7 @@ character_event = {
 							training_mentor_death_knight 	= { change_variable = { which = wc_experience_death_knight 		value = 5 } }
 							training_mentor_necromancer 	= { change_variable = { which = wc_experience_necromancer 		value = 5 } }
 							training_mentor_shadow_priest 	= { change_variable = { which = wc_experience_shadow_priest 	value = 5 } }
+							training_mentor_monk 		= { change_variable = { which = wc_experience_monk 			value = 5 } }
 						}
 						modifier = {
 							factor = 1.5
@@ -4197,6 +4364,7 @@ character_event = {
 							training_mentor_death_knight 	= { change_variable = { which = wc_experience_death_knight 		value = 6 } }
 							training_mentor_necromancer 	= { change_variable = { which = wc_experience_necromancer 		value = 6 } }
 							training_mentor_shadow_priest 	= { change_variable = { which = wc_experience_shadow_priest 	value = 6 } }
+							training_mentor_monk 		= { change_variable = { which = wc_experience_monk 			value = 6 } }
 						}
 						modifier = {
 							factor = 1.5
@@ -4234,6 +4402,7 @@ character_event = {
 							training_mentor_death_knight 	= { change_variable = { which = wc_experience_death_knight 		value = 7 } }
 							training_mentor_necromancer 	= { change_variable = { which = wc_experience_necromancer 		value = 7 } }
 							training_mentor_shadow_priest 	= { change_variable = { which = wc_experience_shadow_priest 	value = 7 } }
+							training_mentor_monk 		= { change_variable = { which = wc_experience_monk 			value = 7 } }
 						}
 						modifier = {
 							factor = 1.5
@@ -4271,6 +4440,7 @@ character_event = {
 							training_mentor_death_knight 	= { change_variable = { which = wc_experience_death_knight 		value = 8 } }
 							training_mentor_necromancer 	= { change_variable = { which = wc_experience_necromancer 		value = 8 } }
 							training_mentor_shadow_priest 	= { change_variable = { which = wc_experience_shadow_priest 	value = 8 } }
+							training_mentor_monk 		= { change_variable = { which = wc_experience_monk 			value = 8 } }
 						}
 						modifier = {
 							factor = 2
@@ -4316,6 +4486,7 @@ character_event = {
 							training_mentor_death_knight 	= { change_variable = { which = wc_experience_death_knight 		value = 9 } }
 							training_mentor_necromancer 	= { change_variable = { which = wc_experience_necromancer 		value = 9 } }
 							training_mentor_shadow_priest 	= { change_variable = { which = wc_experience_shadow_priest 	value = 9 } }
+							training_mentor_monk 		= { change_variable = { which = wc_experience_monk 			value = 9 } }
 						}
 						modifier = {
 							factor = 2
@@ -5360,6 +5531,7 @@ character_event = {
 	}
 }
 
+#write_libram
 character_event = {
 	id = WCCLS.10200
 	desc = EVTDESC_WCCLS.10200
@@ -5376,28 +5548,65 @@ character_event = {
 		trigger = {
 			can_write_guardianship_libram = yes
 		}
+		
+		piety = -750
+		
 		character_event = { id = WCCLS.10201 days = 360 random = 360 }
+		
+		ai_chance = {
+			factor = 99
+		}
 	}
 	option = {
 		name = EVTOPTB_WCCLS.10200
 		trigger = {
 			can_write_righteousness_libram = yes
 		}
+		
+		piety = -750
+		
 		character_event = { id = WCCLS.10202 days = 360 random = 360 }
+		
+		ai_chance = {
+			factor = 99
+		}
 	}
 	option = {
 		name = EVTOPTC_WCCLS.10200
 		trigger = {
 			can_write_reckoning_libram = yes
 		}
+		
+		piety = -750
+		
 		character_event = { id = WCCLS.10203 days = 360 random = 360 }
+		
+		ai_chance = {
+			factor = 99
+		}
 	}
 	option = {
 		name = EVTOPTD_WCCLS.10200
 		trigger = {
 			can_write_devoutness_libram = yes
 		}
+		
+		piety = -750
+		
 		character_event = { id = WCCLS.10204 days = 360 random = 360 }
+		
+		ai_chance = {
+			factor = 99
+		}
+	}
+	option = {
+		name = CHANGED_MY_MIND
+		
+		clr_character_flag = do_not_disturb
+		
+		ai_chance = {
+			factor = 1
+		}
 	}
 }
 character_event = {
@@ -5415,7 +5624,7 @@ character_event = {
 	option = {
 		name = EVTOPTA_WCCLS.10201
 		random_list = {
-			70 = {
+			30 = {
 				add_artifact = libram_of_guardianship_01
 			}
 			20 = {
@@ -5450,7 +5659,7 @@ character_event = {
 	option = {
 		name = EVTOPTA_WCCLS.10202
 		random_list = {
-			70 = {
+			30 = {
 				add_artifact = libram_of_righteousness_01
 			}
 			20 = {
@@ -5485,7 +5694,7 @@ character_event = {
 	option = {
 		name = EVTOPTA_WCCLS.10203
 		random_list = {
-			70 = {
+			30 = {
 				add_artifact = libram_of_reckoning_01
 			}
 			20 = {
@@ -5520,7 +5729,7 @@ character_event = {
 	option = {
 		name = EVTOPTA_WCCLS.10204
 		random_list = {
-			70 = {
+			30 = {
 				add_artifact = libram_of_devoutness_01
 			}
 			20 = {
@@ -5541,6 +5750,7 @@ character_event = {
 	}
 }
 
+#forge_runeblade
 character_event = {
 	id = WCCLS.10300
 	desc = {
@@ -5565,18 +5775,45 @@ character_event = {
 
 	option = {
 		name = EVTOPTA_WCCLS.10300
+		
+		forge_runeblade_cost_effect = yes
 
 		character_event = { id = WCCLS.10301 days = 30 random = 60 }
+		
+		ai_chance = {
+			factor = 99
+		}
 	}
 	option = {
 		name = EVTOPTB_WCCLS.10300
+		
+		forge_runeblade_cost_effect = yes
 
 		character_event = { id = WCCLS.10302 days = 30 random = 60 }
+		
+		ai_chance = {
+			factor = 99
+		}
 	}
 	option = {
 		name = EVTOPTC_WCCLS.10300
+		
+		forge_runeblade_cost_effect = yes
 
 		character_event = { id = WCCLS.10303 days = 30 random = 60 }
+		
+		ai_chance = {
+			factor = 99
+		}
+	}
+	option = {
+		name = CHANGED_MY_MIND
+		
+		clr_character_flag = do_not_disturb
+		
+		ai_chance = {
+			factor = 1
+		}
 	}
 }
 character_event = {
@@ -5594,10 +5831,10 @@ character_event = {
 	option = {
 		name = EVTOPTA_WCCLS.10301
 		random_list = {
-			60 = {
+			30 = {
 				add_artifact = runeblade_unholy_1
 			}
-			25 = {
+			20 = {
 				add_artifact = runeblade_unholy_2
 				
 				death_knight_half_score = yes
@@ -5605,7 +5842,7 @@ character_event = {
 				shadow_priest_half_score = yes
 				necromancer_half_score = yes
 			}
-			15 = {
+			10 = {
 				add_artifact = runeblade_unholy_3
 				death_knight_score = yes
 				warlock_score = yes
@@ -5630,10 +5867,10 @@ character_event = {
 	option = {
 		name = EVTOPTA_WCCLS.10302
 		random_list = {
-			60 = {
+			30 = {
 				add_artifact = runeblade_blood_1
 			}
-			25 = {
+			20 = {
 				add_artifact = runeblade_blood_2
 				
 				death_knight_half_score = yes
@@ -5641,7 +5878,7 @@ character_event = {
 				shadow_priest_half_score = yes
 				necromancer_half_score = yes
 			}
-			15 = {
+			10 = {
 				add_artifact = runeblade_blood_3
 				
 				death_knight_score = yes
@@ -5668,10 +5905,10 @@ character_event = {
 	option = {
 		name = EVTOPTA_WCCLS.10303
 		random_list = {
-			60 = {
+			30 = {
 				add_artifact = runeblade_frost_1
 			}
-			25 = {
+			20 = {
 				add_artifact = runeblade_frost_2
 				
 				death_knight_half_score = yes
@@ -5679,13 +5916,72 @@ character_event = {
 				shadow_priest_half_score = yes
 				necromancer_half_score = yes
 			}
-			15 = {
+			10 = {
 				add_artifact = runeblade_frost_3
 				
 				death_knight_score = yes
 				warlock_score = yes
 				shadow_priest_score = yes
 				necromancer_score = yes
+			}
+		}
+	}
+}
+
+#########################
+### Combat class event tombola
+#########################
+character_event = {
+	id = WCCLS.10500
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	min_age = 16
+	only_capable = yes
+	prisoner = no
+	
+	trigger = {
+		is_alive = yes
+		is_dying = no
+
+		OR = {
+			war = yes
+			liege = { war = yes }
+		}
+		
+		OR = {
+			is_hunter_class_trigger = yes
+			is_warrior_class_trigger = yes
+			AND = {
+				is_monk_class_trigger = yes
+				has_7_8_magic_class_or_higher_trigger = yes
+			}
+		}
+		NOT = { trait = craven }
+	}
+
+	immediate = {
+		log = "WCCLS.10500 fired for [Root.GetBestName]"
+		save_event_target_as = target_class
+		location = { save_event_target_as = target_province }
+		
+		random_list = {
+			10 = {
+				trigger = {
+					OR = {
+						is_hunter_class_trigger = yes
+						is_warrior_class_trigger = yes
+					}
+				}
+				character_event = { id = WCCLS.105 }
+			}
+			10 = {
+				trigger = {
+					is_monk_class_trigger = yes
+					has_7_8_magic_class_or_higher_trigger = yes
+				}
+				character_event = {	id = WCCLS.1610 }
 			}
 		}
 	}

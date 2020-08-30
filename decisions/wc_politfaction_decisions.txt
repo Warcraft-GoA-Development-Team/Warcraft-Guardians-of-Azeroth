@@ -44,7 +44,7 @@ decisions = {
 		allow = {
 			NOT = { has_character_modifier = faction_action_cooldown }
 			
-			realm_size = 50
+			realm_size = 75
 			
 			trigger_if = {
 				limit = { has_landed_title = e_horde }
@@ -131,7 +131,7 @@ decisions = {
 			leader_of_horde_trait = {
 				trigger_if = {
 					limit = { ROOT = { ai = no } }
-					is_within_diplo_range = ROOT
+					ROOT = { is_within_prev_diplo_range_trigger = yes }
 				}
 				ROOT = { has_opinion_to_join_prev_faction_leader_trigger = yes }
 			}
@@ -189,11 +189,11 @@ decisions = {
 				# Leader can't leave faction if it's centralized
 				trigger_if = {
 					limit = { trait = leader_of_horde_trait }
-					NOT = { has_global_flag = centralized_horde_flag }
+					horde_is_centralized_faction_trigger = no
 				}
 			}
 			trigger_else = {
-				has_global_flag = centralized_horde_flag
+				horde_is_centralized_faction_trigger = yes
 				de_facto_liege = e_horde
 				NOT = { has_landed_title = e_horde }
 				real_tier = KING
@@ -298,7 +298,7 @@ decisions = {
 		allow = {
 			NOT = { has_character_modifier = faction_action_cooldown }
 			
-			realm_size = 50
+			realm_size = 75
 			
 			trigger_if = {
 				limit = { tier = EMPEROR }
@@ -412,7 +412,7 @@ decisions = {
 			leader_of_alliance_trait = {
 				trigger_if = {
 					limit = { ROOT = { ai = no } }
-					is_within_diplo_range = ROOT
+					ROOT = { is_within_prev_diplo_range_trigger = yes }
 				}
 				ROOT = { has_opinion_to_join_prev_faction_leader_trigger = yes }
 			}
@@ -470,11 +470,11 @@ decisions = {
 				# Leader can't leave faction if it's centralized
 				trigger_if = {
 					limit = { trait = leader_of_alliance_trait }
-					NOT = { has_global_flag = centralized_alliance_flag }
+					alliance_is_centralized_faction_trigger = no
 				}
 			}
 			trigger_else = {
-				has_global_flag = centralized_alliance_flag
+				alliance_is_centralized_faction_trigger = yes
 				de_facto_liege = e_alliance
 				NOT = { has_landed_title = e_alliance }
 				real_tier = KING
@@ -530,11 +530,13 @@ decisions = {
 			OR = {
 				AND = {
 					trait = leader_of_horde_trait
-					NOT = { has_global_flag = centralized_horde_flag }
+					horde_is_centralized_faction_trigger = no
+					horde_can_be_centralized_faction_trigger = yes
 				}
 				AND = {
 					trait = leader_of_alliance_trait
-					NOT = { has_global_flag = centralized_alliance_flag }
+					alliance_is_centralized_faction_trigger = no
+					alliance_can_be_centralized_faction_trigger = yes
 				}
 			}
 		}
@@ -596,18 +598,12 @@ decisions = {
 		effect = {
 			if = {
 				limit = { trait = leader_of_horde_trait }
-				if = {
-					limit = { NOT = { has_global_flag = centralized_horde_flag } }
-					set_global_flag = centralized_horde_flag
-				}
+				centralize_horde_faction_effect = yes
 				create_e_horde_effect = yes
 			}
 			if = {
 				limit = { trait = leader_of_alliance_trait }
-				if = {
-					limit = { NOT = { has_global_flag = centralized_alliance_flag } }
-					set_global_flag = centralized_alliance_flag
-				}
+				centralize_alliance_faction_effect = yes
 				create_e_alliance_effect = yes
 			}
 			hidden_effect = { character_event = { id = WCPLF.2 } }

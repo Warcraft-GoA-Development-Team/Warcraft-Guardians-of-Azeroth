@@ -59,32 +59,38 @@ is_susceptible_to_fel_corruption_trigger = {
 }
 # YOU CAN'T BE VOID CREATURE AND GET VOID CORRUPTION IF IT'S NOT TRUE
 is_susceptible_to_void_corruption_trigger = {
-	is_adult = yes
-	trigger_if = {
-		limit = {
-			OR = {
-				controls_religion = yes
-				holy_order = yes
-				mercenary = yes
+	custom_tooltip = {
+		text = is_susceptible_to_void_corruption_tooltip
+		is_adult = yes
+		trigger_if = {
+			limit = {
+				OR = {
+					controls_religion = yes
+					holy_order = yes
+					mercenary = yes
+				}
 			}
+			religion_group = void_group
 		}
-		religion_group = void_group
+
+		is_humanoid_trigger = yes
+		NOT = {
+			trait = being_undead
+			trait = worgen
+			trait = creature_dryad
+			trait = creature_frostnymph
+
+			has_character_modifier = fel_corruption_1
+			has_character_modifier = fel_corruption_2
+			trait = being_demon
+
+			true_religion_group = fel_group
+			has_character_flag = consuming_fel_magic_flag
+		}
 	}
-
-	is_humanoid_trigger = yes
-	NOT = {
-		trait = being_undead
-		trait = worgen
-		trait = creature_dryad
-		trait = creature_frostnymph
-
-		has_character_modifier = fel_corruption_1
-		has_character_modifier = fel_corruption_2
-		trait = being_demon
-
-		true_religion_group = fel_group
-		has_character_flag = consuming_fel_magic_flag
-	}
+}
+has_max_mutations_trigger = {
+	check_variable = { which = void_mutations value = 5 }
 }
 
 is_dark_being_trigger = {
@@ -93,4 +99,50 @@ is_dark_being_trigger = {
 		trait = being_demon
 		trait = being_void
 	}
+}
+is_prev_dark_being_trigger = {
+	trigger_if = {
+		limit = { PREV = { trait = being_undead } }
+		trait = being_undead
+	}
+	trigger_else_if = {
+		limit = { PREV = { trait = being_demon } }
+		trait = being_demon
+	}
+	trigger_else_if = {
+		limit = { PREV = { trait = being_void } }
+		trait = being_void
+	}
+	trigger_else = {
+		always = no
+	}
+}
+demon_being_province_trigger = {
+	OR = {
+		culture_group = demonic_group
+		culture = satyr
+	}
+}
+void_being_province_trigger = {
+	OR = {
+		culture = qiraji
+		culture_group = shathyar_group
+		culture = naga
+	}
+}
+potential_mutation_trigger = {
+	is_untouchable_trigger = no
+	
+	is_alive = yes
+	is_dying = no
+	
+	is_susceptible_to_void_corruption_trigger = yes
+	OR = {
+		NOT = { trait = being_void }
+		trait = creature_naga
+	}
+}
+allow_mutation_trigger = {
+	religion = old_gods_worship
+	true_religion = old_gods_worship
 }

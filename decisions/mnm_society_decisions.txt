@@ -508,6 +508,14 @@ society_decisions = {
 					had_character_flag = { flag = holy_seclusion_timer days = 1000 }
 				}
 			}
+			custom_tooltip = {
+				text = in_meditation_cooldown_tt
+				hidden_trigger = {
+					NOT = {
+						has_character_modifier = in_meditation
+					}
+				}
+			}
 		}
 
 		effect = {
@@ -555,6 +563,7 @@ society_decisions = {
 				has_character_modifier = doing_penance
 				has_character_modifier = in_meditation
 			}
+			
 		}
 
 		allow = {
@@ -1039,7 +1048,7 @@ targeted_decisions = {
 			is_ruler = yes
 			OR = {
 				FROM = { ai = yes } # Only checks realm, so by definition in range
-				is_within_diplo_range = FROM
+				FROM = { is_within_prev_diplo_range_trigger = yes }
 			}
 		}
 
@@ -1170,7 +1179,7 @@ targeted_decisions = {
 			
 			NOT = { character = FROM }
 			is_adult = yes
-			is_within_diplo_range = FROM
+			FROM = { is_within_prev_diplo_range_trigger = yes }
 
 			#Limits for performance and sense-making
 			OR = {
@@ -1279,7 +1288,7 @@ targeted_decisions = {
 			
 			NOT = { character = FROM }
 			is_adult = yes
-			is_within_diplo_range = FROM
+			FROM = { is_within_prev_diplo_range_trigger = yes }
 			has_character_flag = assassins_target_marked_for_death
 		}
 
@@ -1370,8 +1379,8 @@ targeted_decisions = {
 	            }
 	        }
 	        trigger_if = {
-	        	limit = { NOT = { is_within_diplo_range = FROM } }
-	        	is_within_diplo_range = FROM # CPU HEAVY!
+	        	limit = { NOT = { FROM = { is_within_prev_diplo_range_trigger = yes } } }
+	        	FROM = { is_within_prev_diplo_range_trigger = yes } # CPU HEAVY!
 	        }
 	    }
 	    
@@ -1751,7 +1760,6 @@ targeted_decisions = {
 				# Warcraft
 				society_member_of = cult_of_the_damned
 				society_member_of = shadow_council
-				society_member_of = twilights_hammer_cult
 			}
 			society_rank >= 3
 			NOR = {
@@ -1762,21 +1770,7 @@ targeted_decisions = {
 		
 		allow = {
 			has_society_currency_medium_trigger = yes
-			custom_tooltip = {
-				text = devil_worshipers_dark_healing_tooltip
-				OR = {
-
-					has_disease_trigger = yes
-					has_symptom_trigger = yes
-					has_injury_trigger = yes
-					is_maimed_trigger = yes
-					trait = infirm
-					trait = mangled
-					trait = eunuch
-					trait = blinded
-					is_incapable = yes
-				}
-			}
+			devil_worshipers_dark_healing_trigger = yes
 		}
 		effect = {
 			increase_visibility_effect = yes
@@ -1964,7 +1958,7 @@ targeted_decisions = {
 			}
 			OR = {
 				FROM = { ai = yes } # Only checks realm, so by definition in range
-				is_within_diplo_range = FROM
+				FROM = { is_within_prev_diplo_range_trigger = yes }
 			}
 			is_adult = yes
 			prisoner = no
@@ -2251,7 +2245,7 @@ targeted_decisions = {
 			is_untouchable_trigger = no
 			
 			ai = yes
-			is_within_diplo_range = FROM
+			FROM = { is_within_prev_diplo_range_trigger = yes }
 			religion = FROM
 			OR = {
 				AND = {
@@ -2700,11 +2694,7 @@ targeted_decisions = {
 		
 		potential = {
 			# Warcraft
-			is_untouchable_trigger = no
-			can_rule_peacefully_trigger = yes
-			is_dark_being_trigger = no
-			is_humanoid_trigger = yes
-			has_invader_title_trigger = no
+			can_be_abducted_trigger = yes
 			
 			ai = yes
 			NOT = { character = FROM }
@@ -2806,7 +2796,7 @@ targeted_decisions = {
 				FROM = { has_society_currency_medium_trigger = yes }
 			}
 			
-			is_within_diplo_range = FROM
+			FROM = { is_within_prev_diplo_range_trigger = yes }
 		}
 		
 		effect = {
