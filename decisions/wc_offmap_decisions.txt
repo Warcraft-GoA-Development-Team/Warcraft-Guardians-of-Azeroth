@@ -856,4 +856,143 @@ offmap_decisions = {
 			}
 		}
 	}
+	wake_old_god_offmap = {
+		button_name = offmap_boons
+
+		ai_check_interval = 36
+
+		only_playable = yes
+		only_independent = yes
+
+		potential = {
+			is_playable = yes
+			independent = yes
+
+			NOT = {
+				has_game_rule = {
+					name = old_god_black_empire_invasion
+					value = off
+				}
+			}
+			OR = {
+				AND = {
+					is_offmap_tag = offmap_cthun
+					offmap_cthun = { offmap_old_god_can_be_awaken = yes }
+				}
+				AND = {
+					is_offmap_tag = offmap_nzoth
+					offmap_nzoth = { offmap_old_god_can_be_awaken = yes }
+				}
+				AND = {
+					is_offmap_tag = offmap_yoggsaron
+					offmap_yoggsaron = { offmap_old_god_can_be_awaken = yes }
+				}
+			}
+		}
+		from_potential = {
+			mercenary = no
+			holy_order = no
+			is_landed = yes
+		}
+		allow = {
+			trigger_if = {
+				limit = { is_offmap_tag = offmap_cthun }
+				FROM = {
+					trigger_if = {
+						limit = { ai = no }
+						has_offmap_currency = { offmap = offmap_cthun value = 8000 }
+					}
+					trigger_else = {
+						total_years_played = 25
+						NOT = { has_character_modifier = wake_old_god_offmap_cooldown }
+					}
+					cthun_offmap_decisions_enabled_trigger = yes
+					OR = {
+						has_cthun_wonder_trigger = yes
+						offmap_cthun = { has_status = old_god_imprisoned }
+					}
+				}
+			}
+			trigger_else_if = {
+				limit = { is_offmap_tag = offmap_nzoth }
+				FROM = {
+					trigger_if = {
+						limit = { ai = no }
+						has_offmap_currency = { offmap = offmap_nzoth value = 8000 }
+					}
+					trigger_else = {
+						total_years_played = 25
+						NOT = { has_character_modifier = wake_old_god_offmap_cooldown }
+					}
+					nzoth_offmap_decisions_enabled_trigger = yes
+					OR = {
+						has_nzoth_wonder_trigger = yes
+						offmap_nzoth = { has_status = old_god_imprisoned }
+					}
+				}
+			}
+			trigger_else = {
+				FROM = {
+					trigger_if = {
+						limit = { ai = no }
+						has_offmap_currency = { offmap = offmap_yoggsaron value = 8000 }
+					}
+					trigger_else = {
+						total_years_played = 25
+						NOT = { has_character_modifier = wake_old_god_offmap_cooldown }
+					}
+					yogg_saron_offmap_decisions_enabled_trigger = yes
+					OR = {
+						has_yogg_saron_wonder_trigger = yes
+						offmap_yoggsaron = { has_status = old_god_imprisoned }
+					}
+				}
+			}
+			FROM = { religion = old_gods_worship }
+		}
+		effect = {
+			if = {
+				limit = { FROM = { ai = no } }
+				if = {
+					limit = {
+						is_offmap_tag = offmap_cthun
+					}
+					FROM = {
+						add_offmap_currency = {
+							offmap = offmap_cthun
+							value = -8000
+						}
+					}
+				}
+				else_if = {
+					limit = {
+						is_offmap_tag = offmap_nzoth
+					}
+					FROM = {
+						add_offmap_currency = {
+							offmap = offmap_nzoth
+							value = -8000
+						}
+					}
+				}
+				else = {
+					FROM = {
+						add_offmap_currency = {
+							offmap = offmap_yoggsaron
+							value = -8000
+						}
+					}
+				}
+			}
+			FROM = {
+				add_character_modifier = { name = wake_old_god_offmap_cooldown years = 25 hidden = yes }
+				
+				set_character_flag = freeing_old_god_flag
+				character_event = { id = WCOME.300 }
+			}
+		}
+		ai_will_do = {
+			factor = 1
+		}
+	}
 }
