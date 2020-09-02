@@ -109,4 +109,119 @@ decisions = {
 			# }
 		# }
 	# }
+	build_new_vessel = {
+		is_high_prio = yes
+
+		ai_check_interval = 12
+
+		only_playable = yes
+		only_independent = yes
+		
+		potential = {
+			is_adult = yes
+			
+			NOT = { has_character_flag = spiritbinding_ongoing_flag }
+			
+			trait = creature_mogu
+			
+			# Has reason to do so
+			OR = {
+				age = 125 #150 is average lifespan
+				is_maimed_trigger = yes
+				has_healable_disability_trigger = yes
+				has_negative_congenital_trigger = yes
+			}
+		}
+
+		allow = {
+			# Knows secrets of spiritbinding
+			OR = {
+				religion = thunder_king
+				culture = mogu
+			}
+			
+			wealth = 500
+			prestige = 500
+			piety = 250
+		}
+
+		effect = {
+			set_character_flag = spiritbinding_ongoing_flag
+			
+			wealth = -500
+			prestige = -500
+			piety = -250
+			
+			character_event = { id = WCRAC.500 }
+		}
+
+		revoke_allowed = {
+			always = no
+		}
+
+		ai_will_do = {
+			factor = 1
+		}
+	}
+}
+targetted_decisions = {
+	# Awakens sleeping mantid paragon
+	awaken_paragon = {
+		filter = court
+		ai_target_filter = court
+		
+		ai_check_interval = 120
+		
+		ai = no
+		only_playable = yes
+
+		from_potential = {
+			is_untouchable_trigger = no
+
+			is_adult = yes
+			is_incapable = no
+		}
+
+		potential = {
+			is_ruler = no
+			
+			host = { character = FROM }
+			
+			NOT = { has_character_flag = awaken_paragon_ongoing_flag }
+			
+			trait = sleeping_trait
+			has_character_flag = paragon_sleeping_flag
+		}
+
+		allow = {
+			NOT = { has_character_modifier = recently_became_paragon_cooldown }
+			
+			FROM = {
+				prisoner = no
+				
+				religion = old_gods_worship
+				culture = mantid
+				
+				prestige = 500
+				piety = 250
+			}
+		}
+
+		effect = {
+			save_event_target_as = target_paragon
+			
+			set_character_flag = awaken_paragon_ongoing_flag
+			
+			character_event = { id = WCRAC.1019 days = 15 }
+			
+			FROM = {
+				prestige = -500
+				piety = -250
+			}
+		}
+
+		ai_will_do = {
+			factor = 1
+		}
+	}
 }

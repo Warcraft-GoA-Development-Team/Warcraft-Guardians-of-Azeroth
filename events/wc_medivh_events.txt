@@ -297,7 +297,6 @@ narrative_event = {
 	}
 	
 	option = {
-		trigger = { has_character_flag = sided_with_good }
 		name = EVTOPTB_WCMDV_108
 		narrative_event = { id = WCMDV.117 days = 5 }
 	}
@@ -620,16 +619,17 @@ narrative_event = {
 	
 	is_triggered_only = yes
 	
-	option = {
-		trigger = { has_character_flag = sided_with_good }
-		name = EVTOPTA_WCMDV_117
-		narrative_event = { id = WCMDV.118 days = 10 }
+	portrait = c_1008
+	
+	immediate = {
+		add_trait = travelling
+		c_59170 = { add_trait = travelling }
 	}
 	
 	option = {
-		trigger = { has_character_flag = sided_with_sargeras }
-		name = EVTOPTB_WCMDV_117
-		narrative_event = { id = WCMDV.118 days = 10 }
+		trigger = { has_character_flag = sided_with_good }
+		name = EVTOPTA_WCMDV_117
+		narrative_event = { id = WCMDV.118 days = 15 }
 	}
 }
 
@@ -639,12 +639,204 @@ narrative_event = {
 	
 	title = EVTTITLE_WCMDV_118
 	desc = EVTDESC_WCMDV_118
-	picture = GFX_evt_orcish_horde
-	border = GFX_event_narrative_frame_war
+	picture = GFX_evt_lordaeron_coast
+	border = GFX_event_narrative_frame_intrigue
 	
 	is_triggered_only = yes
 	
 	option = {
 		name = EVTOPTA_WCMDV_118
+		narrative_event = { id = WCMDV.119 = 10 days }
+	}
+}
+
+#Siege of Stormwind
+narrative_event = {
+	id = WCMDV.119
+	
+	title = EVTTITLE_WCMDV_119
+	desc = EVTDESC_WCMDV_119
+	picture = GFX_evt_orcish_horde
+	border = GFX_event_narrative_frame_war
+	
+	is_triggered_only = yes
+	
+	portrait = c_2
+	
+	immediate = {
+		random_list = {
+			75 = {
+				narrative_event = { id = WCMDV.120 days = 3 }
+			}
+			25 = {
+				narrative_event = { id = WCMDV.121 days = 3 }
+			}
+		}
+	}
+	
+	option = {
+		name = EVTOPTA_WCMDV_119
+	}
+}
+
+#Blackhand won the duel
+narrative_event = {
+	id = WCMDV.120
+	
+	title = EVTTITLE_WCMDV_120
+	desc = EVTDESC_WCMDV_120
+	picture = GFX_evt_makgora
+	border = GFX_event_narrative_frame_war
+	
+	is_triggered_only = yes
+	
+	portrait = c_10000
+	
+	immediate = {
+		c_2 = {
+			death = {
+				death_reason = death_duel
+				killer = c_10000
+			}
+		}
+		c_10000 = { add_trait = scarred }
+		random_province = {
+			limit = {
+				religion_group = light_group
+				culture_group = human_group
+				
+				province_id = 1	# Stormwind
+			}
+			save_event_target_as = target_province
+		}
+	}
+	
+	option = {
+		name = EVTOPTA_WCMDV_120
+		narrative_event = { id = WCMDV.122 days = 5 }
+	}
+}
+
+#Llane won the duel
+narrative_event = {
+	id = WCMDV.121
+	
+	title = EVTTITLE_WCMDV_121
+	desc = EVTDESC_WCMDV_121
+	picture = GFX_evt_warrior_human
+	border = GFX_event_narrative_frame_war
+	
+	is_triggered_only = yes
+	
+	portrait = c_2
+	
+	immediate = {
+		c_10000 = {
+			death = {
+				death_reason = death_duel
+				killer = c_2
+			}
+		}
+	}
+	
+	option = {
+		name = EVTOPTA_WCMDV_121
+		
+	}
+}
+
+#Purge of Stormwind: Medivh event
+narrative_event = {
+	id = WCMDV.122
+	
+	title = EVTTITLE_WCMDV_122
+	desc = EVTDESC_WCMDV_122
+	picture = GFX_evt_orcish_horde
+	border = GFX_event_narrative_frame_war
+	
+	is_triggered_only = yes
+	
+	immediate = {
+		event_target:target_province = {
+			add_max_depopulation_effect = yes
+			hidden_effect = {
+				province_event = { id = WCMDV.124 }
+				any_province_character = {
+					limit = {
+						NOT = {
+							character = c_8 
+							character = c_1008
+							character = c_60578
+						}
+						
+						in_command = no
+					}
+					random = {
+						chance = 60
+						death = {
+							death_reason = death_battle
+							killer = c_10000
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	option = {
+		name = EVTOPTA_WCMDV_122
+	}
+}
+
+#Purge of Stormwind: ping event
+province_event = {
+	id = WCMDV.124
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	immediate = {
+		FROM = { narrative_event = { id = WCMDV.123 days = 1 } }
+	}
+}
+
+$Purge of Stormwind: major event
+narrative_event = {
+	id = WCMDV.123
+	
+	title = EVTTITLE_WCMDV_123
+	desc = EVTDESC_WCMDV_123
+	picture = GFX_evt_culling
+	border = GFX_event_narrative_frame_war
+	
+	is_triggered_only = yes
+
+	major = yes
+	major_trigger = {
+		ai = no
+	}
+	show_from_from = yes
+	
+	option = {
+		trigger = {
+			NOT = { has_character_flag = is_medivh }
+		}
+		name = {
+			trigger = {
+				is_aggressive_trigger = no
+			}
+			text = EVTOPTA_WCMDV_123
+		}
+		name = {
+			trigger = {
+				is_aggressive_trigger = yes
+			}
+			text = EXCELLENT
+		}
+	}
+	
+	option = {
+		trigger = { has_character_flag = is_medivh }
+		name = EVTOPTB_WCMDV_123
 	}
 }

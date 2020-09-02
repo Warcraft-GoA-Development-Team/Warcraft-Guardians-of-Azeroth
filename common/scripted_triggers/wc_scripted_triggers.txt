@@ -102,7 +102,18 @@ can_declare_wars_trigger = {
 		is_untouchable_trigger = yes
 		AND = {
 			trait = creature_qiraji
-			NOT = { has_global_flag = reawakening_of_cthun_flag }
+			offmap_cthun = {
+				OR = {
+					has_status = old_god_imprisoned
+					has_status = old_god_partly_imprisoned
+				}
+			}
+			NOT = {
+				has_game_rule = {
+					name = old_god_black_empire_invasion
+					value = off
+				}
+			}
 		}
 	}
 }
@@ -509,6 +520,9 @@ can_has_sexual_relation_with_prev = {
 			trait = creature_sayaadi
 		}
 	}
+	
+	is_not_isolated_from_prev_trigger = yes
+	
 	trigger_if = {
 		limit = {
 			has_game_rule = {
@@ -516,7 +530,6 @@ can_has_sexual_relation_with_prev = {
 				value = unrestricted
 			}
 		}
-		always = yes
 	}
 	trigger_else = {
 		OR = {
@@ -836,6 +849,7 @@ is_aggressive_religion_trigger = {
 		religion = throsic
 		religion_group = primitive_group
 		religion_group = vrykul_religion_group
+		religion = thunder_king
 	}
 }
 like_raiding_adventure_triggger = {
@@ -958,6 +972,10 @@ can_be_feudal_trigger = {
 			culture_group = human_group
 			culture_group = titanforged_group
 			culture_group = undead_group
+			culture_group = pandaren_group #PH
+			culture_group = jinyu_group #PH
+			culture_group = saurok_group #PH
+			culture_group = grummle_group #PH
 		}
 	}
 }
@@ -989,6 +1007,7 @@ is_small_humanoid_trigger = {
 			trait = creature_gorloc
 			trait = creature_wolvar
 			trait = creature_vulpera
+			trait = creature_grummle
 		}
 	}
 }
@@ -1023,6 +1042,11 @@ is_medium_humanoid_trigger = {
 			trait = creature_highborne
 			trait = creature_sethrak
 			trait = creature_wickerman # sort of?
+			trait = creature_pandaren
+			trait = creature_jinyu
+			trait = creature_ankoan
+			trait = creature_mantid
+			trait = creature_saurok
 		}
 	}
 }
@@ -1050,6 +1074,8 @@ is_large_humanoid_trigger = {
 			trait = creature_qiraji
 			trait = creature_wicker_behemoth # sort of?
 			trait = creature_wicker_golem # sort of?
+			trait = creature_yaungol
+			trait = creature_mogu
 		}
 	}
 }
@@ -1499,101 +1525,142 @@ potential_race_wicker_golem_trigger = {
 	graphical_culture = wickergolemgfx
 	NOT = { trait = creature_wicker_golem }
 }
+potential_race_pandaren_trigger = {
+	graphical_culture = pandarengfx
+	NOT = { trait = creature_pandaren }
+}
+potential_race_jinyu_trigger = {
+	graphical_culture = jinyugfx
+	NOT = { trait = creature_jinyu }
+}
+potential_race_ankoan_trigger = {
+	graphical_culture = ankoangfx
+	NOT = { trait = creature_ankoan }
+}
+potential_race_mogu_trigger = {
+	graphical_culture = mogugfx
+	NOT = { trait = creature_mogu }
+}
+potential_race_saurok_trigger = {
+	graphical_culture = saurokgfx
+	NOT = { trait = creature_saurok }
+}
+potential_race_grummle_trigger = {
+	graphical_culture = grummlegfx
+	NOT = { trait = creature_grummle }
+}
+potential_race_mantid_trigger = {
+	graphical_culture = mantidgfx
+	NOT = { trait = creature_mantid }
+}
+potential_race_yaungol_trigger = {
+	graphical_culture = yaungolgfx
+	NOT = { trait = creature_yaungol }
+}
 potential_race_trigger = {
 	# Add new races always at the end
-		OR = {
-			potential_race_human_trigger = yes
-			potential_race_orc_trigger = yes
-			potential_race_ogre_trigger = yes
-			potential_race_troll_trigger = yes
-			potential_race_murloc_trigger = yes
-			potential_race_gnoll_trigger = yes
-			potential_race_kobold_trigger = yes
-			potential_race_dwarf_trigger = yes
-			potential_race_gnome_trigger = yes
-			potential_race_high_elf_trigger = yes
-			potential_race_blood_elf_trigger = yes
-			potential_race_naga_trigger = yes
+	OR = {
+		potential_race_human_trigger = yes
+		potential_race_orc_trigger = yes
+		potential_race_ogre_trigger = yes
+		potential_race_troll_trigger = yes
+		potential_race_murloc_trigger = yes
+		potential_race_gnoll_trigger = yes
+		potential_race_kobold_trigger = yes
+		potential_race_dwarf_trigger = yes
+		potential_race_gnome_trigger = yes
+		potential_race_high_elf_trigger = yes
+		potential_race_blood_elf_trigger = yes
+		potential_race_naga_trigger = yes
 
-			# Dragons
-			potential_race_red_dragon_trigger = yes
-			potential_race_blue_dragon_trigger = yes
-			potential_race_green_dragon_trigger = yes
-			potential_race_black_dragon_trigger = yes
-			potential_race_bronze_dragon_trigger = yes
-			potential_race_infinite_dragon_trigger = yes
+		# Dragons
+		potential_race_red_dragon_trigger = yes
+		potential_race_blue_dragon_trigger = yes
+		potential_race_green_dragon_trigger = yes
+		potential_race_black_dragon_trigger = yes
+		potential_race_bronze_dragon_trigger = yes
+		potential_race_infinite_dragon_trigger = yes
 
-			potential_race_goblin_trigger = yes
-			potential_race_pygmy_trigger = yes
-			potential_race_hozen_trigger = yes
-			potential_race_draenei_trigger = yes
-			potential_race_arakkoa_corrupted_trigger = yes
+		potential_race_goblin_trigger = yes
+		potential_race_pygmy_trigger = yes
+		potential_race_hozen_trigger = yes
+		potential_race_draenei_trigger = yes
+		potential_race_arakkoa_corrupted_trigger = yes
 
-			# Undeads
-			# potential_race_ghoul_trigger = yes
-			# potential_race_skeleton_trigger = yes
-			potential_race_wraith_trigger = yes
-			potential_race_banshee_trigger = yes
-			potential_race_plague_eruptor_trigger = yes
-			potential_race_abomination_trigger = yes
-			potential_race_lich_trigger = yes
+		# Undeads
+		# potential_race_ghoul_trigger = yes
+		# potential_race_skeleton_trigger = yes
+		potential_race_wraith_trigger = yes
+		potential_race_banshee_trigger = yes
+		potential_race_plague_eruptor_trigger = yes
+		potential_race_abomination_trigger = yes
+		potential_race_lich_trigger = yes
 
-			# Demons
-			potential_race_annihilan_trigger = yes
-			potential_race_nathrezim_trigger = yes
-			potential_race_eredruin_trigger = yes
-			potential_race_fel_orc_trigger = yes
-			potential_race_felblood_elf_trigger = yes
-			potential_race_satyr_trigger = yes
-			potential_race_eredar_trigger = yes
-			potential_race_sayaadi_trigger = yes
-			potential_race_shivarra_trigger = yes
-			potential_race_moarg_trigger = yes
-			potential_race_observer_trigger = yes
+		# Demons
+		potential_race_annihilan_trigger = yes
+		potential_race_nathrezim_trigger = yes
+		potential_race_eredruin_trigger = yes
+		potential_race_fel_orc_trigger = yes
+		potential_race_felblood_elf_trigger = yes
+		potential_race_satyr_trigger = yes
+		potential_race_eredar_trigger = yes
+		potential_race_sayaadi_trigger = yes
+		potential_race_shivarra_trigger = yes
+		potential_race_moarg_trigger = yes
+		potential_race_observer_trigger = yes
 
-			# Elementals
-			potential_race_air_elemental_trigger = yes
-			potential_race_earth_elemental_trigger = yes
-			potential_race_fire_elemental_trigger = yes
-			potential_race_flamewaker_trigger = yes
-			potential_race_water_elemental_trigger = yes
+		# Elementals
+		potential_race_air_elemental_trigger = yes
+		potential_race_earth_elemental_trigger = yes
+		potential_race_fire_elemental_trigger = yes
+		potential_race_flamewaker_trigger = yes
+		potential_race_water_elemental_trigger = yes
 
-			potential_race_iron_dwarf_trigger = yes
-			potential_race_vrykul_trigger = yes
-			potential_race_tuskarr_trigger = yes
-			potential_race_magnataur_trigger = yes
-			potential_race_furbolg_trigger = yes
-			potential_race_gorloc_trigger = yes
-			potential_race_watcher_trigger = yes
-			potential_race_wolvar_trigger = yes
-			potential_race_taunka_trigger = yes
-			potential_race_kvaldir_trigger = yes
-			potential_race_nerubian_trigger = yes
-			potential_race_harpy_trigger = yes
-			potential_race_mechagnome_trigger = yes
-			potential_race_earthen_trigger = yes
-			potential_race_giant_trigger = yes
+		potential_race_iron_dwarf_trigger = yes
+		potential_race_vrykul_trigger = yes
+		potential_race_tuskarr_trigger = yes
+		potential_race_magnataur_trigger = yes
+		potential_race_furbolg_trigger = yes
+		potential_race_gorloc_trigger = yes
+		potential_race_watcher_trigger = yes
+		potential_race_wolvar_trigger = yes
+		potential_race_taunka_trigger = yes
+		potential_race_kvaldir_trigger = yes
+		potential_race_nerubian_trigger = yes
+		potential_race_harpy_trigger = yes
+		potential_race_mechagnome_trigger = yes
+		potential_race_earthen_trigger = yes
+		potential_race_giant_trigger = yes
 
-			potential_race_nraqi_trigger = yes
-			potential_race_cthraxxi_trigger = yes
-			potential_race_night_elf_trigger = yes
-			potential_race_tauren_trigger = yes
-			potential_race_centaur_trigger = yes
-			potential_race_quilboar_trigger = yes
-			potential_race_tolvir_trigger = yes
-			potential_race_qiraji_trigger = yes
-			potential_race_dryad_trigger = yes
-			potential_race_highborne_trigger = yes
-			potential_race_frostnymph_trigger = yes
-			potential_race_vulpera_trigger = yes
-			potential_race_sethrak_trigger = yes
+		potential_race_nraqi_trigger = yes
+		potential_race_cthraxxi_trigger = yes
+		potential_race_night_elf_trigger = yes
+		potential_race_tauren_trigger = yes
+		potential_race_centaur_trigger = yes
+		potential_race_quilboar_trigger = yes
+		potential_race_tolvir_trigger = yes
+		potential_race_qiraji_trigger = yes
+		potential_race_dryad_trigger = yes
+		potential_race_highborne_trigger = yes
+		potential_race_frostnymph_trigger = yes
+		potential_race_vulpera_trigger = yes
+		potential_race_sethrak_trigger = yes
 
-			potential_race_protector_trigger = yes
-			potential_race_ancient_war_trigger = yes
-			potential_race_ancient_lore_trigger = yes
-			potential_race_ancient_wind_trigger = yes
+		potential_race_protector_trigger = yes
+		potential_race_ancient_war_trigger = yes
+		potential_race_ancient_lore_trigger = yes
+		potential_race_ancient_wind_trigger = yes
 
-		}
+		# Pandaria
+		potential_race_pandaren_trigger = yes
+		potential_race_jinyu_trigger = yes
+		potential_race_ankoan_trigger = yes
+		potential_race_mogu_trigger = yes
+		potential_race_saurok_trigger = yes
+		potential_race_grummle_trigger = yes
+		potential_race_mantid_trigger = yes
+		potential_race_yaungol_trigger = yes
+	}
 }
 
 has_race_trait_trigger = {
@@ -1730,6 +1797,16 @@ has_race_trait_trigger = {
 		trait = creature_ancient_war
 		trait = creature_ancient_lore
 		trait = creature_ancient_wind
+		
+		# Pandaria
+		trait = creature_pandaren
+		trait = creature_jinyu
+		trait = creature_ankoan
+		trait = creature_mogu
+		trait = creature_saurok
+		trait = creature_grummle
+		trait = creature_mantid
+		trait = creature_yaungol
 	}
 }
 
@@ -1841,6 +1918,15 @@ has_prev_race_trigger = {
 	trigger_else_if = { limit = { trait = creature_ancient_war			} PREV = { trait = creature_ancient_war			} }
 	trigger_else_if = { limit = { trait = creature_ancient_lore			} PREV = { trait = creature_ancient_lore			} }
 	trigger_else_if = { limit = { trait = creature_ancient_wind			} PREV = { trait = creature_ancient_wind			} }
+	
+	trigger_else_if = { limit = { trait = creature_pandaren			} PREV = { trait = creature_pandaren			} }
+	trigger_else_if = { limit = { trait = creature_jinyu			} PREV = { trait = creature_jinyu			} }
+	trigger_else_if = { limit = { trait = creature_ankoan			} PREV = { trait = creature_ankoan			} }
+	trigger_else_if = { limit = { trait = creature_mogu			} PREV = { trait = creature_mogu			} }
+	trigger_else_if = { limit = { trait = creature_saurok			} PREV = { trait = creature_saurok			} }
+	trigger_else_if = { limit = { trait = creature_grummle			} PREV = { trait = creature_grummle			} }
+	trigger_else_if = { limit = { trait = creature_mantid			} PREV = { trait = creature_mantid			} }
+	trigger_else_if = { limit = { trait = creature_yaungol			} PREV = { trait = creature_yaungol			} }
 	
 	# Fallback, always at the end
 	trigger_else = {
@@ -2217,6 +2303,8 @@ has_weak_character_trigger = {
 can_fight_prev_trigger = {
 	can_declare_wars_trigger = yes
 	PREV = { can_declare_wars_trigger = yes }
+	is_not_isolated_from_prev_trigger = yes
+	
 	trigger_if = {
 		limit = {
 			OR = {
@@ -2690,7 +2778,7 @@ ai_from_prefer_to_hurt_this_trigger = {
 	}
 }
 from_in_range_to_hurt_this_trigger = {
-	is_within_diplo_range = FROM
+	FROM = { is_within_prev_diplo_range_trigger = yes }
 	OR = {
 		same_realm = FROM
 		FROM = { is_foe = PREV }
@@ -2784,6 +2872,8 @@ ongoing_invasion_trigger = {
 # Immortals who are immune from WCRAC.1
 is_completely_immortal_trigger = {
 	OR = {
+		trait = sleeping_trait
+		
 		trait = immortal
 		trait = being_undead
 		trait = being_demon
@@ -3033,6 +3123,7 @@ is_aqir_trigger = {
 	OR = {
 		trait = creature_nerubian
 		trait = creature_qiraji
+		trait = creature_mantid
 	}
 }
 
@@ -3195,6 +3286,7 @@ like_proud_trait_trigger = {
 		culture_group = troll_group
 		culture_group = undead_group
 		culture_group = vrykul_group
+		culture = mogu
 	}
 }
 prefer_proud_trait_trigger = {
@@ -3225,6 +3317,7 @@ like_ambitious_trait_trigger = {
 		culture_group = troll_group
 		culture_group = undead_group
 		culture_group = vrykul_group
+		culture = mogu
 	}
 }
 prefer_ambitious_trait_trigger = {
@@ -3254,6 +3347,7 @@ like_brave_trait_trigger = {
 		religion_group = primitive_group
 		religion_group = shamanism_group
 		religion_group = vrykul_religion_group
+		religion = thunder_king
 	}
 }
 prefer_brave_trait_trigger = {
@@ -3502,7 +3596,6 @@ is_60_physical_age_trigger = {
 	}
 }
 is_70_physical_age_trigger = {
-	immortal = no
 	trigger_if = {
 		limit = { immortal = yes }
 		is_old_immortal_physical_age_trigger = yes
@@ -3512,7 +3605,6 @@ is_70_physical_age_trigger = {
 	}
 }
 is_80_physical_age_trigger = {
-	immortal = no
 	trigger_if = {
 		limit = { immortal = yes }
 		is_old_immortal_physical_age_trigger = yes
@@ -3522,7 +3614,6 @@ is_80_physical_age_trigger = {
 	}
 }
 is_90_physical_age_trigger = {
-	immortal = no
 	trigger_if = {
 		limit = { immortal = yes }
 		is_old_immortal_physical_age_trigger = yes
@@ -3553,6 +3644,14 @@ is_old_immortal_physical_age_trigger = {
 		trigger_else_if = {
 			limit = { trait = creature_giant }
 			age = 690
+		}
+		trigger_else_if = {
+			limit = { trait = creature_mogu }
+			age = 215
+		}
+		trigger_else_if = {
+			limit = { trait = creature_mantid }
+			age = 215
 		}
 		trigger_else = {	# creature_naga, creature_night_elf, creature_highborne
 			age = 1290
@@ -3601,7 +3700,7 @@ creatable_religious_head_trigger = {
 	}
 }
 
-# Religions that LOOK (DOESN'T BEHAVE) like christians...
+# Religions that look like christians...
 like_christian_public_religion_trigger = {
 	OR = {
 		light_public_religion_trigger = yes
@@ -3610,7 +3709,10 @@ like_christian_public_religion_trigger = {
 	NOT = { religion = kaldorei_religion }
 }
 
-# ...like buddhists...
+# ...like indian_group...
+like_indian_group_public_religion_trigger = {
+	religion_group = pandaren_religion_group
+}
 like_buddhist_public_religion_trigger = {
 	religion_group = pandaren_religion_group
 }
@@ -3742,6 +3844,11 @@ is_mammal_trigger = {
 		trait = creature_highborne
 
 		trait = creature_vulpera
+		
+		trait = creature_pandaren
+		trait = creature_mogu
+		trait = creature_grummle
+		trait = creature_yaungol
 	}
 }
 
@@ -3931,6 +4038,7 @@ is_yaungol_trigger = {
 	OR = {
 		trait = creature_taunka
 		trait = creature_tauren
+		trait = creature_yaungol
 	}
 }
 is_cenarius_offspring_trigger = {
@@ -4308,6 +4416,10 @@ create_event_empire_allow_trigger = {
 	
 	independent = yes
 	war = no
+	OR = {
+		is_feudal = yes
+		is_tribal = yes
+	}
 	
 	prestige = 5000
 	
@@ -4330,7 +4442,7 @@ create_titular_empire_common_trigger = {
 }
 
 religion_has_pilgrimage_trigger = {
-	always = no
+	has_dharmic_religion_trigger = yes
 }
 religion_has_heaven_and_hell_trigger = {
 	OR = {
@@ -4359,6 +4471,7 @@ can_create_merchant_republic_trigger = {
 }
 
 from_can_have_trade_post_trigger = {
+	FROM = { is_not_isolated_from_prev_trigger = yes }
 	trigger_if = {
 		limit = { FROM = { evil_public_religion_trigger = yes } }
 		religion = FROM
@@ -4368,27 +4481,13 @@ from_can_have_trade_post_trigger = {
 	}
 }
 owner_can_have_trade_post_trigger = {
+	trade_post_owner = { is_not_isolated_from_prev_trigger = yes }
 	trigger_if = {
 		limit = { trade_post_owner = { evil_public_religion_trigger = yes } }
 		religion = trade_post_owner
 	}
 	trigger_else = {
 		evil_public_religion_trigger = no
-	}
-}
-
-use_scimitars_trigger = {
-	OR = {
-		marine_culture_trigger = yes
-		
-		culture_group = aqir_group
-		culture_group = arakkoa_group
-		culture_group = centaur_group
-		culture_group = elf_group
-		culture_group = sethrak_group
-		culture_group = troll_group
-		culture_group = vulpera_group
-		# More Pandaria cultures should be there
 	}
 }
 
@@ -4680,32 +4779,14 @@ can_travel_in_carriage_trigger = {
 }
 
 allow_sky_burial_trigger = {
-	religion_group = primitive_group
+	OR = {
+		religion_group = primitive_group
+		has_dharmic_religion_trigger = yes
+	}
 	# Followers of water deities have no use for a sky burial 
 	NOT = {
 		religion = water_deities
-	}
-}
-
-# These hunters (I mean class) prefer to use guns
-prefers_guns_trigger = {
-	OR = {
-		culture_group = demonic_group
-		AND = {
-			culture_group = dwarf_group
-			NOT = { culture = wildhammer }
-		}
-		culture_group = gnome_group
-		culture_group = goblin_group
-		culture = gilnean
-		culture = baradin
-		culture = tirassian
-		culture = northern
-		culture = pirate_culture
-		AND = {
-			culture_group = titanforged_group
-			NOT = { culture = tolvir }
-		}
+		religion = waterspeaker
 	}
 }
 
@@ -4986,7 +5067,7 @@ is_scale_race_trigger = {
 this_can_lend_prev_money_trigger = {
 	war = no
 	
-	is_within_diplo_range = PREV
+	is_within_prev_diplo_range_trigger = yes
 	
 	custom_tooltip = {
 		text = borrowing_bothering_tooltip
@@ -5209,4 +5290,149 @@ has_magical_addiction_trigger = {
 	NOT = {
 		has_character_flag = immune_magical_addiction
 	}
+}
+
+is_infested_by_sha_trigger = {
+	OR = {
+		has_character_modifier = infested_by_sha_of_anger
+		has_character_modifier = infested_by_sha_of_despair
+		has_character_modifier = infested_by_sha_of_doubt
+		has_character_modifier = infested_by_sha_of_fear
+		has_character_modifier = infested_by_sha_of_hatred
+		has_character_modifier = infested_by_sha_of_pride
+		has_character_modifier = infested_by_sha_of_violence
+	}
+}
+
+is_not_isolated_from_prev_trigger = {
+	trigger_if = {
+		limit = { character = yes }
+		is_untouchable_trigger = no
+	}
+	PREV = {
+		trigger_if = {
+			limit = { character = yes }
+			is_untouchable_trigger = no
+		}
+	}
+
+	trigger_if = {
+		limit = {
+			NOT = { has_global_flag = mists_of_pandaria_parted_flag }
+			NOT = { has_game_rule = { name = mists_of_pandaria value = off } }
+			OR = {
+				is_in_pandaria_trigger = yes
+				PREV = { is_in_pandaria_trigger = yes }
+			}
+		}
+		custom_tooltip = {
+			text = mists_of_pandaria_dont_block_interactions_tooltip
+			is_in_pandaria_trigger = yes
+			PREV = { is_in_pandaria_trigger = yes }
+		}
+	}
+}
+is_isolated_in_pandaria_trigger = {
+	NOT = { has_global_flag = mists_of_pandaria_parted_flag }
+	NOT = { has_game_rule = { name = mists_of_pandaria value = off } }
+	is_in_pandaria_trigger = yes
+}
+is_in_pandaria_or_no_mists = {
+	OR = {
+		has_global_flag = mists_of_pandaria_parted_flag
+		has_game_rule = { name = mists_of_pandaria value = off }
+		is_in_pandaria_trigger = yes
+	}
+}
+is_in_pandaria_trigger = {
+	trigger_if = {
+		limit = { character = yes }
+		trigger_if = {
+			limit = {
+				is_ruler = yes
+			}
+			trigger_if = {
+				limit = { capital_scope = { always = yes } }
+				capital_scope = { region = world_pandaria }
+			}
+			trigger_else = {
+				location = { region = world_pandaria }
+			}
+		}
+		trigger_else = {
+			liege = { capital_scope = { region = world_pandaria } }
+		}
+	}
+	trigger_else = {
+		region = world_pandaria
+	}
+}
+
+has_unique_minor_titles = {
+	OR = {
+		# Religions
+		like_norse_pagan_public_religion_trigger = yes
+		religion_group = elemental_lords_group
+		religion_group = primitive_group
+		religion_group = shamanism_group
+		pandaria_public_religion_trigger = yes
+	}
+}
+
+# This culture is from Pandaria
+pandaria_culture_trigger = {
+	OR = {
+		culture_group = hozen_group
+		culture_group = jinyu_group
+		culture_group = mogu_group
+		culture_group = pandaren_group
+		culture = grummle
+		culture = yaungol
+	}
+}
+
+is_susceptible_to_sha_trigger = {
+	is_alive = yes
+	is_dying = no
+	
+	is_adult = yes
+	is_incapable = no
+	custom_tooltip = {
+		text = sha_immunity_NO_tooltip
+		NOT = { has_character_flag = sha_immunity_flag }
+	}
+	custom_tooltip = {
+		text = is_infested_by_sha_NO_tooltip
+		is_infested_by_sha_trigger = no
+	}
+	
+	OR = {
+		trait = wroth
+		trait = depressed
+		trait = paranoid
+		trait = craven
+		trait = zealous
+		trait = proud
+		trait = cruel
+	}
+	
+	is_susceptible_to_void_corruption_trigger = yes
+}
+
+is_worth_to_be_mantid_paragon_trigger = {
+	NOT = { tier = EMPEROR }	# They have other things to do
+	
+	religion = old_gods_worship
+	culture = mantid
+	NOT = { trait = mantid_paragon }
+	OR = {
+		diplomacy = 15
+		martial = 15
+		stewardship = 15
+		intrigue = 15
+		learning = 15
+		combat_rating = 75
+	}
+	
+	NOT = { has_landed_title = d_klaxxi }	# Can't pick themselves
 }

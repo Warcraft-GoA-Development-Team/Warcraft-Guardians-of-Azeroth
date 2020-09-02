@@ -1,0 +1,176 @@
+namespace = WCPAN
+
+### The Mists of Pandaria parted
+# on_five_year_pulse
+#Pinger event
+character_event = {
+	id = WCPAN.99
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	ai = no
+	
+	trigger = {
+		OR = {
+			multiplayer = no
+			is_multiplayer_host_character = yes
+		}
+		
+		NOT = { has_game_rule = { name = mists_of_pandaria value = off } }
+		
+		NOT = { has_global_flag = mists_of_pandaria_parted_flag }
+		
+		year = 613
+	}
+	
+	immediate = {
+		set_global_flag = mists_of_pandaria_parted_flag
+		
+		any_player = {
+			narrative_event = { id = WCPAN.100 }
+		}
+		
+		# Zandalari ruler hears legends about Lei Shen and may claim Pandaria
+		e_zandalari = { holder_scope = { narrative_event = { id = WCCRS.330 days = 30 random = 30 } } }
+	}
+}
+#Ping event
+narrative_event = {
+	id = WCPAN.100
+	title = EVTTITLE_WCPAN_100
+	desc = {
+		trigger = { capital_scope = { region = world_pandaria } }
+		text = EVTDESC_WCPAN_100_pandaria
+	}
+	desc = {
+		trigger = { NOT = { capital_scope = { region = world_pandaria } } }
+		text = EVTDESC_WCPAN_100_azeroth
+	}
+	picture = GFX_evt_bishop_pandaren_religion_group
+	border = GFX_event_narrative_frame_diplomacy
+	
+	is_triggered_only = yes
+	hide_from = yes
+	
+	#New lands to explore and conquer!
+	option = {
+		trigger = {
+			is_aggressive_trigger = yes
+		}
+		name = EVTOPTA_WCTRO_100_conquer
+	}
+	# Welcome, wanderers!
+	option = {
+		trigger = {
+			NOT = {
+				is_aggressive_trigger = yes
+			}
+			capital_scope = { region = world_pandaria }
+		}
+		name = EVTOPTA_WCTRO_100_welcome
+	}
+	#Send expeditions
+	option = {
+		trigger = {
+			NOT = {
+				is_aggressive_trigger = yes
+				capital_scope = { region = world_pandaria }
+			}
+		}
+		name = EVTOPTA_WCPAN_100_expeditions
+	}
+}
+
+### Pandaria Empire ###
+# Pandaria Empire is formed
+narrative_event = {
+	id = WCPAN.200
+	title = EVTTITLE_WCPAN_200
+	desc = {
+		trigger = { culture_group = pandaren_group }
+		text = EVTDESC_WCPAN_200_pandaren
+	}
+	desc = {
+		trigger = { culture = mogu }
+		text = EVTDESC_WCPAN_200_mogu
+	}
+	desc = {
+		trigger = {
+			NOT = {
+				culture_group = pandaren_group
+				culture = mogu
+			}
+		}
+		text = EVTDESC_WCPAN_200_generic
+	}
+	picture = GFX_evt_pandaria_twin_monoliths
+	border = GFX_event_narrative_frame_diplomacy
+
+	is_triggered_only = yes
+
+	# I am the heart of Pandaria!
+	option = {
+		trigger = {
+			character = event_target:target_emperor
+		}
+		name = {
+			trigger = { culture_group = pandaren_group }
+			text = EVTOPTA_WCPAN_200_pandaren
+		}
+		name = {
+			trigger = { culture = mogu }
+			text = EVTOPTA_WCPAN_200_mogu
+		}
+		name = {
+			trigger = {
+				NOT = {
+					culture_group = pandaren_group
+					culture = mogu
+				}
+			}
+			text = EVTOPTA_WCPAN_200_generic
+		}
+	}
+	option = {
+		trigger = {
+			NOT = {
+				character = event_target:target_emperor
+			}
+			religion_group = event_target:target_emperor
+			culture_group = event_target:target_emperor
+		}
+		name = {
+			trigger = { culture = mogu }
+			text = EVTOPTB_WCPAN_200_mogu
+		}
+		name = {
+			trigger = { NOT = { culture = mogu } }
+			text = EVTOPTB_WCPAN_200_generic
+		}
+	}
+	option = {
+		trigger = {
+			NOT = {
+				character = event_target:target_emperor
+				AND = {
+					religion_group = event_target:target_emperor
+					culture_group = event_target:target_emperor
+				}
+			}
+		}
+		name = INTERESTING
+	}
+	option = {
+		trigger = {
+			NOT = {
+				character = event_target:target_emperor
+				AND = {
+					religion_group = event_target:target_emperor
+					culture_group = event_target:target_emperor
+				}
+			}
+		}
+		name = ALAS
+	}
+}
