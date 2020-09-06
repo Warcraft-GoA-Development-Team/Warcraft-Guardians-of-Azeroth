@@ -165,14 +165,10 @@ narrative_event = {
 	immediate = {
 	    c_59170 = { 
 			move_character = ROOT
-			save_event_target_as = student
 			opinion = { modifier = opinion_teaching_me who = ROOT }
 			set_character_flag = ask_to_be_mentor_ongoing_flag
 			set_character_flag = training_mentor_mage_flag
 			character_event = { id = WCCLS.2150 days = 1 }
-		}
-		ROOT = {
-			save_event_target_as = mentor
 		}
 		narrative_event = { id = WCMDV.105 days = 1 }
 	}
@@ -646,7 +642,7 @@ narrative_event = {
 	
 	option = {
 		name = EVTOPTA_WCMDV_118
-		narrative_event = { id = WCMDV.119 = 10 days }
+		narrative_event = { id = WCMDV.119 days = 10 }
 	}
 }
 
@@ -737,15 +733,17 @@ narrative_event = {
 				killer = c_2
 			}
 		}
+		remove_trait = travelling
+		c_59170 = { remove_trait = travelling }
 	}
 	
 	option = {
 		name = EVTOPTA_WCMDV_121
-		
+		narrative_event = { id = WCMDV.123 days = 15 }
 	}
 }
 
-#Purge of Stormwind: Medivh event
+#Purge of Stormwind
 narrative_event = {
 	id = WCMDV.122
 	
@@ -760,7 +758,6 @@ narrative_event = {
 		event_target:target_province = {
 			add_max_depopulation_effect = yes
 			hidden_effect = {
-				province_event = { id = WCMDV.124 }
 				any_province_character = {
 					limit = {
 						NOT = {
@@ -781,62 +778,96 @@ narrative_event = {
 				}
 			}
 		}
+		remove_trait = travelling
+		c_59170 = { remove_trait = travelling }
 	}
 	
 	option = {
 		name = EVTOPTA_WCMDV_122
+		narrative_event = { id = WCMDV.123 days = 10 }
 	}
 }
 
-#Purge of Stormwind: ping event
-province_event = {
-	id = WCMDV.124
-
-	is_triggered_only = yes
-	hide_window = yes
-
-	immediate = {
-		FROM = { narrative_event = { id = WCMDV.123 days = 1 } }
-	}
-}
-
-$Purge of Stormwind: major event
+#Everyone is suspicious
 narrative_event = {
 	id = WCMDV.123
 	
 	title = EVTTITLE_WCMDV_123
 	desc = EVTDESC_WCMDV_123
-	picture = GFX_evt_culling
+	picture = GFX_evt_karazhan_tower
+	border = GFX_event_narrative_frame_intrigue
+	
+	is_triggered_only = yes
+	
+	immediate = {
+		c_59170 = {
+			save_event_target_as = target_khadgar
+			opinion = { modifier = opinion_possessed_by_evil who = ROOT }
+		}
+		c_1008 = {
+			opinion = { modifier = opinion_possessed_by_evil who = ROOT }
+		}
+	}
+	
+	option = {
+		name = EVTOPTA_WCMDV_123
+		narrative_event = { id = WCMDV.124 days = 5 }
+	}
+}
+
+#Rest in peperoni, Medivh
+narrative_event = {
+	id = WCMDV.124
+	
+	title = EVTTITLE_WCMDV_124
+	desc = EVTDESC_WCMDV_124
+	picture = GFX_evt_possessed_medivh
 	border = GFX_event_narrative_frame_war
 	
 	is_triggered_only = yes
+	
+	portrait = c_59170
+	
+	immediate = {
+		с_59170 = { set_character_flag = cursed_with_aging }
+		give_nickname = nick_the_fallen_guardian
+	}
+	
+	option = { #Actually world needs a guardian
+		name = EVTOPTA_WCMDV_124
+		event_target:target_khadgar = {
+			ROOT = { this_abdicate_transfer_wealth_to_play_prev_effect = yes }
+			narrative_event = { id = WCMDV.125 }
+		}
+		death = { death_reason = death_battle }
+	}
+	
+	option = { #This world needs no guardian
+		name = EVTOPTB_WCMDV_124
+		death = { death_reason = death_battle }
+	}
+}
 
-	major = yes
-	major_trigger = {
-		ai = no
-	}
-	show_from_from = yes
+#Woohoo, Khadgar now a wizard
+narrative_event = {
+	id = WCMDV.125
 	
-	option = {
-		trigger = {
-			NOT = { has_character_flag = is_medivh }
-		}
-		name = {
-			trigger = {
-				is_aggressive_trigger = no
-			}
-			text = EVTOPTA_WCMDV_123
-		}
-		name = {
-			trigger = {
-				is_aggressive_trigger = yes
-			}
-			text = EXCELLENT
-		}
+	title = EVTTITLE_WCMDV_125
+	desc = EVTDESC_WCMDV_125
+	picture = GFX_evt_khadgar_mage
+	border = GFX_event_narrative_frame_diplomacy
+	
+	is_triggered_only = yes
+	
+	immediate = {
+		reset_experience_effect = yes
+		remove_trait = class_mage_3
 	}
 	
 	option = {
-		trigger = { has_character_flag = is_medivh }
-		name = EVTOPTB_WCMDV_123
+		name = EVTOPTA_WCMDV_125
+		set_special_character_title = title_guardian_of_tirisfal
+		add_trait = guardian_of_tirisfal
+		add_trait = class_mage_7
 	}
 }
