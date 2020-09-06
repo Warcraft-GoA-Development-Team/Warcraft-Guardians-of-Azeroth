@@ -143,6 +143,15 @@ prev_student_this_class_mentor_potential = {
 				}
 			}
 		}
+		trigger_if = {
+			limit = { potential_mentor_monk_trigger = yes }
+			PREV = {
+				OR = {
+					potential_monk_wo_training_trigger = yes
+					is_weak_monk_class_trigger = yes
+				}
+			}
+		}
 
 		# Fallback
 		always = no
@@ -285,6 +294,16 @@ prev_student_this_class_mentor_allow = {
 					allow_shadow_priest_trigger = yes
 				}
 			}
+			trigger_if = {
+				limit = { PREV = { potential_mentor_monk_trigger = yes } }
+				trigger_if = {
+					limit = { is_monk_class_trigger = yes }
+					is_weak_monk_class_trigger = yes
+				}
+				trigger_else = {
+					allow_monk_trigger = yes
+				}
+			}
 
 			# Fallback
 			always = no
@@ -411,4 +430,141 @@ scourge_champion_event_trigger = {
 	true_religion_group = light_group
 	
 	e_scourge = { has_holder = yes }
+}
+
+#Used in Cho'gall's event
+old_gods_chosen_event_trigger = {
+	is_alive = yes
+	is_dying = no
+	is_untouchable_trigger = no
+	
+	prisoner = no
+	is_consort = no
+	
+	OR = {
+		is_ruler = no
+		is_feudal = yes
+		is_tribal = yes
+	}
+	
+	true_religion = old_gods_worship
+	
+	has_invader_title_trigger = no
+}
+garona_hunt_chain_trigger = {
+	is_alive = yes
+	is_dying = no
+
+	is_untouchable_trigger = no
+
+	is_adult = yes
+	is_incapable = no
+	prisoner = no
+	
+	is_ruler = yes
+	
+	character = event_target:target_chogall
+	
+	event_target:target_garona = {
+		is_alive = yes
+		is_dying = no
+
+		is_untouchable_trigger = no
+
+		is_adult = yes
+		is_incapable = no
+		prisoner = no
+		#is_inaccessible_trigger = no
+		
+		is_ruler = no
+		
+		NOT = { religion = event_target:target_chogall }
+		
+		NOT = { is_married = event_target:target_chogall }
+		NOT = { obedient = event_target:target_chogall }
+	}
+}
+is_possible_garona_target_trigger = {
+	is_alive = yes
+	is_dying = no
+
+	is_untouchable_trigger = no
+
+	ai = yes
+	is_adult = yes
+	is_incapable = no
+	prisoner = no
+	is_inaccessible_trigger = no
+	
+	religion = event_target:target_chogall
+	NOT = { religion = event_target:target_garona }
+	
+	combat_rating_diff = { who = event_target:target_garona value < 10 }
+	event_target:target_garona = {
+		NOT = { is_married = PREV }
+		NOT = { obedient = PREV }
+	}
+}
+
+control_mind_target_potential_trigger = {
+	is_untouchable_trigger = no
+	is_alive = yes
+	is_dying = no
+	
+	ai = yes
+	is_adult = yes
+	
+	from_in_range_to_hurt_this_trigger = yes
+}
+control_mind_target_allow_trigger = {
+	is_inaccessible_trigger = no
+	
+	OR = {
+		host = { character = PREVPREV }
+		liege = { character = PREVPREV }
+		trigger_if = {
+			limit = {
+				PREV = {
+					is_society_grandmaster = yes
+					society_member_of = shadow_council
+				}
+			}
+			same_realm = PREV
+		}
+	}
+
+	NOT = { trait = being_demon }
+	NOT = { trait = being_void }
+	is_humanoid_trigger = yes
+	
+	has_invader_title_trigger = no
+	has_weak_character_trigger = yes
+}
+
+# Used in Heart of Y'Shaarj events
+is_able_to_excavate_yshaarj_vault_trigger = {
+	is_alive = yes
+	is_dying = no
+	
+	is_playable = yes
+	#prisoner = no
+	
+	independent = yes
+	
+	OR = {
+		# Knows what is inside and doesn't plan to open it
+		NOR = {
+			religion = mystery_of_the_makers
+			religion = thunder_king
+			religion_group = pandaren_religion_group
+			true_religion = mystery_of_the_makers
+			true_religion = thunder_king
+			true_religion_group = pandaren_religion_group
+		}
+		# Sha tells to open it
+		is_infested_by_sha_trigger = yes
+	}
+	
+	completely_controls = c_thux_tsex
+	completely_controls = c_lulkail
 }
