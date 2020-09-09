@@ -1,0 +1,394 @@
+namespace = WCSHA
+
+### Sha mechanics ###
+### Sha - trigger:
+# Sha of Anger - wroth
+# Sha of Despair - depressed
+# Sha of Doubt - paranoid
+# Sha of Fear - craven
+# Sha of Hatred - zealous
+# Sha of Pride - proud
+# Sha of Violence - cruel
+
+### Character is infested by sha
+character_event = {
+	id = WCSHA.100
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	only_playable = yes
+	
+	trigger = {
+		is_playable = yes
+		
+		is_susceptible_to_sha_trigger = yes
+		capital_scope = { region = world_pandaria }
+	}
+	
+	weight_multiplier = {
+		days = 1
+		# Negative emotions
+		modifier = {
+			factor = 1.5
+			trait = wroth
+		}
+		modifier = {
+			factor = 1.5
+			trait = depressed
+		}
+		modifier = {
+			factor = 1.5
+			trait = paranoid
+		}
+		modifier = {
+			factor = 1.5
+			trait = craven
+		}
+		modifier = {
+			factor = 1.5
+			trait = zealous
+		}
+		modifier = {
+			factor = 1.5
+			trait = proud
+		}
+		modifier = {
+			factor = 1.5
+			trait = cruel
+		}
+		modifier = {
+			factor = 0.01
+			ai = yes
+			independent = yes
+		}
+		
+		# Less chances, but possible
+		modifier = {
+			factor = 0.5
+			true_religion = old_gods_worship
+		}
+	}
+	
+	immediate = {
+		character_event = { id = WCSHA.101 }
+	}
+}
+### Sha tombola
+character_event = {
+	id = WCSHA.101
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
+		change_variable = { which = global_rulers_infested_by_sha value = 1 }
+		
+		set_character_flag = sha_immunity_flag	# Only once in life
+		
+		random_list = {
+			10 = {
+				trigger = { trait = wroth }
+				set_character_flag = flag_infested_by_sha_of_anger
+			}
+			10 = {
+				trigger = { trait = depressed }
+				set_character_flag = flag_infested_by_sha_of_despair
+			}
+			10 = {
+				trigger = { trait = paranoid }
+				set_character_flag = flag_infested_by_sha_of_doubt
+			}
+			10 = {
+				trigger = { trait = craven }
+				set_character_flag = flag_infested_by_sha_of_fear
+			}
+			10 = {
+				trigger = { trait = zealous }
+				set_character_flag = flag_infested_by_sha_of_hatred
+			}
+			10 = {
+				trigger = { trait = proud }
+				set_character_flag = flag_infested_by_sha_of_pride
+			}
+			10 = {
+				trigger = { trait = cruel }
+				set_character_flag = flag_infested_by_sha_of_violence
+			}
+			fallback = {
+				set_character_flag = flag_infested_by_sha_of_fear
+			}
+		}
+		
+		character_event = { id = WCSHA.110 }
+	}
+}
+### Sha infests character
+character_event = {
+	id = WCSHA.110
+	desc = EVTDESC_WCSHA_110
+	picture = GFX_evt_yshaarj
+	border = GFX_event_normal_frame_intrigue
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = {
+			trigger = { has_character_flag = flag_infested_by_sha_of_anger }
+			text = ANGER_OPTION
+		}
+		name = {
+			trigger = { has_character_flag = flag_infested_by_sha_of_despair }
+			text = DESPAIR_OPTION
+		}
+		name = {
+			trigger = { has_character_flag = flag_infested_by_sha_of_doubt }
+			text = DOUBT_OPTION
+		}
+		name = {
+			trigger = { has_character_flag = flag_infested_by_sha_of_fear }
+			text = FEAR_OPTION
+		}
+		name = {
+			trigger = { has_character_flag = flag_infested_by_sha_of_hatred }
+			text = HATRED_OPTION
+		}
+		name = {
+			trigger = { has_character_flag = flag_infested_by_sha_of_pride }
+			text = PRIDE_OPTION
+		}
+		name = {
+			trigger = { has_character_flag = flag_infested_by_sha_of_violence }
+			text = VIOLENCE_OPTION
+		}
+		
+		trigger_switch = {
+			on_trigger = has_character_flag
+			flag_infested_by_sha_of_anger = { add_character_modifier = { name = infested_by_sha_of_anger years = 11 } }
+			flag_infested_by_sha_of_despair = { add_character_modifier = { name = infested_by_sha_of_despair years = 11 } }
+			flag_infested_by_sha_of_doubt = { add_character_modifier = { name = infested_by_sha_of_doubt years = 11 } }
+			flag_infested_by_sha_of_fear = { add_character_modifier = { name = infested_by_sha_of_fear years = 11 } }
+			flag_infested_by_sha_of_hatred = { add_character_modifier = { name = infested_by_sha_of_hatred years = 11 } }
+			flag_infested_by_sha_of_pride = { add_character_modifier = { name = infested_by_sha_of_pride years = 11 } }
+			flag_infested_by_sha_of_violence = { add_character_modifier = { name = infested_by_sha_of_violence years = 11 } }
+		}
+		add_35_void_corruption_effect = yes
+		
+		clear_flags_with_prefix = flag_infested_by_sha_of_
+		
+		character_event = { id = WCSHA.120 years = 5 random = 1825 }
+	}
+}
+### Sha retreats
+character_event = {
+	id = WCSHA.120
+	desc = EVTDESC_WCSHA_120
+	picture = GFX_evt_yshaarj
+	border = GFX_event_normal_frame_intrigue
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = EVTOPTA_WCSHA_120
+		
+		trigger_switch = {
+			on_trigger = has_character_modifier
+			infested_by_sha_of_anger = {
+				remove_character_modifier = infested_by_sha_of_anger
+				remove_trait_silently_wroth_effect = yes
+			}
+			infested_by_sha_of_despair = {
+				remove_character_modifier = infested_by_sha_of_despair
+				remove_trait_silently_depressed_effect = yes
+			}
+			infested_by_sha_of_doubt = {
+				remove_character_modifier = infested_by_sha_of_doubt
+				remove_trait_silently_paranoid_effect = yes
+			}
+			infested_by_sha_of_fear = {
+				remove_character_modifier = infested_by_sha_of_fear
+				remove_trait_silently_craven_effect = yes
+			}
+			infested_by_sha_of_hatred = {
+				remove_character_modifier = infested_by_sha_of_hatred
+				remove_trait_silently_zealous_effect = yes
+			}
+			infested_by_sha_of_pride = {
+				remove_character_modifier = infested_by_sha_of_pride
+				remove_trait_silently_proud_effect = yes
+			}
+			infested_by_sha_of_violence = {
+				remove_character_modifier = infested_by_sha_of_violence
+				remove_trait_silently_cruel_effect = yes
+			}
+		}
+	}
+}
+
+### Heart of Y'Shaarj ###
+### A group of archaeologists may start excavations in the Vale
+narrative_event = {
+	id = WCSHA.500
+	title = EVTTITLE_WCDAC_500
+	desc = EVTDESC_WCSHA_500
+	picture = GFX_evt_pandaria_twin_monoliths
+	border = GFX_event_narrative_frame_intrigue
+	
+	is_triggered_only = yes
+	
+	only_playable = yes
+	only_independent = yes
+	
+	trigger = {
+		NOT = { has_global_flag = yshaarj_heart_excavation_happened_flag }
+		
+		is_able_to_excavate_yshaarj_vault_trigger = yes
+	}
+	
+	immediate = {
+		primary_title = { save_event_target_as = target_primary_title }
+		
+		set_global_flag = yshaarj_heart_excavation_happened_flag
+	}
+	
+	# Fine, I'll sponsor them.
+	option = {
+		name = EVTOPTA_WCSHA_500
+		
+		if = { limit = { ai = no } wealth = -500 }
+		
+		73 = { province_event = { id = WCSHA.509 years = 1 random = 365 } }
+		
+		ai_chance = {
+			factor = 1
+		}
+	}
+	# Go away.
+	option = {
+		name = EVTOPTB_WCSHA_500
+		
+		custom_tooltip = {
+			text = stops_the_event_chain
+			clr_global_flag = yshaarj_heart_excavation_happened_flag
+		}
+		
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+### Archaeologists unearthed the vault
+#Delayer event
+province_event = {
+	id = WCSHA.509
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
+		if = {
+			limit = { FROM = { is_able_to_excavate_yshaarj_vault_trigger = yes } }
+			FROM = { narrative_event = { id = WCSHA.510 } }
+		}
+		else_if = {
+			limit = { event_target:target_primary_title = { holder_scope = { is_able_to_excavate_yshaarj_vault_trigger = yes } } }
+			event_target:target_primary_title = { holder_scope = { narrative_event = { id = WCSHA.510 } } }
+		}
+		else = {
+			clr_global_flag = yshaarj_heart_excavation_happened_flag
+			
+			FROM = { character_event = { id = WCSHA.550 } }
+		}
+	}
+}
+#Delayed event
+narrative_event = {
+	id = WCSHA.510
+	title = EVTTITLE_WCDAC_500
+	desc = EVTDESC_WCSHA_510
+	picture = GFX_evt_pandaria_twin_monoliths
+	border = GFX_event_narrative_frame_intrigue
+	
+	is_triggered_only = yes
+	
+	# Fine, I'll invest more.
+	option = {
+		name = EVTOPTA_WCSHA_510
+		
+		if = { limit = { ai = no } wealth = -500 }
+		
+		73 = { province_event = { id = WCSHA.519 years = 1 random = 365 } }
+		
+		ai_chance = {
+			factor = 1
+		}
+	}
+	# Call prospectors back.
+	option = {
+		name = EVTOPTB_WCSHA_510
+		
+		custom_tooltip = {
+			text = stops_the_event_chain
+			clr_global_flag = yshaarj_heart_excavation_happened_flag
+		}
+		
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+### The lead archaeologists brings you the heart
+#Delayer event
+province_event = {
+	id = WCSHA.519
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
+		if = {
+			limit = { FROM = { is_able_to_excavate_yshaarj_vault_trigger = yes } }
+			FROM = { narrative_event = { id = WCSHA.520 } }
+		}
+		else_if = {
+			limit = { event_target:target_primary_title = { holder_scope = { is_able_to_excavate_yshaarj_vault_trigger = yes } } }
+			event_target:target_primary_title = { holder_scope = { narrative_event = { id = WCSHA.520 } } }
+		}
+		else = {
+			clr_global_flag = yshaarj_heart_excavation_happened_flag
+			
+			FROM = { character_event = { id = WCSHA.550 } }
+		}
+	}
+}
+#Delayed event
+narrative_event = {
+	id = WCSHA.520
+	title = EVTTITLE_WCDAC_500
+	desc = EVTDESC_WCSHA_520
+	picture = GFX_evt_yshaarj
+	border = GFX_event_narrative_frame_intrigue
+	
+	is_triggered_only = yes
+	
+	# The heart is mine!
+	option = {
+		name = EVTOPTA_WCSHA_520
+		
+		add_artifact = heart_of_yshaarj
+	}
+}
+#Fallback: stops excavations
+character_event = {
+	id = WCSHA.550
+	title = EVTTITLE_WCDAC_500
+	desc = EVTDESC_WCSHA_550
+	picture = GFX_evt_pandaria_twin_monoliths
+	border = GFX_event_normal_frame_intrigue
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = ALAS
+	}
+}
