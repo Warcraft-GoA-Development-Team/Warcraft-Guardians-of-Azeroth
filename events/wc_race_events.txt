@@ -24,6 +24,7 @@ character_event = {
 			trait = creature_night_elf
 			trait = creature_highborne
 			trait = creature_mogu
+			trait = creature_mantid
 			# Classes
 			# has_5_6_magic_class_or_higher_trigger = yes
 			# has_7_8_magic_class_or_higher_trigger = yes
@@ -68,8 +69,12 @@ character_event = {
 			trait = creature_highborne
 		}
 		modifier = {
-			factor = 0.5
+			factor = 1.5
 			trait = creature_mogu
+		}
+		modifier = {
+			factor = 1.5
+			trait = creature_mantid
 		}
 		# Health modifiers
 		modifier = {
@@ -668,6 +673,7 @@ character_event = {
 		else_if = {
 			limit = { potential_race_mantid_trigger = yes }
 			add_trait = creature_mantid
+			add_trait_void_creature_effect = yes
 		}
 		else_if = {
 			limit = { potential_race_yaungol_trigger = yes }
@@ -1057,5 +1063,279 @@ character_event = {
 	
 	after = {
 		clear_flags_with_prefix = spiritbinding_
+	}
+}
+
+### Mantid Paragons ###
+### The Klaxxi pick paragons
+character_event = {
+	id = WCRAC.1000
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	only_playable = yes
+	religion = old_gods_worship
+	
+	trigger = {
+		is_playable = yes
+		
+		religion = old_gods_worship
+		
+		has_landed_title = d_klaxxi
+	}
+	
+	immediate = {
+		any_playable_ruler = {
+			limit = {
+				#NOT = { character = ROOT } # Can't pick themselves	#Doesn't ignore you if you fire it via console
+				NOT = { has_character_flag = mantid_paragon_happend_flag }
+				
+				is_worth_to_be_mantid_paragon_trigger = yes
+			}
+			count = 1
+			score_value = {
+				value = 0
+				has_diplomacy_5_per_5_positive_score = yes
+				has_martial_5_per_5_positive_score = yes
+				has_stewardship_5_per_5_positive_score = yes
+				has_intrigue_5_per_5_positive_score = yes
+				has_learning_5_per_5_positive_score = yes
+				has_combat_rating_10_per_5_positive_score = yes
+			}
+			
+			log = "(MANTID) [This.GetBestName] is picked to be paragon"
+			
+			set_character_flag = mantid_paragon_happend_flag #Once in life
+			
+			character_event = { id = WCRAC.1005 days = 3 random = 27 }
+		}
+	}
+}
+### The Klaxxi want you to be a paragon
+character_event = {
+	id = WCRAC.1005
+	title = EVTTITLE_WCRAC_1005
+	desc = EVTDESC_WCRAC_1005
+	picture = GFX_evt_emissary
+	border = GFX_event_normal_frame_religion
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		is_worth_to_be_mantid_paragon_trigger = yes
+	}
+	
+	#The honour is mine.
+	option = {
+		name = EVTOPTA_WCRAC_1005
+		
+		character_event = { id = WCRAC.1010 days = 3 }
+	}
+	#I'm sorry, but my people need me here.
+	option = {
+		name = EVTOPTB_WCRAC_1005
+		
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+### The ritual begins, your ambersmith is killed
+long_character_event = {
+	id = WCRAC.1010
+	title = EVTTITLE_WCRAC_1005
+	desc = EVTDESC_WCRAC_1010
+	picture = GFX_evt_emissary
+	border = GFX_event_long_frame_religion
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		is_worth_to_be_mantid_paragon_trigger = yes
+	}
+	
+	immediate = {
+		hidden_effect = {
+			save_event_target_as = target_paragon
+		}
+	}
+	
+	#So wake me up when it's all over...
+	option = {
+		name = EVTOPTA_WCRAC_1010
+		
+		add_character_modifier = { name = recently_became_paragon_cooldown years = 50 hidden = yes }
+		
+		add_trait = mantid_paragon
+		put_to_sleep_paragon_effect = yes
+		if = {
+			limit = { NOT = { any_owned_bloodline = { has_character_flag = weak_earned_bloodline } } }
+			if = { 
+				limit = { is_female = no }
+				create_bloodline = { type = mantid_paragon_bloodline }		
+			}
+			else = {
+				create_bloodline = { type = mantid_paragon_bloodline inheritance = matrilineal }		
+			}
+		}
+		if = {
+			limit = { has_nickname = no }
+			assign_random_mantid_paragon_nickname_effect = yes
+		}
+		
+		current_heir = {
+			show_scope_change = no
+			save_event_target_as = target_new_ruler
+			
+			ROOT = {
+				show_scope_change = no
+				
+				this_abdicate_transfer_wealth_to_prev_effect = yes
+			}
+		}
+		
+		hidden_effect = {
+			any_player = {
+				limit = {
+					religion = old_gods_worship
+					culture = mantid
+					
+					NOT = {
+						character = ROOT
+						character = event_target:target_new_ruler
+					}
+				}
+				character_event = { id = WCRAC.1013 }
+			}
+		}
+	}
+}
+### Notification: the Klaxxi has chosen her/him to be a paragon
+character_event = {
+	id = WCRAC.1013
+	title = EVTTITLE_WCRAC_1013
+	desc = EVTDESC_WCRAC_1013
+	picture = GFX_evt_emissary
+	border = GFX_event_normal_frame_religion
+	portrait = event_target:target_paragon
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = INTERESTING
+	}
+}
+### The Klaxxi reawakes the paragon
+#Delayer event
+character_event = {
+	id = WCRAC.1015
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	trigger = {
+		NOT = { has_character_flag = awaken_paragon_ongoing_flag }
+	}
+	
+	immediate = {
+		set_character_flag = awaken_paragon_ongoing_flag
+		
+		character_event = { id = WCRAC.1019 }
+	}
+}
+#Delayed event
+character_event = {
+	id = WCRAC.1019
+	
+	is_triggered_only = yes
+	hide_window = yes
+	
+	trigger = {
+		is_ruler = no
+		
+		trait = sleeping_trait
+		has_character_flag = paragon_sleeping_flag
+		
+		liege = {
+			religion = old_gods_worship
+			culture = mantid
+		}
+	}
+	
+	fail_trigger_effect = {
+		death = { death_reason = death_accident }
+	}
+	
+	immediate = {
+		save_event_target_as = target_paragon
+		
+		liege = { character_event = { id = WCRAC.1020 } }
+	}
+}
+#Pinged event
+character_event = {
+	id = WCRAC.1020
+	title = EVTTITLE_WCRAC_1005
+	desc = EVTDESC_WCRAC_1020
+	picture = GFX_evt_emissary
+	border = GFX_event_normal_frame_religion
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = EVTOPTA_WCRAC_1020
+		
+		event_target:target_paragon = {
+			show_scope_change = no
+			
+			if = {
+				limit = { prisoner = yes }
+				imprison = no
+			}
+			
+			awaken_paragon_effect = yes
+			
+			move_character = ROOT
+		}
+		
+		ai_chance = {
+			factor = 1
+		}
+	}
+	option = {
+		trigger = { dynasty = event_target:target_paragon }
+		name = EVTOPTB_WCRAC_1020
+		
+		event_target:target_paragon = {
+			show_scope_change = no
+			
+			if = {
+				limit = { prisoner = yes }
+				imprison = no
+			}
+			
+			awaken_paragon_effect = yes
+			
+			move_character = ROOT
+			
+			ROOT = {
+				show_scope_change = no
+				
+				this_abdicate_transfer_wealth_to_play_prev_effect = yes
+			}
+		}
+		
+		ai_chance = {
+			factor = 99
+			modifier = {
+				factor = 0
+				trait = mantid_paragon
+			}
+		}
+	}
+	
+	after = {
+		FROM = { clr_character_flag = awaken_paragon_ongoing_flag }
 	}
 }
