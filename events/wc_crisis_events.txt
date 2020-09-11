@@ -714,7 +714,14 @@ character_event = {
 	only_playable = yes
 
 	trigger = {
+		# Can't happen twice
 		NOT = {	has_global_flag = amathet_awakening_happened }
+		
+		# Uldum must be open to everyone
+		OR = {
+			has_game_rule = { name = uldum_isolation value = off }
+			has_global_flag = uldum_has_opened_flag
+		}
 
 		# Needs to control any of these important Tol'vir counties
 		OR = {
@@ -733,36 +740,44 @@ character_event = {
 		set_global_flag = amathet_awakening_happened	# Blocks the event from firing twice during one playthrough
 
 		# Check if c_tolnariv is held by a Titanic/Suntouched tol'vir
-		if = {
-			limit = {
-				has_landed_title = c_tolnariv
-				OR = {
-					true_religion = mystery_of_the_makers
-					true_religion = suntouched
-				}
-			}
-			save_event_target_as = target_amathet_wakener
-		}
 
 		# If no valid tol'vir holder of the above, pick a ruler anywhere in de-jure e_uldum
-		else = {
-			limit = {
-				any_de_jure_vassal = e_uldum
-				OR = {
-					true_religion = mystery_of_the_makers
-					true_religion = suntouched
-					evil_public_religion_trigger = yes
-				}
-			}
-			save_event_target_as = target_amathet_wakener
-		}
 		
 		# The following event is sent to a valid recipient that can go and explore the tombs
-		event_target:target_amathet_wakener = { narrative_event = { id = WCCRS.210 } }
+		# event_target:target_amathet_wakener = { narrative_event = { id = WCCRS.210 } }
 	}
 }
 
 ### Tomb of the Sun King
+narrative_event = {
+	id = WCCRS.215
+	title = EVTTITLE_WCCRS_215
+	desc = EVTDESC_WCCRS_215
+	picture = GFX_evt_uldum
+	border = GFX_event_narrative_frame_war
+	
+	is_triggered_only = yes
+
+	# Delve deeper
+	option = {
+		name = EVTOPTA_WCCRS_215
+
+		event_target:target_amathet_wakener = { character_event = { id = WCCRS.220 } }
+
+		ai_chance = {
+			factor = 1
+		}
+	}
+
+	# This is a bad idea
+	option = {
+		name = EVTOPTB_WCCRS_215
+
+		custom_tooltip = {
+			text = stops_the_event_chain
+		}
+	}
+}
 
 ### The Amathet are Awakened
 
