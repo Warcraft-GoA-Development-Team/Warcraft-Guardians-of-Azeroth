@@ -704,7 +704,7 @@ narrative_event = {
 ### CRISIS: AWAKENING OF THE AMATHET ###
 # this crisis mostly serves as a counterbalance to the invading qiraji, and generally should fire not long after Uldum's isolation ends and it gets stomped but can happen anytime
 # Opening event: The Tombs Are Stirring
-# this serves as a notification that the defenses of Uldum have been breached and the slumbering guardians are stirring in response
+# This serves as a pinger if an evil religion follower owns major holding
 character_event = {
 	id = WCCRS.200
 
@@ -739,19 +739,23 @@ character_event = {
 	immediate = {
 		set_global_flag = amathet_awakening_happened	# Blocks the event from firing twice during one playthrough
 
-		# Check if c_tolnariv is held by a Titanic/Suntouched tol'vir
-		if = {
+		# Check if c_tolnariv is held by a Titanic/Suntouched tol'vir // broken, needs rework
+		any_playable_ruler = {
 			limit = {
-				has_landed_title = c_tolnariv
+				OR = {
+					has_landed_title = c_orsis
+					has_landed_title = c_ramkahen
+					has_landed_title = c_neferset
+					has_landed_title = c_uldum
+					has_landed_title = c_tolnariv
+				}
 				OR = {
 					true_religion = mystery_of_the_makers
 					true_religion = suntouched
 				}
-				save_event_target_as = target_amathet_wakener
 			}
+			save_event_target_as = target_amathet_wakener
 		}
-
-		# If no valid tol'vir holder of the above, pick a ruler anywhere in de-jure e_uldum
 		
 		# The following event is sent to a valid recipient that can go and explore the tombs
 		# event_target:target_amathet_wakener = { narrative_event = { id = WCCRS.210 } }
@@ -759,8 +763,26 @@ character_event = {
 }
 
 ### A Great Stir in the East
+# This is initial event for the Amathet Wakener
+narrative_event = {
+	id = WCCRS.210
+	title = EVTTITLE_WCCRS_210
+	desc = EVTDESC_WCCRS_210
+	picture = GFX_evt_uldum
+	border = GFX_event_narrative_frame_war
+	
+	is_triggered_only = yes
+
+	# Let's check this out
+	option = {
+		name = EVTOPTA_WCCRS_210
+
+		event_target:target_amathet_wakener = { character_event = { id = WCCRS.215 } }
+	}
+}
 
 ### Tomb of the Sun King
+# Last chance to back out
 narrative_event = {
 	id = WCCRS.215
 	title = EVTTITLE_WCCRS_215
@@ -792,7 +814,6 @@ narrative_event = {
 }
 
 ### Creates Nahkotep
-# Pinger event
 # lots of spaghetti here
 character_event = {
 	id = WCCRS.220
@@ -847,7 +868,6 @@ character_event = {
 			# Starter pack
 			for_war_start_pack_effect = yes
 			
-			# Army WIP
 			# Three stacks of colonial troops
 			spawn_colonial_troops_effect = yes
 			spawn_colonial_troops_effect = yes
