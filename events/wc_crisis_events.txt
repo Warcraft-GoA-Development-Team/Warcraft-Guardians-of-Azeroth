@@ -1025,3 +1025,181 @@ narrative_event = {
 		}
 	}
 }
+
+### CRISIS: RAISING OF NAZJATAR EVENTS ###
+
+# Creates Azshara and others - triggered by decision
+narrative_event = {
+	id = WCCRS.400
+	title = EVTTITLE_WCCRS_400
+	desc = EVTDESC_WCCRS_400
+	picture = GFX_evt_drustvar # PH
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	major = yes
+	major_trigger = {
+		ai = no
+	}
+	show_root = yes
+
+	immediate = {
+		log = "WCCRS.400 fired for [Root.GetBestName]"
+		save_event_target_as = target_summoner_of_azshara
+		
+		set_global_flag = nazjatar_settled		# Prevents clearing of Maelstrom provinces at game load
+
+		# Reassign de jure lieges for inactive titles
+		d_zin_azshari = {
+			de_jure_liege = k_nazjatar
+		}
+		d_ashen_strand = {
+			de_jure_liege = k_nazjatar
+		}
+		d_heart = {
+			de_jure_liege = k_rift
+		}
+		d_scintal_reef = {
+			de_jure_liege = k_rift
+		}
+		d_boiling_terrace = {
+			de_jure_liege = k_rift
+		}
+		d_barren_atol = {
+			de_jure_liege = k_rift
+		}
+		
+		create_character = {
+			name = Azshara
+			dynasty = 111026
+			female = yes
+			culture = naga
+			religion = old_gods_worship
+			attributes = {
+				martial=6 diplomacy=5 stewardship=7 intrigue=7 learning=8
+			}
+			trait=elusive_shadow
+			trait=creature_naga
+			trait=class_mage_10
+			trait=sorcerer trait=quick trait=fair trait=ambitious trait=proud trait=cynical trait=deceitful trait=stubborn
+			#trait=azshara_trait
+			age = 600
+		}
+		new_character = {
+			save_event_target_as = target_azshara
+			# Used in scripted effects
+			save_event_target_as = target_settler
+			add_artifact = tidestone_of_golganneth
+
+			create_bloodline = { type = azshara }
+			
+			c_eternal_palace = {
+				activate_title = { title = THIS status = yes }
+				any_province_holding = { # Suppressing ghost town
+					destroy_settlement = THIS
+				}
+				settle_as_target_settler_effect = yes
+			}
+			
+			c_coral_forest = {		
+				activate_title = { title = THIS status = yes }
+				any_province_holding = { # Suppressing ghost town
+					destroy_settlement = THIS
+				}
+				settle_as_target_settler_effect = yes
+			}
+			
+			c_zin_azshari = {
+				activate_title = { title = THIS status = yes }
+				any_province_holding = { # Suppressing ghost town
+					destroy_settlement = THIS
+				}
+				settle_as_target_settler_effect = yes
+			}
+			
+			clear_settler_flag_effect = yes
+			
+			e_nazjatar = { grant_title = event_target:target_azshara }
+			
+			set_government_type = black_pact_government			
+		}
+		# Make the person that fired the decison a vassal of Azshara
+		event_target:target_summoner_of_azshara = {
+			if = {
+				limit = { character_can_be_vassalized_trigger = yes }
+				set_defacto_liege = event_target:target_azshara
+			}
+		}
+		#Gives troops
+		event_target:target_azshara = {
+			# Gives money, spawn commanders
+			for_war_start_pack_effect = yes
+			# Gives troops
+			spawn_colonial_troops_effect = yes
+			spawn_colonial_troops_effect = yes
+			spawn_colonial_troops_effect = yes
+			spawn_colonial_troops_effect = yes
+			spawn_colonial_troops_effect = yes
+			spawn_colonial_troops_effect = yes
+			spawn_colonial_troops_effect = yes
+			spawn_colonial_troops_effect = yes
+		}
+
+		create_character = {
+			name = Okani
+			dynasty = 171021
+			culture = ankoan
+			religion = neptulon_worship
+			attributes = {
+				martial=6 diplomacy=5 stewardship=5 intrigue=4 learning=5
+			}
+			trait=skilled_tactician
+			trait=creature_ankoan
+			trait=class_warrior_5
+			trait=brave trait=strong trait=wroth trait=stubborn trait=trusting
+			age = 45
+		}		
+		new_character = {
+			save_event_target_as = target_okani
+			# Used in scripted effects
+			save_event_target_as = target_settler
+			
+			c_ashen_strand = {
+				activate_title = { title = THIS status = yes }
+				any_province_holding = { # Suppressing ghost town
+					destroy_settlement = THIS
+				}
+				settle_as_target_settler_effect = yes
+			}
+			
+			c_hanging_reef = {		
+				activate_title = { title = THIS status = yes }
+				any_province_holding = { # Suppressing ghost town
+					destroy_settlement = THIS
+				}
+				settle_as_target_settler_effect = yes
+			}
+			
+			clear_settler_flag_effect = yes
+			
+			set_government_type = feudal_government			
+		}
+	}
+	
+	option = {
+		name = EVTOPTA_WCCRS_400
+	}
+	
+	option = {
+		trigger = {
+			ai = no
+			event_target:target_azshara = { ai = yes }
+			
+			character = event_target:target_summoner_of_azshara
+		}
+		name = EVTOPTB_WCCRS_400
+		
+		set_player_character = event_target:target_azshara
+	}
+}
