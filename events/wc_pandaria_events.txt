@@ -1,58 +1,58 @@
-namespace = WCPAN
+namespace = WCPND
 
-### The Mists of Pandaria parted
+### MISTS OF PANDARIA ###
 # on_five_year_pulse
-#Pinger event
+# Pinger event
 character_event = {
-	id = WCPAN.99
-	
+	id = WCPND.99
+
 	is_triggered_only = yes
 	hide_window = yes
-	
+
 	ai = no
-	
+
 	trigger = {
 		OR = {
 			multiplayer = no
 			is_multiplayer_host_character = yes
 		}
-		
+
 		NOT = { has_game_rule = { name = mists_of_pandaria value = off } }
-		
 		NOT = { has_global_flag = mists_of_pandaria_parted_flag }
-		
+
 		year = 613
 	}
-	
+
 	immediate = {
 		set_global_flag = mists_of_pandaria_parted_flag
-		
+
 		any_player = {
-			narrative_event = { id = WCPAN.100 }
+			narrative_event = { id = WCPND.100 }
 		}
 		
 		# Zandalari ruler hears legends about Lei Shen and may claim Pandaria
 		e_zandalari = { holder_scope = { narrative_event = { id = WCCRS.330 days = 30 random = 30 } } }
 	}
 }
-#Ping event
+
+# Announces the parting of the Mists to the world
 narrative_event = {
-	id = WCPAN.100
-	title = EVTTITLE_WCPAN_100
+	id = WCPND.100
+	title = EVTTITLE_WCPND_100
 	desc = {
 		trigger = { capital_scope = { region = world_pandaria } }
-		text = EVTDESC_WCPAN_100_pandaria
+		text = EVTDESC_WCPND_100_pandaria
 	}
 	desc = {
 		trigger = { NOT = { capital_scope = { region = world_pandaria } } }
-		text = EVTDESC_WCPAN_100_azeroth
+		text = EVTDESC_WCPND_100_azeroth
 	}
 	picture = GFX_evt_bishop_pandaren_religion_group
 	border = GFX_event_narrative_frame_diplomacy
-	
+
 	is_triggered_only = yes
 	hide_from = yes
-	
+
 	#New lands to explore and conquer!
 	option = {
 		trigger = {
@@ -78,22 +78,361 @@ narrative_event = {
 				capital_scope = { region = world_pandaria }
 			}
 		}
-		name = EVTOPTA_WCPAN_100_expeditions
+		name = EVTOPTA_WCPND_100_expeditions
+	}
+}
+
+### ANKOAN COURTIERS ###
+
+# Ankoan courtier appears at court
+character_event = {
+	id = WCPND.200
+	desc = EVTDESC_WCPND_200
+	picture = GFX_evt_emissary
+	border = GFX_event_normal_frame_diplomacy
+	
+	min_age = 16
+	prisoner = no
+	only_playable = yes
+	capable_only = yes
+	
+	is_triggered_only = yes
+	
+	trigger = {		
+		OR = {
+			religion = waterspeaker
+			religion = water_deities
+			religion = neptulon_worship
+		}
+		NOT = { 
+			culture = ankoan
+			is_incapable = yes
+			is_inaccessible_trigger = yes
+		}
+		# Can only appear after the Naga have spawned in the world
+		has_global_flag = naga_resurfaced_flag
+	}
+	
+	# More likely to appear in Tidehunter courts
+	weight_multiplier = {
+		days = 1
+		modifier = {
+			factor = 1.5
+			religion = neptulon_worship
+		}
+	}
+	
+	immediate = {
+		create_character = {
+			random_traits = yes
+			culture = ankoan
+			dynasty = culture
+			religion = neptulon_worship
+			female = no
+			age = 30
+			flag = ai_flag_refuse_conversion
+		}
+		new_character = {
+			remove_lifestyle_trait_effect = yes
+			random_list = {
+				5 = {
+					add_trait = socializer
+				}
+				5 = {
+					add_trait = socializer
+					add_trait = shrewd
+				}
+				5 = {
+					add_trait = administrator
+				}
+				5 = {
+					add_trait = administrator
+					add_trait = shrewd
+				}
+				10 = {
+					add_trait = schemer
+					add_trait = class_rogue_4
+				}
+				5 = {
+					add_trait = schemer
+					add_trait = shrewd
+					add_trait = class_rogue_4
+				}
+				5 = {
+					add_trait = schemer
+					add_trait = shrewd
+					add_trait = class_rogue_5
+				}
+				10 = {
+					add_trait = mystic
+					add_trait = class_shaman_4
+				}
+				5 = {
+					add_trait = mystic
+					add_trait = shrewd
+					add_trait = class_shaman_4
+				}
+				5 = {
+					add_trait = mystic
+					add_trait = shrewd
+					add_trait = class_shaman_5
+				}
+				10 = {
+					add_trait = sturdy
+					add_trait = class_warrior_4
+				}
+				10 = {
+					add_trait = sturdy
+					add_trait = class_hunter_4
+				}
+				5 = {
+					add_trait = sturdy
+					add_trait = strong
+					add_trait = class_warrior_5
+				}
+				5 = {
+					add_trait = sturdy
+					add_trait = strong
+					add_trait = class_hunter_4
+				}
+				5 = {
+					add_trait = sturdy
+					add_trait = strong
+					add_trait = class_warrior_5
+				}
+				5 = {
+					add_trait = sturdy
+					add_trait = strong
+					add_trait = class_hunter_5
+				}
+			}
+			save_event_target_as = ankoan_courtier
+		}
+	}
+	
+	option = {
+		name = EVTOPTA_WCPND_200
+		custom_tooltip = { text = ankoan_courtier_tooltip }
+	}
+	
+	option = {
+		name = EVTOPTB_WCPND_200
+		hidden_tooltip = { 
+			event_target:ankoan_courtier = { death = { death_reason = death_missing } }
+		}
+	}
+}
+
+### WANDERING ISLE PANDAREN ###
+
+# on_bi_yearly_pulse
+# A Giant Seafaring Turtle Sighted! - initial
+character_event = {
+	id = WCPND.299
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	ai = no
+
+	trigger = {
+		OR = {
+			multiplayer = no
+			is_multiplayer_host_character = yes
+		}
+		NOT = { 
+			has_global_flag = wandering_isle_sighted
+			has_game_rule = {
+				name = mists_of_pandaria
+				value = off
+			}
+		}
+		year = 610	# Roughly 3 years before Mists of Pandaria disappear
+	}
+
+	immediate = {
+		set_global_flag = wandering_isle_sighted
+
+		any_player = {
+			narrative_event = { id = WCPND.300 }
+		}
+	}
+}
+
+# This event unlocks the possibility for random Wandering Isle Pandaren courtiers to spawn in the world
+# A Giant Seafaring Turtle Sighted! - pinger
+narrative_event = {
+	id = WCPND.300
+	title = EVTTITLE_WCPND_300
+	desc = {
+		trigger = { capital_scope = { region = world_pandaria } }
+		text = EVTDESC_WCPND_300_PANDARIA
+	}
+	desc = {
+		trigger = { NOT = { capital_scope = { region = world_pandaria } } }
+		text = EVTDESC_WCPND_300_AZEROTH
+	}
+	picture = GFX_evt_wandering_isle
+	border = GFX_event_narrative_frame_diplomacy
+	
+	is_triggered_only = yes
+	hide_from = yes
+	
+	# Non-Pandarian
+	option = {
+		trigger = {
+			NOT = { 
+				culture_group = pandaren_group
+				culture_group = hozen_group
+				culture = jinyu
+				culture = mogu
+				culture = mantid
+				culture = yaungol
+				culture = grummle
+				culture = saurok
+			} 
+		}
+		name = EVTOPTA_WCPND_300
+	}
+	
+	# Pandarian - Friendly
+	option = {
+		trigger = {
+			OR = {
+				culture_group = pandaren_group
+				culture = jinyu
+				culture = grummle
+			}
+		}
+		name = EVTOPTB_WCPND_300
+	}
+	
+	# Pandarian - Hostile
+	option = {
+		trigger = {
+			OR = {
+				culture = mogu
+				culture = mantid
+				culture = yaungol
+				culture = saurok
+			}
+		}
+		name = EVTOPTC_WCPND_300
+	}
+	# Hozen
+	option = {
+		trigger = { culture_group = hozen_group }
+		name = EVTOPTD_WCPND_300
+	}
+}
+
+# Wandering Pandaren poet appears at court
+character_event = {
+	id = WCPND.301
+	desc = EVTDESC_WCPND_301
+	picture = GFX_evt_emissary
+	border = GFX_event_normal_frame_diplomacy
+	
+	min_age = 16
+	prisoner = no
+	only_playable = yes
+	capable_only = yes
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		NOT = { 
+			evil_public_religion_trigger = yes
+			is_incapable = yes
+			is_inaccessible_trigger = yes
+		}
+		OR = { 
+			has_global_flag = wandering_isle_sighted
+			has_game_rule = {
+				name = mists_of_pandaria
+				value = off
+			}
+		}
+	}
+	
+	immediate = {
+		create_character = {
+			random_traits = yes
+			culture = wandering_pandaren
+			dynasty = culture
+			religion = august_celestials
+			female = no
+			age = 30
+			flag = ai_flag_refuse_conversion
+		}
+		new_character = {
+			remove_lifestyle_trait_effect = yes
+			random_list = {
+				10 = {
+					add_trait = poet
+				}
+				10 = {
+					add_trait = poet
+					add_trait = shrewd
+				}
+				10 = {
+					add_trait = architect
+				}
+				10 = {
+					add_trait = architect
+					add_trait = shrewd
+				}
+				20 = {
+					add_trait = mystic
+					add_trait = class_priest_4
+				}
+				10 = {
+					add_trait = mystic
+					add_trait = shrewd
+					add_trait = class_priest_4
+				}
+				10 = {
+					add_trait = mystic
+					add_trait = shrewd
+					add_trait = class_priest_5
+				}
+				10 = {
+					add_trait = drunkard
+				}
+				10 = {
+					add_trait = drunkard
+					add_trait = strong
+				}
+			}
+			save_event_target_as = wandering_pandaren_courtier
+		}
+	}
+	
+	option = {
+		name = EVTOPTA_WCPND_301
+		custom_tooltip = { text = wandering_pandaren_courtier_tooltip }
+	}
+	
+	option = {
+		name = EVTOPTB_WCPND_301
+		hidden_tooltip = {
+			event_target:wandering_pandaren_courtier = { death = { death_reason = death_missing } }
+		}
 	}
 }
 
 ### Pandaria Empire ###
 # Pandaria Empire is formed
 narrative_event = {
-	id = WCPAN.200
-	title = EVTTITLE_WCPAN_200
+	id = WCPND.400
+	title = EVTTITLE_WCPND_400
 	desc = {
 		trigger = { culture_group = pandaren_group }
-		text = EVTDESC_WCPAN_200_pandaren
+		text = EVTDESC_WCPND_400_pandaren
 	}
 	desc = {
 		trigger = { culture = mogu }
-		text = EVTDESC_WCPAN_200_mogu
+		text = EVTDESC_WCPND_400_mogu
 	}
 	desc = {
 		trigger = {
@@ -102,7 +441,7 @@ narrative_event = {
 				culture = mogu
 			}
 		}
-		text = EVTDESC_WCPAN_200_generic
+		text = EVTDESC_WCPND_400_generic
 	}
 	picture = GFX_evt_pandaria_twin_monoliths
 	border = GFX_event_narrative_frame_diplomacy
@@ -116,11 +455,11 @@ narrative_event = {
 		}
 		name = {
 			trigger = { culture_group = pandaren_group }
-			text = EVTOPTA_WCPAN_200_pandaren
+			text = EVTOPTA_WCPND_400_pandaren
 		}
 		name = {
 			trigger = { culture = mogu }
-			text = EVTOPTA_WCPAN_200_mogu
+			text = EVTOPTA_WCPND_400_mogu
 		}
 		name = {
 			trigger = {
@@ -129,7 +468,7 @@ narrative_event = {
 					culture = mogu
 				}
 			}
-			text = EVTOPTA_WCPAN_200_generic
+			text = EVTOPTA_WCPND_400_generic
 		}
 	}
 	option = {
@@ -142,11 +481,11 @@ narrative_event = {
 		}
 		name = {
 			trigger = { culture = mogu }
-			text = EVTOPTB_WCPAN_200_mogu
+			text = EVTOPTB_WCPND_400_mogu
 		}
 		name = {
 			trigger = { NOT = { culture = mogu } }
-			text = EVTOPTB_WCPAN_200_generic
+			text = EVTOPTB_WCPND_400_generic
 		}
 	}
 	option = {
