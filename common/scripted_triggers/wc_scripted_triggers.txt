@@ -453,6 +453,7 @@ is_uncursed_titanforged_trigger = {
 		trait = creature_mechagnome
 		trait = creature_earthen
 		trait = creature_iron_dwarf
+		trait = creature_stone_tolvir
 	}
 }
 # CAN'T MARRY IF IT'S NOT TRUE
@@ -1046,6 +1047,7 @@ is_medium_humanoid_trigger = {
 			is_jinyu_trigger = yes
 			trait = creature_mantid
 			trait = creature_saurok
+			trait = creature_stone_tolvir # sort of?		
 		}
 	}
 }
@@ -1556,6 +1558,10 @@ potential_race_yaungol_trigger = {
 	graphical_culture = yaungolgfx
 	NOT = { trait = creature_yaungol }
 }
+potential_race_stone_tolvir_trigger = {
+	graphical_culture = stonetolvirgfx
+	NOT = { trait = creature_stone_tolvir }
+}
 potential_race_trigger = {
 	# Add new races always at the end
 	OR = {
@@ -1644,6 +1650,7 @@ potential_race_trigger = {
 		potential_race_frostnymph_trigger = yes
 		potential_race_vulpera_trigger = yes
 		potential_race_sethrak_trigger = yes
+		potential_race_stone_tolvir_trigger = yes
 
 		potential_race_protector_trigger = yes
 		potential_race_ancient_war_trigger = yes
@@ -1778,6 +1785,7 @@ has_race_trait_trigger = {
 		trait = creature_dryad
 		trait = creature_frostnymph
 		trait = creature_highborne
+		trait = creature_stone_tolvir
 
 		# Infinite dragons
 		trait = creature_infinite_whelp
@@ -1902,6 +1910,7 @@ has_prev_race_trigger = {
 	trigger_else_if = { limit = { trait = creature_dryad 				} PREV = { trait = creature_dryad 					} }
 	trigger_else_if = { limit = { trait = creature_frostnymph 			} PREV = { trait = creature_frostnymph 			} }
 	trigger_else_if = { limit = { trait = creature_highborne			} PREV = { trait = creature_highborne 				} }
+	trigger_else_if = { limit = { trait = creature_stone_tolvir 		} PREV = { trait = creature_stone_tolvir 				} }
 
 		# Infinite Dragons
 	trigger_else_if = { limit = { is_infinite_dragon_trigger = yes		} PREV = { is_infinite_dragon_trigger = yes		} }
@@ -2818,6 +2827,7 @@ light_public_religion_trigger = {
 		religion_group = light_group
 		religion_group = arakkoa_religion_group
 		religion = kaldorei_religion
+		religion = suntouched
 	}
 }
 light_true_religion_trigger = {
@@ -2825,6 +2835,7 @@ light_true_religion_trigger = {
 		true_religion_group = light_group
 		true_religion_group = arakkoa_religion_group
 		true_religion = kaldorei_religion
+		true_religion = suntouched
 	}
 }
 shamanic_public_religion_trigger = {
@@ -5338,17 +5349,20 @@ is_not_isolated_from_prev_trigger = {
 			PREV = { is_in_pandaria_trigger = yes }
 		}
 	}
-}
-is_isolated_in_pandaria_trigger = {
-	NOT = { has_global_flag = mists_of_pandaria_parted_flag }
-	NOT = { has_game_rule = { name = mists_of_pandaria value = off } }
-	is_in_pandaria_trigger = yes
-}
-is_in_pandaria_or_no_mists = {
-	OR = {
-		has_global_flag = mists_of_pandaria_parted_flag
-		has_game_rule = { name = mists_of_pandaria value = off }
-		is_in_pandaria_trigger = yes
+	trigger_else_if = {
+		limit = {
+			NOT = { has_global_flag = uldum_has_opened_flag }
+			NOT = { has_game_rule = { name = uldum_isolation value = off } }
+			OR = {
+				is_in_uldum_trigger = yes
+				PREV = { is_in_uldum_trigger = yes }
+			}
+		}
+		custom_tooltip = {
+			text = uldum_isolation_dont_block_interactions_tooltip
+			is_in_uldum_trigger = yes
+			PREV = { is_in_uldum_trigger = yes }
+		}
 	}
 }
 is_in_pandaria_trigger = {
@@ -5372,6 +5386,29 @@ is_in_pandaria_trigger = {
 	}
 	trigger_else = {
 		region = world_pandaria
+	}
+}
+is_in_uldum_trigger = {
+	trigger_if = {
+		limit = { character = yes }
+		trigger_if = {
+			limit = {
+				is_ruler = yes
+			}
+			trigger_if = {
+				limit = { capital_scope = { always = yes } }
+				capital_scope = { region = world_kalimdor_uldum }
+			}
+			trigger_else = {
+				location = { region = world_kalimdor_uldum }
+			}
+		}
+		trigger_else = {
+			liege = { capital_scope = { region = world_kalimdor_uldum } }
+		}
+	}
+	trigger_else = {
+		region = world_kalimdor_uldum
 	}
 }
 
