@@ -2582,4 +2582,522 @@ narrative_event = {
 	}
 }
 
-# Takeover of Quel'thalas
+# Void Takeover of Quel'Thalas
+narrative_event = {
+	id = WCVOD.10300
+	title = EVTTITLE_WCVOD_10300
+	picture = GFX_evt_corrupted_sunwell_scourge
+	desc = {
+		trigger = {
+			ROOT = {
+				religion = old_gods_worship
+				true_religion = old_gods_worship
+			}
+		}
+		text = EVTDESC_WCVOD_1000_OLDGODS
+	}
+	desc = {
+		trigger = {
+			ROOT = {
+				religion = voidfarer
+				true_religion = voidfarer
+			}
+		}
+		text = EVTDESC_WCVOD_1000_VOIDFARER
+	}
+	border = GFX_event_narrative_frame_war
+
+	major = yes
+	major_trigger = {
+		ai = no
+	}
+	show_root = yes
+	
+	is_triggered_only = yes
+
+	immediate = {
+		ROOT = {
+			save_event_target_as = target_corruptor			
+			add_voidwell_effect = yes
+		}
+		73 = { province_event = { id = WCVOD.10301 days = 60 } }
+	}
+	
+	option = {
+		trigger = {
+			ROOT = {
+				religion = old_gods_worship
+				true_religion = old_gods_worship
+			}
+			religion = old_gods_worship
+			true_religion = old_gods_worship
+		}
+		name = EVTOPTA_WCVOD_10300_OLDGODS	# Quel'Thalas belongs to the Old Gods!
+		
+		trigger = {
+			ROOT = {
+				religion = old_gods_worship
+				true_religion = old_gods_worship
+			}
+			religion = voidfarer
+			true_religion = voidfarer
+		}
+		name = EVTOPTA_WCVOD_10300_OLDGODS_VFREACT	# These lunatics will ruin everything!
+		
+		trigger = {
+			ROOT = {
+				religion = voidfarer
+				true_religion = voidfarer
+			}
+			religion = voidfarer
+			true_religion = voidfarer
+		}
+		name = EVTOPTA_WCVOD_10300_VOIDFARER	# Progress requires sacrifice
+		
+		trigger = {
+			ROOT = {
+				religion = voidfarer
+				true_religion = voidfarer
+			}
+			religion = old_gods_worship
+			true_religion = old_gods_worship
+		}
+		name = EVTOPTA_WCVOD_10300_VOIDFARER_OGREACT	# They foolishly think they can control the Void's power
+	}
+	
+	option = {
+		trigger = { 
+			religion = cult_of_sunwell 
+			true_religion = cult_of_sunwell
+		}
+		name = EVTOPTB_WCVOD_10300	# They will doom us all!
+	}
+
+	option = {
+		trigger = {
+			NOT = {
+				religion = cult_of_sunwell 
+				true_religion = cult_of_sunwell
+				religion = old_gods_worship
+				true_religion = old_gods_worship
+				religion = voidfarer
+				true_religion = voidfarer		
+			}
+		}
+		name = EVTOPTC_WCVOD_10300	# The sun is setting on Quel'Thalas, and it may not rise again
+	}
+
+	# placeholder
+	after = {
+		if = {
+			limit = { character = ROOT }
+			prestige = 500
+			piety = 500
+		}
+	}
+}
+
+### Renaming of high elves 2: Void Boogaloo ###
+province_event = {
+	id = WCVOD.10301
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	trigger = {
+		NOT = { 
+			has_global_flag = void_elves_happened_flag
+		}
+	}
+
+	# Unlike the situation where they become blood elves cause outsider force corrupts the Sunwell, practically corrupting your race's fount of power VOLUNTARILY is a dick move, so there will be dissent
+	immediate = {
+		# Voidfarer High King of Quel'Thalas
+		if = {
+			limit = {
+				e_quelthalas = {
+					has_holder = yes
+					holder_scope = {
+						character = event_target:target_corruptor	# Here it's the ruler who corrupts the well
+						
+						trait = creature_void_elf	# Must be a void elf already, of course
+						
+						# Voidfarers have a bit different outcome, while still polarizing, they have more chance for the elves to accept the new ways
+						OR = {
+							religion = voidfarer
+							true_religion = voidfarer
+						}
+					}
+				}
+			}
+			# Generally more favorable to be accepted, but still will have dissent
+			e_quelthalas = { holder_scope = { narrative_event = { id = WCVOD.10302 } } }
+		}
+		# Old God Worshipping High King of Quel'Thalas
+		else_if = {
+			limit = {
+				e_quelthalas = {
+					has_holder = yes
+					holder_scope = {
+						character = event_target:target_corruptor	# Here it's the ruler who corrupts the well
+						
+						trait = creature_void_elf	# Must be a void elf already, of course
+						
+						# You serve the ruinous powers, so good luck having your people accept this sacrilege
+						OR = {
+							religion = old_gods_worship
+							true_religion = old_gods_worship
+						}
+					}
+				}
+			}
+			# A lot of dissent here
+			e_quelthalas = { holder_scope = { narrative_event = { id = WCVOD.10303 } } }
+		}
+		# Voidfarer King of Quel'Thalas
+		else_if = {
+			limit = {
+				k_quelthalas = {
+					has_holder = yes
+					holder_scope = {
+						character = event_target:target_corruptor	# Here it's the ruler who corrupts the well
+						
+						trait = creature_void_elf	# Must be a void elf already, of course
+						
+						# Voidfarers have a bit different outcome, while still polarizing, they have more chance for the elves to accept the new ways
+						OR = {
+							religion = voidfarer
+							true_religion = voidfarer
+						}
+					}
+				}
+			}
+			# Generally more favorable to be accepted, but still will have dissent
+			k_quelthalas = { holder_scope = { narrative_event = { id = WCVOD.10302 } } }
+		}
+		# Old God Worshipping King of Quel'Thalas
+		else_if = {
+			limit = {
+				k_quelthalas = {
+					has_holder = yes
+					holder_scope = {
+						character = event_target:target_corruptor	# Here it's the ruler who corrupts the well
+						
+						trait = creature_void_elf	# Must be a void elf already, of course
+						
+						# You serve the ruinous powers, so good luck having your people accept this sacrilege
+						OR = {
+							religion = old_gods_worship
+							true_religion = old_gods_worship
+						}
+					}
+				}
+			}
+			# A lot of dissent here
+			e_quelthalas = { holder_scope = { narrative_event = { id = WCVOD.10303 } } }
+		}
+		else_if = {
+			# Voidfarer, Top liege of the Sunwell
+			394 = {
+				wonder = {
+					wonder_owner = {
+						if = {
+							limit = {
+								character = event_target:target_corruptor	# Here it's the ruler who corrupts the well
+						
+								trait = creature_void_elf	# Must be a void elf already, of course
+						
+								# Voidfarers have a bit different outcome, while still polarizing, they have more chance for the elves to accept the new ways
+								OR = {
+									religion = voidfarer
+									true_religion = voidfarer
+								}
+							}
+							# Generally more favorable to be accepted, but still will have dissent
+							narrative_event = { id = WCVOD.10302 }
+						}
+					}
+				}
+			}
+		}
+		else = {
+			# Old Gods Worship, Top liege of the Sunwell
+			394 = {
+				wonder = {
+					wonder_owner = {
+						if = {
+							limit = {
+								character = event_target:target_corruptor	# Here it's the ruler who corrupts the well
+						
+								trait = creature_void_elf	# Must be a void elf already, of course
+						
+								# You serve the ruinous powers, so good luck having your people accept this sacrilege
+								OR = {
+									religion = old_gods_worship
+									true_religion = old_gods_worship
+								}
+							}
+							# A lot of dissent here
+							narrative_event = { id = WCVOD.10303 }
+						}
+					}
+				}
+			}
+		}
+	}
+}
+# Voidfarer event
+narrative_event = {
+	id = WCVOD.10302
+	title = EVTTITLE_WCVOD_10302
+	picture = GFX_evt_sunwell
+	desc = EVTDESC_WCVOD_10302
+	border = GFX_event_narrative_frame_diplomacy
+
+	is_triggered_only = yes
+
+	immediate = {
+		set_global_flag = void_elves_happened_flag
+	}
+
+	# Here's no way out, you voluntarily decided to voidify the elves
+	option = {
+		name = EVTOPTA_WCVOD_10302
+		
+		# Your court will switch
+		convert_this_and_vassals_to_void_elves_voidfarer_effect = yes
+
+		custom_tooltip = {
+			text = proclaims_your_people_the_void_elves
+			hidden_effect = { narrative_event = { id = WCVOD.10304 } }
+		}
+	}
+}
+# Old Gods event
+narrative_event = {
+	id = WCVOD.10303
+	title = EVTTITLE_WCVOD_10303
+	picture = GFX_evt_sunwell
+	desc = EVTDESC_WCVOD_10303
+	border = GFX_event_narrative_frame_diplomacy
+
+	is_triggered_only = yes
+
+	immediate = {
+		set_global_flag = void_elves_happened_flag
+	}
+
+	# Here's no way out, you doomed your race, expect a lot of internal conflicts from here on now
+	option = {
+		name = EVTOPTA_WCVOD_10303
+		
+		# Your court will switch
+		convert_this_and_vassals_to_void_elves_old_gods_effect = yes
+
+		custom_tooltip = {
+			text = proclaims_your_people_the_void_elves
+			hidden_effect = { narrative_event = { id = WCVOD.10305 } }
+		}
+	}
+}
+# Conversion, Voidfarer
+narrative_event = {
+	id = WCVOD.10304
+	title = EVTTITLE_WCVOD_10304
+	picture = GFX_evt_sunwell
+	desc = EVTDESC_WCVOD_10304
+	border = GFX_event_narrative_frame_diplomacy
+
+	is_triggered_only = yes
+
+	major = yes
+	major_trigger = {
+		OR = {
+			ai = no
+			trait = creature_high_elf
+			trait = creature_blood_elf
+			trait = creature_void_elf
+		}
+	}
+	show_root = yes
+	
+	option = {
+		trigger = {
+			character = event_target:target_corruptor	# One who corrupted the well
+		}		
+		name = EVTOPTA_WCVOD_10304
+	}
+
+	option = {
+		trigger = {
+			NOT = {
+				character = event_target:target_corruptor	# One who corrupted the well
+			}
+			OR = {
+				trait = creature_high_elf
+				trait = creature_blood_elf
+				trait = creature_void_elf				
+			}
+		}
+		name = EVTOPTB_WCVOD_10304
+		
+		convert_this_and_vassals_to_void_elves_voidfarer_effect = yes
+
+		ai_chance = {
+			factor = 50	# This is pretty polarizing
+			modifier = {
+				factor = 0.01
+				NOT = { location = { region = world_eastern_kingdoms_quelthalas } }
+			}
+		}
+	}
+	option = {
+		trigger = {
+			NOT = {
+				character = event_target:target_corruptor	# One who corrupted the well
+			}
+			OR = {
+				trait = creature_high_elf
+				trait = creature_blood_elf
+			}
+		}
+		name = EVTOPTC_WCVOD_10304
+
+		ai_chance = {
+			factor = 50 # Many will decide to stay Beloric
+		}
+	}
+	option = {
+		trigger = {
+			NOT = {
+				character = event_target:target_corruptor	# One who corrupted the well
+			}
+			true_religion = old_gods_worship
+		}
+		name = EVTOPTD_WCVOD_10304	# Reaction of the Old God Worshippers
+	}
+	option = {
+		trigger = {
+			NOT = {
+				character = event_target:target_corruptor	# One who corrupted the well
+				true_religion = old_gods_worship
+				trait = creature_high_elf
+				trait = creature_blood_elf
+				trait = creature_void_elf
+			}
+		}
+		name = EVTOPTE_WCVOD_10304	# Reaction of other races
+	}
+}
+# Conversion, Old Gods
+narrative_event = {
+	id = WCVOD.10305
+	title = EVTTITLE_WCVOD_10305
+	picture = GFX_evt_sunwell
+	desc = EVTDESC_WCVOD_10305
+	border = GFX_event_narrative_frame_diplomacy
+
+	is_triggered_only = yes
+
+	major = yes
+	major_trigger = {
+		OR = {
+			ai = no
+			trait = creature_high_elf
+			trait = creature_blood_elf
+			trait = creature_void_elf
+		}
+	}
+	show_root = yes
+	
+	option = {
+		trigger = {
+			character = event_target:target_corruptor	# One who corrupted the well
+		}		
+		name = EVTOPTA_WCVOD_10305
+	}
+
+	option = {
+		trigger = {
+			NOT = {
+				character = event_target:target_corruptor	# One who corrupted the well
+			}
+			OR = {
+				trait = creature_high_elf
+				trait = creature_blood_elf
+				trait = creature_void_elf				
+			}
+		}
+		name = EVTOPTB_WCVOD_10304
+		
+		convert_this_and_vassals_to_void_elves_old_gods_effect = yes
+
+		ai_chance = {
+			factor = 10
+			modifier = {
+				factor = 0.01
+				NOT = { location = { region = world_eastern_kingdoms_quelthalas } }
+			}
+		}
+	}
+	option = {
+		trigger = {
+			NOT = {
+				character = event_target:target_corruptor	# One who corrupted the well
+			}
+			OR = {
+				trait = creature_high_elf
+				trait = creature_blood_elf
+				trait = creature_void_elf				
+			}
+		}
+		name = EVTOPTC_WCVOD_10304
+		
+		convert_this_and_vassals_to_void_elves_voidfarer_effect = yes
+
+		ai_chance = {
+			factor = 20	# Void-infused dissenters
+			modifier = {
+				factor = 0.01
+				NOT = { location = { region = world_eastern_kingdoms_quelthalas } }
+			}
+		}
+	}
+	option = {
+		trigger = {
+			NOT = {
+				character = event_target:target_corruptor	# One who corrupted the well
+			}
+			OR = {
+				trait = creature_high_elf
+				trait = creature_blood_elf
+			}
+		}
+		name = EVTOPTD_WCVOD_10304
+
+		ai_chance = {
+			factor = 70 # Overwhelming lot will stay Beloric
+		}
+	}
+	option = {
+		trigger = {
+			NOT = {
+				character = event_target:target_corruptor	# One who corrupted the well
+			}
+			true_religion = voidfarer
+		}
+		name = EVTOPTE_WCVOD_1015	# Reaction of the Voidfarers
+	}
+	option = {
+		trigger = {
+			NOT = {
+				character = event_target:target_corruptor	# One who corrupted the well
+				true_religion = voidfarer
+				trait = creature_high_elf
+				trait = creature_blood_elf
+				trait = creature_void_elf
+			}
+		}
+		name = EVTOPTF_WCVOD_1015	# Reaction of other races
+	}
+}
