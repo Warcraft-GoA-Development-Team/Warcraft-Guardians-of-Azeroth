@@ -1,0 +1,267 @@
+namespace = WCVRW
+
+# Starting event
+letter_event = {
+	id = WCVRW.1
+	desc = EVTDESC_WCVRW_1
+	border = GFX_event_letter_frame_religion
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = EVTOPTA_WCVRW_1
+		piety = 5
+		set_character_flag = preparing_riftwalk
+		clr_character_flag = activated_riftwalk
+		hidden_tooltip = {
+			character_event = { id = WCVRW.2 days = 14 }
+		}	
+	}
+}
+
+# The Riftwalk is Starting
+character_event = {
+	id = WCVRW.2
+	desc = EVTDESC_WCVRW_2
+	picture = GFX_evt_telogrus
+	border = GFX_event_normal_frame_religion
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = EVTOPTA_WCVRW_2
+		clr_character_flag = preparing_riftwalk
+		add_trait = on_riftwalk
+		if = {
+			limit = { ai = no }
+			chronicle = {
+				entry = CHRONICLE_WENT_ON_RIFTWALK
+				picture = GFX_evt_telogrus
+			}
+		}
+		hidden_tooltip = {
+			character_event = { id = WCVRW.3 days = 7 }
+		}
+	}
+}
+
+# Arrival at Telogrus		
+character_event = {
+	id = WCVRW.3
+	
+	hide_window = yes
+	
+	is_triggered_only = yes
+	
+	immediate = {
+		set_character_flag = riftwalker_arrived_in_telogrus
+		character_event = { id = WCVRW.4 }
+	}
+}
+
+# Attunement
+character_event = {
+	id = WCVRW.4
+	desc = EVTDESC_WCVRW_4
+	picture = GFX_evt_telogrus
+	border = GFX_event_normal_frame_religion
+	
+	prisoner = no
+	
+	is_triggered_only = yes
+
+	trigger = {
+		trait = on_riftwalk
+	}
+	
+	option = {
+		name = EVTOPTA_WCVRW_4
+		piety = 15
+		hidden_tooltip = {
+			character_event = { id = WCVRW.5 days = 2 }
+		}		
+	}
+}
+
+# Mastery
+character_event = {
+	id = WCVRW.5
+	desc = EVTDESC_WCVRW_5
+	picture = GFX_evt_telogrus
+	border = GFX_event_normal_frame_religion
+	
+	prisoner = no
+	
+	is_triggered_only = yes
+
+	trigger = {
+		trait = on_riftwalk
+	}
+	
+	option = {
+		name = EVTOPTA_WCVRW_5
+		if = {
+			limit = {
+				trait = proud
+			}
+			add_trait = ambitious
+		}
+		random = {
+			chance = 33
+			add_trait = proud
+			# PH
+			hidden_tooltip = { character_event = { id = 38261 } }
+		}
+		piety = 25
+		hidden_tooltip = {
+			character_event = { id = WCVRW.6 days = 1 }
+		}		
+	}
+	option = {
+		name = EVTOPTB_WCVRW_5
+		piety = 25
+		add_trait = humble
+		
+		hidden_tooltip = {
+			character_event = { id = WCVRW.6 days = 1 }
+		}	
+	}	
+}
+
+# Hidden gateway event				
+character_event = {
+	id = WCVRW.6
+	
+	hide_window = yes
+	
+	is_triggered_only = yes
+	
+	immediate = {
+		random_list = {
+			33 = {  character_event = { id = WCVRW.7 days = 1 } }
+			33 = {  character_event = { id = WCVRW.8 days = 1 } }
+			33 = {  character_event = { id = WCVRW.9 days = 1 } }
+		}
+		character_event = { id = WCVRW.10 days = 14 }
+	}
+}
+
+# Purity of Body
+character_event = {
+	id = WCVRW.7
+	desc = EVTDESC_WCVRW_7
+	picture = GFX_evt_telogrus
+	border = GFX_event_normal_frame_religion
+	
+	prisoner = no
+	
+	is_triggered_only = yes
+
+	trigger = {
+		trait = on_riftwalk
+	}
+	
+	option = {
+		name = EVTOPTA_WCVRW_7
+		set_character_flag = on_home_from_riftwalk
+		clr_character_flag = riftwalker_arrived_in_telogrus
+		
+		if = {
+			limit = {
+				NOT  = { has_character_flag = gained_hajj_health }
+			}
+			health = 1
+			set_character_flag = gained_riftwalk_health
+			break = yes
+		}
+		if = {
+			limit = {
+				has_character_flag = gained_hajj_health
+			}
+			piety = 25
+		}
+	}
+}
+	
+# Purity of Spirit
+character_event = {
+	id = WCVRW.8
+	desc = EVTDESC_WCVRW_8
+	picture = GFX_evt_telogrus
+	border = GFX_event_normal_frame_religion
+	
+	prisoner = no
+	
+	is_triggered_only = yes
+
+	trigger = {
+		trait = on_riftwalk
+	}
+	
+	option = {
+		name = EVTOPTA_WCVRW_8
+		set_character_flag = on_home_from_riftwalk
+		clr_character_flag = riftwalker_arrived_in_telogrus
+		piety = 50
+	}
+}
+	
+# Purity of Mind
+character_event = {
+	id = WCVRW.9
+	desc = EVTDESC_WCVRW_9
+	picture = GFX_evt_telogrus
+	border = GFX_event_normal_frame_religion
+	
+	prisoner = no
+	
+	is_triggered_only = yes
+
+	trigger = {
+		trait = on_riftwalk
+	}
+	
+	option = {
+		name = EVTOPTA_WCVRW_9
+		set_character_flag = on_home_from_riftwalk
+		clr_character_flag = riftwalker_arrived_in_telogrus
+		if = {
+			limit = { trait = possessed }
+			remove_trait = possessed
+			# maybe it should also clear major void corruption
+		}
+		if = {
+			limit = { trait = lunatic }
+			remove_trait = lunatic
+		}
+		if = {
+			limit = { trait = stressed }
+			remove_trait = stressed
+		}	
+		if = {
+			limit = { trait = depressed }
+			remove_trait = depressed
+		}	
+		piety = 15		
+	}
+}
+
+# Returned home
+character_event = {
+	id = WCVRW.10
+	desc = EVTDESC_WCVRW_10
+	picture = GFX_evt_telogrus
+	border = GFX_event_normal_frame_religion
+	
+	is_triggered_only = yes
+	
+	immediate = {
+		clr_character_flag = on_home_from_riftwalk
+		clr_character_flag = do_not_disturb
+	}
+	option = {
+		name = EVTOPTA_WCVRW_10
+		remove_trait = on_riftwalk
+		add_trait = riftwalker
+	}
+}
