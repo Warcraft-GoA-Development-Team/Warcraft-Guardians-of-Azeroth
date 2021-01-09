@@ -385,10 +385,8 @@ narrative_event = {
 			# }
 			
 			set_graphical_culture = vrykul_undead
-			create_bloodline = {
-				type = gorak_tul
-				has_dlc = "Holy Fury"
-			}
+
+			create_bloodline = { type = gorak_tul }
 			
 			c_fates_end = {
 				# event_target:target_settler and its people settle here	# without gameover if current ruler is player
@@ -400,7 +398,6 @@ narrative_event = {
 			activate_title = { title = k_drustvar status = yes }
 			k_drustvar = { grant_title = event_target:target_gorak_tul }
 			
-			wealth = 1000
 			set_government_type = tribal_monarchy_government
 			
 			create_character = {
@@ -555,9 +552,18 @@ narrative_event = {
 		NOT = { has_global_flag = drust_sack_boralus }
 		
 		religion = throsic
+		culture = drust
 		
 		FROM = {
 			title = b_boralus
+			# Is not protected by throsic ruler
+			holder_scope = {
+				NOT = { religion = throsic }
+				top_liege = {
+					NOT = { religion = throsic }
+				}
+			}
+			# Living humans live there
 			location = {
 				NOT = { has_province_modifier = undead_province }	# I think it is not necessary to explain why I added these ones
 				dark_public_religion_trigger = no
@@ -692,5 +698,577 @@ narrative_event = {
 			true_religion = throsic
 		}
 		name = EVTOPTB_WCCRS_150
+	}
+}
+
+### CRISIS: AWAKENING OF THE AMATHET ###
+# this crisis mostly serves as a counterbalance to the invading qiraji, and generally should fire not long after Uldum's isolation ends and it gets stomped but can happen anytime
+# Opening event: The Tombs Are Stirring
+# This serves as a pinger if an evil religion follower owns major holding
+character_event = {
+	id = WCCRS.200
+
+	is_triggered_only = yes
+	hide_window = yes
+
+	only_playable = yes
+
+	trigger = {
+		# Can't happen twice
+		NOT = {	has_global_flag = amathet_awakening_happened }
+		
+		# Uldum must be open to everyone
+		has_global_flag = uldum_has_opened_flag
+
+		# Needs to control any of these important Tol'vir counties
+		OR = {
+			has_landed_title = c_orsis
+			has_landed_title = c_ramkahen
+			has_landed_title = c_neferset
+			has_landed_title = c_uldum
+			has_landed_title = c_tolnariv
+		}
+		
+		# Must be a public follower of an evil religion
+		evil_public_religion_trigger = yes
+	}
+
+	immediate = {
+		# Check for an eligible Titanic/Suntouched tol'vir
+		any_playable_ruler = {
+			limit = {
+				OR = {
+					true_religion = mystery_of_the_makers
+					true_religion = suntouched
+				}
+				culture = tolvir
+				is_in_uldum_trigger = yes
+			}
+			save_event_target_as = target_amathet_wakener
+			set_global_flag = amathet_awakening_happened	# Blocks the event from firing twice during one playthrough
+		}
+		
+		# The following event is sent to a valid recipient that can go and explore the tombs
+		event_target:target_amathet_wakener = { narrative_event = { id = WCCRS.210 } }
+	}
+}
+
+### A Great Stir in the East
+# This is initial event for the Amathet Wakener
+narrative_event = {
+	id = WCCRS.210
+	title = EVTTITLE_WCCRS_210
+	desc = EVTDESC_WCCRS_210
+	picture = GFX_evt_uldum
+	border = GFX_event_narrative_frame_war
+	
+	is_triggered_only = yes
+
+	# Let's check this out
+	option = {
+		name = EVTOPTA_WCCRS_210
+
+		event_target:target_amathet_wakener = { character_event = { id = WCCRS.215 days = 3 } }
+	}
+}
+
+### Tomb of the Sun King
+# Last chance to back out
+narrative_event = {
+	id = WCCRS.215
+	title = EVTTITLE_WCCRS_215
+	desc = EVTDESC_WCCRS_215
+	picture = GFX_evt_uldum
+	border = GFX_event_narrative_frame_war
+	
+	is_triggered_only = yes
+
+	# Delve deeper
+	option = {
+		name = EVTOPTA_WCCRS_215
+
+		event_target:target_amathet_wakener = { character_event = { id = WCCRS.220 days = 3 } }
+
+		ai_chance = {
+			factor = 1
+		}
+	}
+
+	# This is a bad idea
+	option = {
+		name = EVTOPTB_WCCRS_215
+
+		custom_tooltip = {
+			text = you_leave_the_tomb
+		}
+
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+
+### Creates Nahkotep
+# lots of spaghetti here
+character_event = {
+	id = WCCRS.220
+
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {		
+		create_character = {
+			name = Nahkotep
+			dynasty = 121020
+			culture = tolvir
+			religion = suntouched
+			trait = mastermind_theologian
+			trait = holy_warrior
+			trait = class_priest_6
+			trait = shrewd
+			trait = diligent trait = wroth trait = zealous trait = ambitious trait = patient
+			age = 600
+		}
+		new_character = {
+			save_event_target_as = target_nahkotep
+			save_event_target_as = target_settler
+
+			# Changes race into stone tolvir
+			become_stone_tolvir_suntouched_effect = yes
+			
+			# Titles
+			activate_title = { title = k_amathet status = yes }
+			k_amathet = { grant_title = event_target:target_nahkotep }
+			
+			c_tolnariv = {
+				# event_target:target_settler and its people settle here
+				settle_as_target_settler_effect = yes
+			}
+			d_uldum = {
+				any_direct_de_jure_vassal_title = {
+					# event_target:target_settler and its people settle here
+					settle_as_target_settler_effect = yes
+				}
+			}
+			c_tolnariv = {
+				# Declares war against player
+				target_settler_declare_war_effect = yes
+			}
+			set_defacto_liege = THIS
+			clear_settler_flag_effect = yes
+
+			# Nickname
+			give_nickname = nick_the_sun_king
+
+			# Starter pack
+			for_war_start_pack_effect = yes
+			
+			# 4 stacks of colonial troops
+			spawn_colonial_troops_effect = yes
+			spawn_colonial_troops_effect = yes
+			spawn_colonial_troops_effect = yes
+			spawn_colonial_troops_effect = yes
+			
+			# Gets claims on the empire of Uldum
+			if = {
+				limit = { e_uldum = { is_title_active = THIS } }
+				if = {
+					limit = { e_uldum = { has_holder = no } }
+					primary_title = {
+						e_uldum = {
+							grant_title_no_opinion = event_target:target_nahkotep
+							copy_title_laws = PREV
+						}
+					}
+				}
+				else = {
+					add_pressed_claim = e_uldum
+				}
+			}
+		}
+		
+		narrative_event = { id = WCCRS.225 }
+		any_player = {
+			narrative_event = { id = WCCRS.225 }
+		}
+	}
+}
+
+# Ping event
+narrative_event = {
+	id = WCCRS.225
+	title = EVTTITLE_WCCRS_225
+	desc = EVTDESC_WCCRS_225
+	picture = GFX_evt_tolvir_prophet
+	border = GFX_event_narrative_frame_war
+	
+	is_triggered_only = yes
+
+	# I am the cleansing flame of the Makers
+	option = {
+		trigger = {
+			character = event_target:target_nahkotep
+		}
+		name = EVTOPTA_WCCRS_225
+	}
+	# Switcher option to play as Nahkotep
+	option = {
+		trigger = {
+			NOT = {
+				character = event_target:target_nahkotep
+			}
+			character = event_target:target_amathet_wakener
+		}
+		name = EVTOPTB_WCCRS_225
+		
+		set_player_character = event_target:target_nahkotep
+	}
+	# Tol'vir react
+	option = {
+		trigger = {
+			NOT = {
+				character = event_target:target_nahkotep
+				character = event_target:target_amathet_wakener
+			}
+			culture = tolvir
+		}
+		name = EVTOPTC_WCCRS_225
+	}
+	# Rest of the world
+	option = {
+		trigger = {
+			NOT = {
+				character = event_target:target_nahkotep
+				character = event_target:target_amathet_wakener
+				culture = tolvir
+			}
+		}
+		name = EVTOPTD_WCCRS_225
+	}
+}
+
+### CRISIS: THUNDER KING EVENTS ###
+### Creates Lei Shen
+# Pinger event
+character_event = {
+	id = WCCRS.300
+
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
+		save_event_target_as = target_resurrector
+		
+		set_global_flag = resurrect_lei_shen_happened_flag
+		
+		create_character = {
+			name = Lei
+			dynasty = 172018
+			culture = mogu
+			religion = thunder_king
+			trait = brilliant_strategist
+			trait = holy_warrior
+			trait = creature_mogu
+			trait = class_shaman_10
+			trait = genius
+			trait = immortal
+			trait = thunder_king_trait
+			trait = cruel trait = wroth trait = zealous trait = ambitious trait = proud
+			age = 300
+		}
+		new_character = {
+			save_event_target_as = target_lei_shen
+			save_event_target_as = target_settler
+			
+			# Titles
+			c_lei_shen = {
+				# event_target:target_settler and its people settle here
+				settle_as_target_settler_effect = yes
+			}
+			d_lei_shen = {
+				any_direct_de_jure_vassal_title = {
+					# event_target:target_settler and its people settle here
+					settle_as_target_settler_effect = yes
+				}
+			}
+			c_lei_shen = {
+				# Declares war against player
+				target_settler_declare_war_effect = yes
+			}
+			set_defacto_liege = THIS
+			clear_settler_flag_effect = yes
+			
+			# Gold, commanders
+			for_war_start_pack_effect = yes
+			give_nickname = nick_the_thunder_king
+			create_bloodline = { type = lei_shen }
+			
+			# Army
+			# Well-balanced troops + fleet
+			spawn_colonial_troops_effect = yes
+			spawn_colonial_troops_effect = yes
+			spawn_colonial_troops_effect = yes
+			spawn_colonial_troops_effect = yes
+			
+			# Claims
+			if = {
+				limit = { e_kun_lai = { is_title_active = THIS } }
+				if = {
+					limit = { e_kun_lai = { has_holder = no } }
+					primary_title = {
+						e_kun_lai = {
+							grant_title_no_opinion = event_target:target_lei_shen
+							copy_title_laws = PREV
+						}
+					}
+				}
+				else = {
+					add_pressed_claim = e_kun_lai
+				}
+			}
+		}
+		
+		narrative_event = { id = WCCRS.305 }
+		any_playable_ruler = {
+			limit = {
+				OR = {
+					ai = no
+					AND = {
+						religion = thunder_king
+						culture = mogu
+					}
+				}
+			}
+			narrative_event = { id = WCCRS.305 }
+		}
+	}
+}
+# Ping event
+narrative_event = {
+	id = WCCRS.305
+	title = EVTTITLE_WCCRS_305
+	desc = EVTDESC_WCCRS_305
+	picture = GFX_evt_thunder_king
+	border = GFX_event_narrative_frame_war
+	
+	is_triggered_only = yes
+
+	# I'm Lei Shen, slayer of kings and gods.
+	option = {
+		trigger = {
+			character = event_target:target_lei_shen
+		}
+		name = EVTOPTA_WCCRS_305
+	}
+	# If I were the Thunder King...
+	option = {
+		trigger = {
+			NOT = {
+				character = event_target:target_lei_shen
+			}
+			character = event_target:target_resurrector
+		}
+		name = EVTOPTB_WCCRS_305
+		
+		set_player_character = event_target:target_lei_shen
+	}
+	# Bow to the Thunder King!
+	option = {
+		trigger = {
+			NOT = {
+				character = event_target:target_lei_shen
+			}
+			religion = thunder_king
+			culture = mogu
+		}
+		name = EVTOPTC_WCCRS_305
+		
+		if = {
+			limit = {
+				event_target:target_lei_shen = { higher_tier_than = ROOT }
+			}
+			set_defacto_liege = event_target:target_lei_shen
+		}
+		
+		ai_chance = {
+			factor = 50
+		}
+	}
+	# Now let's talk about our deal.
+	option = {
+		trigger = {
+			NOT = {
+				character = event_target:target_lei_shen
+				AND = {
+					religion = thunder_king
+					culture = mogu
+				}
+			}
+			character = event_target:target_resurrector
+		}
+		name = EVTOPTD_WCCRS_305
+		
+		#Allies Lei Shen
+		opinion = { modifier = in_non_aggression_pact who = event_target:target_lei_shen }
+		reverse_opinion = { modifier = in_non_aggression_pact who = event_target:target_lei_shen }
+		add_alliance = { who = event_target:target_lei_shen years = 20 }
+	}
+	# He better stay in his grave.
+	option = {
+		trigger = {
+			NOT = {
+				character = event_target:target_lei_shen
+				character = event_target:target_resurrector
+			}
+		}
+		name = EVTOPTE_WCCRS_305
+		
+		ai_chance = {
+			factor = 50
+			ambitious_ai_chance_score = yes
+		}
+	}
+}
+### Zandalari ruler hears legends about Lei Shen and may claim Pandaria
+narrative_event = {
+	id = WCCRS.330
+	title = EVTTITLE_WCCRS_330
+	desc = EVTDESC_WCCRS_330
+	picture = GFX_evt_melee_troll_group
+	border = GFX_event_narrative_frame_war
+	
+	is_triggered_only = yes
+	
+	only_playable = yes
+	only_independent = yes 
+	
+	trigger = {
+		is_adult = yes
+		is_incapable = no
+		prisoner = no
+		is_inaccessible_trigger = no
+		
+		NOT = { has_character_flag = zandalari_pandaria_claims_happened_flag }
+		
+		evil_public_religion_trigger = no
+		culture = zandalari
+		
+		has_landed_title = e_zandalari
+		OR = {
+			k_zouchin = {
+				is_controlled_by_prev_or_same_realm_trigger = no
+				NOT = { claimed_by = ROOT }
+			}
+			k_kun_lai = {
+				is_controlled_by_prev_or_same_realm_trigger = no
+				NOT = { claimed_by = ROOT }
+			}
+			d_nalaksha = {
+				is_controlled_by_prev_or_same_realm_trigger = no
+				NOT = { claimed_by = ROOT }
+			}
+			d_zouchin = {
+				is_controlled_by_prev_or_same_realm_trigger = no
+				NOT = { claimed_by = ROOT }
+			}
+			d_howlingwind = {
+				is_controlled_by_prev_or_same_realm_trigger = no
+				NOT = { claimed_by = ROOT }
+			}
+		}
+		
+		job_spiritual = {
+			is_adult = yes
+			is_incapable = no
+			prisoner = no
+			is_inaccessible_trigger = no
+			
+			evil_public_religion_trigger = no
+			culture = zandalari
+		}
+		
+		# Pandaria isn't isolated
+		c_lushat_lan = { holder_scope = { ROOT = { is_not_isolated_from_prev_trigger = yes } } }
+	}
+	
+	immediate = {
+		job_spiritual = { save_event_target_as = target_spiritual }
+		
+		set_character_flag = zandalari_pandaria_claims_happened_flag
+	}
+	
+	# Agree. It's our birthright.
+	option = {
+		name = EVTOPTA_WCCRS_330
+		
+		remove_content_or_add_ambitious_silently_effect = yes
+		
+		prestige = 100
+		
+		if = {
+			limit = {
+				k_zouchin = {
+					is_title_active = THIS
+					is_controlled_by_prev_or_same_realm_trigger = no
+					NOT = { claimed_by = ROOT }
+				}
+			}
+			add_pressed_claim = k_zouchin
+		}
+		if = {
+			limit = {
+				k_kun_lai = {
+					is_title_active = THIS
+					is_controlled_by_prev_or_same_realm_trigger = no
+					NOT = { claimed_by = ROOT }
+				}
+			}
+			add_pressed_claim = k_kun_lai
+		}
+		if = {
+			limit = {
+				d_nalaksha = {
+					is_controlled_by_prev_or_same_realm_trigger = no
+					NOT = { claimed_by = ROOT }
+				}
+			}
+			add_pressed_claim = d_nalaksha
+		}
+		if = {
+			limit = {
+				d_zouchin = {
+					is_controlled_by_prev_or_same_realm_trigger = no
+					NOT = { claimed_by = ROOT }
+				}
+			}
+			add_pressed_claim = d_zouchin
+		}
+		if = {
+			limit = {
+				d_howlingwind = {
+					is_controlled_by_prev_or_same_realm_trigger = no
+					NOT = { claimed_by = ROOT }
+				}
+			}
+			add_pressed_claim = d_howlingwind
+		}
+		set_character_flag = quest_to_resurrect_lei_shen_flag
+		
+		ai_chance = {
+			factor = 50
+			ambitious_ai_chance_score = yes
+		}
+	}
+	# Let people of Pandaria live in peace
+	option = {
+		name = EVTOPTB_WCCRS_330
+		
+		remove_ambitious_or_add_content_silently_effect = yes
+		
+		prestige = -100
+		
+		ai_chance = {
+			factor = 50
+		}
 	}
 }

@@ -52,6 +52,26 @@ set_undead_gfx_effect = {
 				}
 				set_graphical_culture = gnoll_undead
 			}
+			else_if = {
+				limit = { has_troll_gfx_trigger = yes }
+				set_graphical_culture = troll_undead
+			}
+			else_if = {
+				limit = { has_eredar_gfx_trigger = yes }
+				set_graphical_culture = draenei_undead
+			}
+			else_if = {
+				limit = { graphical_culture = wildhammergfx }
+				set_graphical_culture = wildhammer_undead
+			}
+			else_if = {
+				limit = { graphical_culture = darkirongfx }
+				set_graphical_culture = dark_iron_undead
+			}
+			else_if = {
+				limit = { has_dwarf_gfx_trigger = yes }
+				set_graphical_culture = dwarf_undead
+			}
 			# You're too ugly, sorry
 			# else = {
 				# set_graphical_culture = ghoul
@@ -358,6 +378,22 @@ set_demon_gfx_effect = {
 				limit = { has_highborne_gfx_trigger = yes }
 				set_graphical_culture = highborne_fel
 			}
+			else_if = {
+				limit = { has_troll_gfx_trigger = yes }
+				set_graphical_culture = troll_fel
+			}
+			else_if = {
+				limit = { graphical_culture = darkirongfx }
+				set_graphical_culture = dark_iron_fel
+			}
+			else_if = {
+				limit = { graphical_culture = wildhammergfx }
+				set_graphical_culture = wildhammer_fel
+			}
+			else_if = {
+				limit = { has_dwarf_gfx_trigger = yes }
+				set_graphical_culture = dwarf_fel
+			}
 		}
 		if = {
 			limit = {
@@ -374,6 +410,12 @@ set_demon_gfx_effect = {
 				limit = { has_human_gfx_trigger = yes }
 				set_graphical_culture = human_demon
 			}
+			else_if = {
+				limit = { has_eredar_gfx_trigger = yes }
+				if = { limit = { trait = creature_draenei } remove_trait = creature_draenei }
+				if = { limit = { NOT = { trait = creature_eredar } } add_trait = creature_eredar }
+				set_graphical_culture = eredar
+			}
 		}
 		if = {
 			limit = {
@@ -381,12 +423,6 @@ set_demon_gfx_effect = {
 				has_demon_gfx_trigger = no
 			}
 			if = {
-				limit = { has_eredar_gfx_trigger = yes }
-				if = { limit = { trait = creature_draenei } remove_trait = creature_draenei }
-				if = { limit = { NOT = { trait = creature_eredar } } add_trait = creature_eredar }
-				set_graphical_culture = eredar
-			}
-			else_if = {
 				limit = {
 					OR = {
 						has_nightelf_gfx_trigger = yes
@@ -420,6 +456,7 @@ add_trait_demon_effect = {
 	clean_dark_beings_effect = yes
 
 	set_demon_gfx_effect = yes
+	if = { limit = { culture = draenei } culture = eredar }
 
 	hidden_effect = {
 		# Pregnant shall not pass
@@ -853,36 +890,14 @@ clean_dark_beings_effect = {
 
 	# Remove diseases
 	# Remove infection
-	if = { limit = { trait = infection } remove_trait = infection }
-	if = { limit = { trait = lovers_pox } remove_trait = lovers_pox }
-	remove_disease_trait_effect = yes
-	remove_symptoms_effect = yes
-	hidden_effect = {
-		# Remove pending infection from wound prior to becoming demon
-		if = {
-			limit = { has_character_flag = pending_infection }
-			clr_character_flag = pending_infection
-		}
-		remove_disease_flags_effect = yes
-		remove_treatment_modifiers_effect = yes
-	}
+	heal_all_diseases = yes
 
 	# Removed negative genetic
 	remove_all_negative_congenital_traits_effect = yes
 	remone_all_non_inheritable_negative_congenital_traits_effect = yes
 
 	# Remove weight
-	if = {
-		limit = { trait = is_fat }
-		remove_trait = is_fat
-	}
-	if = {
-		limit = { trait = is_malnourished }
-		remove_trait = is_malnourished
-	}
-	remove_weight_modifier_effect = yes
-	clear_fat_flags_effect = yes
-	clear_malnourished_flags_effect = yes
+	remove_weight_effect = yes
 	
 	# Remove some modifiers
 	if = { limit = { has_character_modifier = light_mark_good } remove_character_modifier = light_mark_good }

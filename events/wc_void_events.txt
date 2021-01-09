@@ -850,155 +850,6 @@ narrative_event = {
 	}
 }
 
-### The Reawakening of C'thun ###
-# Ping event
-province_event = {
-	id = WCVOD.1000
-
-	is_triggered_only = yes
-	hide_window = yes
-
-	trigger = {
-		NOT = { has_global_flag = reawakening_of_cthun_flag }
-	}
-
-	immediate = {
-		if = {
-			limit = {
-				e_ahnqiraj = {
-					has_holder = yes
-					holder_scope = { reawakening_of_cthun_qiraji_event_trigger = yes }
-				}
-			}
-			e_ahnqiraj = {
-				holder_scope = { narrative_event = { id = WCVOD.1005 } }
-			}
-		}
-		else = {
-			create_character = {
-				female = no
-				dynasty = none
-				culture = qiraji religion = old_gods_worship
-				trait = creature_qiraji
-				trait = mastermind_theologian
-				trait = class_shadow_priest_10
-				trait = scholar trait = quick trait = cruel trait = deceitful
-				random_traits = no
-				age = 300
-				trait = being_void
-			}
-			new_character = {
-				# Used in scripted effects
-				save_event_target_as = target_settler
-				
-				d_ahnqiraj = {
-					any_direct_de_jure_vassal_title = {
-						# event_target:target_settler and its people settle here
-						settle_as_target_settler_effect = yes
-					}
-				}
-				
-				if = {
-					limit = { is_government_potential = black_pact_government }
-					set_black_pact_government_effect = yes
-				}
-				
-				e_ahnqiraj = {
-					destroy_landed_title = THIS
-					gain_title = PREV
-				}
-				
-				c_ahnqiraj = {
-					# Declares war against player
-					target_settler_declare_war_effect = yes
-				}
-				
-				clear_settler_flag_effect = yes
-
-				narrative_event = { id = WCVOD.1005 }
-			}
-		}
-	}
-}
-# Main event
-narrative_event = {
-	id = WCVOD.1005
-	title = EVTTITLE_WCVOD_1005
-	desc = EVTDESC_WCVOD_1005
-	picture = GFX_evt_ahnqiraj
-	border = GFX_event_narrative_frame_war
-
-	is_triggered_only = yes
-
-	major = yes
-	major_trigger = {
-		ai = no
-	}
-	show_root = yes
-
-	immediate = {
-		set_global_flag = reawakening_of_cthun_flag
-		
-		1613 = { save_event_target_as = target_province }
-	}
-
-	# The Qiraji will devour them all!
-	option = {
-		trigger = { true_religion = old_gods_worship }
-		name = EVTOPTA_WCFEL_1005
-
-		if = {
-			limit = { character = ROOT }
-			
-			# Gives gold
-			wealth = 1000
-			
-			# Spawns troops
-			spawn_qiraji_troops_effect = yes
-			spawn_qiraji_troops_effect = yes
-			spawn_qiraji_troops_effect = yes
-			spawn_qiraji_troops_effect = yes
-			if = {		# Gives troops and gold to another Twin Emperor
-				limit = {
-					k_ahnqiraj = {
-						holder_scope = {
-							reawakening_of_cthun_qiraji_event_trigger = yes
-						}
-					}
-				}
-				hidden_effect = {
-					k_ahnqiraj = {
-						holder_scope = {
-							# Gives gold
-							wealth = 500
-						
-							# Spawns troops
-							spawn_qiraji_troops_effect = yes
-							spawn_qiraji_troops_effect = yes
-						}
-					}
-				}
-			}
-			else = {
-				spawn_qiraji_troops_effect = yes
-				spawn_qiraji_troops_effect = yes
-			}
-			
-			offmap_cthun = {
-				set_status = old_god_partly_free
-			}
-			b_ahnqiraj = {
-				add_building = ca_old_god_1
-			}
-		}
-	}
-	# The ancient evil must remain in confinement!
-	option = {
-		trigger = { NOT = { true_religion = old_gods_worship } }
-		name = EVTOPTB_WCFEL_1005
-	}
-}
-
 #############################
 # 		Xal'atath 			#
 #############################
@@ -1578,6 +1429,10 @@ character_event = {
 			factor = 1.2
 			is_mage_class_trigger = yes
 		}
+		modifier = {
+			factor = 5
+			holds_living_old_god_prison_trigger = yes
+		}
 	}
 
 	immediate = {
@@ -1587,6 +1442,10 @@ character_event = {
 				modifier = {
 					factor = 0
 					trait = being_void
+				}
+				modifier = {
+					factor = 5
+					holds_living_old_god_prison_trigger = yes
 				}
 			}
 			10 = {
@@ -2510,5 +2369,170 @@ narrative_event = {
 	after = {
 		clr_character_flag = found_cthraxxi_good_end_flag
 		clr_character_flag = found_cthraxxi_bad_end_flag
+	}
+}
+
+### Tekahn's Bargain ###
+# An agent of the Twilight's Hammer visits the Neferset and offers to lift the Curse of Flesh
+narrative_event = {
+	id = WCVOD.10100
+	title = EVTTITLE_WCVOD_10100
+	desc = EVTDESC_WCVOD_10100
+	picture = GFX_evt_cthun_priestess
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+	
+	only_playable = yes
+
+	trigger = {
+		trait = creature_tolvir
+		is_dark_being_trigger = no
+		culture = tolvir	# Must be of tol'vir culture
+		is_shadow_priest_class_trigger = yes	# Only shadow priests can be contacted by the entity
+		NOT = { 
+			religion = old_gods_worship		# Must NOT be a servant of the Old Gods at the time
+			true_religion = old_gods_worship
+		}
+
+		has_landed_title = c_neferset	# Must hold the city of Neferset
+		has_global_flag = uldum_has_opened_flag		# Uldum must not be isolated
+		NOT = { has_global_flag = dark_pharaohs_bargain_flag }	# This is here so event can't fire twice
+	}
+
+	immediate = {
+		set_global_flag = dark_pharaohs_bargain_flag
+		save_event_target_as = target_dark_pharaoh
+	}
+
+	option = {
+		name = EVTOPTA_WCVOD_10100
+
+		event_target:target_dark_pharaoh = { narrative_event = { id = WCVOD.10105 } }
+		event_target:target_dark_pharaoh = { give_nickname = nick_the_dark_pharaoh }
+
+		ai_chance = {
+			factor = 1
+		}
+	}
+
+	option = {
+		name = EVTOPTB_WCVOD_10100
+
+		custom_tooltip = {
+			text = you_reject_the_offer
+		}
+
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+
+# A ritual commences, 'Tekahn' regains his stone body
+narrative_event = {
+	id = WCVOD.10105
+	title = EVTTITLE_WCVOD_10105
+	desc = EVTDESC_WCVOD_10105
+	picture = GFX_evt_cthun_priestess
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	# I shall serve the Old Gods
+	option = {
+		name = EVTOPTA_WCVOD_10105
+		become_stone_tolvir_old_gods_effect = yes
+		
+		ai_chance = {
+			factor = 50
+			
+			evil_ai_chance_score = yes
+			evil_ai_chance_religion_score = yes
+		}
+	}
+
+	# Tekahn does not serve, Tekahn rules
+	option = {
+		name = EVTOPTB_WCVOD_10105
+		become_stone_tolvir_voidfarer_effect = yes
+		custom_tooltip = {
+			text = defiance_wont_go_unpunished
+		}
+		event_target:target_dark_pharaoh = { narrative_event = { id = WCVOD.10110 days = 60 } }	# At this point he cannot die of natural causes
+		
+		ai_chance = {
+			factor = 50
+		}
+	}
+}
+
+# Twilight assassins attempt to strike down the rebellious 'Tekahn'
+narrative_event = {
+	id = WCVOD.10110
+	title = EVTTITLE_WCVOD_10110
+	desc = EVTDESC_WCVOD_10110
+	picture = GFX_evt_tekahn
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	# Fight for your life
+	option = {
+		name = EVTOPTA_WCVOD_10110
+
+		# A chance for him to either survive or die
+		random_list = {
+			80 = {
+				custom_tooltip = {
+					text = tekahn_emerge_victorious
+					event_target:target_dark_pharaoh = { narrative_event = { id = WCVOD.10120 } }
+				}
+				good_soldier_outcome_score = yes
+				is_good_intrigue_character_score = yes
+			}
+			20 = {
+				custom_tooltip = {
+					text = tekahn_failure
+				}
+				event_target:target_dark_pharaoh = { narrative_event = { id = WCVOD.10121 } }
+			}
+		}
+	}
+}
+
+# 'Tekahn' is successful
+narrative_event = {
+	id = WCVOD.10120
+	title = EVTTITLE_WCVOD_10120
+	desc = EVTDESC_WCVOD_10120
+	picture = GFX_evt_tekahn
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	# Now I am complete
+	option = {
+		name = EVTOPTA_WCVOD_10120
+
+		prestige = 500
+	}
+}
+
+# 'Tekahn' dies
+narrative_event = {
+	id = WCVOD.10121
+	title = EVTTITLE_WCVOD_10121
+	desc = EVTDESC_WCVOD_10121
+	picture = GFX_evt_cthun_priestess
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	# This is not what the vision promised!
+	option = {
+		name = EVTOPTA_WCVOD_10121
+
+		event_target:target_dark_pharaoh = { death = { death_reason = death_murder_butchered } }
 	}
 }

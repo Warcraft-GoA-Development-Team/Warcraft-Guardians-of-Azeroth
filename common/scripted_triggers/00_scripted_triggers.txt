@@ -1677,6 +1677,7 @@ physician_good_trigger = {
 		is_shaman_class_trigger = yes
 		is_druid_class_trigger = yes
 		is_loa_priest_class_trigger = yes
+		is_monk_class_trigger = yes
 
 		is_learned_trigger = yes
 		
@@ -1690,6 +1691,12 @@ is_inaccessible_trigger = { #Remember to write this "is_inaccessible_trigger = n
 		text = is_inaccessible_tooltip
 		hidden_tooltip = {
 			OR = {
+				# Warcraft
+				trait = in_ice_prison
+				trait = in_twisting_nether
+				trait = lost_corporeal_body
+				trait = sleeping_trait
+				
 				has_character_flag = flag_holding_great_tribal_festival
 				trait = in_hiding
 				trait = on_hajj
@@ -1807,7 +1814,10 @@ is_unimportant_trigger = {
 }
 
 sad_example_trigger = {
-	age = 30
+	# Warcraft
+	is_completely_immortal_trigger = no
+	
+	is_60_physical_age_trigger = yes
 	is_married = no
 	NOT = { num_of_children = 1 }
 }
@@ -2913,7 +2923,7 @@ assassins_appropriate_target_trigger = {
 	# Warcraft
 	always = no
 	
-	is_within_diplo_range = ROOT
+	ROOT = { is_within_prev_diplo_range_trigger = yes }
 	is_adult = yes
 	is_quest_target = no
 
@@ -3739,7 +3749,7 @@ character_knows_prev_trigger = {
 		dynasty = PREV
 		same_liege = PREV
 		AND = {
-			is_within_diplo_range = PREV
+			is_within_prev_diplo_range_trigger = yes
 			PREV = { independent = yes } 
 		}
 	}
@@ -6440,9 +6450,13 @@ religion_openly_aztec_or_reformed_trigger = {
 
 has_dharmic_religion_trigger = {
 	OR = {
-		religion = hindu
-		religion = buddhist
-		religion = jain
+		# Warcraft
+		# religion = hindu
+
+		like_buddhist_public_religion_trigger = yes
+
+		# Warcraft
+		# religion = jain
 	}
 }
 
@@ -6560,7 +6574,7 @@ china_offmap_decisions_enabled_trigger = {
 		}
 		governor = {
 			show_scope_change = no
-			is_within_diplo_range = FROM
+			FROM = { is_within_prev_diplo_range_trigger = yes }
 			hidden_trigger  = { NOT = { character = FROM } } #Governor cannot use boon/tributes decisions
 		}
 	}
@@ -6599,7 +6613,7 @@ china_offmap_hostile_decisions_enabled_trigger = {
 		}
 		governor = {
 			show_scope_change = no
-			is_within_diplo_range = FROM
+			FROM = { is_within_prev_diplo_range_trigger = yes }
 			hidden_trigger  = { NOT = { character = FROM } } #Governor cannot use boon/tributes decisions
 		}
 		offmap_ruler = {
@@ -6672,7 +6686,7 @@ valid_offmap_china_target = {
 	NOT = { has_character_flag = defeated_china }
 	NOT = {	is_tributary = { suzerain = ROOT } }
 	in_revolt = no
-	is_within_diplo_range = ROOT
+	ROOT = { is_within_prev_diplo_range_trigger = yes }
 	is_landed = yes
 	higher_tier_than = BARON
 	NOT = { primary_title = { has_title_flag = rebel_general_title } } #uses special cb to target
@@ -7055,7 +7069,7 @@ proselytize_convert_independent_trigger = {
 		NOT = {
 			has_opinion_modifier = { who = FROM modifier = opinion_sent_preacher }
 		}
-		is_within_diplo_range = FROM
+		FROM = { is_within_prev_diplo_range_trigger = yes }
 	}
 }
 
@@ -8176,13 +8190,12 @@ this_is_spiritual_culture_trigger = { #Not really about culture - Used in AI vot
 	OR = { 
 		# Warcraft
 		religion_group = loa_group
-		religion_group = pandaren_religion_group
 		
 		culture = gnome_group
 		culture = mechagnome
 		
 		# Warcraft
-		# religion_group = indian_group
+		like_indian_group_public_religion_trigger = yes
 		# religion = bon
 		
 		has_religion_feature = religion_peaceful
