@@ -1,0 +1,129 @@
+namespace = WCAIE
+
+character_event = {
+	id = WCOME.301
+	picture = GFX_evt_azshara
+	desc = EVTDESC_WCOME.301
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	trigger = {
+	}
+
+	option = {
+		name = EVTOPTA_WCOME.301 #send tribute
+		trigger = {
+			wealth = 500
+		}
+		transfer_scaled_wealth = { to = FROM min = 500 max = 500 }
+		FROM = { prestige = 250 }
+		if = {
+			limit = {
+				check_variable = { which = "azshara_favor" value = 1 }
+			}
+			change_variable = { which = "azshara_favor" value = 1 }
+		}
+		else = {
+			set_variable = { which = "azshara_favor" value = 1 }
+		}
+	}
+	option = {
+		name = EVTOPTB_WCOME.301 #become tributary
+		trigger = {
+			independent = yes
+			tier = king
+		}
+		e_nazjatar = { holder = { make_tributary = { who = ROOT tributary_type = vassal_of_nazjatar } } }
+		ai_chance = {
+			factor = 0.6
+			modifier = {
+				factor = 0
+				NOT = { culture = naga}
+			}
+		}
+	}
+	option = {
+		name = EVTOPTC_WCOME.301 #request maid
+		trigger = {
+			check_variable = { which = "azshara_favor" value = 1 }
+		}
+		character_event = { id = WCOME.302 }
+	}
+	option = {
+		name = EVTOPTD_WCOME.301 #nothing
+		prestige = -50
+	}
+	option = {
+		name = EVTOPTE_WCOME.301 #summon azshara
+		trigger = {
+			check_variable = { which = "azshara_favor" value = 20 }
+			FROM = { prestige = 20000 }
+			ai = no
+		}
+		character_event = { id = WCOME.320 }
+	}
+}
+character_event = {
+	id = WCOME.302
+	picture = GFX_evt_azshara
+	desc = EVTDESC_WCOME.302
+	border = GFX_event_normal_frame_religion
+
+	is_triggered_only = yes
+
+	immediate = {
+		create_character = {
+			dynasty = actually_culture
+			religion = old_gods_worship
+			culture = naga
+			female = yes
+			age = 300
+			attributes = {
+				martial=5 diplomacy=5 stewardship=5 intrigue=5 learning=10
+			}
+			random_traits = yes
+			trait = scholarly_theologian
+			trait = creature_naga
+			trait = fair
+			trait = groomed
+			trait = being_void
+		}
+		new_character = {
+			random_list = {
+				50 = {
+					add_trait = class_mage_6
+				}
+				50 = {
+					add_trait = class_mage_7
+				}
+			}
+			# Removes wrong traits
+			remove_negative_genetic_effect = yes
+			remove_trait = chaste
+			remove_trait = kind
+			remove_trait = charitable
+			remove_trait = humble
+			remove_trait = honest
+			remove_trait = zealous
+			remove_trait = trusting
+			remove_trait = craven
+			add_character_modifier = { name = azshara_handmaiden duration = -1}
+			save_event_target_as = target_handmaiden
+			reverse_opinion = { modifier = opinion_loyal_servant who = event_target:target_handmaiden }
+		}
+	}
+
+	option = {
+		name = EVTOPTA_WCOME.302
+	}
+	option = {
+		name = EVTOPTB_WCOME.302
+		trigger = {
+			can_marry = yes
+			is_female = no
+			trait = creature_naga
+		}
+		add_spouse = new_character
+	}
+}
