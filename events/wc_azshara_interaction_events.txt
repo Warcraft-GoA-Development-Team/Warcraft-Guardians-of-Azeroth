@@ -12,18 +12,74 @@ character_event = {
 	}
 	
 	option = {
-		name = EVTOPTA_WCAIE.1 #rsubmissions
+		name = EVTOPTA_WCAIE.1 #send tribute
 		trigger = {
-			check_variable = { which = "azshara_favor" value = 1 }
+			wealth = 500
 		}
-		character_event = { id = WCAIE.10 }
+		wealth = -500
+		random_list = {
+			#modifier
+			10 = {
+				add_character_modifier = { name = azshara_favor months = 60 }
+				modifier = {
+					factor = 0
+					has_character_modifier = azshara_favor
+				}
+			}
+			#handmaiden
+			10 = {
+				set_character_flag = azshara_handmaiden_event
+				modifier = {
+					factor = 0
+					had_character_flag = {
+						flag = azshara_handmaiden
+						years =< 5
+					}
+				}
+			}
+			#artifacts
+			
+			#statue
+			10 = {
+				set_character_flag = azshara_artifact_statue
+			}
+			#scimitar
+			10 = {
+				set_character_flag = azshara_artifact_scimitar
+			}
+			#trident
+			10 = {
+				set_character_flag = azshara_artifact_trident
+			}
+			#scepter
+			10 = {
+				set_character_flag = azshara_artifact_scepter
+			}
+		}
+		if = {
+			limit = { has_character_flag = azshara_handmaiden_event }
+			character_event = { id = WCAIE.20 }
+			clr_character_flag = azshara_handmaiden_event
+		}
+		else = {
+			character_event = { id = WCAIE.10 }
+		}
 	}
 	option = {
-		name = EVTOPTB_WCAIE.1 #requests
+		name = EVTOPTB_WCAIE.1 #become tributary
 		trigger = {
-			check_variable = { which = "azshara_favor" value = 1 }
+			independent = yes
+			tier = king
+			e_nazjatar = { has_holder = yes }
 		}
-		character_event = { id = WCAIE.20 }
+		e_nazjatar = { holder = { make_tributary = { who = ROOT tributary_type = vassal_of_nazjatar } } }
+		ai_chance = {
+			factor = 0.6
+			modifier = {
+				factor = 0
+				NOT = { culture = naga }
+			}
+		}
 	}
 	option = {
 		name = EVTOPTD_WCAIE.1 #nothing
@@ -42,74 +98,15 @@ character_event = {
 	}
 	
 	option = {
-		name = EVTOPTA_WCAIE.10 #send tribute
-		trigger = {
-			wealth = 500
-		}
-		if = {
-			limit = {
-				check_variable = { which = "azshara_favor" value = 1 }
-			}
-			change_variable = { which = "azshara_favor" value = 1 }
-		}
-		else = {
-			set_variable = { which = "azshara_favor" value = 1 }
-		}
-	}
-	option = {
-		name = EVTOPTB_WCAIE.10 #become tributary
-		trigger = {
-			independent = yes
-			tier = king
-			e_nazjatar = { has_holder = yes }
-		}
-		e_nazjatar = { holder = { make_tributary = { who = ROOT tributary_type = vassal_of_nazjatar } } }
-		ai_chance = {
-			factor = 0.6
-			modifier = {
-				factor = 0
-				NOT = { culture = naga }
-			}
-		}
-	}
-	option = {
-		name = EVTOPTC_WCAIE.10 #go back
+		name = EVTOPTA_WCAIE.10
 		character_event = { id = WCAIE.1 }
 	}
 }
+
 character_event = {
 	id = WCAIE.20
 	picture = GFX_evt_azshara
 	desc = EVTDESC_WCAIE.20
-	border = GFX_event_normal_frame_religion
-
-	is_triggered_only = yes
-
-	trigger = {
-	}
-	
-	option = {
-		name = EVTOPTA_WCAIE.20 #request maid
-		trigger = {
-			check_variable = { which = "azshara_favor" value = 1 }
-		}
-		character_event = { id = WCAIE.21 }
-	}
-	option = {
-		name = EVTOPTB_WCAIE.20 #request artifact
-		trigger = {
-			check_variable = { which = "azshara_favor" value = 1 }
-		}
-	}
-	option = {
-		name = EVTOPTC_WCAIE.10 #go back
-		character_event = { id = WCAIE.1 }
-	}
-}
-character_event = {
-	id = WCAIE.21
-	picture = GFX_evt_azshara
-	desc = EVTDESC_WCAIE.21
 	border = GFX_event_normal_frame_religion
 
 	is_triggered_only = yes
@@ -157,10 +154,10 @@ character_event = {
 	}
 
 	option = {
-		name = EVTOPTA_WCAIE.21
+		name = EVTOPTA_WCAIE.20
 	}
 	option = {
-		name = EVTOPTB_WCAIE.21
+		name = EVTOPTB_WCAIE.20
 		trigger = {
 			can_marry = yes
 			is_female = no
