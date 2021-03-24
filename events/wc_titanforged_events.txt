@@ -216,6 +216,7 @@ character_event = {
 		}
 	}
 }
+#ulduar expedition
 character_event = {
 	#Basic event information
 	id = WCUTF.10
@@ -226,23 +227,27 @@ character_event = {
 	is_triggered_only = yes
 
 	immediate = {
+		#tries to use brann bronzebeard first
 		if = {
 			limit = {
-				17028 = {
+				c_17028 = {
+					is_untouchable_trigger = no
 					is_alive = yes
+					is_incapable = no
+					prisoner = no
 					OR = {
 						AND = {
 							ROOT = { evil_public_religion_trigger = no }
-							17028 = { evil_public_religion_trigger = no }
+							c_17028 = { evil_public_religion_trigger = no }
 						}
 						AND = {
 							ROOT = { evil_public_religion_trigger = yes }
-							17028 = { evil_public_religion_trigger = yes }
+							c_17028 = { evil_public_religion_trigger = yes }
 						}
 					}
 				}
 			}
-			17028 = {
+			c_17028 = {
 				save_event_target_as = ulduar_explorer
 			}
 		}
@@ -274,6 +279,46 @@ character_event = {
 	option = {
 		name = EVTOPTA_WCUTF.10
 		event_target:ulduar_explorer = {
+			add_trait = travelling
+		}
+		narrative_event = { id = WCUTF.20  days = 120 }
+	}
+}
+#breach of ulduar
+narrative_event = {
+	id = WCUTF.20
+	title = EVTTITLE_WCUTF.20
+	desc = EVTDESC_WCUTF.20
+	picture = GFX_evt_thorim_sif
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+	
+	major = yes
+	major_trigger = {
+		ai = no
+	}
+
+	immediate = {
+		d_ulduar = {
+			any_de_jure_vassal_title = {
+				location = {
+					remove_province_modifier = ulduar_closed_down
+				}
+			}
+			holder_scope = {
+				spawn_ulduar_defence_troops_effect = yes
+			}
+		}
+		set_global_flag = ulduar_opened_flag
+		clr_global_flag = ulduar_expedition
+	}
+
+	option = {
+		name = EVTOPTA_WCUTF.20
+		event_target:ulduar_explorer = {
+			remove_trait = travelling
+			add_trait = stressed
 		}
 	}
 }
