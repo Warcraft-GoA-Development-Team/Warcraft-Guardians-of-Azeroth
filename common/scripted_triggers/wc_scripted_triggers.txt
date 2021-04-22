@@ -842,6 +842,7 @@ is_aggressive_religion_trigger = {
 		religion_group = primitive_group
 		religion_group = vrykul_religion_group
 		religion = thunder_king
+		religion = suntouched
 	}
 }
 like_raiding_adventure_triggger = {
@@ -966,8 +967,6 @@ can_be_feudal_trigger = {
 			culture_group = undead_group
 			culture_group = pandaren_group #PH
 			culture_group = jinyu_group #PH
-			culture_group = saurok_group #PH
-			culture_group = grummle_group #PH
 		}
 	}
 }
@@ -1152,12 +1151,7 @@ potential_race_kobold_trigger = {
 	NOT = { trait = creature_kobold }
 }
 potential_race_dwarf_trigger = {
-	OR = {
-		graphical_culture = dwarfgfx
-		graphical_culture = wildhammergfx
-		graphical_culture = darkirongfx
-		graphical_culture = frostborngfx
-	}
+	has_dwarf_gfx_trigger = yes
 	NOT = { trait = creature_dwarf }
 }
 potential_race_gnome_trigger = {
@@ -2168,7 +2162,8 @@ can_be_explorer_trigger = {
 						liege = {
 							is_gender_equal_trigger = yes
 						}
-						liege = { has_religion_feature = religion_feature_bon }
+
+						# Warcraft
 					}
 				}
 				trait = horse # So we can have female glitterhoofs! :D
@@ -2374,6 +2369,9 @@ has_undead_gfx_trigger = {
 		graphical_culture = highborneundeadgfx
 		graphical_culture = trollundeadgfx
 		graphical_culture = draeneiundeadgfx
+		graphical_culture = dwarfundeadgfx
+		graphical_culture = darkironundeadgfx
+		graphical_culture = wildhammerundeadgfx
 	}
 }
 has_demon_gfx_trigger = {
@@ -2392,6 +2390,9 @@ has_demon_gfx_trigger = {
 		graphical_culture = nightelfdemongfx	#Should be here to block double-picking demonic portraits
 		graphical_culture = highelfdemongfx
 		graphical_culture = trollfelgfx
+		graphical_culture = dwarffelgfx
+		graphical_culture = darkironfelgfx
+		graphical_culture = wildhammerfelgfx
 	}
 }
 has_fel_gfx_trigger = {
@@ -2523,6 +2524,20 @@ has_troll_gfx_trigger = {
 		graphical_culture = trollsandgfx
 		graphical_culture = trollundeadgfx
 		graphical_culture = trollfelgfx
+	}
+}
+has_dwarf_gfx_trigger = {
+	OR = {
+		graphical_culture = dwarfgfx
+		graphical_culture = wildhammergfx
+		graphical_culture = darkirongfx
+		graphical_culture = frostborngfx
+		graphical_culture = dwarfundeadgfx
+		graphical_culture = darkironundeadgfx
+		graphical_culture = wildhammerundeadgfx
+		graphical_culture = dwarffelgfx
+		graphical_culture = darkironfelgfx
+		graphical_culture = wildhammerfelgfx
 	}
 }
 
@@ -3503,6 +3518,7 @@ like_zealous_trait_trigger = {
 		religion = lightbound
 		religion = cult_of_hakkar
 		religion = old_gods_worship
+		religion = suntouched
 	}
 }
 prefer_zealous_trait_trigger = {
@@ -3567,6 +3583,7 @@ kind_public_religion_trigger = {
 			religion_group = secular_group
 			NOT = {
 				religion = cult_of_wealth
+				religion = suntouched
 			}
 		}
 		religion_group = shamanism_group
@@ -4245,6 +4262,7 @@ religion_has_heresy_trigger = {
 		religion = naaru
 		religion = lightbound
 		religion = mystery_of_the_makers
+		religion = suntouched
 	}
 }
 
@@ -4307,7 +4325,7 @@ wish_join_rebel_faction_trigger = {
 		liege = { evil_public_religion_trigger = yes }
 	}
 	trigger_else = {
-		NOT = { religion = liege }
+		NOT = { liege = { religion = PREV } }
 	}
 }
 
@@ -4495,7 +4513,7 @@ owner_can_have_trade_post_trigger = {
 	trade_post_owner = { is_not_isolated_from_prev_trigger = yes }
 	trigger_if = {
 		limit = { trade_post_owner = { evil_public_religion_trigger = yes } }
-		religion = trade_post_owner
+		trade_post_owner = { religion = PREV }
 	}
 	trigger_else = {
 		evil_public_religion_trigger = no
@@ -4525,17 +4543,13 @@ religion_prefer_to_send_missionaries_trigger = {
 arcane_public_religion_trigger = {
 	OR = {
 		religion_group = arcane_group
-		religion_group = dragon_religion_group
-		religion = mystery_of_the_makers
-		religion = odyn
+		titanic_public_religion_trigger = yes
 	}
 }
 arcane_true_religion_trigger = {
 	OR = {
 		true_religion_group = arcane_group
-		true_religion_group = dragon_religion_group
-		true_religion = mystery_of_the_makers
-		true_religion = odyn
+		titanic_true_religion_trigger = yes
 	}
 }
 
@@ -4862,7 +4876,14 @@ from_allow_genocide_this_province_trigger = {
 		NOT = { true_religion = PREV }
 		# These cultures can be genocided by their own group
 		trigger_if = {
-			limit = { PREV = { monster_culture_trigger = yes } }
+			limit = {
+				PREV = {
+					OR = {
+						monster_culture_trigger = yes
+						culture_group = mogu_group
+					}
+				}
+			}
 			NOT = { culture = PREV }
 		}
 		trigger_else = {
@@ -4874,7 +4895,14 @@ from_allow_genocide_this_province_trigger = {
 				NOT = { religion = PREVPREV }
 				# These cultures can be genocided by their own group
 				trigger_if = {
-					limit = { PREVPREV = { monster_culture_trigger = yes  } }
+					limit = {
+						PREVPREV = {
+							OR = {
+								monster_culture_trigger = yes
+								culture_group = mogu_group
+							}
+						}
+					}
 					NOT = { culture = PREVPREV }
 				}
 				trigger_else = {
@@ -5477,6 +5505,9 @@ is_worth_to_be_mantid_paragon_trigger = {
 }
 
 is_locked_qiraji_trigger = {
+	trait = creature_qiraji
+	religion = old_gods_worship
+	true_religion = old_gods_worship
 	offmap_cthun = {
 		OR = {
 			has_status = old_god_imprisoned
@@ -5489,4 +5520,40 @@ is_locked_qiraji_trigger = {
 			value = off
 		}
 	}
+}
+
+#This trigger forces the AI to be more religious stable
+ai_religious_stability_trigger = {
+	trigger_if = {
+		limit = { ai = yes }
+		independent = yes
+		OR = {
+			tier = EMPEROR
+			tier = KING
+		}
+	}
+	trigger_else = {
+		ai = no
+	}
+}
+
+is_possible_xalatath_holder_trigger = {
+	is_untouchable_trigger = no
+
+	is_adult = yes
+	is_incapable = no
+	prisoner = no
+
+	NOT = { has_character_flag = xalatath_happened_flag }
+
+	OR = {
+		is_tribal = no
+		government = tribal_monarchy_government
+	}
+	is_nomadic = no
+
+	is_susceptible_to_void_corruption_trigger = yes
+
+	NOT = { trait = craven }
+	NOT = { trait = content }
 }

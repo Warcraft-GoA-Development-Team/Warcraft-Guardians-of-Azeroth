@@ -196,233 +196,234 @@ remove_racial_traits_effect = {
 	if = { limit = { trait = scales_mutation 						} remove_trait = scales_mutation						}
 	if = { limit = { trait = eyes_mutation 							} remove_trait = eyes_mutation							}
 }
-tomb_generate_random_treasury_effect = {
-	if = {
-		limit = { has_province_flag = tomb_of_sargeras_flag }
-		set_variable = { which = tomb_random_room value = 80010 }
-	}
-	if = {
-		limit = { NOT = { has_province_flag = tomb_of_sargeras_flag } }
-		random_list = {
-			10 = { set_variable = { which = tomb_random_room value = 80000 } }
-		}
-	}
-}
-tomb_generate_random_room_effect = {
-	random_list = {
-		10 = {
-			set_variable = { which = tomb_random_room value = 70 }
-		}
-		10 = {
-			set_variable = { which = tomb_random_room value = 50 }
-		}
-		10 = {
-			set_variable = { which = tomb_random_room value = 40 }
-		}
-		10 = {
-			set_variable = { which = tomb_random_room value = 30 }
-		}
-		10 = {
-			set_variable = { which = tomb_random_room value = 10 }
-			modifier = { factor = 0 has_province_modifier = mysterious_cave }
-		}
-	}
-}
-chose_tomb_expedition_leader_effect = {
-	if = {
-		limit = {
-			liege = { ai = no }
-			ai = yes
-			NOT = { has_character_flag = special_leader_of_expedition }
-		}
-		liege = { save_event_target_as = target_leader_of_expedition }
-	}
-	if = {
-		limit = {
-			OR = {
-				liege = { ai = yes }
-				ai = no
-				has_character_flag = special_leader_of_expedition
-			}
-		}
-		save_event_target_as = target_leader_of_expedition
-	}
-}
-escape_from_tomb_effect = {
-	remove_trait = travelling
-	clr_character_flag = on_journey_to_tomb_flag
 
-	if = {
-		limit = {
-			has_job_title = job_explorer
-			has_job_action = action_survey
-		}
-		cancel_job_action = action_survey
-	}
-	clr_char_tomb_flags_and_modifiers_effect = yes
-	clear_flags_with_prefix = WCTMB_
-	event_target:target_tomb_location = { clr_prov_tomb_flags_and_modifiers_effect = yes }
-	custom_tooltip = {
-		text = escape_from_tomb_effect_tooltip
-		hidden_tooltip = {
-			character_event = { id = WCTMB.99900 }
-		}
-	}
-}
-clr_char_tomb_flags_and_modifiers_effect = {
-	clear_flags_with_prefix = WCTMB_room_
-}
-clr_prov_tomb_flags_and_modifiers_effect = {
-	hidden_effect = {
-		clr_province_flag = expedition_is_in_tomb_flag
-		set_variable = { which = tomb_expedition_location value = 0 }
-		if = {
-			limit = {
-				OR = {
-					event_target:target_explorer = { has_character_flag = got_to_treasure_flag }
-					has_province_flag = tomb_of_sargeras_flag												# Tomb of Sargeras will be removed when you leave it
-				}
-			}
-			if = {
-				limit = { has_province_flag = tomb_of_sargeras_flag }
-				clr_province_flag = tomb_of_sargeras_flag
-			}
-			if = {
-				limit = { has_province_modifier = elven_tomb }
-				remove_province_modifier = elven_tomb
-			}
-			if = {
-				limit = { has_province_modifier = mysterious_cave }
-				remove_province_modifier = mysterious_cave
-			}
-			if = {
-				limit = { has_province_modifier = troll_ruins }
-				remove_province_modifier = troll_ruins
-			}
-			if = {
-				limit = { has_province_modifier = human_tomb }
-				remove_province_modifier = human_tomb
-			}
-			if = {
-				limit = { has_province_modifier = vrykul_barrow }
-				remove_province_modifier = vrykul_barrow
-			}
-		}
-	}
-}
-fire_next_tomb_event_effect = {
-	custom_tooltip = {
-		text = fire_next_tomb_event_effect_tooltip
-		hidden_tooltip = {
-			clr_char_tomb_flags_and_modifiers_effect = yes
-			if = {
-				limit = {
-					OR = {
-						event_target:target_leader_of_expedition = { ai = yes }
-						event_target:target_tomb_location = { check_variable = { which = tomb_expedition_location value = 3 } }
-					}
-				}
-				set_character_flag = got_to_treasure_flag
-				if = {
-					limit = { event_target:target_tomb_location = { has_province_flag = tomb_of_sargeras_flag } }
-					narrative_event = { id = WCTMB.80010 }
-				}
-				# Random treasures
-				random_list = {
-					10 = { narrative_event = { id = WCTMB.80000 } }
-				}
-			}
-			else = {
-				event_target:target_tomb_location = { change_variable = { which = tomb_expedition_location value = 1 } }
-
-				# Random rooms
-				random_list = {
-					10 = {
-						set_character_flag = WCTMB_70_fired_flag
-						narrative_event = { id = WCTMB.70 }
-						modifier = {
-							factor = 0
-							has_character_flag = WCTMB_70_fired_flag
-						}
-					}
-					10 = {
-						set_character_flag = WCTMB_50_fired_flag
-						narrative_event = { id = WCTMB.50 }
-						modifier = {
-							factor = 0
-							has_character_flag = WCTMB_50_fired_flag
-						}
-					}
-					10 = {
-						set_character_flag = WCTMB_40_fired_flag
-						narrative_event = { id = WCTMB.40 }
-						modifier = {
-							factor = 0
-							has_character_flag = WCTMB_40_fired_flag
-						}
-					}
-					10 = {
-						set_character_flag = WCTMB_30_fired_flag
-						narrative_event = { id = WCTMB.30 }
-						modifier = {
-							factor = 0
-							has_character_flag = WCTMB_30_fired_flag
-						}
-					}
-					10 = {
-						set_character_flag = WCTMB_10_fired_flag
-						narrative_event = { id = WCTMB.10 }
-						modifier = {
-							factor = 0
-							has_character_flag = WCTMB_10_fired_flag
-						}
-					}
-				}
-			}
-		}
-	}
-}
-increase_colony = {
-	if = {
-		limit = { has_province_modifier = colony_3 }
-		remove_province_modifier = colony_3
-		county = { grant_title_no_opinion = ROOT }
-	}
-	else = {
-		if = {
-			limit = { has_province_modifier = colony_2 }
-			remove_province_modifier = colony_2
-			add_province_modifier = { name = colony_3 duration = -1 }
-		}
-		else = {
-			if = {
-				limit = { has_province_modifier = colony_1 }
-				remove_province_modifier = colony_1
-				add_province_modifier = { name = colony_2 duration = -1 }
-			}
-			else = {
-				add_province_modifier = { name = colony_1 duration = -1 }
-				holder_scope = { set_defacto_liege = ROOT }
-			}
-		}
-	}
-}
-decrease_colony = {
+# tomb_generate_random_treasury_effect = {
 	# if = {
-		# limit = { has_province_modifier = colony_1 }
-		# remove_province_modifier = colony_1
+		# limit = { has_province_flag = tomb_of_sargeras_flag }
+		# set_variable = { which = tomb_random_room value = 80010 }
 	# }
-	if = {
-		limit = { has_province_modifier = colony_2 }
-		remove_province_modifier = colony_2
-		add_province_modifier = { name = colony_1 duration = -1 }
-	}
-	if = {
-		limit = { has_province_modifier = colony_3 }
-		remove_province_modifier = colony_3
-		add_province_modifier = { name = colony_2 duration = -1 }
-	}
-}
+	# if = {
+		# limit = { NOT = { has_province_flag = tomb_of_sargeras_flag } }
+		# random_list = {
+			# 10 = { set_variable = { which = tomb_random_room value = 80000 } }
+		# }
+	# }
+# }
+# tomb_generate_random_room_effect = {
+	# random_list = {
+		# 10 = {
+			# set_variable = { which = tomb_random_room value = 70 }
+		# }
+		# 10 = {
+			# set_variable = { which = tomb_random_room value = 50 }
+		# }
+		# 10 = {
+			# set_variable = { which = tomb_random_room value = 40 }
+		# }
+		# 10 = {
+			# set_variable = { which = tomb_random_room value = 30 }
+		# }
+		# 10 = {
+			# set_variable = { which = tomb_random_room value = 10 }
+			# modifier = { factor = 0 has_province_modifier = mysterious_cave }
+		# }
+	# }
+# }
+# chose_tomb_expedition_leader_effect = {
+	# if = {
+		# limit = {
+			# liege = { ai = no }
+			# ai = yes
+			# NOT = { has_character_flag = special_leader_of_expedition }
+		# }
+		# liege = { save_event_target_as = target_leader_of_expedition }
+	# }
+	# if = {
+		# limit = {
+			# OR = {
+				# liege = { ai = yes }
+				# ai = no
+				# has_character_flag = special_leader_of_expedition
+			# }
+		# }
+		# save_event_target_as = target_leader_of_expedition
+	# }
+# }
+# escape_from_tomb_effect = {
+	# remove_trait = travelling
+	# clr_character_flag = on_journey_to_tomb_flag
+
+	# if = {
+		# limit = {
+			# has_job_title = job_explorer
+			# has_job_action = action_survey
+		# }
+		# cancel_job_action = action_survey
+	# }
+	# clr_char_tomb_flags_and_modifiers_effect = yes
+	# clear_flags_with_prefix = WCTMB_
+	# event_target:target_tomb_location = { clr_prov_tomb_flags_and_modifiers_effect = yes }
+	# custom_tooltip = {
+		# text = escape_from_tomb_effect_tooltip
+		# hidden_tooltip = {
+			# character_event = { id = WCTMB.99900 }
+		# }
+	# }
+# }
+# clr_char_tomb_flags_and_modifiers_effect = {
+	# clear_flags_with_prefix = WCTMB_room_
+# }
+# clr_prov_tomb_flags_and_modifiers_effect = {
+	# hidden_effect = {
+		# clr_province_flag = expedition_is_in_tomb_flag
+		# set_variable = { which = tomb_expedition_location value = 0 }
+		# if = {
+			# limit = {
+				# OR = {
+					# event_target:target_explorer = { has_character_flag = got_to_treasure_flag }
+					# has_province_flag = tomb_of_sargeras_flag												# Tomb of Sargeras will be removed when you leave it
+				# }
+			# }
+			# if = {
+				# limit = { has_province_flag = tomb_of_sargeras_flag }
+				# clr_province_flag = tomb_of_sargeras_flag
+			# }
+			# if = {
+				# limit = { has_province_modifier = elven_tomb }
+				# remove_province_modifier = elven_tomb
+			# }
+			# if = {
+				# limit = { has_province_modifier = mysterious_cave }
+				# remove_province_modifier = mysterious_cave
+			# }
+			# if = {
+				# limit = { has_province_modifier = troll_ruins }
+				# remove_province_modifier = troll_ruins
+			# }
+			# if = {
+				# limit = { has_province_modifier = human_tomb }
+				# remove_province_modifier = human_tomb
+			# }
+			# if = {
+				# limit = { has_province_modifier = vrykul_barrow }
+				# remove_province_modifier = vrykul_barrow
+			# }
+		# }
+	# }
+# }
+# fire_next_tomb_event_effect = {
+	# custom_tooltip = {
+		# text = fire_next_tomb_event_effect_tooltip
+		# hidden_tooltip = {
+			# clr_char_tomb_flags_and_modifiers_effect = yes
+			# if = {
+				# limit = {
+					# OR = {
+						# event_target:target_leader_of_expedition = { ai = yes }
+						# event_target:target_tomb_location = { check_variable = { which = tomb_expedition_location value = 3 } }
+					# }
+				# }
+				# set_character_flag = got_to_treasure_flag
+				# if = {
+					# limit = { event_target:target_tomb_location = { has_province_flag = tomb_of_sargeras_flag } }
+					# narrative_event = { id = WCTMB.80010 }
+				# }
+				# # Random treasures
+				# random_list = {
+					# 10 = { narrative_event = { id = WCTMB.80000 } }
+				# }
+			# }
+			# else = {
+				# event_target:target_tomb_location = { change_variable = { which = tomb_expedition_location value = 1 } }
+
+				# # Random rooms
+				# random_list = {
+					# 10 = {
+						# set_character_flag = WCTMB_70_fired_flag
+						# narrative_event = { id = WCTMB.70 }
+						# modifier = {
+							# factor = 0
+							# has_character_flag = WCTMB_70_fired_flag
+						# }
+					# }
+					# 10 = {
+						# set_character_flag = WCTMB_50_fired_flag
+						# narrative_event = { id = WCTMB.50 }
+						# modifier = {
+							# factor = 0
+							# has_character_flag = WCTMB_50_fired_flag
+						# }
+					# }
+					# 10 = {
+						# set_character_flag = WCTMB_40_fired_flag
+						# narrative_event = { id = WCTMB.40 }
+						# modifier = {
+							# factor = 0
+							# has_character_flag = WCTMB_40_fired_flag
+						# }
+					# }
+					# 10 = {
+						# set_character_flag = WCTMB_30_fired_flag
+						# narrative_event = { id = WCTMB.30 }
+						# modifier = {
+							# factor = 0
+							# has_character_flag = WCTMB_30_fired_flag
+						# }
+					# }
+					# 10 = {
+						# set_character_flag = WCTMB_10_fired_flag
+						# narrative_event = { id = WCTMB.10 }
+						# modifier = {
+							# factor = 0
+							# has_character_flag = WCTMB_10_fired_flag
+						# }
+					# }
+				# }
+			# }
+		# }
+	# }
+# }
+# increase_colony = {
+	# if = {
+		# limit = { has_province_modifier = colony_3 }
+		# remove_province_modifier = colony_3
+		# county = { grant_title_no_opinion = ROOT }
+	# }
+	# else = {
+		# if = {
+			# limit = { has_province_modifier = colony_2 }
+			# remove_province_modifier = colony_2
+			# add_province_modifier = { name = colony_3 duration = -1 }
+		# }
+		# else = {
+			# if = {
+				# limit = { has_province_modifier = colony_1 }
+				# remove_province_modifier = colony_1
+				# add_province_modifier = { name = colony_2 duration = -1 }
+			# }
+			# else = {
+				# add_province_modifier = { name = colony_1 duration = -1 }
+				# holder_scope = { set_defacto_liege = ROOT }
+			# }
+		# }
+	# }
+# }
+# decrease_colony = {
+	# # if = {
+		# # limit = { has_province_modifier = colony_1 }
+		# # remove_province_modifier = colony_1
+	# # }
+	# if = {
+		# limit = { has_province_modifier = colony_2 }
+		# remove_province_modifier = colony_2
+		# add_province_modifier = { name = colony_1 duration = -1 }
+	# }
+	# if = {
+		# limit = { has_province_modifier = colony_3 }
+		# remove_province_modifier = colony_3
+		# add_province_modifier = { name = colony_2 duration = -1 }
+	# }
+# }
 
 add_prev_useful_flesh = {
 	if = {
@@ -669,38 +670,13 @@ drain_fel_source_effect = {
 			liege = { religion_group = fel_group }
 		}
 		if = { limit = { has_secret_religion = yes } clear_secret_religion = yes }
-		religion = liege
+		liege = { reverse_religion = PREV }
 	}
 	else = {
 		set_character_flag = consuming_fel_magic_flag
 	}
 	
 	add_15_fel_corruption_effect = yes
-	
-	if = {
-		limit = { is_ruler = yes }
-		hidden_effect = {
-			any_courtier_or_vassal = {
-				limit = {
-					OR = {
-						ai = no
-						NOT = { has_character_flag = ai_refused_dark_magic_flag }
-					}
-					is_unimportant_trigger = no
-					prisoner = no
-
-					is_susceptible_to_fel_corruption_trigger = yes
-					is_high_elf_trigger = yes
-					NOR = {
-						religion_group = fel_group
-						true_religion_group = fel_group
-						has_character_flag = consuming_fel_magic_flag
-					}
-				}
-				letter_event = { id = WCTHW.1065 }
-			}
-		}
-	}
 }
 drain_void_source_effect = {
 	if = {
@@ -708,38 +684,13 @@ drain_void_source_effect = {
 			liege = { religion_group = void_group }
 		}
 		if = { limit = { has_secret_religion = yes } clear_secret_religion = yes }
-		religion = liege
+		liege = { reverse_religion = PREV }
 	}
 	else = {
 		set_character_flag = consuming_void_magic_flag
 	}
 	
 	add_15_void_corruption_effect = yes
-	
-	if = {
-		limit = { is_ruler = yes }
-		hidden_effect = {
-			any_courtier_or_vassal = {
-				limit = {
-					OR = {
-						ai = no
-						NOT = { has_character_flag = ai_refused_dark_magic_flag }
-					}
-					prisoner = no
-					is_unimportant_trigger = no
-
-					is_susceptible_to_void_corruption_trigger = yes
-					is_high_elf_trigger = yes
-					NOR = {
-						religion_group = void_group
-						true_religion_group = void_group
-						has_character_flag = consuming_void_magic_flag
-					}
-				}
-				letter_event = { id = WCTHW.1065 }
-			}
-		}
-	}
 }
 add_xalatath_effect = {
 	add_artifact = xalatath
@@ -2226,7 +2177,10 @@ give_claim_or_title_to_target_settler_effect = {
 build_or_give_holding_to_target_settler_effect = {
 	hidden_effect = {
 		if = {
-			limit = { NOT = { num_of_max_settlements = 7 } }
+			limit = {
+				has_empty_holding = no
+				NOT = { num_of_max_settlements = 7 }
+			}
 			add_holding_slot = 1
 		}
 		if = {
@@ -2941,7 +2895,7 @@ ruler_sell_land_to_holy_order_effect = {
 					limit = {
 						event_target:target_ruler = { independent = no }
 					}
-					set_defacto_liege = top_liege
+					top_liege = { set_defacto_vassal = PREV }
 				}
 				# ...otherwise, make vassals independent
 				else = {
@@ -4041,7 +3995,10 @@ this_abdicate_transfer_wealth_to_play_prev_effect = {
 			any_artifact = {
 				transfer_artifact = { from = event_target:target_ruler to = event_target:target_heir }
 			}
-			set_player_character = event_target:target_heir	# THIS start playing PREV
+			if = {
+				limit = { ai = no }
+				set_player_character = event_target:target_heir	# THIS start playing PREV
+			}
 		}
 		abdicate_to = PREV
 		hidden_effect = {
@@ -4052,7 +4009,13 @@ this_abdicate_transfer_wealth_to_play_prev_effect = {
 				}
 				remove_claim = event_target:target_ruler
 			}
-			move_character = event_target:target_heir
+			if = {
+				limit = {
+					is_ruler = no
+					event_target:target_heir = { is_ruler = yes }
+				}
+				move_character = event_target:target_heir
+			}
 			event_target:target_heir = {
 				destroy_temporary_landless_title_effect = yes	# Destroys title created in create_temporary_landless_title_effect
 				set_defacto_liege = event_target:target_liege
