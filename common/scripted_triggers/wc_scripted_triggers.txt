@@ -367,7 +367,7 @@ can_switch_culture_province_trigger = {
 	}
 }
 # TITLE CAN'T BE CONQUERED IF IT'S NOT TRUE
-title_can_be_lost_trigger = {
+title_can_be_faction_claimed_trigger = {
 	OR = {
 		has_holder = no
 		holder_scope = { is_untouchable_trigger = no }
@@ -394,6 +394,10 @@ title_can_be_lost_trigger = {
 	# invader_title_trigger = no # Allowed claiming via factions
 	dragonflight_title_trigger = no
 }
+title_can_be_lost_trigger = {
+	title_can_be_faction_claimed_trigger = yes
+	invader_title_trigger = no
+}
 # TITLES ARE IN DANGER, SO MANY ACTIONS CAN'T BE USED AGAINST THIS CHARACTER
 character_can_lose_title_trigger = {
 	is_untouchable_trigger = no
@@ -412,6 +416,7 @@ character_can_be_vassalized_trigger = {
 	is_nomadic = no
 	in_revolt = no
 	NOT = { government = society_government }
+	has_invader_title_trigger = no
 }
 # CAN'T GET SICK IF IT'S NOT TRUE
 # Associated with text_effect_can_not_get_diseases
@@ -842,6 +847,7 @@ is_aggressive_religion_trigger = {
 		religion_group = primitive_group
 		religion_group = vrykul_religion_group
 		religion = thunder_king
+		religion = suntouched
 	}
 }
 like_raiding_adventure_triggger = {
@@ -966,8 +972,6 @@ can_be_feudal_trigger = {
 			culture_group = undead_group
 			culture_group = pandaren_group #PH
 			culture_group = jinyu_group #PH
-			culture_group = saurok_group #PH
-			culture_group = grummle_group #PH
 		}
 	}
 }
@@ -2163,7 +2167,8 @@ can_be_explorer_trigger = {
 						liege = {
 							is_gender_equal_trigger = yes
 						}
-						liege = { has_religion_feature = religion_feature_bon }
+
+						# Warcraft
 					}
 				}
 				trait = horse # So we can have female glitterhoofs! :D
@@ -3518,6 +3523,7 @@ like_zealous_trait_trigger = {
 		religion = lightbound
 		religion = cult_of_hakkar
 		religion = old_gods_worship
+		religion = suntouched
 	}
 }
 prefer_zealous_trait_trigger = {
@@ -3582,6 +3588,7 @@ kind_public_religion_trigger = {
 			religion_group = secular_group
 			NOT = {
 				religion = cult_of_wealth
+				religion = suntouched
 			}
 		}
 		religion_group = shamanism_group
@@ -4260,6 +4267,7 @@ religion_has_heresy_trigger = {
 		religion = naaru
 		religion = lightbound
 		religion = mystery_of_the_makers
+		religion = suntouched
 	}
 }
 
@@ -4322,7 +4330,7 @@ wish_join_rebel_faction_trigger = {
 		liege = { evil_public_religion_trigger = yes }
 	}
 	trigger_else = {
-		NOT = { religion = liege }
+		NOT = { liege = { religion = PREV } }
 	}
 }
 
@@ -4510,7 +4518,7 @@ owner_can_have_trade_post_trigger = {
 	trade_post_owner = { is_not_isolated_from_prev_trigger = yes }
 	trigger_if = {
 		limit = { trade_post_owner = { evil_public_religion_trigger = yes } }
-		religion = trade_post_owner
+		trade_post_owner = { religion = PREV }
 	}
 	trigger_else = {
 		evil_public_religion_trigger = no
@@ -4540,17 +4548,13 @@ religion_prefer_to_send_missionaries_trigger = {
 arcane_public_religion_trigger = {
 	OR = {
 		religion_group = arcane_group
-		religion_group = dragon_religion_group
-		religion = mystery_of_the_makers
-		religion = odyn
+		titanic_public_religion_trigger = yes
 	}
 }
 arcane_true_religion_trigger = {
 	OR = {
 		true_religion_group = arcane_group
-		true_religion_group = dragon_religion_group
-		true_religion = mystery_of_the_makers
-		true_religion = odyn
+		titanic_true_religion_trigger = yes
 	}
 }
 
@@ -4877,7 +4881,14 @@ from_allow_genocide_this_province_trigger = {
 		NOT = { true_religion = PREV }
 		# These cultures can be genocided by their own group
 		trigger_if = {
-			limit = { PREV = { monster_culture_trigger = yes } }
+			limit = {
+				PREV = {
+					OR = {
+						monster_culture_trigger = yes
+						culture_group = mogu_group
+					}
+				}
+			}
 			NOT = { culture = PREV }
 		}
 		trigger_else = {
@@ -4889,7 +4900,14 @@ from_allow_genocide_this_province_trigger = {
 				NOT = { religion = PREVPREV }
 				# These cultures can be genocided by their own group
 				trigger_if = {
-					limit = { PREVPREV = { monster_culture_trigger = yes  } }
+					limit = {
+						PREVPREV = {
+							OR = {
+								monster_culture_trigger = yes
+								culture_group = mogu_group
+							}
+						}
+					}
 					NOT = { culture = PREVPREV }
 				}
 				trigger_else = {
@@ -5507,4 +5525,40 @@ is_locked_qiraji_trigger = {
 			value = off
 		}
 	}
+}
+
+#This trigger forces the AI to be more religious stable
+ai_religious_stability_trigger = {
+	trigger_if = {
+		limit = { ai = yes }
+		independent = yes
+		OR = {
+			tier = EMPEROR
+			tier = KING
+		}
+	}
+	trigger_else = {
+		ai = no
+	}
+}
+
+is_possible_xalatath_holder_trigger = {
+	is_untouchable_trigger = no
+
+	is_adult = yes
+	is_incapable = no
+	prisoner = no
+
+	NOT = { has_character_flag = xalatath_happened_flag }
+
+	OR = {
+		is_tribal = no
+		government = tribal_monarchy_government
+	}
+	is_nomadic = no
+
+	is_susceptible_to_void_corruption_trigger = yes
+
+	NOT = { trait = craven }
+	NOT = { trait = content }
 }
