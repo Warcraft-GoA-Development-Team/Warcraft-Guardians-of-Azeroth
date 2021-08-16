@@ -138,6 +138,7 @@ character_event = {
 # Accept character into family
 character_event = {
 	id = WCCOU.200
+	picture = GFX_evt_cemetery
 	desc = {
 		trigger = { trait = being_undead }
 		text = EVTDESC_WCCOU_200_undead
@@ -159,7 +160,12 @@ character_event = {
 		picture = GFX_evt_nraqi
 	}
 	desc = {
-		trigger = { is_plant_race_trigger = yes }
+		trigger = { 
+			AND = {
+				is_plant_race_trigger = yes
+				NOT = { trait = creature_ancient_coral }
+			}		
+		}
 		text = EVTDESC_WCRAC.300
 		picture = GFX_evt_emerald_dream
 	}
@@ -170,7 +176,10 @@ character_event = {
 				trait = being_demon
 				is_uncursed_titanforged_trigger = yes
 				trait = being_void
-				is_plant_race_trigger = yes
+				AND = {
+					is_plant_race_trigger = yes
+					NOT = { trait = creature_ancient_coral }
+				}
 			}
 		}
 		text = EVTDESC_WCCOU_200_other
@@ -207,7 +216,12 @@ character_event = {
 			# Nothing
 		}
 		else_if = {
-			limit = { is_plant_race_trigger = yes }
+			limit = { 
+				AND = {
+					is_plant_race_trigger = yes
+					NOT = { trait = creature_ancient_coral }
+				}
+			}
 			#Gets seed in options
 		}
 		else = {
@@ -226,7 +240,13 @@ character_event = {
 					set_gender = female
 				}
 				
-				set_prev_gfx_effect = yes
+				if = {
+					limit = { ROOT = { NOT = {  trait = creature_ancient_coral } } }
+					set_prev_gfx_effect = yes
+				}
+				else = {
+					set_graphical_culture = ancient_coral
+				}
 				character_event = { id = WCRAC.10 } 	# Adds race trait
 				if = {
 					limit = { ROOT = { trait = being_undead } }
@@ -250,7 +270,12 @@ character_event = {
 	
 	#I'll take him
 	option = {
-		trigger = { is_plant_race_trigger = no }
+		trigger = {
+			OR = {
+				is_plant_race_trigger = no
+				trait = creature_ancient_coral
+			}
+		}
 		name = EVTOPTA_WCCOU_200
 		
 		event_target:target_new_member = {
@@ -260,7 +285,12 @@ character_event = {
 	}
 	#Never
 	option = {
-		trigger = { is_plant_race_trigger = no }
+		trigger = {
+			OR = {
+				is_plant_race_trigger = no
+				trait = creature_ancient_coral
+			}
+		}
 		name = EVTOPTB_WCCOU_200
 		
 		hidden_effect = {
@@ -273,7 +303,12 @@ character_event = {
 	}
 	#Pick up seed
 	option = {
-		trigger = { is_plant_race_trigger = yes }
+		trigger = { 
+			AND = {
+				is_plant_race_trigger = yes
+				NOT = { trait = creature_ancient_coral }
+			}
+		}
 		name = EVTOPTA_WCRAC.300
 		
 		add_artifact = ancient_kernel

@@ -861,34 +861,25 @@ province_event = {
 	hide_window = yes
 
 	immediate = {
-		random_playable_ruler = {
+		if = {
 			limit = {
-				is_untouchable_trigger = no
-
-				is_adult = yes
-				is_incapable = no
-				prisoner = no
-
-				NOT = { has_character_flag = xalatath_happened_flag }
-
-				OR = {
-					is_tribal = no
-					government = tribal_monarchy_government
+				any_playable_ruler = {
+					is_possible_xalatath_holder_trigger = yes
 				}
-				is_nomadic = no
-
-				is_susceptible_to_void_corruption_trigger = yes
-
-				NOT = { trait = craven }
-				NOT = { trait = content }
 			}
-			log = "Xal'atath chose [This.GetBestName] as a new host"
-			set_character_flag = xalatath_happened_flag
-			narrative_event = { id = WCVOD.2005 }
-			break = yes
+			random_playable_ruler = {
+				limit = {
+					is_possible_xalatath_holder_trigger = yes
+				}
+				log = "Xal'atath chose [This.GetBestName] as a new host"
+				set_character_flag = xalatath_happened_flag
+				narrative_event = { id = WCVOD.2005 }
+			}
 		}
-		log = "Xal'atath couldn't find a host"
-		province_event = { id = WCVOD.2000 days = 365 }
+		else = {
+			log = "Xal'atath couldn't find a host"
+			province_event = { id = WCVOD.2000 days = 365 }
+		}
 	}
 }
 # The old man gives you a mysterious blade
@@ -2369,5 +2360,170 @@ narrative_event = {
 	after = {
 		clr_character_flag = found_cthraxxi_good_end_flag
 		clr_character_flag = found_cthraxxi_bad_end_flag
+	}
+}
+
+### Tekahn's Bargain ###
+# An agent of the Twilight's Hammer visits the Neferset and offers to lift the Curse of Flesh
+narrative_event = {
+	id = WCVOD.10100
+	title = EVTTITLE_WCVOD_10100
+	desc = EVTDESC_WCVOD_10100
+	picture = GFX_evt_cthun_priestess
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+	
+	only_playable = yes
+
+	trigger = {
+		trait = creature_tolvir
+		is_dark_being_trigger = no
+		culture = tolvir	# Must be of tol'vir culture
+		is_shadow_priest_class_trigger = yes	# Only shadow priests can be contacted by the entity
+		NOT = { 
+			religion = old_gods_worship		# Must NOT be a servant of the Old Gods at the time
+			true_religion = old_gods_worship
+		}
+
+		has_landed_title = c_neferset	# Must hold the city of Neferset
+		has_global_flag = uldum_has_opened_flag		# Uldum must not be isolated
+		NOT = { has_global_flag = dark_pharaohs_bargain_flag }	# This is here so event can't fire twice
+	}
+
+	immediate = {
+		set_global_flag = dark_pharaohs_bargain_flag
+		save_event_target_as = target_dark_pharaoh
+	}
+
+	option = {
+		name = EVTOPTA_WCVOD_10100
+
+		event_target:target_dark_pharaoh = { narrative_event = { id = WCVOD.10105 } }
+		event_target:target_dark_pharaoh = { give_nickname = nick_the_dark_pharaoh }
+
+		ai_chance = {
+			factor = 1
+		}
+	}
+
+	option = {
+		name = EVTOPTB_WCVOD_10100
+
+		custom_tooltip = {
+			text = you_reject_the_offer
+		}
+
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+
+# A ritual commences, 'Tekahn' regains his stone body
+narrative_event = {
+	id = WCVOD.10105
+	title = EVTTITLE_WCVOD_10105
+	desc = EVTDESC_WCVOD_10105
+	picture = GFX_evt_cthun_priestess
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	# I shall serve the Old Gods
+	option = {
+		name = EVTOPTA_WCVOD_10105
+		become_stone_tolvir_old_gods_effect = yes
+		
+		ai_chance = {
+			factor = 50
+			
+			evil_ai_chance_score = yes
+			evil_ai_chance_religion_score = yes
+		}
+	}
+
+	# Tekahn does not serve, Tekahn rules
+	option = {
+		name = EVTOPTB_WCVOD_10105
+		become_stone_tolvir_voidfarer_effect = yes
+		custom_tooltip = {
+			text = defiance_wont_go_unpunished
+		}
+		event_target:target_dark_pharaoh = { narrative_event = { id = WCVOD.10110 days = 60 } }	# At this point he cannot die of natural causes
+		
+		ai_chance = {
+			factor = 50
+		}
+	}
+}
+
+# Twilight assassins attempt to strike down the rebellious 'Tekahn'
+narrative_event = {
+	id = WCVOD.10110
+	title = EVTTITLE_WCVOD_10110
+	desc = EVTDESC_WCVOD_10110
+	picture = GFX_evt_tekahn
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	# Fight for your life
+	option = {
+		name = EVTOPTA_WCVOD_10110
+
+		# A chance for him to either survive or die
+		random_list = {
+			80 = {
+				custom_tooltip = {
+					text = tekahn_emerge_victorious
+					event_target:target_dark_pharaoh = { narrative_event = { id = WCVOD.10120 } }
+				}
+				good_soldier_outcome_score = yes
+				is_good_intrigue_character_score = yes
+			}
+			20 = {
+				custom_tooltip = {
+					text = tekahn_failure
+				}
+				event_target:target_dark_pharaoh = { narrative_event = { id = WCVOD.10121 } }
+			}
+		}
+	}
+}
+
+# 'Tekahn' is successful
+narrative_event = {
+	id = WCVOD.10120
+	title = EVTTITLE_WCVOD_10120
+	desc = EVTDESC_WCVOD_10120
+	picture = GFX_evt_tekahn
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	# Now I am complete
+	option = {
+		name = EVTOPTA_WCVOD_10120
+
+		prestige = 500
+	}
+}
+
+# 'Tekahn' dies
+narrative_event = {
+	id = WCVOD.10121
+	title = EVTTITLE_WCVOD_10121
+	desc = EVTDESC_WCVOD_10121
+	picture = GFX_evt_cthun_priestess
+	border = GFX_event_narrative_frame_intrigue
+
+	is_triggered_only = yes
+
+	# This is not what the vision promised!
+	option = {
+		name = EVTOPTA_WCVOD_10121
+
+		event_target:target_dark_pharaoh = { death = { death_reason = death_murder_butchered } }
 	}
 }
