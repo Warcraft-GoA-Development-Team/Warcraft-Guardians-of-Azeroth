@@ -31,12 +31,7 @@ character_event = {
 	only_playable = yes
 	
 	trigger = {
-		OR = {
-			must_have_ruled_too_long_penalty_trigger = yes
-			FROMFROM = {
-				must_have_ruled_too_long_penalty_trigger = no
-			}
-		}
+		must_have_ruled_too_long_penalty_trigger = yes
 	}
 	
 	immediate = {
@@ -47,14 +42,6 @@ character_event = {
 			set_character_flag = ruled_too_long_timer_flag
 			
 			character_event = { id = WCIMM.20 years = 50 }
-		}
-		if = {
-			limit = {
-				FROMFROM = {
-					must_have_ruled_too_long_penalty_trigger = no
-				}
-			}
-			FROMFROM = { character_event = { id = WCIMM.30 } }
 		}
 	}
 }
@@ -71,10 +58,15 @@ character_event = {
 		is_playable = yes
 		
 		has_character_flag = ruled_too_long_timer_flag
+		must_have_ruled_too_long_penalty_trigger = yes
 	}
 	
 	fail_trigger_effect = {
 		clr_character_flag = ruled_too_long_timer_flag
+		remove_character_modifiers = {
+			modifier = ruled_too_long_modifier
+			amount = 30
+		}
 	}
 	
 	immediate = {
@@ -85,29 +77,5 @@ character_event = {
 		name = EVTOPTA_WCIMM_20
 		
 		add_character_modifier = { name = ruled_too_long_modifier duration = -1 stacking = yes }
-	}
-}
-# Clears ruled too long modifier when becomes unplayable
-character_event = {
-	id = WCIMM.30
-	
-	is_triggered_only = yes
-	hide_window = yes
-	
-	trigger = {
-		has_character_flag = ruled_too_long_timer_flag
-	}
-	
-	immediate = {
-		log = "WCIMM.30 fired for [Root.GetBestName]"
-		
-		clr_character_flag = ruled_too_long_timer_flag
-		
-		remove_character_modifiers = {
-			modifier = ruled_too_long_modifier
-			amount = 30
-		}
-		
-		clear_delayed_event = { id = WCIMM.20 }
 	}
 }
