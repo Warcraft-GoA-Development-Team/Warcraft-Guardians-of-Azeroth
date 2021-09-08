@@ -216,3 +216,125 @@ character_event = {
 		}
 	}
 }
+#ulduar expedition
+character_event = {
+	#Basic event information
+	id = WCUTF.10
+	desc = EVTDESC_WCUTF.10
+	picture = GFX_evt_explorers
+	border = GFX_event_normal_frame_war
+
+	is_triggered_only = yes
+
+	immediate = {
+		#tries to use brann bronzebeard first
+		if = {
+			limit = {
+				c_17028 = {
+					ai = yes
+					is_untouchable_trigger = no
+					is_alive = yes
+					is_incapable = no
+					prisoner = no
+					OR = {
+						AND = {
+							ROOT = { evil_public_religion_trigger = no }
+							c_17028 = { evil_public_religion_trigger = no }
+						}
+						AND = {
+							ROOT = { evil_public_religion_trigger = yes }
+							c_17028 = { religion = ROOT }
+						}
+					}
+				}
+			}
+			c_17028 = {
+				save_event_target_as = ulduar_explorer
+			}
+		}
+		#create explorer
+		else = {
+			create_character = {
+				random_traits = yes
+				dynasty = none
+				religion = ROOT
+				culture = ROOT
+				female = no
+				attributes = {
+					martial = 3
+					diplomacy = 5
+					stewardship = 5
+					intrigue = 3
+					learning = 5
+				}
+				trait = explorer
+			}
+			new_character = {
+				set_prev_gfx_effect = yes
+				character_event = { id = WCRAC.10 }
+				save_event_target_as = ulduar_explorer
+			}
+		}
+	}
+	
+	option = {
+		name = EVTOPTA_WCUTF.10
+		event_target:ulduar_explorer = {
+			add_trait = travelling
+		}
+		858 = { province_event = { id = WCUTF.15 } }
+	}
+}
+#make event death proof
+province_event = {
+	id = WCUTF.15
+	is_triggered_only = yes
+	hide_window = yes
+	
+	immediate = {
+		owner = { narrative_event = { id = WCUTF.20 days = 120  } }
+	}
+	
+}
+#breach of ulduar
+narrative_event = {
+	id = WCUTF.20
+	title = EVTTITLE_WCUTF.20
+	desc = EVTDESC_WCUTF.20
+	picture = GFX_evt_ulduar
+	border = GFX_event_narrative_frame_war
+
+	is_triggered_only = yes
+	
+	major = yes
+	major_trigger = {
+		ai = no
+	}
+
+	immediate = {
+		d_ulduar = {
+			any_de_jure_vassal_title = {
+				location = {
+					remove_province_modifier = ulduar_closed_down
+				}
+			}
+			holder_scope = {
+				spawn_ulduar_defence_troops_effect = yes
+			}
+		}
+		set_global_flag = ulduar_opened_flag
+		clr_global_flag = ulduar_expedition
+	}
+
+	option = {
+		name = EVTOPTA_WCUTF.20
+		event_target:ulduar_explorer = {
+			if = {
+				limit = { is_alive = yes }
+				remove_trait = travelling
+				add_trait = stressed
+				prestige = 1000
+			}
+		}
+	}
+}
