@@ -1,0 +1,393 @@
+namespace = WCLIFES
+
+# Becoming a Brewmaster
+character_event = {
+	id = WCLIFES.1
+	picture = GFX_evt_brewmaster
+	desc = EVTDESC_WCLIFES.1
+	border = GFX_event_normal_frame_diplomacy
+
+	is_triggered_only = yes
+
+
+	option = {
+		name = EVTOPTA_WCLIFES.1
+		character_event = { id = WCLIFES.2 days = 120 random = 90 }
+	}
+}
+
+character_event = {
+	id = WCLIFES.2
+	picture = GFX_evt_brewmaster
+	desc = EVTDESC_WCLIFES.2
+	border = GFX_event_normal_frame_diplomacy
+
+	is_triggered_only = yes
+
+
+	option = {
+		name = EVTOPTA_WCLIFES.2
+		add_trait = brewmaster
+		if = {
+			limit = { trait = drunkard }
+			remove_trait = drunkard
+		}
+		clr_character_flag = becoming_brewmaster
+		clr_character_flag = do_not_disturb
+	}
+}
+
+character_event = {
+	id = WCLIFES.10
+	picture = GFX_evt_brewing_alcohol
+	desc = EVTDESC_WCLIFES.10
+	border = GFX_event_normal_frame_diplomacy
+
+	is_triggered_only = yes
+
+
+	option = {
+		name = EVTOPTA_WCLIFES.10
+		custom_tooltip = { text = brewing_option_diplomacy }
+		set_character_flag = brew_diplomacy
+		character_event = { id = WCLIFES.20 days = 90 }
+	}
+	option = {
+		name = EVTOPTB_WCLIFES.10
+		custom_tooltip = { text = brewing_option_martial }
+		set_character_flag = brew_martial
+		character_event = { id = WCLIFES.20 days = 90 }
+	}
+	option = {
+		name = EVTOPTC_WCLIFES.10
+		custom_tooltip = { text = brewing_option_stewardship }
+		set_character_flag = brew_stewardship
+		character_event = { id = WCLIFES.20 days = 90 }
+	}
+	option = {
+		name = EVTOPTD_WCLIFES.10
+		character_event = { id = WCLIFES.11 }
+	}
+}
+character_event = {
+	id = WCLIFES.11
+	picture = GFX_evt_brewing_alcohol
+	desc = EVTDESC_WCLIFES.10
+	border = GFX_event_normal_frame_diplomacy
+
+	is_triggered_only = yes
+
+
+	option = {
+		custom_tooltip = { text = brewing_option_intrigue }
+		name = EVTOPTA_WCLIFES.11
+		set_character_flag = brew_intrigue
+		character_event = { id = WCLIFES.20 days = 90 }
+	}
+	option = {
+		name = EVTOPTB_WCLIFES.11
+		custom_tooltip = { text = brewing_option_learning }
+		set_character_flag = brew_learning
+		character_event = { id = WCLIFES.20 days = 90 }
+	}
+	option = {
+		name = EVTOPTD_WCLIFES.10
+		character_event = { id = WCLIFES.10 }
+	}
+	option = {
+		name = EVTOPTD_WCLIFES.11
+		clr_character_flag = do_not_disturb
+		wealth = 100
+	}
+}
+character_event = {
+	id = WCLIFES.20
+	picture = GFX_evt_brewing_alcohol
+	desc = EVTDESC_WCLIFES.20
+	border = GFX_event_normal_frame_diplomacy
+
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WCLIFES.20
+		if = {
+			limit = { has_character_flag = brew_diplomacy }
+			clr_character_flag = brew_diplomacy
+			add_artifact = halaani_whiskey_keg
+			new_artifact = {
+				set_artifact_flag = keg_fullness_3
+				set_name = "[This.GetKegAlcoholAmount] [This.GetName]"
+			}
+		}
+		if = {
+			limit = { has_character_flag = brew_martial }
+			clr_character_flag = brew_martial
+			add_artifact = sulfuron_slammer_keg
+			new_artifact = {
+				set_artifact_flag = keg_fullness_3
+				set_name = "[This.GetKegAlcoholAmount] [This.GetName]"
+			}
+		}
+		if = {
+			limit = { has_character_flag = brew_stewardship }
+			clr_character_flag = brew_stewardship
+			add_artifact = metal_brew_keg
+			new_artifact = {
+				set_artifact_flag = keg_fullness_3
+				set_name = "[This.GetKegAlcoholAmount] [This.GetName]"
+			}
+		}
+		if = {
+			limit = { has_character_flag = brew_intrigue }
+			clr_character_flag = brew_intrigue
+			add_artifact = tiger_stout_keg
+			new_artifact = {
+				set_artifact_flag = keg_fullness_3
+				set_name = "[This.GetKegAlcoholAmount] [This.GetName]"
+			}
+		}
+		if = {
+			limit = { has_character_flag = brew_learning }
+			clr_character_flag = brew_learning
+			add_artifact = serpent_ale_keg
+			new_artifact = {
+				set_artifact_flag = keg_fullness_3
+				set_name = "[This.GetKegAlcoholAmount] [This.GetName]"
+			}
+		}
+		clr_character_flag = do_not_disturb
+	}
+}
+
+character_event = {
+	id = WCLIFES.35
+	picture = GFX_evt_drinking_beer
+	desc = {
+		trigger = { character = event_target:brew_giver }
+		text = EVTDESC_WCLIFES.35_1
+	}
+	desc = {
+		trigger = { NOT = { character = event_target:brew_giver } }
+		text = EVTDESC_WCLIFES.35_2
+	}
+	border = GFX_event_normal_frame_diplomacy
+
+	is_triggered_only = yes
+	
+	immediate = {
+		if = {
+			limit = {
+				#only rulers can have courtiers so it only avaible to them
+				any_courtier = {
+					is_possible_fellow_drinker_trigger = yes
+				}
+			}
+			random_courtier = {
+				limit = { is_possible_fellow_drinker_trigger = yes }
+				score_value = {
+					value = 1
+					additive_modifier = {
+						value = 10	
+						is_primary_heir = ROOT
+					}
+					additive_modifier = {
+						value = 10		
+						is_child_of = ROOT
+					}
+					additive_modifier = {
+						value = 10		
+						is_father = ROOT
+					}
+					additive_modifier = {
+						value = 10		
+						is_mother = ROOT
+					}
+					additive_modifier = {
+						value = 20		
+						is_main_spouse = ROOT
+					}
+					additive_modifier = {
+						value = 10		
+						dynasty = ROOT
+					}
+					additive_modifier = {
+						value = 10		
+						is_close_relative = ROOT
+					}
+					additive_modifier = {
+						value = 10		
+						is_consort = ROOT
+					}
+					
+					additive_modifier = {
+						value = 20		
+						is_friend = ROOT
+					}
+					additive_modifier = {
+						value = 20		
+						is_lover = ROOT
+					}
+					additive_modifier = {
+						value = 10		
+						is_powerful_vassal = ROOT
+					}
+				}
+				count = 1
+				save_event_target_as = fellow_drinker
+			}
+		}
+	}
+
+	option = {
+		name = EVTOPTA_WCLIFES.35
+		if = {
+			limit = { NOT = { character = event_target:brew_giver } }
+			opinion = { modifier = opinion_grateful who = event_target:brew_giver years = 5 }
+		}
+		if = {
+			limit = { event_target:brew_keg = { artifact_type = halaani_whiskey_keg } }
+			event_target:brew_receiver = {
+				show_scope_change = no
+				add_character_modifier = { name = halaani_whiskey_intoxication months = 36 }
+			}
+		}
+		else_if = {
+			limit = { event_target:brew_keg = { artifact_type = sulfuron_slammer_keg } }
+			event_target:brew_receiver = {
+				show_scope_change = no
+				add_character_modifier = { name = sulfuron_slammer_intoxication months = 36 }
+			}
+		}
+		else_if = {
+			limit = { event_target:brew_keg = { artifact_type = metal_brew_keg } }
+			event_target:brew_receiver = {
+				show_scope_change = no
+				add_character_modifier = { name = metal_brew_intoxication months = 36 }
+			}
+		}
+		else_if = {
+			limit = { event_target:brew_keg = { artifact_type = tiger_stout_keg } }
+			event_target:brew_receiver = {
+				show_scope_change = no
+				add_character_modifier = { name = tiger_stout_intoxication months = 36 }
+			}
+		}
+		else = {
+			event_target:brew_receiver = {
+				show_scope_change = no
+				add_character_modifier = { name = serpent_ale_intoxication months = 36 }
+			}
+		}
+		event_target:brew_keg = { drink_keg_brew_effect = yes }
+	}
+	option = {
+		name = EVTOPTB_WCLIFES.35
+		trigger = {
+			event_target:brew_receiver = { character =  event_target:brew_giver }
+			event_target:brew_keg = {
+				OR = {
+					has_artifact_flag = keg_fullness_3
+					has_artifact_flag = keg_fullness_3
+				}
+			}
+			any_courtier = {
+					is_possible_fellow_drinker_trigger = yes
+			}
+		}
+		event_target:fellow_drinker = {
+			show_scope_change = no
+			
+			opinion = { modifier = opinion_grateful who = event_target:brew_giver years = 5 }
+			if = {
+				limit = { event_target:brew_keg = { artifact_type = halaani_whiskey_keg } }
+				event_target:fellow_drinker = {
+					show_scope_change = no
+					add_character_modifier = { name = halaani_whiskey_intoxication months = 36 }
+				}
+			}
+			else_if = {
+				limit = { event_target:brew_keg = { artifact_type = sulfuron_slammer_keg } }
+				event_target:fellow_drinker = {
+					show_scope_change = no
+					add_character_modifier = { name = sulfuron_slammer_intoxication months = 36 }
+				}
+			}
+			else_if = {
+				limit = { event_target:brew_keg = { artifact_type = metal_brew_keg } }
+				event_target:fellow_drinker = {
+					show_scope_change = no
+					add_character_modifier = { name = metal_brew_intoxication months = 36 }
+				}
+			}
+			else_if = {
+				limit = { event_target:brew_keg = { artifact_type = tiger_stout_keg } }
+				event_target:fellow_drinker = {
+					show_scope_change = no
+					add_character_modifier = { name = tiger_stout_intoxication months = 36 }
+				}
+			}
+			else = {
+				event_target:fellow_drinker = {
+					show_scope_change = no
+					add_character_modifier = { name = serpent_ale_intoxication months = 36 }
+				}
+			}
+			event_target:brew_keg = { drink_keg_brew_effect = yes }
+		}
+		if = {
+			limit = { event_target:brew_keg = { artifact_type = halaani_whiskey_keg } }
+			event_target:brew_receiver = {
+				show_scope_change = no
+				add_character_modifier = { name = halaani_whiskey_intoxication months = 36 }
+			}
+		}
+		else_if = {
+			limit = { event_target:brew_keg = { artifact_type = sulfuron_slammer_keg } }
+			event_target:brew_receiver = {
+				show_scope_change = no
+				add_character_modifier = { name = sulfuron_slammer_intoxication months = 36 }
+			}
+		}
+		else_if = {
+			limit = { event_target:brew_keg = { artifact_type = metal_brew_keg } }
+			event_target:brew_receiver = {
+				show_scope_change = no
+				add_character_modifier = { name = metal_brew_intoxication months = 36 }
+			}
+		}
+		else_if = {
+			limit = { event_target:brew_keg = { artifact_type = tiger_stout_keg } }
+			event_target:brew_receiver = {
+				show_scope_change = no
+				add_character_modifier = { name = tiger_stout_intoxication months = 36 }
+			}
+		}
+		else = {
+			event_target:brew_receiver = {
+				show_scope_change = no
+				add_character_modifier = { name = serpent_ale_intoxication months = 36 }
+			}
+		}
+		event_target:brew_keg = { drink_keg_brew_effect = yes }
+		
+		ai_chance = {
+			factor = 0
+		}
+	}
+	option = {
+		name = EVTOPTC_WCLIFES.35
+		
+		if = {
+			limit = { NOT = { event_target:brew_receiver = { character =  event_target:brew_giver } } }
+			add_character_modifier = { name = rejected_brew months = 12 }
+		}
+		
+		
+		ai_chance = {
+			factor = 0
+		}
+	}
+	after = {
+		event_target:brew_giver = { clr_character_flag = do_not_disturb }
+	}
+}

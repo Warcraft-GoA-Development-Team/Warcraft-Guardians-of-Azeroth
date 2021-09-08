@@ -1,0 +1,162 @@
+decisions = {
+	become_brewmaster = {
+		is_high_prio = yes # Will show an alert once decision is enabled
+		
+		ai_check_interval = 120
+		
+		only_playable = yes
+		
+		potential = {
+			#Brewmaster race or player
+			OR = {
+				culture_group = vrykul_group
+				culture_group = ogre_group
+				culture_group = dwarf_group
+				culture_group = pandaren_group
+				ai = no
+			}
+			can_drink_alcohol_trigger = yes
+			NOT = { has_character_flag = becoming_brewmaster }
+			NOT = {	trait = brewmaster }
+		}
+		allow = {
+			custom_tooltip = {
+				text = is_not_busy_trigger_tooltip
+				hidden_tooltip = { NOT = { has_character_flag = do_not_disturb } }
+			}
+			wealth = 100
+			lifestyle_traits < 1
+			has_focus = focus_carousing
+		}
+		effect = {
+			set_character_flag = do_not_disturb
+			set_character_flag = becoming_brewmaster
+			wealth = -100
+			character_event = { id = WCLIFES.1 }
+		}
+		ai_will_do = {
+			factor = 1
+		}
+	}
+	make_brew = {
+		is_high_prio = yes # Will show an alert once decision is enabled
+		
+		ai_check_interval = 84
+		
+		only_playable = yes
+		
+		potential = {
+			trait = brewmaster
+		}
+		allow = {
+			custom_tooltip = {
+				text = is_not_busy_trigger_tooltip
+				hidden_tooltip = { NOT = { has_character_flag = do_not_disturb } }
+			}
+			wealth = 100
+		}
+		effect = {
+			set_character_flag = do_not_disturb
+			wealth = -100
+			character_event = { id = WCLIFES.10 }
+		}
+		ai_will_do = {
+			factor = 0.6
+		}
+	}
+}
+targetted_decisions = {
+	drink_brew = {
+		filter = realm_including_me
+		third_party_filter = artifacts
+		third_party = FROM
+		show_third_party_potential = yes
+		ai_target_filter = court_including_me
+		ai_check_interval = 24
+
+		only_playable = yes
+
+		from_potential = {
+			is_untouchable_trigger = no
+			
+			any_artifact = { has_artifact_flag = alcohol }
+		}
+
+		potential = {
+			is_adult = yes
+			is_ill = no
+			is_incapable = no
+			prisoner = no
+			can_drink_alcohol_trigger = yes
+			
+			is_within_diplo_range = FROM
+		}
+		third_party_potential = {
+			hidden_tooltip = {
+				FROMFROM = {
+					has_artifact_flag = alcohol
+				}
+			}
+		}
+		third_party_allow = {}
+		allow = {	
+			ROOT = {
+				is_inaccessible_trigger = no
+				NOT = {
+					has_character_modifier = halaani_whiskey_intoxication
+					has_character_modifier = sulfuron_slammer_intoxication
+					has_character_modifier = metal_brew_intoxication
+					has_character_modifier = tiger_stout_intoxication
+					has_character_modifier = serpent_ale_intoxication
+				}
+			}
+			FROM = {
+				custom_tooltip = {
+					text = is_not_busy_trigger_tooltip
+					hidden_tooltip = { NOT = { has_character_flag = do_not_disturb } }
+				}
+				is_inaccessible_trigger = no
+			}
+		}
+
+		effect = {
+			FROM = {
+				set_character_flag = do_not_disturb
+				save_event_target_as = brew_giver
+			}
+			FROMFROM = { save_event_target_as = brew_keg }
+			ROOT = {
+				save_event_target_as = brew_receiver
+				character_event = { id = WCLIFES.35 }
+				custom_tooltip = {
+					text = brew_effect_tooltip
+				}
+			}
+		}
+
+		revoke_allowed = { always = no }
+
+		ai_will_do = {
+			factor = 0.5
+			modifier = {
+				factor = 10
+				character = FROM
+			}
+			modifier = {
+				factor = 2
+				reverse_opinion = {
+					who = FROM
+					value = 30
+				}
+			}
+			modifier = {
+				factor = 0
+				NOR = {
+					is_close_relative = FROM
+					is_friend = FROM
+					is_lover = FROM
+				}
+			}
+		}
+	}
+}
