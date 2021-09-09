@@ -1,15 +1,20 @@
 ### IMPORTANT, WIDELY USED TRIGGERS ###
 # YOU CAN NOT INTERACT WITH THEM
 is_untouchable_trigger = {
-	# Since Ulduar can't be opened outside, it was sad you couldn't conquer it
-	always = no
-	# trigger_if = {
-		# limit = { top_liege = { primary_title = { title = d_ulduar } } }
-		# custom_tooltip = { text = ulduar_is_opened_tooltip NOT = { has_global_flag = ulduar_opened_flag } }
-	# }
-	# trigger_else = {
-		# always = no
-	# }
+	trigger_if = {
+		limit = {
+			top_liege = {
+				primary_title = { title = d_ulduar }
+			}
+		}
+		custom_tooltip = {
+			text = ulduar_is_opened_tooltip
+			NOT = { has_global_flag = ulduar_opened_flag }
+		}
+	}
+	trigger_else = {
+		always = no
+	}
 }
 
 # FORBIDS AI TO ATTACK THEM
@@ -98,8 +103,7 @@ evil_government_trigger = {
 }
 # CAN'T DECLARE WARS IF IT'S NOT TRUE
 can_declare_wars_trigger = {
-	# Must be uncommented if we add more conditions in is_untouchable_trigger
-	# is_untouchable_trigger = yes
+	is_untouchable_trigger = no
 	trigger_if = {
 		limit = { trait = creature_qiraji }
 		custom_tooltip = {
@@ -367,7 +371,7 @@ can_switch_culture_province_trigger = {
 	}
 }
 # TITLE CAN'T BE CONQUERED IF IT'S NOT TRUE
-title_can_be_lost_trigger = {
+title_can_be_faction_claimed_trigger = {
 	OR = {
 		has_holder = no
 		holder_scope = { is_untouchable_trigger = no }
@@ -394,6 +398,10 @@ title_can_be_lost_trigger = {
 	# invader_title_trigger = no # Allowed claiming via factions
 	dragonflight_title_trigger = no
 }
+title_can_be_lost_trigger = {
+	title_can_be_faction_claimed_trigger = yes
+	invader_title_trigger = no
+}
 # TITLES ARE IN DANGER, SO MANY ACTIONS CAN'T BE USED AGAINST THIS CHARACTER
 character_can_lose_title_trigger = {
 	is_untouchable_trigger = no
@@ -412,6 +420,7 @@ character_can_be_vassalized_trigger = {
 	is_nomadic = no
 	in_revolt = no
 	NOT = { government = society_government }
+	has_invader_title_trigger = no
 }
 # CAN'T GET SICK IF IT'S NOT TRUE
 # Associated with text_effect_can_not_get_diseases
@@ -497,7 +506,10 @@ is_completely_infertile_race_and_being_trigger = {
 
 		is_nraqi_trigger = yes
 
-		is_plant_race_trigger = yes
+		AND = {
+			is_plant_race_trigger = yes
+			NOT = { trait = trait = creature_ancient_coral }
+		}
 	}
 }
 # CAN'T HAS ROMANCES, MARRIAGES WITH CHARACTER IF IT'S NOT TRUE
@@ -1499,6 +1511,10 @@ potential_race_ancient_wind_trigger = {
 	graphical_culture = ancientwindgfx
 	NOT = { trait = creature_ancient_wind }
 }
+potential_race_ancient_coral_trigger = {
+	graphical_culture = ancientcoralgfx
+	NOT = { trait = creature_ancient_coral }
+}
 potential_race_wickerman_trigger = {
 	graphical_culture = wickermangfx
 	NOT = { trait = creature_wickerman }
@@ -1641,6 +1657,7 @@ potential_race_trigger = {
 		potential_race_ancient_war_trigger = yes
 		potential_race_ancient_lore_trigger = yes
 		potential_race_ancient_wind_trigger = yes
+		potential_race_ancient_coral_trigger = yes
 
 		# Pandaria
 		potential_race_pandaren_trigger = yes
@@ -1789,6 +1806,7 @@ has_race_trait_trigger = {
 		trait = creature_ancient_war
 		trait = creature_ancient_lore
 		trait = creature_ancient_wind
+		trait = creature_ancient_coral
 		
 		# Pandaria
 		trait = creature_pandaren
@@ -1911,6 +1929,7 @@ has_prev_race_trigger = {
 	trigger_else_if = { limit = { trait = creature_ancient_war			} PREV = { trait = creature_ancient_war			} }
 	trigger_else_if = { limit = { trait = creature_ancient_lore			} PREV = { trait = creature_ancient_lore			} }
 	trigger_else_if = { limit = { trait = creature_ancient_wind			} PREV = { trait = creature_ancient_wind			} }
+	trigger_else_if = { limit = { trait = creature_ancient_coral			} PREV = { trait = creature_ancient_coral			} }
 	
 	trigger_else_if = { limit = { trait = creature_pandaren			} PREV = { trait = creature_pandaren			} }
 	trigger_else_if = { limit = { is_jinyu_trigger = yes				} PREV = { is_jinyu_trigger = yes				} }
@@ -2934,6 +2953,7 @@ is_plant_race_trigger = {
 		trait = creature_ancient_war
 		trait = creature_ancient_lore
 		trait = creature_ancient_wind
+		trait = creature_ancient_coral #it's actually an animal but is here for trigger purposes
 	}
 }
 
